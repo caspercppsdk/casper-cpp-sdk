@@ -13,7 +13,7 @@ Client::Client(const std::string& address)
       mRpcClient{mHttpConnector, jsonrpccxx::version::v2} {}
 
 /**
- * @brief Get a list  of the node.
+ * @brief Get a list of the nodes.
  *
  * @return InfoGetPeersResult that is a struct contains a Peer vector.
  */
