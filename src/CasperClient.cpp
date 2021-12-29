@@ -50,4 +50,17 @@ GetStateRootHashResult Client::GetStateRootHash(const std::string& block_hash) {
       1, "chain_get_state_root_hash", block_identifier);
 }
 
+/**
+ * @brief Returns the deploy info.
+ *
+ * @param deploy_hash Hash string of the smart contract.
+ * @return GetDeployInfoResult that contains the deploy info as a string.
+ */
+GetDeployInfoResult Client::GetDeployInfo(const std::string& deploy_hash) {
+  nlohmann::json hash{std::make_pair("deploy_hash", deploy_hash)};
+
+  return mRpcClient.CallMethodNamed<GetDeployInfoResult>(
+      1, "info_get_deploy", hash);
+}
+
 }  // namespace Casper
