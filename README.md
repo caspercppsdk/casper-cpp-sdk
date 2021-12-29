@@ -42,7 +42,7 @@ Change the CASPER_TEST_ADDRESS value in the CasperClient.h with an RPC Server ad
         #include "CasperClient.h"
     2. Link the installed SDK to the application. A CMake example is given below.
         add_executable(ApplicationName main.cpp)
-        target_link_libraries(ApplicationName PUBLIC CasperSDK_lib)
+        target_link_libraries(ApplicationName PUBLIC CasperSDK)
 
 ## Tests
     cd build/test

@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 2.8)
-project(CasperSDK)
+cmake_minimum_required(VERSION 3.0)
+project(CasperSDK VERSION 1.0.0)
+
+message("CasperSDK Version: ${CMAKE_PROJECT_VERSION}")
 
 # Set C++17 as the default C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -13,4 +15,3 @@ add_subdirectory(src)
 add_subdirectory(test)
 add_subdirectory(lib/googletest)
 add_subdirectory(examples)
-
