@@ -63,4 +63,14 @@ GetDeployInfoResult Client::GetDeployInfo(const std::string& deploy_hash) {
       1, "info_get_deploy", hash);
 }
 
+/**
+ * @brief Returns the status info.
+ *
+ * @return GetStatusInfoResult that contains the status info as a string.
+ */
+GetStatusInfoResult Client::GetStatusInfo() {
+
+  return mRpcClient.CallMethodNamed<GetStatusInfoResult>(1, "info_get_status");
+}
+
 }  // namespace Casper

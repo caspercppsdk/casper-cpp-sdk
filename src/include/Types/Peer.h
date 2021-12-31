@@ -14,6 +14,8 @@ struct Peer {
    */
   Peer() : node_id(), address() {}
 
+  Peer(std::string address_, std::string node_id_) : address(address_), node_id(node_id_) {}
+
   /// The node ID as a string.
   std::string node_id;
 
