@@ -91,5 +91,15 @@ int main() {
       }
     }
 
+  /// Call chain_get_era_info_by_switch_block rpc function.
+  Casper::GetEraInfoResult eraInfoResult = casper_client.GetEraInfoBySwitchBlock(Casper::BlockIdentifier(status_result.last_added_block_info.hash, 1));
+  std::cout << "\neraInfoResult: " << eraInfoResult.api_version;
+  std::cout << "\nblock_hash: " << eraInfoResult.era_summary.block_hash
+    << "\nera_id: " << eraInfoResult.era_summary.era_id
+    << "\nmarker_proof: " << eraInfoResult.era_summary.merkle_proof
+    << "\nstate_root_hash: " << eraInfoResult.era_summary.state_root_hash
+    << "\nstored_value: " << eraInfoResult.era_summary.stored_value;
+
+
   std::cout << "\n";
 }
