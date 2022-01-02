@@ -10,6 +10,7 @@
 #include "JsonRpc/ResultTypes/GetStatus.h"
 #include "JsonRpc/ResultTypes/GetBlockTransfersResult.h"
 #include "Types/BlockIdentifier.h"
+#include "JsonRpc/ResultTypes/GetBlock.h"
 
 #include "jsonrpccxx/client.hpp"
 #include "nlohmann/json.hpp"
@@ -33,6 +34,7 @@ class Client {
   GetStatusInfoResult GetStatusInfo();
   GetBlockTransfersResult GetBlockTransfers(BlockIdentifier identifier);
   GetBlockTransfersResult GetBlockTransfers();
+  GetBlockResult GetBlock(BlockIdentifier identifier);
 };
 
 };  // namespace Casper

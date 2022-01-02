@@ -82,7 +82,7 @@ GetBlockTransfersResult Client::GetBlockTransfers() {
 }
 
 /**
- * @brief Returns the transfers infotmation.
+ * @brief Returns the transfers information.
  *
  * @return GetBlockTransfersResult that contains the transfers info.
  */
@@ -94,6 +94,21 @@ GetBlockTransfersResult Client::GetBlockTransfers(BlockIdentifier identifier) {
   };
 
   return mRpcClient.CallMethodNamed<GetBlockTransfersResult>(1, "chain_get_block_transfers", identifierJSON);
+}
+
+/**
+ * @brief Returns the block information.
+ *
+ * @return GetBlockResult that contains the block info.
+ */
+GetBlockResult Client::GetBlock(BlockIdentifier identifier) {
+  nlohmann::json identifierJSON
+  {
+    { "Hash", identifier.hash },
+    { "Height", identifier.height}
+  };
+
+  return mRpcClient.CallMethodNamed<GetBlockResult>(1, "chain_get_block", identifierJSON);
 }
 
 }  // namespace Casper

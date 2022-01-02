@@ -60,5 +60,36 @@ int main() {
       << " id: " << transfersResult.transfers[i].id;
   }
 
+  /// Call GetBlockResult rpc function.
+  Casper::GetBlockResult blockResult = casper_client.GetBlock(Casper::BlockIdentifier(status_result.last_added_block_info.hash, 1));
+    std::cout << "\nblockresult\napi_version: " << blockResult.api_version;
+
+    if (!blockResult.block.body.proposer.empty()) {
+      std::cout << "\nproposer: " << blockResult.block.body.proposer
+        << "\nhash: " << blockResult.block.hash
+        << "\naccumulated_seed: " << blockResult.block.header.accumulated_seed
+        << "\nbody_hash: " << blockResult.block.header.body_hash
+        << "\nera_end: " << blockResult.block.header.era_end
+        << "\nera_id: " << blockResult.block.header.era_id
+        << "\nheight: " << blockResult.block.header.height
+        << "\nparent_hash: " << blockResult.block.header.parent_hash
+        << "\nprotocol_version: " << blockResult.block.header.protocol_version
+        << "\nrandom_bit: " << blockResult.block.header.random_bit
+        << "\nstate_root_hash: " << blockResult.block.header.state_root_hash
+        << "\ntimestamp: " << blockResult.block.header.timestamp;
+
+      for (std::size_t i = 0; i < blockResult.block.body.deploy_hashes.size(); i++) {
+        std::cout << "\nDeploy hash: " << blockResult.block.body.deploy_hashes[i];
+      }
+
+      for (std::size_t i = 0; i < blockResult.block.body.transfer_hashes.size(); i++) {
+        std::cout << "\nTransfer hash: " << blockResult.block.body.transfer_hashes[i];
+      }
+
+      for (std::size_t i = 0; i < blockResult.block.proofs.size(); i++) {
+        std::cout << "\nProof: PK: " << blockResult.block.proofs[i].public_key << " Signature: " << blockResult.block.proofs[i].signature;
+      }
+    }
+
   std::cout << "\n";
 }
