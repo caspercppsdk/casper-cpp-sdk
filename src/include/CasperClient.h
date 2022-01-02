@@ -16,7 +16,7 @@
 #include "jsonrpccxx/client.hpp"
 #include "nlohmann/json.hpp"
 
-#define CASPER_TEST_ADDRESS "http://185.246.84.43:7777"
+#define CASPER_TEST_ADDRESS "http://127.0.0.1:7777"
 
 namespace Casper {
 class Client {
