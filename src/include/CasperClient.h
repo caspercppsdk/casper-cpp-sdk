@@ -8,6 +8,8 @@
 #include "JsonRpc/ResultTypes/InfoGetPeersResult.h"
 #include "JsonRpc/ResultTypes/GetDeployResult.h"
 #include "JsonRpc/ResultTypes/GetStatus.h"
+#include "JsonRpc/ResultTypes/GetBlockTransfersResult.h"
+#include "Types/BlockIdentifier.h"
 
 #include "jsonrpccxx/client.hpp"
 #include "nlohmann/json.hpp"
@@ -29,6 +31,8 @@ class Client {
   GetStateRootHashResult GetStateRootHash(const std::string& block_hash = "");
   GetDeployInfoResult GetDeployInfo(const std::string& deploy_hash);
   GetStatusInfoResult GetStatusInfo();
+  GetBlockTransfersResult GetBlockTransfers(BlockIdentifier identifier);
+  GetBlockTransfersResult GetBlockTransfers();
 };
 
 };  // namespace Casper
