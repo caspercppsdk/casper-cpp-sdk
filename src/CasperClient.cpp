@@ -111,4 +111,28 @@ GetBlockResult Client::GetBlock(BlockIdentifier identifier) {
   return mRpcClient.CallMethodNamed<GetBlockResult>(1, "chain_get_block", identifierJSON);
 }
 
+/**
+ * @brief Returns the era information.
+ *
+ * @return GetEraInfoBySwitchBlock that contains the era info.
+ */
+GetEraInfoResult Client::GetEraInfoBySwitchBlock() {
+  return mRpcClient.CallMethodNamed<GetEraInfoResult>(1, "chain_get_era_info_by_switch_block");
+}
+
+/**
+ * @brief Returns the era information.
+ *
+ * @return GetEraInfoBySwitchBlock that contains the era info.
+ */
+GetEraInfoResult Client::GetEraInfoBySwitchBlock(BlockIdentifier identifier) {
+  nlohmann::json identifierJSON
+  {
+    { "Hash", identifier.hash },
+    { "Height", identifier.height}
+  };
+
+  return mRpcClient.CallMethodNamed<GetEraInfoResult>(1, "chain_get_era_info_by_switch_block", identifierJSON);
+}
+
 }  // namespace Casper
