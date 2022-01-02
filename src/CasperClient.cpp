@@ -69,8 +69,31 @@ GetDeployInfoResult Client::GetDeployInfo(const std::string& deploy_hash) {
  * @return GetStatusInfoResult that contains the status info as a string.
  */
 GetStatusInfoResult Client::GetStatusInfo() {
-
   return mRpcClient.CallMethodNamed<GetStatusInfoResult>(1, "info_get_status");
+}
+
+/**
+ * @brief Returns the transfers infotmation.
+ *
+ * @return GetBlockTransfersResult that contains the transfers info.
+ */
+GetBlockTransfersResult Client::GetBlockTransfers() {
+  return mRpcClient.CallMethodNamed<GetBlockTransfersResult>(1, "chain_get_block_transfers");
+}
+
+/**
+ * @brief Returns the transfers infotmation.
+ *
+ * @return GetBlockTransfersResult that contains the transfers info.
+ */
+GetBlockTransfersResult Client::GetBlockTransfers(BlockIdentifier identifier) {
+  nlohmann::json identifierJSON
+  {
+    { "Hash", identifier.hash },
+    { "Height", identifier.height}
+  };
+
+  return mRpcClient.CallMethodNamed<GetBlockTransfersResult>(1, "chain_get_block_transfers", identifierJSON);
 }
 
 }  // namespace Casper

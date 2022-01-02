@@ -44,5 +44,21 @@ int main() {
   std::cout << "\nbuild_version: " << status_result.build_version;
   std::cout << "\nuptime: " << status_result.uptime;
 
+  /// Call GetBlockTransfers function.
+  Casper::GetBlockTransfersResult transfersResult = casper_client.GetBlockTransfers();
+  std::cout << "\ntransfers: api_version: " << transfersResult.api_version << " block_hash: " << transfersResult.block_hash;
+  for (std::size_t i = 0; i < transfersResult.transfers.size(); i++) {
+    std::cout
+      << std::to_string(i + 1)
+      << "\nTransfer: deploy_hash: " << transfersResult.transfers[i].deploy_hash
+      << " from:" << transfersResult.transfers[i].from
+      << " to: " << transfersResult.transfers[i].to
+      << " source: " << transfersResult.transfers[i].source
+      << " target: " << transfersResult.transfers[i].target
+      << " amount: " << transfersResult.transfers[i].amount
+      << " gas: " << transfersResult.transfers[i].gas
+      << " id: " << transfersResult.transfers[i].id;
+  }
+
   std::cout << "\n";
 }
