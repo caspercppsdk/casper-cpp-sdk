@@ -3,17 +3,6 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 
 ## Dependencies
 1. [CMake](https://cmake.org)
-2. [Google Test](https://github.com/google/googletest)
-
-### Google Test Installation
-    cd lib
-    git clone https://github.com/google/googletest
-    cd googletest
-    mkdir build
-    cd build
-    cmake ..
-    make
-    sudo make install
 
 ## SDK Installation
     mkdir build

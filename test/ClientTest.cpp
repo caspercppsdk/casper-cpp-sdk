@@ -1,34 +1,37 @@
 #include "CasperClient.h"
-#include "gtest/gtest.h"
+#include "acutest.h"
 
 /**
- * @brief Construct a new TEST object for "info_get_peers" rpc call. Compare the
- * count of peers with 0.
+ * @brief Check the "info_get_peers" rpc function. Size of the resulting array shouldn't be 0.
  *
  */
-TEST(ClientTest, GetPeers) {
+void get_peers_test (void) {
   Casper::Client client(CASPER_TEST_ADDRESS);
-  ASSERT_NE(client.GetNodePeers().peers.size(), 0);
+  TEST_ASSERT(client.GetNodePeers().peers.size() != 0);
 }
 
 /**
- * @brief Construct a new TEST object for "get_state_root_hash" rpc call with a
- * uint64_t typed block height. Compare the state root hash with an empty
- * string.
+ * @brief Check the "get_state_root_hash" rpc function with a variable. Compare the result with an empty string.
  *
  */
-TEST(ClientTest, GetStateRootHashWithHeight) {
+void get_state_root_hash_block_height_test (void) {
   Casper::Client client(CASPER_TEST_ADDRESS);
-  ASSERT_NE(client.GetStateRootHash(10).state_root_hash, "");
+  uint64_t block_height = 10;
+  TEST_ASSERT(client.GetStateRootHash(block_height).state_root_hash != "");
 }
 
 /**
- * @brief Construct a new TEST object for "get_state_root_hash" rpc call with
- * empty valued block hash string. Compare the state root hash with an empty
- * string.
+ * @brief Check the "get_state_root_hash" rpc function without a variable. Compare the result with an empty string.
  *
  */
-TEST(ClientTest, GetStateRootHashWithBlockHash) {
+void get_state_root_hash_test () {
   Casper::Client client(CASPER_TEST_ADDRESS);
-  ASSERT_NE(client.GetStateRootHash().state_root_hash, "");
+  TEST_ASSERT(client.GetStateRootHash().state_root_hash != "");
 }
+
+TEST_LIST = {
+    { "peers", get_peers_test },
+    { "root hash 1",     get_state_root_hash_block_height_test },
+    { "root hash 2",    get_state_root_hash_test },
+    { NULL, NULL }
+};
