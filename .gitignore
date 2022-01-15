@@ -49,3 +49,9 @@ Makefile
 # Executables
 HelloSDK
 CasperSDK_test
+
+# Test outputs
+Testing/Temporary
+
+# Install output
+install_manifest.txt
