@@ -2,12 +2,31 @@
 Casper C++ SDK provides an interface to establish a connection between the Casper Blockchain and a client. Currently, the SDK is compatible with Linux systems.
 
 ## Dependencies
-1. [CMake](https://cmake.org)
+1. [CMake Version 3.0.0 or newer](https://cmake.org)
 
-## SDK Installation
-    mkdir build
-    cd build
-    cmake ..
+
+## Build
+
+### Debug
+    cmake -DCMAKE_BUILD_TYPE=Debug .
+    make all
+
+### Release
+    cmake -DCMAKE_BUILD_TYPE=Release .
+    make all
+
+## Test
+    cmake -DCMAKE_BUILD_TYPE=Debug .
+    make all
+    make test
+
+## Run Example
+    cmake -DCMAKE_BUILD_TYPE=Debug .
+    make all
+    ./examples/HelloSDK
+
+## Install
+    cmake -DCMAKE_BUILD_TYPE=Release .
     make all
     sudo make install
 
@@ -17,25 +36,12 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 Change the CASPER_TEST_ADDRESS value in the CasperClient.h with an RPC Server address to run the examples and the tests.
 
 ---
-
-## Examples
-    cd examples
-    mkdir build
-    cd build
-    cmake ..
-    make all
-    ./HelloSDK
-
 ## How to use
     1. Include the header file to the application file.
         #include "CasperClient.h"
     2. Link the installed SDK to the application. A CMake example is given below.
         add_executable(ApplicationName main.cpp)
         target_link_libraries(ApplicationName PUBLIC CasperSDK)
-
-## Tests
-    cd build/test
-    ./CasperSDK_test
 
 ## External Libraries
 1. https://github.com/nlohmann/json
