@@ -31,7 +31,7 @@ void get_state_root_hash_test () {
 
 TEST_LIST = {
     { "peers", get_peers_test },
-    { "root hash 1",     get_state_root_hash_block_height_test },
-    { "root hash 2",    get_state_root_hash_test },
+    { "root hash 1", get_state_root_hash_block_height_test },
+    { "root hash 2", get_state_root_hash_test },
     { NULL, NULL }
 };
