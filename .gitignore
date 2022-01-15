@@ -34,7 +34,6 @@
 # Build intermediates
 build/
 examples/build/
-lib/googletest/build/
 
 # vs code folder
 .vscode
@@ -50,4 +49,3 @@ Makefile
 # Executables
 HelloSDK
 CasperSDK_test
-googletest
