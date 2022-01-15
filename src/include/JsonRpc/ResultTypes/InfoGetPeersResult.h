@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+
 #include "RpcResult.h"
 #include "Types/Peer.h"
 

@@ -19,7 +19,7 @@ struct GetEraInfoResult : public RpcResult {
 
   /// The state root hash as a string.
   std::string api_version;
-  EraSummary era_summary; // Optional.
+  EraSummary era_summary;  // Optional.
 };
 
 /**

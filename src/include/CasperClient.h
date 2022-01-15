@@ -4,15 +4,14 @@
 #include <string>
 
 #include "JsonRpc/Connection/HttpLibConnector.h"
-#include "JsonRpc/ResultTypes/GetStateRootHashResult.h"
-#include "JsonRpc/ResultTypes/InfoGetPeersResult.h"
-#include "JsonRpc/ResultTypes/GetDeployResult.h"
-#include "JsonRpc/ResultTypes/GetStatus.h"
-#include "JsonRpc/ResultTypes/GetBlockTransfersResult.h"
-#include "Types/BlockIdentifier.h"
 #include "JsonRpc/ResultTypes/GetBlock.h"
+#include "JsonRpc/ResultTypes/GetBlockTransfersResult.h"
+#include "JsonRpc/ResultTypes/GetDeployResult.h"
 #include "JsonRpc/ResultTypes/GetEraInfoResult.h"
-
+#include "JsonRpc/ResultTypes/GetStateRootHashResult.h"
+#include "JsonRpc/ResultTypes/GetStatus.h"
+#include "JsonRpc/ResultTypes/InfoGetPeersResult.h"
+#include "Types/BlockIdentifier.h"
 #include "jsonrpccxx/client.hpp"
 #include "nlohmann/json.hpp"
 

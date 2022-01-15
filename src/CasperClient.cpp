@@ -59,8 +59,8 @@ GetStateRootHashResult Client::GetStateRootHash(const std::string& block_hash) {
 GetDeployInfoResult Client::GetDeployInfo(const std::string& deploy_hash) {
   nlohmann::json hash{std::make_pair("deploy_hash", deploy_hash)};
 
-  return mRpcClient.CallMethodNamed<GetDeployInfoResult>(
-      1, "info_get_deploy", hash);
+  return mRpcClient.CallMethodNamed<GetDeployInfoResult>(1, "info_get_deploy",
+                                                         hash);
 }
 
 /**
@@ -78,7 +78,8 @@ GetStatusInfoResult Client::GetStatusInfo() {
  * @return GetBlockTransfersResult that contains the transfers info.
  */
 GetBlockTransfersResult Client::GetBlockTransfers() {
-  return mRpcClient.CallMethodNamed<GetBlockTransfersResult>(1, "chain_get_block_transfers");
+  return mRpcClient.CallMethodNamed<GetBlockTransfersResult>(
+      1, "chain_get_block_transfers");
 }
 
 /**
@@ -87,13 +88,11 @@ GetBlockTransfersResult Client::GetBlockTransfers() {
  * @return GetBlockTransfersResult that contains the transfers info.
  */
 GetBlockTransfersResult Client::GetBlockTransfers(BlockIdentifier identifier) {
-  nlohmann::json identifierJSON
-  {
-    { "Hash", identifier.hash },
-    { "Height", identifier.height}
-  };
+  nlohmann::json identifierJSON{{"Hash", identifier.hash},
+                                {"Height", identifier.height}};
 
-  return mRpcClient.CallMethodNamed<GetBlockTransfersResult>(1, "chain_get_block_transfers", identifierJSON);
+  return mRpcClient.CallMethodNamed<GetBlockTransfersResult>(
+      1, "chain_get_block_transfers", identifierJSON);
 }
 
 /**
@@ -102,13 +101,11 @@ GetBlockTransfersResult Client::GetBlockTransfers(BlockIdentifier identifier) {
  * @return GetBlockResult that contains the block info.
  */
 GetBlockResult Client::GetBlock(BlockIdentifier identifier) {
-  nlohmann::json identifierJSON
-  {
-    { "Hash", identifier.hash },
-    { "Height", identifier.height}
-  };
+  nlohmann::json identifierJSON{{"Hash", identifier.hash},
+                                {"Height", identifier.height}};
 
-  return mRpcClient.CallMethodNamed<GetBlockResult>(1, "chain_get_block", identifierJSON);
+  return mRpcClient.CallMethodNamed<GetBlockResult>(1, "chain_get_block",
+                                                    identifierJSON);
 }
 
 /**
@@ -117,7 +114,8 @@ GetBlockResult Client::GetBlock(BlockIdentifier identifier) {
  * @return GetEraInfoBySwitchBlock that contains the era info.
  */
 GetEraInfoResult Client::GetEraInfoBySwitchBlock() {
-  return mRpcClient.CallMethodNamed<GetEraInfoResult>(1, "chain_get_era_info_by_switch_block");
+  return mRpcClient.CallMethodNamed<GetEraInfoResult>(
+      1, "chain_get_era_info_by_switch_block");
 }
 
 /**
@@ -126,13 +124,11 @@ GetEraInfoResult Client::GetEraInfoBySwitchBlock() {
  * @return GetEraInfoBySwitchBlock that contains the era info.
  */
 GetEraInfoResult Client::GetEraInfoBySwitchBlock(BlockIdentifier identifier) {
-  nlohmann::json identifierJSON
-  {
-    { "Hash", identifier.hash },
-    { "Height", identifier.height}
-  };
+  nlohmann::json identifierJSON{{"Hash", identifier.hash},
+                                {"Height", identifier.height}};
 
-  return mRpcClient.CallMethodNamed<GetEraInfoResult>(1, "chain_get_era_info_by_switch_block", identifierJSON);
+  return mRpcClient.CallMethodNamed<GetEraInfoResult>(
+      1, "chain_get_era_info_by_switch_block", identifierJSON);
 }
 
 }  // namespace Casper
