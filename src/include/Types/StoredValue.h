@@ -3,14 +3,14 @@
 #include <string>
 #include <vector>
 
+#include "Types/Contract.h"
+#include "Types/Transfer.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
 struct CLValue;
 struct Account;
-struct Contract;
 struct ContractPackage;
-struct Transfer;
 struct DeployInfo;
 struct EraInfo;
 struct UnbondingPurse;
