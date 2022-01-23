@@ -6,6 +6,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include/JsonRpc/Connection
     ${CMAKE_CURRENT_SOURCE_DIR}/include/JsonRpc/ResultTypes
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Types
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Utils
 )
 
 add_library(${LIB_NAME} SHARED CasperClient.cpp)
