@@ -29,7 +29,7 @@ class KeyAlgo {
     }
   }
 
-  constexpr static std::string GetName(Value value) {
+  static std::string GetName(Value value) {
     if (value == Value::ED25519) {
       return "ED25519";
     } else if (value == Value::SECP256K1) {

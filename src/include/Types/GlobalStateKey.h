@@ -1,10 +1,8 @@
 #pragma once
-#include <string>
 #include <vector>
 
+#include "Utils/CEP57Checksum.h"
 #include "nlohmann/json.hpp"
-
-using bytes = std::vector<std::byte>;
 
 namespace Casper {
 /// <summary>
@@ -64,15 +62,16 @@ enum KeyIdentifier {
 /// </summary>
 class GlobalStateKey {
  protected:
-  const std::string key;
+  std::string key;
 
  public:
   KeyIdentifier key_identifier;
-  bytes raw_bytes;  // TODO: rawbytes ->  return _GetRawBytesFromKey(Key);
+  SecByteBlock
+      raw_bytes;  // TODO: rawbytes ->  return _GetRawBytesFromKey(Key);
 
  protected:
-  virtual bytes _GetRawBytesFromKey(std::string key) {
-    return {};
+  virtual SecByteBlock _GetRawBytesFromKey(std::string key) {
+    return CEP57Checksum::Decode(key.substr(key.find_last_of("-") + 1));
     // return Hex.Decode(key.Substring(key.LastIndexOf('-') + 1));
   }
   /// <summary>
@@ -84,17 +83,13 @@ class GlobalStateKey {
   /// Constructor for the GlobalStateKey class with key prefix.
   /// </summary>
   GlobalStateKey(std::string key_, std::string key_prefix) {
-    if (!key_.StartsWith(key_prefix))
-      throw new ArgumentException(
-          $ "Key not valid. It should start with '{key_prefix}'.",
-          nameof(key_));
+    if (key_.rfind(key_prefix, 0) != 0)
+      throw std::invalid_argument(
+          "Key not valid. It should start with '{key_prefix}'.");
 
-    bytes res = CEP57Checksum.Decode(key_.Substring(key_.LastIndexOf('-') + 1),
-                                     out int checksumResult);
-    if (checksumResult == CEP57Checksum.InvalidChecksum)
-      throw new ArgumentException("Global State Key checksum mismatch.");
-
-    key = key_prefix + CEP57Checksum.Encode(res);
+    SecByteBlock res =
+        CEP57Checksum::Decode(key_.substr(key_.find_last_of('-') + 1));
+    key = key_prefix + CEP57Checksum::Encode(res);
   }
 };
 }  // namespace Casper

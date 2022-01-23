@@ -1,18 +1,18 @@
 #pragma once
-#include <string>
 #include <vector>
 
 #include "Types/KeyAlgo.h"
+#include "Utils/CEP57Checksum.h"
 #include "Utils/File.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
 struct PublicKey {
-  std::vector<std::byte> raw_bytes;
+  SecByteBlock raw_bytes;
   KeyAlgo key_algorithm;
 
  protected:
-  PublicKey(std::vector<std::byte> raw_bytes_, KeyAlgo key_algorithm_)
+  PublicKey(SecByteBlock raw_bytes_, KeyAlgo key_algorithm_)
       : raw_bytes(raw_bytes_), key_algorithm(key_algorithm_) {}
 
  public:
@@ -21,12 +21,12 @@ struct PublicKey {
   /// Key algorithm identifier).
   /// </summary>
   static PublicKey FromHexString(const std::string& hexBytes) {
-    var rawBytes =
-        CEP57Checksum.Decode(hexBytes.substr(2), out var checksumResult);
-
-    if (checksumResult == CEP57Checksum.InvalidChecksum)
-      throw std::invalid_argument("Public key checksum mismatch.");
-
+    // TODO: add try catch blocks
+    SecByteBlock rawBytes = CEP57Checksum::Decode(hexBytes.substr(2));
+    /*
+      if (checksumResult == CEP57Checksum.InvalidChecksum)
+        throw std::invalid_argument("Public key checksum mismatch.");
+  */
     if (hexBytes.substr(0, 2) == "01") {
       return FromRawBytes(rawBytes, KeyAlgo::ED25519);
     } else if (hexBytes.substr(0, 2) == "02") {
@@ -53,12 +53,11 @@ struct PublicKey {
 
       if (pemObject is ECPublicKeyParameters ecPk) {
         byte[] compressed = ecPk.Q.GetEncoded(true);
-        return new PublicKey(compressed, KeyAlgo.SECP256K1);
+        return PublicKey(compressed, KeyAlgo.SECP256K1);
       }
 
-      throw new ArgumentException(
-          "Unsupported key format or it's not a private key PEM object.",
-          nameof(filePath));
+      throw std::invalid_argument(
+          "Unsupported key format or it's not a private key PEM object.");
     }
   }
 
@@ -66,7 +65,7 @@ struct PublicKey {
   /// Creates a PublicKey object from a byte array. First byte in the array must
   /// contain the key algorithm identifier.
   /// </summary>
-  static PublicKey FromBytes(const std::vector<std::byte>& bytes) {
+  static PublicKey FromBytes(const SecByteBlock& bytes) {
     if (bytes.empty())
       throw std::invalid_argument("Public key bytes cannot be empty.");
 
@@ -89,8 +88,7 @@ struct PublicKey {
       throw std::runtime_error("Wrong public key format. Expected length is " +
                                std::to_string(expectedPublicKeySize));
 
-    std::vector<std::byte> rawBytes =
-        std::vector<std::byte>(expectedPublicKeySize - 1);
+    SecByteBlock rawBytes(expectedPublicKeySize - 1);
 
     std::copy(bytes.begin() + 1, bytes.begin() + expectedPublicKeySize,
               rawBytes.begin());
@@ -103,8 +101,7 @@ struct PublicKey {
   /// Creates a PublicKey object from a byte array and the key algorithm
   /// identifier.
   /// </summary>
-  static PublicKey FromRawBytes(const std::vector<std::byte>& rawBytes,
-                                KeyAlgo keyAlgo) {
+  static PublicKey FromRawBytes(const SecByteBlock& rawBytes, KeyAlgo keyAlgo) {
     try {
       int expectedPublicKeySize = KeyAlgo::GetKeySizeInBytes(keyAlgo) - 1;
       if (rawBytes.size() != expectedPublicKeySize) {
@@ -115,7 +112,6 @@ struct PublicKey {
     } catch (std::exception& e) {
       throw new std::exception(e.what());
     }
-
     return PublicKey(rawBytes, keyAlgo);
   }
 
@@ -155,17 +151,16 @@ struct PublicKey {
   /// Returns the Account Hash associated to this Public Key.
   /// </summary>
   std::string GetAccountHash() {
-    var bcBl2bdigest = new Org.BouncyCastle.Crypto.Digests.Blake2bDigest(256);
-    std::string algo = key_algorithm.ToString().ToLower();
-    bcBl2bdigest.BlockUpdate(System.Text.Encoding.UTF8.GetBytes(algo), 0,
-                             algo.Length);
-    bcBl2bdigest.Update(0x00);
-    bcBl2bdigest.BlockUpdate(RawBytes, 0, RawBytes.Length);
+    BLAKE2b hash(32u);
+    std::string algo_str = std::tolower(KeyAlgo::GetName(key_algorithm));
+    hash.Update(algo_str.data(), algo_str.size());
+    hash.Update(0x00);
+    hash.Update(raw_bytes.begin(), raw_bytes.size());
 
-    var hash = new byte[bcBl2bdigest.GetDigestSize()];
-    bcBl2bdigest.DoFinal(hash, 0);
+    SecByteBlock digest_bytes(hash.DigestSize());
+    hash.Final(digest_bytes.data());
 
-    return "account-hash-" + CEP57Checksum.Encode(hash);
+    return "account-hash-" + CEP57Checksum::Encode(digest_bytes);
   }
 
   /// <summary>
@@ -174,27 +169,17 @@ struct PublicKey {
   /// </summary>
 
   std::string ToAccountHex() {
-    look todo here
-
-        if (key_algorithm == KeyAlgo::ED25519) {
-      return "01" + Hex.ToHexString(
-                        RawBytes);  // TODO: CEP57Checksum.Encode(RawBytes);
-                                    // instead of hex.tohexstring
-    }
-    else if (key_algorithm == KeyAlgo::SECP256K1) {
-      return "02" + Hex.ToHexString(
-                        RawBytes);  // TODO: CEP57Checksum.Encode(RawBytes);
-                                    // instead of hex.tohexstring
-    }
-    else {
+    if (key_algorithm == KeyAlgo::ED25519) {
+      return "01" + CEP57Checksum::Encode(raw_bytes);
+    } else if (key_algorithm == KeyAlgo::SECP256K1) {
+      return "02" + CEP57Checksum::Encode(raw_bytes);
+    } else {
       throw std::runtime_error("Unsupported key type.");
     }
   }
 
- public
   override string ToString() { return ToAccountHex(); }
 
- public
   override bool Equals(object obj) {
     // Check for null and compare run-time types.
     if (obj == null || !GetType().Equals(obj.GetType())) return false;
@@ -203,7 +188,6 @@ struct PublicKey {
     return pk.GetBytes().SequenceEqual(this.GetBytes());
   }
 
- public
   override int GetHashCode() {
     return this.ToAccountHex().ToLower().GetHashCode();
   }
@@ -212,7 +196,7 @@ struct PublicKey {
   /// Returns the bytes of the public key, including the Key algorithm as the
   /// first byte.
   /// </summary>
- public
+
   byte[] GetBytes() {
     byte[] bytes = new byte[1 + RawBytes.Length];
     bytes[0] = KeyAlgorithm switch {KeyAlgo.ED25519 = > 0x01,
@@ -225,16 +209,16 @@ struct PublicKey {
   /// <summary>
   /// Verifies the signature given its value and the original message.
   /// </summary>
- public
+
   bool VerifySignature(byte[] message, byte[] signature) {
-    if (KeyAlgorithm == KeyAlgo.ED25519) {
+    if (key_algorithm == KeyAlgo::ED25519) {
       Ed25519PublicKeyParameters edPk =
           new Ed25519PublicKeyParameters(RawBytes, 0);
       return Ed25519.Verify(signature, 0, RawBytes, 0, message, 0,
                             message.Length);
     }
 
-    if (KeyAlgorithm == KeyAlgo.SECP256K1) {
+    if (key_algorithm == KeyAlgo::SECP256K1) {
       var curve = ECNamedCurveTable.GetByName("secp256k1");
       var domainParams = new ECDomainParameters(curve.Curve, curve.G, curve.N,
                                                 curve.H, curve.GetSeed());
@@ -248,25 +232,24 @@ struct PublicKey {
       return signer.VerifySignature(signature);
     }
 
-    throw new Exception("Unsupported key type.");
+    throw std::runtime_error("Unsupported key type.");
   }
 
   /// <summary>
   /// Verifies the signature given its value and the original message.
   /// </summary>
- public
+
   bool VerifySignature(string message, string signature) {
     return VerifySignature(Hex.Decode(message), Hex.Decode(signature));
   }
 
-#region Cast operators
-
- public
-  static explicit operator string(PublicKey pk) = > pk.ToAccountHex();
-
-#endregion
+  ostream& operator<<(ostream& os, const PublicKey& pk) {
+    os << pk.ToAccountHex();
+    return os;
+  }
 };
 
+/*
 /// <summary>
 /// Json converter class to serialize/deserialize a PublicKey to/from Json
 /// </summary>
@@ -288,5 +271,5 @@ class PublicKeyConverter : JsonConverter<PublicKey> {
     writer.WriteStringValue(publicKey.ToAccountHex());
   }
 }
-
+*/
 }  // namespace Casper
