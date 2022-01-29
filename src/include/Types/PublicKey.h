@@ -1,11 +1,12 @@
 #pragma once
+#include <cctype>
 #include <vector>
 
+#include <boost/algorithm/string.hpp>
 #include "Types/KeyAlgo.h"
 #include "Utils/CEP57Checksum.h"
 #include "Utils/File.h"
-#include "nlohmann/json.hpp"
-
+#include "lib/nlohmann/json.hpp"
 namespace Casper {
 struct PublicKey {
   SecByteBlock raw_bytes;
@@ -152,8 +153,11 @@ struct PublicKey {
   /// </summary>
   std::string GetAccountHash() {
     BLAKE2b hash(32u);
-    std::string algo_str = std::tolower(KeyAlgo::GetName(key_algorithm));
-    hash.Update(algo_str.data(), algo_str.size());
+    std::string algo_str = KeyAlgo::GetName(key_algorithm);
+    boost::to_lower(algo_str);
+
+    hash.Update(reinterpret_cast<const byte*>(algo_str.data()),
+                algo_str.size());
     hash.Update(0x00);
     hash.Update(raw_bytes.begin(), raw_bytes.size());
 
@@ -178,31 +182,34 @@ struct PublicKey {
     }
   }
 
-  override string ToString() { return ToAccountHex(); }
+  std::string ToString() { return ToAccountHex(); }
 
-  override bool Equals(object obj) {
+  bool Equals(object obj) {
     // Check for null and compare run-time types.
-    if (obj == null || !GetType().Equals(obj.GetType())) return false;
+    if (obj == null || !GetType().Equals(obj.GetType()))
+      return false;
 
     var pk = (PublicKey)obj;
     return pk.GetBytes().SequenceEqual(this.GetBytes());
   }
 
-  override int GetHashCode() {
-    return this.ToAccountHex().ToLower().GetHashCode();
-  }
+  int GetHashCode() { return this->ToAccountHex().ToLower().GetHashCode(); }
 
   /// <summary>
   /// Returns the bytes of the public key, including the Key algorithm as the
   /// first byte.
   /// </summary>
 
-  byte[] GetBytes() {
-    byte[] bytes = new byte[1 + RawBytes.Length];
-    bytes[0] = KeyAlgorithm switch {KeyAlgo.ED25519 = > 0x01,
-                                    KeyAlgo.SECP256K1 = > 0x02, _ = > 0x00};
-    Array.Copy(RawBytes, 0, bytes, 1, RawBytes.Length);
-
+  SecByteBlock GetBytes() {
+    SecByteBlock bytes = SecByteBlock(raw_bytes.SizeInBytes() + 1);
+    if (key_algorithm == KeyAlgo::ED25519) {
+      bytes[0] = 0x01;
+    } else if (key_algorithm == KeyAlgo::SECP256K1) {
+      bytes[0] = 0x02;
+    } else {
+      bytes[0] = 0x00;
+    }
+    std::copy(raw_bytes.begin(), raw_bytes.end(), bytes.begin() + 1);
     return bytes;
   }
 
