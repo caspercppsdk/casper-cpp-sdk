@@ -67,7 +67,7 @@ struct Signature {
 
     return Signature(bytes., algoIdent);
 
-    return new Signature(bytes[1..], algoIdent);
+    return Signature(bytes[1..], algoIdent);
   }
 
   /// <summary>
@@ -75,8 +75,8 @@ struct Signature {
   /// identifier.
   /// </summary>
 
-  static Signature FromRawBytes(byte[] rawBytes, KeyAlgo keyAlgo) {
-    return new Signature(rawBytes, keyAlgo);
+  static Signature FromRawBytes(const SecByteBlock& rawBytes, KeyAlgo keyAlgo) {
+    return Signature(rawBytes, keyAlgo);
   }
 
   /// <summary>
@@ -84,12 +84,16 @@ struct Signature {
   /// first byte.
   /// </summary>
 
-  byte[] GetBytes() {
-    byte[] bytes = new byte[1 + RawBytes.Length];
-    bytes[0] = KeyAlgorithm switch {KeyAlgo.ED25519 = > 0x01,
-                                    KeyAlgo.SECP256K1 = > 0x02, _ = > 0x00};
-    Array.Copy(RawBytes, 0, bytes, 1, RawBytes.Length);
-
+  SecByteBlock GetBytes() {
+    SecByteBlock bytes = SecByteBlock(raw_bytes.SizeInBytes() + 1);
+    if (key_algorithm == KeyAlgo::ED25519) {
+      bytes[0] = 0x01;
+    } else if (key_algorithm == KeyAlgo::SECP256K1) {
+      bytes[0] = 0x02;
+    } else {
+      bytes[0] = 0x00;
+    }
+    std::copy(raw_bytes.begin(), raw_bytes.end(), bytes.begin() + 1);
     return bytes;
   }
 
@@ -100,16 +104,17 @@ struct Signature {
 
   std::string ToHexString() {
     if (key_algorithm == KeyAlgo::ED25519)
-      return "01" + CEP57Checksum.Encode(RawBytes);
+      return "01" + CEP57Checksum::Encode(raw_bytes);
     else
-      return "02" + CEP57Checksum.Encode(RawBytes);
+      return "02" + CEP57Checksum::Encode(raw_bytes);
   }
 
-  override string ToString() { return ToHexString(); }
+  std::string ToString() { return ToHexString(); }
 
   class SignatureConverter : JsonConverter<Signature> {
    public
-    override Signature Read(ref Utf8JsonReader reader, Type typeToConvert,
+    override Signature Read(ref Utf8JsonReader reader,
+                            Type typeToConvert,
                             JsonSerializerOptions options) {
       {
         try {
@@ -121,7 +126,8 @@ struct Signature {
     }
 
    public
-    override void Write(Utf8JsonWriter writer, Signature signature,
+    override void Write(Utf8JsonWriter writer,
+                        Signature signature,
                         JsonSerializerOptions options) =
         > writer.WriteStringValue(signature.ToHexString());
   }
