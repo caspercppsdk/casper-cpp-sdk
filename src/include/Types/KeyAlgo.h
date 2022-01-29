@@ -17,6 +17,7 @@ class KeyAlgo {
   // Prevent usage: if(keyAlgo)
   explicit operator bool() = delete;
   constexpr bool operator==(KeyAlgo a) const { return value == a.value; }
+  constexpr bool operator==(Value a) const { return value == a; }
   constexpr bool operator!=(KeyAlgo a) const { return value != a.value; }
 
   constexpr static int GetKeySizeInBytes(Value value) {
