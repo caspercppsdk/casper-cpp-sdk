@@ -4,14 +4,19 @@
 #include <string>
 
 #include "Types/URef.h"
-#include "nlohmann/json.hpp"
+#include "lib/nlohmann/json.hpp"
 
 namespace Casper {
 
 struct Transfer {
-  Transfer(boost::multiprecision::uint512_t amount_, std::string deploy_hash_,
-           AccountHashKey from_, boost::multiprecision::uint512_t gas_,
-           uint64_t id_, URef source_, URef target_, AccountHashKey to_)
+  Transfer(boost::multiprecision::uint512_t amount_,
+           std::string deploy_hash_,
+           AccountHashKey from_,
+           boost::multiprecision::uint512_t gas_,
+           uint64_t id_,
+           URef source_,
+           URef target_,
+           AccountHashKey to_)
       : amount(amount_),
         deploy_hash(deploy_hash_),
         from(from_),
