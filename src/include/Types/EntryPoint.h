@@ -2,5 +2,7 @@
 
 namespace Casper
 {
-    
+    struct EntryPoint {
+        
+    }
 } // namespace Casper

@@ -2,13 +2,14 @@
 
 #include <string>
 
+#include "Types/StoredValue.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
 
 struct EraSummary {
   EraSummary(std::string block_hash_, uint64_t era_id_,
-             std::string stored_value_, std::string state_root_hash_,
+             StoredValue stored_value_, std::string state_root_hash_,
              std::string merkle_proof_)
       : block_hash(block_hash_),
         era_id(era_id_),
@@ -20,7 +21,7 @@ struct EraSummary {
 
   std::string block_hash;
   uint64_t era_id;
-  std::string stored_value;
+  StoredValue stored_value;
   std::string state_root_hash;
   std::string merkle_proof;
 };

@@ -1,34 +1,34 @@
 #pragma once
 
+#include <boost/multiprecision/cpp_int.hpp>
 #include <string>
 
+#include "Types/URef.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
 
 struct Transfer {
-  Transfer(std::string deploy_hash_, std::string from_, std::string to_,
-           std::string source_, std::string target_, std::string amount_,
-           std::string gas_, uint64_t id_)
-      : deploy_hash(deploy_hash_),
+  Transfer(boost::multiprecision::uint512_t amount_, std::string deploy_hash_,
+           AccountHashKey from_, boost::multiprecision::uint512_t gas_,
+           uint64_t id_, URef source_, URef target_, AccountHashKey to_)
+      : amount(amount_),
+        deploy_hash(deploy_hash_),
         from(from_),
-        to(to_),
+        gas(gas_),
+        id(id_),
         source(source_),
         target(target_),
-        amount(amount_),
-        gas(gas_),
-        id(id_) {}
+        to(to_) {}
 
-  Transfer() {}
-
+  boost::multiprecision::uint512_t amount;
   std::string deploy_hash;
-  std::string from;
-  std::string to;
-  std::string source;
-  std::string target;
-  std::string amount;
-  std::string gas;
+  AccountHashKey from;
+  boost::multiprecision::uint512_t gas;
   uint64_t id;
+  URef source;
+  URef target;
+  AccountHashKey to;
 };
 
 /**

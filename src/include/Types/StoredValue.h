@@ -9,24 +9,19 @@
 
 namespace Casper {
 struct CLValue;
-struct Account;
-struct ContractPackage;
-struct DeployInfo;
-struct EraInfo;
+
 struct UnbondingPurse;
-struct Bid;
 /**
  * @brief
  *
  */
 struct StoredValue {
- public:
   /**
    * @brief
    *
    */
-  StoredValue() {}
 
+  StoredValue() {}
   // TODO: add to_json and from_json for all the classes given below
   std::optional<CLValue> cl_value = std::nullopt;
   std::optional<Account> account = std::nullopt;
