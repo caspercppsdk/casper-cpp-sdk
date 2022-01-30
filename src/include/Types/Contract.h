@@ -2,14 +2,16 @@
 #include <string>
 #include <vector>
 
+#include "Types/StoredValueTypeBase.h"
 #include "Types/EntryPoint.h"
 #include "Types/NamedKey.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
-struct Contract {
-  Contract()
-      : contract_package_hash{}, contract_wasm_hash{}, protocol_version{} {}
+struct Contract : public StoredValueTypeBase {
+  const StoredValueType type;
+
+  Contract() : type(StoredValueType::CONTRACT) {}
 
   std::string contract_package_hash;
   std::string contract_wasm_hash;

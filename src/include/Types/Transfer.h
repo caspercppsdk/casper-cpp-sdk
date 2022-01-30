@@ -1,23 +1,27 @@
 #pragma once
 
-#include <boost/multiprecision/cpp_int.hpp>
 #include <string>
 
 #include "Types/URef.h"
+#include "Types/StoredValueTypeBase.h"
 #include "nlohmann/json.hpp"
+#include "Definitions.h"
 
 namespace Casper {
 
-struct Transfer {
-  Transfer(boost::multiprecision::uint512_t amount_,
+struct Transfer : public StoredValueTypeBase {
+  const StoredValueType type;
+
+  Transfer(big_int amount_,
            std::string deploy_hash_,
-           AccountHashKey from_,
-           boost::multiprecision::uint512_t gas_,
+           std::string from_,
+           big_int gas_,
            uint64_t id_,
            URef source_,
            URef target_,
-           AccountHashKey to_)
-      : amount(amount_),
+           std::string to_)
+      : type(StoredValueType::TRANSFER),
+        amount(amount_),
         deploy_hash(deploy_hash_),
         from(from_),
         gas(gas_),
@@ -26,14 +30,14 @@ struct Transfer {
         target(target_),
         to(to_) {}
 
-  boost::multiprecision::uint512_t amount;
+  big_int amount;
   std::string deploy_hash;
-  AccountHashKey from;
-  boost::multiprecision::uint512_t gas;
+  std::string from;
+  big_int gas;
   uint64_t id;
   URef source;
   URef target;
-  AccountHashKey to;
+  std::string to;
 };
 
 /**

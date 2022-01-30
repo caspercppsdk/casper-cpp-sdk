@@ -1,17 +1,20 @@
 #pragma once
-#include <boost/multiprecision/cpp_int.hpp>
 #include <vector>
 
+#include "Definitions.h"
 #include "Types/Delegator.h"
 #include "Types/PublicKey.h"
 #include "Types/URef.h"
 #include "Types/VestingSchedule.h"
+#include "Types/StoredValueTypeBase.h"
 
 namespace Casper {
 /// <summary>
 /// An entry in a founding validator map representing a bid.
 /// </summary>
-struct Bid {
+struct Bid : public StoredValueTypeBase {
+  const StoredValueType type;
+
   /// <summary>
   /// The purse that was used for bonding.
   /// </summary>
@@ -38,7 +41,7 @@ struct Bid {
   /// The amount of tokens staked by a validator (not including
   /// delegators).
   /// </summary>
-  boost::multiprecision::uint512_t taked_amount;
+  big_int taked_amount;
 
   /// <summary>
   /// Validator public key
@@ -51,5 +54,7 @@ struct Bid {
   /// validator.
   /// </summary>
   VestingSchedule vesting_schedule;
+
+  Bid () : type(StoredValueType::BID) {}
 };
 }  // namespace Casper

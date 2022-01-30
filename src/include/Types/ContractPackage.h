@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Types/URef.h"
+#include "Types/StoredValueTypeBase.h"
 
 namespace Casper {
 /// <summary>
@@ -53,7 +54,9 @@ struct Group {
 /// <summary>
 /// Contract definition, metadata, and security container.
 /// </summary>
-struct ContractPackage {
+struct ContractPackage : StoredValueTypeBase {
+  const StoredValueType type;
+
   URef access_key;
 
   /// <summary>
@@ -73,5 +76,7 @@ struct ContractPackage {
   /// List of active versions of a contract.
   /// </summary>
   std::vector<ContractVersion> versions;
+
+  ContractPackage () : type(StoredValueType::CONTRACTPACKAGE) {}
 };
 }  // namespace Casper

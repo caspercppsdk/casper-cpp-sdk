@@ -15,46 +15,46 @@ enum KeyIdentifier {
   /// <summary>
   /// AccountHash keys store accounts in the global state.
   /// </summary>
-  Account = 0x00,
+  ACCOUNT = 0x00,
   /// <summary>
   /// Hash keys store contracts immutably in the global state.
   /// </summary>
-  Hash = 0x01,
+  HASH = 0x01,
   /// <summary>
   /// URef keys store values and manage permissions to interact with the value
   /// stored under the URef.
   /// </summary>
-  URef = 0x02,
+  UREF = 0x02,
   /// <summary>
   /// Transfer keys store transfers in the global state.
   /// </summary>
-  Transfer = 0x03,
+  TRANSFER = 0x03,
   /// <summary>
   /// DeployInfo keys store information related to deploys in the global state.
   /// </summary>
-  DeployInfo = 0x04,
+  DEPLOYINFO = 0x04,
   /// <summary>
   /// EraInfo keys store information related to the Auction metadata for a
   /// particular era.
   /// </summary>
-  EraInfo = 0x05,
+  ERAINFO = 0x05,
   /// <summary>
   /// Balance keys store information related to the balance of a given purse.
   /// </summary>
-  Balance = 0x06,
+  BALANCE = 0x06,
   /// <summary>
   /// Bid keys store information related to auction bids in the global state.
   /// </summary>
-  Bid = 0x07,
+  BID = 0x07,
   /// <summary>
   /// Withdraw keys store information related to auction withdraws in the global
   /// state.
   /// </summary>
-  Withdraw = 0x08,
+  WITHDRAW = 0x08,
   /// <summary>
   /// Dictionary keys store dictionary items.
   /// </summary>
-  Dictionary = 0x09
+  DICTIONARY = 0x09
 };
 
 /// <summary>

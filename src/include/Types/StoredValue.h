@@ -5,34 +5,18 @@
 
 #include "Types/Contract.h"
 #include "Types/Transfer.h"
+#include "Types/Account.h"
+#include "Types/StoredValueTypeBase.h"
 #include "nlohmann/json.hpp"
+#include "Types/UnbondingPurse.h"
+#include "Types/Withdraw.h"
 
 namespace Casper {
-struct CLValue;
 
-struct UnbondingPurse;
-/**
- * @brief
- *
- */
 struct StoredValue {
-  /**
-   * @brief
-   *
-   */
-
   StoredValue() {}
-  // TODO: add to_json and from_json for all the classes given below
-  std::optional<CLValue> cl_value = std::nullopt;
-  std::optional<Account> account = std::nullopt;
-  std::optional<std::string> contract_wasm = std::nullopt;
-  std::optional<Contract> contract = std::nullopt;
-  std::optional<ContractPackage> contract_package = std::nullopt;
-  std::optional<Transfer> transfer = std::nullopt;
-  std::optional<DeployInfo> deploy_info = std::nullopt;
-  std::optional<EraInfo> era_info = std::nullopt;
-  std::optional<Bid> bid = std::nullopt;
-  std::optional<std::vector<UnbondingPurse>> withdraw = std::nullopt;
+
+  StoredValueTypeBase value;
 };
 
 /**
@@ -44,41 +28,7 @@ struct StoredValue {
 inline void to_json(nlohmann::json& j, const StoredValue& p) {
   j = nlohmann::json{};
 
-  if (p.cl_value != std::nullopt) {
-    j["CLValue"] = p.cl_value.value();
-  }
-
-  if (p.account != std::nullopt) {
-    j["Account"] = p.account.value();
-  }
-
-  if (p.contract_wasm != std::nullopt) {
-    j["ContractWasm"] = p.contract_wasm.value();
-  }
-
-  if (p.contract_package != std::nullopt) {
-    j["ContractPackage"] = p.contract_package.value();
-  }
-
-  if (p.transfer != std::nullopt) {
-    j["Transfer"] = p.transfer.value();
-  }
-
-  if (p.deploy_info != std::nullopt) {
-    j["DeployInfo"] = p.deploy_info.value();
-  }
-
-  if (p.era_info != std::nullopt) {
-    j["EraInfo"] = p.era_info.value();
-  }
-
-  if (p.bid != std::nullopt) {
-    j["Bid"] = p.bid.value();
-  }
-
-  if (p.withdraw != std::nullopt) {
-    j["Withdraw"] = p.withdraw.value();
-  }
+  p.value.to_json(j);
 }
 
 /**

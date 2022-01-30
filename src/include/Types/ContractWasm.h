@@ -7,10 +7,10 @@ namespace Casper
 struct CLValue : public StoredValueTypeBase
 {
     const StoredValueType type;
-    std::string temp;
+    std::string contract_wasm;
 
-    CLValue (std::string temp_) : type(StoredValueType::CLVALUE) {
-        temp = temp_;
+    CLValue (std::string contract_wasm_) : type(StoredValueType::CONTRACTWASM) {
+        contract_wasm = contract_wasm_;
     }
 };
 

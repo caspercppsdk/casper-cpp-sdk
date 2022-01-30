@@ -21,7 +21,7 @@ struct AssociatedKey {
   /// <summary>
   /// Hash derived from the public key
   /// </summary>
-  AccountHashKey account_hash;
+  std::string account_hash;
 
   /// <summary>
   /// Weight of the associated key
@@ -32,11 +32,15 @@ struct AssociatedKey {
 /// <summary>
 /// Structure representing a user's account, stored in global state.
 /// </summary>
-struct Account {
+struct Account : public StoredValueTypeBase{
+  const StoredValueType type;
+
+  Account () : type(StoredValueType::ACCOUNT) {}
+
   /// <summary>
   /// Account identity key
   /// </summary>
-  AccountHashKey account_hash;
+  std::string account_hash;
 
   /// <summary>
   /// Thresholds that have to be met when executing an action of a certain type.

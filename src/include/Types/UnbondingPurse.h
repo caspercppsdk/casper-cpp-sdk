@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/multiprecision/cpp_int.hpp>
+#include "Definitions.h"
 
 #include "Types/PublicKey.h"
 #include "Types/URef.h"
@@ -14,7 +14,7 @@ struct UnbondingPurse {
   /// Unbonding Amount.
   /// </summary>
 
-  boost::multiprecision::uint512_t amount;
+  big_int amount;
 
   URef bonding_purse;
 

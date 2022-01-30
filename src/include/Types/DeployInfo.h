@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/multiprecision/cpp_int.hpp>
+#include "Definitions.h"
 #include <string>
 #include <vector>
 
@@ -20,12 +20,12 @@ struct DeployInfo {
   /// <summary>
   /// Account identifier of the creator of the Deploy.
   /// </summary>
-  AccountHashKey from;
+  std::string from;
 
   /// <summary>
   /// Gas cost of executing the Deploy.
   /// </summary>
-  boost::multiprecision::uint512_t gas;
+  big_int gas;
 
   /// <summary>
   /// Source purse used for payment of the Deploy.
@@ -35,6 +35,6 @@ struct DeployInfo {
   /// <summary>
   /// Transfer addresses performed by the Deploy.
   /// </summary>
-  std::vector<TransferKey> transfers;
+  std::vector<std::string> transfers;
 };
 }  // namespace Casper
