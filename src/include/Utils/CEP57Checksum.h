@@ -3,11 +3,11 @@
 #include <stdexcept>
 #include <string>
 
-#include "lib/cryptopp/blake2.h"
-#include "lib/cryptopp/cryptlib.h"
-#include "lib/cryptopp/files.h"
-#include "lib/cryptopp/hex.h"
-#include "lib/cryptopp/secblock.h"
+#include "cryptopp/blake2.h"
+#include "cryptopp/cryptlib.h"
+#include "cryptopp/files.h"
+#include "cryptopp/hex.h"
+#include "cryptopp/secblock.h"
 using namespace CryptoPP;
 
 namespace Casper {

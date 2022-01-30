@@ -4,7 +4,7 @@
 #include <string>
 
 #include "Types/URef.h"
-#include "lib/nlohmann/json.hpp"
+#include "nlohmann/json.hpp"
 
 namespace Casper {
 

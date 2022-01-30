@@ -20,7 +20,7 @@ struct AuctionState {
   /// <summary>
   /// Era validators.
   /// </summary>
-  td::vector<EraValidators> era_validators;
+  std::vector<EraValidators> era_validators;
 
   /// <summary>
   /// Global state hash.
