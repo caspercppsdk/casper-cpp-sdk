@@ -1,8 +1,5 @@
 #pragma once
 
-namespace Casper
-{
-    struct EntryPoint {
-        
-    }
-} // namespace Casper
+namespace Casper {
+struct EntryPoint {};
+}  // namespace Casper

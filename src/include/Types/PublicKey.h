@@ -1,12 +1,13 @@
 #pragma once
 #include <cctype>
+#include <iostream>
 #include <vector>
 
-#include <boost/algorithm/string.hpp>
 #include "Types/KeyAlgo.h"
 #include "Utils/CEP57Checksum.h"
 #include "Utils/File.h"
-#include "lib/nlohmann/json.hpp"
+#include "nlohmann/json.hpp"
+
 namespace Casper {
 struct PublicKey {
   SecByteBlock raw_bytes;
@@ -40,6 +41,7 @@ struct PublicKey {
   /// <summary>
   /// Loads a PublicKey from a PEM file
   /// </summary>
+  /*
   static PublicKey FromPem(std::string filePath) {
     using(TextReader textReader =
               new StringReader(File.ReadAllText(filePath))) {
@@ -61,7 +63,7 @@ struct PublicKey {
           "Unsupported key format or it's not a private key PEM object.");
     }
   }
-
+*/
   /// <summary>
   /// Creates a PublicKey object from a byte array. First byte in the array must
   /// contain the key algorithm identifier.
@@ -111,7 +113,7 @@ struct PublicKey {
             std::to_string(expectedPublicKeySize));
       }
     } catch (std::exception& e) {
-      throw new std::exception(e.what());
+      // throw std::exception(e.what());
     }
     return PublicKey(rawBytes, keyAlgo);
   }
@@ -119,39 +121,41 @@ struct PublicKey {
   /// <summary>
   /// Saves the public key to a PEM file.
   /// </summary>
+  /*
+    void WriteToPem(const std::string& filePath) {
+      if (File::Exists(filePath))
+        throw std::runtime_error(
+            "Target file already exists. Will not overwrite.\nFile: " +
+    filePath);
 
-  void WriteToPem(const std::string& filePath) {
-    if (File::Exists(filePath))
-      throw std::runtime_error(
-          "Target file already exists. Will not overwrite.\nFile: " + filePath);
+      using(var textWriter = File.CreateText(filePath)) {
+        var writer = new PemWriter(textWriter);
 
-    using(var textWriter = File.CreateText(filePath)) {
-      var writer = new PemWriter(textWriter);
+        if (key_algorithm == KeyAlgo.ED25519) {
+          Ed25519PublicKeyParameters pk =
+              new Ed25519PublicKeyParameters(RawBytes, 0);
+          writer.WriteObject(pk);
+          return;
+        } else if (key_algorithm == KeyAlgo.SECP256K1) {
+          var curve = ECNamedCurveTable.GetByName("secp256k1");
+          var domainParams = new ECDomainParameters(curve.Curve, curve.G,
+    curve.N, curve.H, curve.GetSeed());
 
-      if (key_algorithm == KeyAlgo.ED25519) {
-        Ed25519PublicKeyParameters pk =
-            new Ed25519PublicKeyParameters(RawBytes, 0);
-        writer.WriteObject(pk);
-        return;
-      } else if (key_algorithm == KeyAlgo.SECP256K1) {
-        var curve = ECNamedCurveTable.GetByName("secp256k1");
-        var domainParams = new ECDomainParameters(curve.Curve, curve.G, curve.N,
-                                                  curve.H, curve.GetSeed());
+          ECPoint q = curve.Curve.DecodePoint(RawBytes);
+          ECPublicKeyParameters pk = new ECPublicKeyParameters(q, domainParams);
+          writer.WriteObject(pk);
+          return;
+        }
 
-        ECPoint q = curve.Curve.DecodePoint(RawBytes);
-        ECPublicKeyParameters pk = new ECPublicKeyParameters(q, domainParams);
-        writer.WriteObject(pk);
-        return;
+        throw std::runtime_error("Unsupported key type.");
       }
-
-      throw std::runtime_error("Unsupported key type.");
     }
-  }
-
+  */
   /// <summary>
   /// Returns the Account Hash associated to this Public Key.
   /// </summary>
   std::string GetAccountHash() {
+    /*
     BLAKE2b hash(32u);
     std::string algo_str = KeyAlgo::GetName(key_algorithm);
     boost::to_lower(algo_str);
@@ -165,6 +169,10 @@ struct PublicKey {
     hash.Final(digest_bytes.data());
 
     return "account-hash-" + CEP57Checksum::Encode(digest_bytes);
+    */
+    // TODO:
+
+    return "";
   }
 
   /// <summary>
@@ -183,17 +191,20 @@ struct PublicKey {
   }
 
   std::string ToString() { return ToAccountHex(); }
+  /*
+    bool Equals(object obj) {
+      // Check for null and compare run-time types.
+      if (obj == null || !GetType().Equals(obj.GetType())) return false;
 
-  bool Equals(object obj) {
-    // Check for null and compare run-time types.
-    if (obj == null || !GetType().Equals(obj.GetType()))
-      return false;
-
-    var pk = (PublicKey)obj;
-    return pk.GetBytes().SequenceEqual(this.GetBytes());
+      var pk = (PublicKey)obj;
+      return pk.GetBytes().SequenceEqual(this.GetBytes());
+    }
+  */
+  int GetHashCode() {
+    // TODO:
+    // return this->ToAccountHex().ToLower().GetHashCode();
+    return 0;
   }
-
-  int GetHashCode() { return this->ToAccountHex().ToLower().GetHashCode(); }
 
   /// <summary>
   /// Returns the bytes of the public key, including the Key algorithm as the
@@ -216,42 +227,44 @@ struct PublicKey {
   /// <summary>
   /// Verifies the signature given its value and the original message.
   /// </summary>
+  /*
+    bool VerifySignature(byte[] message, byte[] signature) {
+      if (key_algorithm == KeyAlgo::ED25519) {
+        Ed25519PublicKeyParameters edPk =
+            new Ed25519PublicKeyParameters(RawBytes, 0);
+        return Ed25519.Verify(signature, 0, RawBytes, 0, message, 0,
+                              message.Length);
+      }
 
-  bool VerifySignature(byte[] message, byte[] signature) {
-    if (key_algorithm == KeyAlgo::ED25519) {
-      Ed25519PublicKeyParameters edPk =
-          new Ed25519PublicKeyParameters(RawBytes, 0);
-      return Ed25519.Verify(signature, 0, RawBytes, 0, message, 0,
-                            message.Length);
+      if (key_algorithm == KeyAlgo::SECP256K1) {
+        var curve = ECNamedCurveTable.GetByName("secp256k1");
+        var domainParams = new ECDomainParameters(curve.Curve, curve.G, curve.N,
+                                                  curve.H, curve.GetSeed());
+
+        ECPoint q = curve.Curve.DecodePoint(RawBytes);
+        ECPublicKeyParameters pk = new ECPublicKeyParameters(q, domainParams);
+
+        var signer = SignerUtilities.GetSigner("SHA-256withPLAIN-ECDSA");
+        signer.Init(forSigning : false, pk);
+        signer.BlockUpdate(message, 0, message.Length);
+        return signer.VerifySignature(signature);
+      }
+
+      throw std::runtime_error("Unsupported key type.");
     }
-
-    if (key_algorithm == KeyAlgo::SECP256K1) {
-      var curve = ECNamedCurveTable.GetByName("secp256k1");
-      var domainParams = new ECDomainParameters(curve.Curve, curve.G, curve.N,
-                                                curve.H, curve.GetSeed());
-
-      ECPoint q = curve.Curve.DecodePoint(RawBytes);
-      ECPublicKeyParameters pk = new ECPublicKeyParameters(q, domainParams);
-
-      var signer = SignerUtilities.GetSigner("SHA-256withPLAIN-ECDSA");
-      signer.Init(forSigning : false, pk);
-      signer.BlockUpdate(message, 0, message.Length);
-      return signer.VerifySignature(signature);
-    }
-
-    throw std::runtime_error("Unsupported key type.");
-  }
-
+  */
   /// <summary>
   /// Verifies the signature given its value and the original message.
   /// </summary>
 
-  bool VerifySignature(string message, string signature) {
-    return VerifySignature(Hex.Decode(message), Hex.Decode(signature));
+  bool VerifySignature(std::string message, std::string signature) {
+    // TODO:
+    // return VerifySignature(Hex.Decode(message), Hex.Decode(signature));
+    return false;
   }
 
-  ostream& operator<<(ostream& os, const PublicKey& pk) {
-    os << pk.ToAccountHex();
+  std::ostream& operator<<(std::ostream& os) {
+    os << this->ToAccountHex();
     return os;
   }
 };

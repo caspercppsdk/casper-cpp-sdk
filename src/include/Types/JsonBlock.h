@@ -1,10 +1,11 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
-#include "JsonBlockBody.h"
-#include "JsonBlockHeader.h"
-#include "JsonProof.h"
+#include "Types/JsonBlockBody.h"
+#include "Types/JsonBlockHeader.h"
+#include "Types/JsonProof.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {

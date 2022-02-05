@@ -2,23 +2,18 @@
 
 #include <string>
 
-#include "Types/URef.h"
+#include "Types/Definitions.h"
 #include "Types/StoredValueTypeBase.h"
+#include "Types/URef.h"
 #include "nlohmann/json.hpp"
-#include "Definitions.h"
 
 namespace Casper {
 
 struct Transfer : public StoredValueTypeBase {
   const StoredValueType type;
 
-  Transfer(big_int amount_,
-           std::string deploy_hash_,
-           std::string from_,
-           big_int gas_,
-           uint64_t id_,
-           URef source_,
-           URef target_,
+  Transfer(big_int amount_, std::string deploy_hash_, std::string from_,
+           big_int gas_, uint64_t id_, URef source_, URef target_,
            std::string to_)
       : type(StoredValueType::TRANSFER),
         amount(amount_),
@@ -29,6 +24,8 @@ struct Transfer : public StoredValueTypeBase {
         source(source_),
         target(target_),
         to(to_) {}
+
+  Transfer() : type(StoredValueType::TRANSFER) {}
 
   big_int amount;
   std::string deploy_hash;
@@ -46,6 +43,7 @@ struct Transfer : public StoredValueTypeBase {
  * @param j JSON object to construct.
  * @param p Transfer object to construct from.
  */
+
 inline void to_json(nlohmann::json& j, const Transfer& p) {
   j = nlohmann::json{
       {"deploy_hash", p.deploy_hash},
@@ -65,6 +63,7 @@ inline void to_json(nlohmann::json& j, const Transfer& p) {
  * @param j JSON object to construct the object from.
  * @param p Transfer object to construct.
  */
+
 inline void from_json(const nlohmann::json& j, Transfer& p) {
   j.at("deploy_hash").get_to(p.deploy_hash);
   j.at("from").get_to(p.from);

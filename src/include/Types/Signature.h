@@ -4,8 +4,8 @@
 
 #include "Types/KeyAlgo.h"
 #include "Utils/CEP57Checksum.h"
-#include "lib/cryptopp/hex.h"
-#include "lib/cryptopp/secblock.h"
+#include "cryptopp/hex.h"
+#include "cryptopp/secblock.h"
 
 using namespace CryptoPP;
 
@@ -65,9 +65,10 @@ struct Signature {
       throw std::invalid_argument("Wrong signature algorithm identifier");
     }
 
-    return Signature(bytes., algoIdent);
-
-    return Signature(bytes[1..], algoIdent);
+    SecByteBlock data_bytes(bytes.size() - 1);
+    std::copy(bytes.begin() + 1, bytes.end(), data_bytes.begin());
+    // TODO: copy check
+    return Signature(data_bytes, algoIdent);
   }
 
   /// <summary>
@@ -111,25 +112,27 @@ struct Signature {
 
   std::string ToString() { return ToHexString(); }
 
-  class SignatureConverter : JsonConverter<Signature> {
-   public
-    override Signature Read(ref Utf8JsonReader reader,
-                            Type typeToConvert,
-                            JsonSerializerOptions options) {
-      {
-        try {
-          return Signature.FromHexString(reader.GetString());
-        } catch (Exception e) {
-          throw new JsonException(e.Message);
+  /*
+    class SignatureConverter : JsonConverter<Signature> {
+     public
+      override Signature Read(ref Utf8JsonReader reader,
+                              Type typeToConvert,
+                              JsonSerializerOptions options) {
+        {
+          try {
+            return Signature.FromHexString(reader.GetString());
+          } catch (Exception e) {
+            throw new JsonException(e.Message);
+          }
         }
       }
-    }
 
-   public
-    override void Write(Utf8JsonWriter writer,
-                        Signature signature,
-                        JsonSerializerOptions options) =
-        > writer.WriteStringValue(signature.ToHexString());
-  }
-}
+     public
+      override void Write(Utf8JsonWriter writer,
+                          Signature signature,
+                          JsonSerializerOptions options) =
+          > writer.WriteStringValue(signature.ToHexString());
+    }
+    */
+};
 }  // namespace Casper

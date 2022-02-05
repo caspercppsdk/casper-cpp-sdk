@@ -6,15 +6,15 @@ enum struct AccessRights : uint8_t {
   /// <summary>
   /// No permissions
   /// </summary>
-  NONE = 0b00,
+  NONE = 0b000,
   /// <summary>
   /// Permission to read the value under the associated URef.
   /// </summary>
-  READ = 0b01,
+  READ = 0b001,
   /// <summary>
   /// Permission to write a value under the associated URef.
   /// </summary>
-  WRITE = 0b10,
+  WRITE = 0b010,
   /// <summary>
   /// Permission to add to the value under the associated URef.
   /// </summary>
@@ -22,7 +22,7 @@ enum struct AccessRights : uint8_t {
   /// <summary>
   /// Permission to read or write the value under the associated URef.
   /// </summary>
-  READ_WRITE = 0b11,
+  READ_WRITE = 0b011,
   /// <summary>
   /// Permission to read or add to the value under the associated URef.
   /// </summary>

@@ -1,3 +1,5 @@
 #pragma once
 
-namespace Casper {}  // namespace Casper
+namespace Casper {
+struct Transform {};
+}  // namespace Casper

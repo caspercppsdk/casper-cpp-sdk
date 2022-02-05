@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#include "httplib.h"
+#include "JsonRpc/Connection/httplib.h"
 #include "jsonrpccxx/iclientconnector.hpp"
 #include "jsonrpccxx/server.hpp"
 

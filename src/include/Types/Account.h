@@ -1,5 +1,12 @@
 #pragma once
+
+#include <string>
+#include <vector>
+
 #include "Types/GlobalStateKey.h"
+#include "Types/NamedKey.h"
+#include "Types/StoredValue.h"
+#include "Types/URef.h"
 
 namespace Casper {
 struct ActionThresholds {
@@ -32,10 +39,10 @@ struct AssociatedKey {
 /// <summary>
 /// Structure representing a user's account, stored in global state.
 /// </summary>
-struct Account : public StoredValueTypeBase{
+struct Account : public StoredValueTypeBase {
   const StoredValueType type;
 
-  Account () : type(StoredValueType::ACCOUNT) {}
+  Account() : type(StoredValueType::ACCOUNT) {}
 
   /// <summary>
   /// Account identity key

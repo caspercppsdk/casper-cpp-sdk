@@ -1,10 +1,12 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
-#include "RpcResult.h"
+#include "JsonRpc/ResultTypes/RpcResult.h"
 #include "Types/JsonBlock.h"
 #include "Types/Transfer.h"
+#include "nlohmann/json.hpp"
 
 /**
  * @brief Result for the "chain_get_block" rpc call.

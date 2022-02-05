@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "GlobalStateKey.h"
+#include "Types/GlobalStateKey.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
@@ -29,7 +29,7 @@ inline void to_json(nlohmann::json& j, const NamedKey& p) {
  * @param p Peer object to construct.
  */
 inline void from_json(const nlohmann::json& j, NamedKey& p) {
-  // j.at("node_id").get_to(p.node_id);
-  // j.at("address").get_to(p.address);
+  j.at("name").get_to(p.name);
+  j.at("key").get_to(p.key);
 }
 }  // namespace Casper

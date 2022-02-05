@@ -1,7 +1,7 @@
 #pragma once
+#include <string>
 
-#include "RpcResult.h"
-
+#include "JsonRpc/ResultTypes/RpcResult.h"
 /**
  * @brief Result for the "info_get_deploy" rpc call.
  *

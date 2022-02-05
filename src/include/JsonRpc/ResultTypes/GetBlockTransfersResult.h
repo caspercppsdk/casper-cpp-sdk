@@ -1,8 +1,9 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
-#include "RpcResult.h"
+#include "JsonRpc/ResultTypes/RpcResult.h"
 #include "Types/Transfer.h"
 
 /**
@@ -50,7 +51,7 @@ inline void from_json(const nlohmann::json& j, GetBlockTransfersResult& p) {
     auto t = j.at("transfers").begin();
 
     while (t != j.at("transfers").end()) {
-      Transfer rec = Transfer();
+      Transfer rec;
       rec.deploy_hash = (*t).at("deploy_hash");
       rec.from = (*t).at("from");
 
