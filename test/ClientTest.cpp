@@ -1,4 +1,6 @@
 #include "CasperClient.h"
+#include "Types/GlobalStateKey.cpp"
+#include "Utils/CryptoUtil.h"
 #include "acutest.h"
 
 /**
