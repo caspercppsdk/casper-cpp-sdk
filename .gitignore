@@ -55,21 +55,11 @@ Testing/Temporary
 
 # Install output
 install_manifest.txt
-cryptopp-prefix/tmp/cryptopp-cfgcmd.txt
-cryptopp-prefix/tmp/cryptopp-cfgcmd.txt.in
+
+cryptopp-build
+cryptopp-prefix
+LIBCRYPTOPP-prefix
+test/Testing
+examples/example
+
 lib/cryptopp/adhoc.cpp
-cryptopp-prefix/src/cryptopp-stamp/cryptopp-build
-cryptopp-prefix/src/cryptopp-stamp/cryptopp-configure
-cryptopp-prefix/src/cryptopp-stamp/cryptopp-done
-cryptopp-prefix/src/cryptopp-stamp/cryptopp-download
-cryptopp-prefix/src/cryptopp-stamp/cryptopp-install
-cryptopp-prefix/src/cryptopp-stamp/cryptopp-mkdir
-cryptopp-prefix/src/cryptopp-stamp/cryptopp-patch
-LIBCRYPTOPP-prefix/src/LIBCRYPTOPP-stamp/LIBCRYPTOPP-done
-LIBCRYPTOPP-prefix/src/LIBCRYPTOPP-stamp/LIBCRYPTOPP-download
-LIBCRYPTOPP-prefix/src/LIBCRYPTOPP-stamp/LIBCRYPTOPP-patch
-LIBCRYPTOPP-prefix/tmp/LIBCRYPTOPP-cfgcmd.txt
-LIBCRYPTOPP-prefix/tmp/LIBCRYPTOPP-cfgcmd.txt.in
-LIBCRYPTOPP-prefix/src/LIBCRYPTOPP-stamp/LIBCRYPTOPP-build
-LIBCRYPTOPP-prefix/src/LIBCRYPTOPP-stamp/LIBCRYPTOPP-configure
-LIBCRYPTOPP-prefix/src/LIBCRYPTOPP-stamp/LIBCRYPTOPP-install

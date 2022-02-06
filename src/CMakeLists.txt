@@ -7,9 +7,9 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include/JsonRpc/ResultTypes
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Types
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Utils
+    ${CMAKE_CURRENT_SOURCE_DIR}/../lib/cryptopp
 )
-find_library(LIBCRYPTOPP cryptopp)
-message(STATUS "CRYPTO LIBRARY ===>" ${LIBCRYPTOPP})
 
 add_library(${LIB_NAME} SHARED CasperClient.cpp include/Types/GlobalStateKey.cpp include/Types/URef.cpp include/Utils/CryptoUtil.cpp include/Utils/StringUtil.cpp)
-target_link_libraries(${LIB_NAME} cryptopp)
+
+target_link_libraries(${LIB_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../lib/cryptopp/libcryptopp.a)

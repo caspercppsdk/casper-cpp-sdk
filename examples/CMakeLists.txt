@@ -1,7 +1,7 @@
-# Check the CasperSDK installation.
-find_library(CASPERSDK CasperSDK)
-message(STATUS ${CASPERSDK})
-
 # Link the CasperSDK library to the example project.
-add_executable(HelloSDK HelloSDK.cpp)
-target_link_libraries(HelloSDK PUBLIC CasperSDK)
+
+set(BINARY example)
+
+add_executable(${BINARY} HelloSDK.cpp)
+
+target_link_libraries(${BINARY} ${CMAKE_PROJECT_NAME})
