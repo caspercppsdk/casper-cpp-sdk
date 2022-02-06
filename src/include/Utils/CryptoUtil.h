@@ -14,7 +14,8 @@ namespace Casper {
 SecByteBlock hexDecode(const std::string& hex) {
   std::string decoded;
   StringSource ss(hex, true, new HexDecoder(new StringSink(decoded)));
-  return SecByteBlock(decoded.data(), decoded.size());
+  return SecByteBlock(reinterpret_cast<const unsigned char*>(decoded.data()),
+                      decoded.size());
 }
 
 std::string hexEncode(const SecByteBlock& bytes) {

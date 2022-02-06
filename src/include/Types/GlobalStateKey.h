@@ -110,38 +110,7 @@ class GlobalStateKey {
   /// Converts a global state key from a byte array to its specific key object.
   /// First byte in the array indicates the Key identifier.
   /// </summary>
-  static GlobalStateKey FromBytes(const SecByteBlock& bytes) {
-    SecByteBlock new_bytes(bytes.size() - 1);
-    std::copy(bytes.begin() + 1, bytes.end(), new_bytes.begin());
-
-    switch (bytes[0]) {
-      case 0x00:
-        return AccountHashKey("account-hash-" +
-                              CEP57Checksum::Encode(new_bytes));
-      case 0x01:
-        return HashKey("hash-" + CEP57Checksum::Encode(new_bytes));
-      case 0x02:
-        return URef("uref-" + CEP57Checksum::Encode(new_bytes));
-      case 0x03:
-        return TransferKey("transfer-" + CEP57Checksum::Encode(new_bytes));
-      case 0x04:
-        return DeployInfoKey("deploy-" + CEP57Checksum::Encode(new_bytes));
-      case 0x05:
-        uint64_t era_number = *(uint64_t*)new_bytes.begin();
-        return EraInfoKey("era-" + std::to_string(era_number));
-        // TODO: check era number
-      case 0x06:
-        return BalanceKey("balance-" + CEP57Checksum::Encode(new_bytes));
-      case 0x07:
-        return BidKey("bid-" + CEP57Checksum::Encode(new_bytes));
-      case 0x08:
-        return WithdrawKey("withdraw-" + CEP57Checksum::Encode(new_bytes));
-      case 0x09:
-        return DictionaryKey("dictionary-" + CEP57Checksum::Encode(new_bytes));
-      default:
-        throw std::invalid_argument("Key not valid. Unknown key prefix.");
-    }
-  }
+  static GlobalStateKey FromBytes(const SecByteBlock& bytes);
 
   virtual SecByteBlock GetBytes() {
     SecByteBlock ms(this->raw_bytes.size() + 1);
@@ -234,7 +203,7 @@ struct EraInfoKey : public GlobalStateKey {
   }
 
  protected:
-  SecByteBlock _GetRawBytesFromKey(std::string key) {
+  SecByteBlock _GetRawBytesFromKey(std::string key) override {
     uint64_t u64;
     std::istringstream iss(key.substr(4));
     iss >> u64;
