@@ -12,9 +12,10 @@
 #include "JsonRpc/ResultTypes/GetStatus.h"
 #include "JsonRpc/ResultTypes/InfoGetPeersResult.h"
 #include "Types/BlockIdentifier.h"
+#include "Types/GlobalStateKey.h"
+#include "Types/URef.h"
 #include "jsonrpccxx/client.hpp"
 #include "nlohmann/json.hpp"
-
 #define CASPER_TEST_ADDRESS "http://185.246.84.43:7777"
 
 namespace Casper {

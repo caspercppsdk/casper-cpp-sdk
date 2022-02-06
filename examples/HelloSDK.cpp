@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "../src/include/CasperClient.h"  // To use Casper::Client features
+#include "../src/include/Types/GlobalStateKey.h"
 
 int main() {
   /// Construct a Casper::Client object
@@ -118,8 +119,8 @@ int main() {
             << "\nera_id: " << eraInfoResult.era_summary.era_id
             << "\nmarker_proof: " << eraInfoResult.era_summary.merkle_proof
             << "\nstate_root_hash: "
-            << eraInfoResult.era_summary.state_root_hash
-            << "\nstored_value: " << eraInfoResult.era_summary.stored_value;
+            << eraInfoResult.era_summary.state_root_hash << "\nstored_value: "
+            << eraInfoResult.era_summary.stored_value.value.type;
 
   std::cout << "\n";
 }

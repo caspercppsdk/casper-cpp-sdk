@@ -1,12 +1,14 @@
 #pragma once
-#include <string>
-#include <vector>
 
+#include "Base.h"
 #include "Types/PublicKey.h"
-#include "Types/URef.h"
-#include "Utils/CEP57Checksum.h"
-#include "Utils/CryptoUtil.h"
+
+// Crypto
+#include "cryptopp/secblock.h"
+
+// JSON
 #include "nlohmann/json.hpp"
+
 namespace Casper {
 /// <summary>
 /// Keys in the global state store information about different data types.
@@ -63,43 +65,30 @@ enum class KeyIdentifier {
 /// <summary>
 /// Base class for the different global state keys.
 /// </summary>
-class GlobalStateKey {
- protected:
+struct GlobalStateKey {
   std::string key;
 
  public:
   KeyIdentifier key_identifier;
-  SecByteBlock raw_bytes;
+  CryptoPP::SecByteBlock raw_bytes;
 
  protected:
-  virtual SecByteBlock _GetRawBytesFromKey(std::string key) {
-    return hexDecode(key.substr(key.find_last_of("-") + 1));
-  }
+  virtual CryptoPP::SecByteBlock _GetRawBytesFromKey(std::string key);
 
-  GlobalStateKey() {}
+  GlobalStateKey();
+
   /// <summary>
   /// Constructor for the GlobalStateKey class.
   /// </summary>
-  GlobalStateKey(std::string key_) : key{key_} {}
+  GlobalStateKey(std::string key_);
 
   /// <summary>
   /// Constructor for the GlobalStateKey class with key prefix.
   /// </summary>
-  GlobalStateKey(std::string key_, std::string key_prefix) {
-    if (key_.rfind(key_prefix, 0) != 0)
-      throw std::invalid_argument(
-          "Key not valid. It should start with '{key_prefix}'.");
-
-    SecByteBlock res =
-        CEP57Checksum::Decode(key_.substr(key_.find_last_of('-') + 1));
-    key = key_prefix + CEP57Checksum::Encode(res);
-  }
+  GlobalStateKey(std::string key_, std::string key_prefix);
 
  public:
-  std::string ToHexString() {
-    //
-    return CEP57Checksum::Encode(raw_bytes);
-  }
+  std::string ToHexString();
 
   /// <summary>
   /// Converts a global state key from string to its specific key object.
@@ -111,32 +100,25 @@ class GlobalStateKey {
   /// Converts a global state key from a byte array to its specific key object.
   /// First byte in the array indicates the Key identifier.
   /// </summary>
-  static GlobalStateKey FromBytes(const SecByteBlock& bytes);
+  static GlobalStateKey FromBytes(const CryptoPP::SecByteBlock& bytes);
 
-  virtual SecByteBlock GetBytes() {
-    SecByteBlock ms(this->raw_bytes.size() + 1);
-    ms[0] = static_cast<uint8_t>(this->key_identifier);
-    std::copy(this->raw_bytes.begin(), this->raw_bytes.end(), ms.begin() + 1);
-    return ms;
-  }
+  virtual CryptoPP::SecByteBlock GetBytes();
 
   /// <summary>
   /// Converts a key object to a string with the right prefix
   /// </summary>
 
-  std::string ToString() const { return key; }
+  std::string ToString();
 };
+
 /// <summary>
 /// Stores an account in the global state.
 /// Format: 32-byte length with prefix 'account-hash-'.
 /// </summary>
 struct AccountHashKey : public GlobalStateKey {
-  AccountHashKey(std::string key) : GlobalStateKey(key, "account-hash-") {
-    key_identifier = KeyIdentifier::ACCOUNT;
-  }
+  AccountHashKey(std::string key);
 
-  AccountHashKey(PublicKey publicKey)
-      : GlobalStateKey(publicKey.GetAccountHash(), "account-hash-") {}
+  AccountHashKey(PublicKey publicKey);
 };
 
 /// <summary>
@@ -144,11 +126,9 @@ struct AccountHashKey : public GlobalStateKey {
 /// Format: 32-byte length with prefix 'hash-'.
 /// </summary>
 struct HashKey : public GlobalStateKey {
-  HashKey(std::string key) : GlobalStateKey(key, "hash-") {
-    key_identifier = KeyIdentifier::HASH;
-  }
+  HashKey(std::string key);
 
-  HashKey(SecByteBlock key) : HashKey("hash-" + CEP57Checksum::Encode(key)) {}
+  HashKey(CryptoPP::SecByteBlock key);
 };
 
 /// <summary>
@@ -156,12 +136,9 @@ struct HashKey : public GlobalStateKey {
 /// Format: 32-byte length with prefix 'transfer-'.
 /// </summary>
 struct TransferKey : public GlobalStateKey {
-  TransferKey(std::string key) : GlobalStateKey(key, "transfer-") {
-    key_identifier = KeyIdentifier::TRANSFER;
-  }
+  TransferKey(std::string key);
 
-  TransferKey(SecByteBlock key)
-      : TransferKey("transfer-" + CEP57Checksum::Encode(key)) {}
+  TransferKey(CryptoPP::SecByteBlock key);
 };
 
 /// <summary>
@@ -169,12 +146,9 @@ struct TransferKey : public GlobalStateKey {
 /// Format: 32-byte length with prefix 'deploy-'.
 /// </summary>
 struct DeployInfoKey : public GlobalStateKey {
-  DeployInfoKey(std::string key) : GlobalStateKey(key, "deploy-") {
-    key_identifier = KeyIdentifier::DEPLOYINFO;
-  }
+  DeployInfoKey(std::string key);
 
-  DeployInfoKey(SecByteBlock key)
-      : DeployInfoKey("deploy-" + CEP57Checksum::Encode(key)) {}
+  DeployInfoKey(CryptoPP::SecByteBlock key);
 };
 
 /// <summary>
@@ -182,42 +156,12 @@ struct DeployInfoKey : public GlobalStateKey {
 /// Format: u64 number with prefix 'era-' (e.g. 'era-3407').
 /// </summary>
 struct EraInfoKey : public GlobalStateKey {
-  EraInfoKey(std::string key) : GlobalStateKey(key) {
-    key_identifier = KeyIdentifier::ERAINFO;
-    if (!startsWith(key, "era-"))
-      throw std::invalid_argument("EraInfoKey must start with 'era-'");
+  EraInfoKey(std::string key);
 
-    int64_t era_num;
-    try {
-      std::istringstream iss(key.substr(4));
-      iss >> era_num;
-    } catch (std::exception& e) {
-      throw std::invalid_argument("Key not valid. Cannot parse era number.");
-    }
-  }
-
-  SecByteBlock GetBytes() override {
-    SecByteBlock ms(9);
-    ms[0] = uint8_t(this->key_identifier);
-    std::copy(ms.begin() + 1, ms.end(), raw_bytes.begin());
-    return ms;
-  }
+  CryptoPP::SecByteBlock GetBytes() override;
 
  protected:
-  SecByteBlock _GetRawBytesFromKey(std::string key) override {
-    uint64_t u64;
-    std::istringstream iss(key.substr(4));
-    iss >> u64;
-
-    SecByteBlock bytes(8);
-    std::copy(reinterpret_cast<uint8_t*>(&u64),
-              reinterpret_cast<uint8_t*>(&u64) + 8, bytes.begin());
-
-    // TODO: Check endianness
-    // if (!BitConverter.IsLittleEndian) Array.Reverse(bytes);
-
-    return bytes;
-  }
+  CryptoPP::SecByteBlock _GetRawBytesFromKey(std::string key) override;
 };
 
 /// <summary>
@@ -225,12 +169,9 @@ struct EraInfoKey : public GlobalStateKey {
 /// Format: 32-byte length with prefix 'balance-'.
 /// </summary>
 struct BalanceKey : public GlobalStateKey {
-  BalanceKey(std::string key) : GlobalStateKey(key, "balance-") {
-    key_identifier = KeyIdentifier::BALANCE;
-  }
+  BalanceKey(std::string key);
 
-  BalanceKey(SecByteBlock key)
-      : BalanceKey("balance-" + CEP57Checksum::Encode(key)) {}
+  BalanceKey(CryptoPP::SecByteBlock key);
 };
 
 /// <summary>
@@ -238,11 +179,9 @@ struct BalanceKey : public GlobalStateKey {
 /// Format: 32-byte length with prefix 'bid-'.
 /// </summary>
 struct BidKey : public GlobalStateKey {
-  BidKey(std::string key) : GlobalStateKey(key, "bid-") {
-    key_identifier = KeyIdentifier::BID;
-  }
+  BidKey(std::string key);
 
-  BidKey(SecByteBlock key) : BidKey("bid-" + CEP57Checksum::Encode(key)) {}
+  BidKey(CryptoPP::SecByteBlock key);
 };
 
 /// <summary>
@@ -250,12 +189,9 @@ struct BidKey : public GlobalStateKey {
 /// Format: 32-byte length with prefix 'withdraw-'.
 /// </summary>
 struct WithdrawKey : public GlobalStateKey {
-  WithdrawKey(std::string key) : GlobalStateKey(key, "withdraw-") {
-    key_identifier = KeyIdentifier::WITHDRAW;
-  }
+  WithdrawKey(std::string key);
 
-  WithdrawKey(SecByteBlock key)
-      : WithdrawKey("withdraw-" + CEP57Checksum::Encode(key)) {}
+  WithdrawKey(CryptoPP::SecByteBlock key);
 };
 
 /// <summary>
@@ -263,12 +199,9 @@ struct WithdrawKey : public GlobalStateKey {
 /// Format: 32-byte length with prefix 'dictionary-'.
 /// </summary>
 struct DictionaryKey : public GlobalStateKey {
-  DictionaryKey(std::string key) : GlobalStateKey(key, "dictionary-") {
-    key_identifier = KeyIdentifier::DICTIONARY;
-  }
+  DictionaryKey(std::string key);
 
-  DictionaryKey(SecByteBlock key)
-      : DictionaryKey("dictionary-" + CEP57Checksum::Encode(key)) {}
+  DictionaryKey(CryptoPP::SecByteBlock key);
 };
 
 /**
@@ -279,7 +212,7 @@ struct DictionaryKey : public GlobalStateKey {
  */
 inline void to_json(nlohmann::json& j, const GlobalStateKey& p) {
   // j = nlohmann::json{{"node_id", p.node_id}, {"address", p.address}};
-  j = nlohmann::json{{"key", p.ToString()}};
+  j = nlohmann::json{{"key", p.key}};
   // TODO:
 }
 

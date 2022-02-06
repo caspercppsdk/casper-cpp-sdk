@@ -1,26 +1,13 @@
 #pragma once
-#include <sstream>
-#include <string>
-#include <vector>
+
+#include "Base.h"
 
 namespace Casper {
-bool startsWith(const std::string& str, const std::string& cmp) {
-  return str.compare(0, cmp.length(), cmp) == 0;
-}
+struct StringUtil {
+  static bool startsWith(const std::string& str, const std::string& cmp);
 
-std::vector<std::string> splitString(const std::string& str,
-                                     const std::string& delim) {
-  std::vector<std::string> result;
-  std::stringstream ss(str);
-  std::string token;
-
-  while (std::getline(ss, token, delim[0])) {
-    result.push_back(token);
-  }
-
-  return result;
-}
-
-
+  static std::vector<std::string> splitString(const std::string& str,
+                                              const std::string& delim);
+};
 
 }  // namespace Casper
