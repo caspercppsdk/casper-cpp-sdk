@@ -20,5 +20,26 @@ add_subdirectory(src)
 add_subdirectory(test)
 add_subdirectory(examples)
 
+find_program(MAKE_EXECUTABLE
+NAMES gmake mingw32-make make
+NAMES_PER_DIR
+DOC "GNU Make")
+
+
+include(ExternalProject)
+ExternalProject_Add(
+    LIBCRYPTOPP
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/cryptopp
+    UPDATE_DISCONNECTED true
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/lib/cryptopp && ${MAKE_EXECUTABLE} && cd .. && cd ..
+    INSTALL_COMMAND ""
+    BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/cryptopp
+    DEPENDEES build
+    DEPENDERS install
+)
+
+message(STATUS "CRYPTO LIBRARY ===>" ${LIBCRYPTOPP})
+
 install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/lib/CasperSDK)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/include DESTINATION /usr/lib/CasperSDK)
