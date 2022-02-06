@@ -10,12 +10,10 @@
 namespace Casper {
 
 struct Transfer : public StoredValueTypeBase {
-  const StoredValueType type;
-
   Transfer(big_int amount_, std::string deploy_hash_, std::string from_,
            big_int gas_, uint64_t id_, URef source_, URef target_,
            std::string to_)
-      : type(StoredValueType::TRANSFER),
+      : StoredValueTypeBase(StoredValueType::TRANSFER),
         amount(amount_),
         deploy_hash(deploy_hash_),
         from(from_),
@@ -24,8 +22,6 @@ struct Transfer : public StoredValueTypeBase {
         source(source_),
         target(target_),
         to(to_) {}
-
-  Transfer() : type(StoredValueType::TRANSFER) {}
 
   big_int amount;
   std::string deploy_hash;
@@ -45,16 +41,9 @@ struct Transfer : public StoredValueTypeBase {
  */
 
 inline void to_json(nlohmann::json& j, const Transfer& p) {
-  j = nlohmann::json{
-      {"deploy_hash", p.deploy_hash},
-      {"from", p.from},
-      {"to", p.to},
-      {"source", p.source},
-      {"target", p.target},
-      {"amount", p.amount},
-      {"gas", p.gas},
-      {"id", p.id},
-  };
+  nlohmann::to_json(j, static_cast<StoredValueTypeBase>(p));
+  // TODO: Fill in the rest of the fields
+  // j.update({"amount", p.amount}, {"deploy_hash", p.deploy_hash},.......});
 }
 
 /**
@@ -65,6 +54,7 @@ inline void to_json(nlohmann::json& j, const Transfer& p) {
  */
 
 inline void from_json(const nlohmann::json& j, Transfer& p) {
+  nlohmann::from_json(j, static_cast<StoredValueTypeBase&>(p));
   j.at("deploy_hash").get_to(p.deploy_hash);
   j.at("from").get_to(p.from);
   j.at("to").get_to(p.to);

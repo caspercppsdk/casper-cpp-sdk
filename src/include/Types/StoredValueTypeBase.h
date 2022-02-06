@@ -19,6 +19,9 @@ enum StoredValueType {
 // Defines the base type for StoredValue types.
 struct StoredValueTypeBase {
   StoredValueType type;
+  // TODO: Change default type below
+  StoredValueTypeBase() : type(StoredValueType::CLVALUE) {}
+  StoredValueTypeBase(StoredValueType type) : type(type) {}
 };
 
 /**
