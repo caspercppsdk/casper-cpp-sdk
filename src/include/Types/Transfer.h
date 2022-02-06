@@ -23,6 +23,8 @@ struct Transfer : public StoredValueTypeBase {
         target(target_),
         to(to_) {}
 
+  Transfer() : StoredValueTypeBase(StoredValueType::TRANSFER) {}
+
   big_int amount;
   std::string deploy_hash;
   std::string from;

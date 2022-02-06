@@ -76,6 +76,7 @@ class GlobalStateKey {
     return hexDecode(key.substr(key.find_last_of("-") + 1));
   }
 
+  GlobalStateKey() {}
   /// <summary>
   /// Constructor for the GlobalStateKey class.
   /// </summary>

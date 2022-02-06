@@ -19,6 +19,8 @@ namespace Casper {
 struct URef : public GlobalStateKey {
   AccessRights access_rights;
 
+  URef() : GlobalStateKey() {}
+
   URef(std::string value) : GlobalStateKey(value) {
     key_identifier = KeyIdentifier::UREF;
 

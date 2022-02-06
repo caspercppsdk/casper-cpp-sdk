@@ -59,8 +59,8 @@ inline void from_json(const nlohmann::json& j, GetBlockTransfersResult& p) {
 
       rec.source = (*t).at("source");
       rec.target = (*t).at("target");
-      rec.amount = (*t).at("amount");
-      rec.gas = (*t).at("gas");
+      rec.amount = (big_int)(*t).at("amount");
+      rec.gas = (big_int)(*t).at("gas");
 
       if (!(*t).at("id").is_null()) rec.id = (*t).at("id");
 
