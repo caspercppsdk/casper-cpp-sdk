@@ -64,8 +64,8 @@ int main() {
               << transfersResult.transfers[i].deploy_hash
               << " from:" << transfersResult.transfers[i].from
               << " to: " << transfersResult.transfers[i].to
-              << " source: " << transfersResult.transfers[i].source
-              << " target: " << transfersResult.transfers[i].target
+              << " source: " << transfersResult.transfers[i].source.ToString()
+              << " target: " << transfersResult.transfers[i].target.ToString()
               << " amount: " << transfersResult.transfers[i].amount
               << " gas: " << transfersResult.transfers[i].gas
               << " id: " << transfersResult.transfers[i].id;
