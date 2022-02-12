@@ -1,7 +1,6 @@
 #pragma once
 
-#include <string>
-
+#include "Base.h"
 #include "nlohmann/json.hpp"
 
 /**
@@ -15,8 +14,8 @@ struct RpcResult {
    * @brief Construct a new Rpc Result object
    *
    */
-  RpcResult() : api_version() {}
-
+  RpcResult() {}
+  RpcResult(std::string api_version_) : api_version(api_version_) {}
   /// The API version as a string.
   std::string api_version;
 };

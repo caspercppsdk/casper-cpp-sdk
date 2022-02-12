@@ -1,8 +1,6 @@
 #pragma once
 
-#include <string>
-#include <vector>
-
+#include "Base.h"
 #include "JsonRpc/ResultTypes/RpcResult.h"
 #include "Types/JsonBlock.h"
 #include "Types/Transfer.h"
@@ -14,17 +12,15 @@
  */
 namespace Casper {
 struct GetBlockResult : public RpcResult {
- public:
   /**
    * @brief Construct a new GetBlockResult object.
    *
    */
-  GetBlockResult(std::string api_version_, JsonBlock block_)
-      : api_version(api_version_), block(block_) {}
+  GetBlockResult(JsonBlock block_) : block(block_) {}
+
   GetBlockResult() {}
 
-  std::string api_version;
-  JsonBlock block;  // Optional.
+  JsonBlock block;
 };
 
 /**
@@ -34,7 +30,8 @@ struct GetBlockResult : public RpcResult {
  * @param p GetBlockResult Result object to construct from.
  */
 inline void to_json(nlohmann::json& j, const GetBlockResult& p) {
-  j = nlohmann::json{{"api_version", p.api_version}, {"block", p.block}};
+  j = static_cast<RpcResult>(p);
+  j["block"] = p.block;
 }
 
 /**
@@ -44,8 +41,7 @@ inline void to_json(nlohmann::json& j, const GetBlockResult& p) {
  * @param p GetBlockResult object to construct.
  */
 inline void from_json(const nlohmann::json& j, GetBlockResult& p) {
-  j.at("api_version").get_to(p.api_version);
-
-  if (!j.at("block").is_null()) from_json(j.at("block"), p.block);
+  nlohmann::from_json(j, static_cast<RpcResult&>(p));
+  j.at("block").get_to(p.block);
 }
 }  // namespace Casper

@@ -63,3 +63,4 @@ test/Testing
 examples/example
 
 lib/cryptopp/adhoc.cpp
+.DS_Store

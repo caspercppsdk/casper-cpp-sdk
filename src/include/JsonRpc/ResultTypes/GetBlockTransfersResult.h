@@ -1,8 +1,6 @@
 #pragma once
 
-#include <string>
-#include <vector>
-
+#include "Base.h"
 #include "JsonRpc/ResultTypes/RpcResult.h"
 #include "Types/Transfer.h"
 
@@ -17,9 +15,12 @@ struct GetBlockTransfersResult : public RpcResult {
    * @brief Construct a new GetBlockTransfersResult object.
    *
    */
+  GetBlockTransfersResult(std::string blockHash,
+                          std::vector<Transfer> transfers)
+      : block_hash(blockHash), transfers(transfers) {}
+
   GetBlockTransfersResult() {}
 
-  std::string api_version;
   std::string block_hash;
   std::vector<Transfer> transfers;
 };
@@ -31,9 +32,9 @@ struct GetBlockTransfersResult : public RpcResult {
  * @param p GetBlockTransfersResult Result object to construct from.
  */
 inline void to_json(nlohmann::json& j, const GetBlockTransfersResult& p) {
-  j = nlohmann::json{{"api_version", p.api_version},
-                     {"block_hash", p.block_hash},
-                     {"transfers", p.transfers}};
+  j = static_cast<RpcResult>(p);
+  j["block_hash"] = p.block_hash;
+  j["transfers"] = p.transfers;
 }
 
 /**
@@ -43,30 +44,8 @@ inline void to_json(nlohmann::json& j, const GetBlockTransfersResult& p) {
  * @param p GetBlockTransfersResult object to construct.
  */
 inline void from_json(const nlohmann::json& j, GetBlockTransfersResult& p) {
-  j.at("api_version").get_to(p.api_version);
-
-  if (!j.at("block_hash").is_null()) j.at("block_hash").get_to(p.block_hash);
-
-  if (j.at("transfers").is_array()) {
-    auto t = j.at("transfers").begin();
-
-    while (t != j.at("transfers").end()) {
-      Transfer rec;
-      rec.deploy_hash = (*t).at("deploy_hash");
-      rec.from = (*t).at("from");
-
-      if (!(*t).at("to").is_null()) rec.to = (*t).at("to");
-
-      rec.source = (*t).at("source");
-      rec.target = (*t).at("target");
-      rec.amount = (big_int)(*t).at("amount");
-      rec.gas = (big_int)(*t).at("gas");
-
-      if (!(*t).at("id").is_null()) rec.id = (*t).at("id");
-
-      p.transfers.push_back(rec);
-      ++t;
-    }
-  }
+  nlohmann::from_json(j, static_cast<RpcResult&>(p));
+  j.at("block_hash").get_to(p.block_hash);
+  j.at("transfers").get_to(p.transfers);
 }
 }  // namespace Casper

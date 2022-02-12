@@ -123,12 +123,54 @@ GetEraInfoResult Client::GetEraInfoBySwitchBlock() {
  *
  * @return GetEraInfoBySwitchBlock that contains the era info.
  */
-GetEraInfoResult Client::GetEraInfoBySwitchBlock(BlockIdentifier identifier) {
-  nlohmann::json identifierJSON{{"Hash", identifier.hash},
-                                {"Height", identifier.height}};
+GetEraInfoResult Client::GetEraInfoBySwitchBlock(std::string hash) {
+  nlohmann::json hashJSON{{"Hash", hash}};
+  nlohmann::json identifierJSON{{"block_identifier", hashJSON}};
 
   return mRpcClient.CallMethodNamed<GetEraInfoResult>(
       1, "chain_get_era_info_by_switch_block", identifierJSON);
+}
+
+/**
+ * @brief Returns the era information.
+ *
+ * @return GetEraInfoBySwitchBlock that contains the era info.
+ */
+GetEraInfoResult Client::GetEraInfoBySwitchBlock(uint64_t height) {
+  nlohmann::json heightJSON{{"Height", height}};
+  nlohmann::json identifierJSON{{"block_identifier", heightJSON}};
+
+  return mRpcClient.CallMethodNamed<GetEraInfoResult>(
+      1, "chain_get_era_info_by_switch_block", identifierJSON);
+}
+
+/**
+ * @brief Returns the balance of the account.
+ *
+ * @return GetBalanceResult that contains the balance and merkle_proof.
+ */
+
+GetBalanceResult Client::GetAccountBalance(std::string purseURef,
+                                           std::string stateRootHash) {
+  /*
+// TODO:
+if (!purseURef.StartsWith("uref-"))
+            {
+                var response = await GetAccountInfo(purseURef);
+                purseURef = response.Result.GetProperty("account")
+                    .GetProperty("main_purse").GetString();
+            }
+
+
+  if (stateRootHash.empty()) {
+    stateRootHash = GetStateRootHash().state_root_hash;
+  }
+*/
+  nlohmann::json paramsJSON{{"state_root_hash", stateRootHash},
+                            {"purse_uref", purseURef}};
+
+  return mRpcClient.CallMethodNamed<GetBalanceResult>(1, "state_get_balance",
+                                                      paramsJSON);
 }
 
 }  // namespace Casper
