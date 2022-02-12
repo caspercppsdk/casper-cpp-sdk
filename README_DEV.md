@@ -9,3 +9,16 @@
         nlohmann::from_json(j, static_cast<GlobalStateKey&>(p));
         j.at("access_rights").get_to(p.access_rights);
     }
+
+### Inheritance Header - Source file
+
+    In Child.h, you would simply declare:
+
+    Child(int Param, int ParamTwo);
+
+    In Child.cpp, you would then have:
+
+    Child::Child(int Param, int ParamTwo) : Parent(Param) {
+        //rest of constructor here
+    }
+
