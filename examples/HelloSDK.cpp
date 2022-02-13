@@ -127,7 +127,8 @@ void chainGetBlock() {
 
   /// Call GetBlockResult rpc function.
   Casper::GetBlockResult blockResult = casper_client.GetBlock(
-      Casper::BlockIdentifier(status_result.last_added_block_info.hash, 1));
+      {"acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330",
+       532041});
   std::cout << "\napi_version: " << blockResult.api_version;
 
   if (!blockResult.block.body.proposer.empty()) {
@@ -177,7 +178,8 @@ void chainGetEraInfoBySwitchBlock() {
   /// Call chain_get_era_info_by_switch_block rpc function.
   Casper::GetEraInfoResult eraInfoResult =
       casper_client.GetEraInfoBySwitchBlock(
-          "acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330");
+          {"acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330",
+           532041});
   std::cout << "\napi_version: " << eraInfoResult.api_version;
   std::cout << "\nblock_hash: " << eraInfoResult.era_summary.block_hash
             << "\nera_id: " << eraInfoResult.era_summary.era_id

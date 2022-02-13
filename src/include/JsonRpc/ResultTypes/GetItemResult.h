@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RpcResult.h"
+#include "JsonRpc/ResultTypes/RpcResult.h"
 #include "Types/StoredValue.h"
 
 /**
@@ -14,7 +14,10 @@ struct GetItemResult : public RpcResult {
    * @brief Construct a new GetItemResult object.
    *
    */
-  GetItemResult() : stored_value(), merkle_proof() {}
+  GetItemResult(StoredValue stored_value_, const std::string& merkle_proof_)
+      : stored_value(stored_value_), merkle_proof(merkle_proof_) {}
+
+  GetItemResult() {}
 
   StoredValue stored_value;
   std::string merkle_proof;
@@ -26,9 +29,10 @@ struct GetItemResult : public RpcResult {
  * @param j JSON object to construct.
  * @param p GetStateRootHash Result object to construct from.
  */
-inline void to_json(nlohmann::json &j, const GetItemResult &p) {
-  j = nlohmann::json{{"stored_value", p.stored_value},
-                     {"merkle_proof", p.merkle_proof}};
+inline void to_json(nlohmann::json& j, const GetItemResult& p) {
+  j = static_cast<RpcResult>(p);
+  j["stored_value"] = p.stored_value;
+  j["merkle_proof"] = p.merkle_proof;
 }
 
 /**
@@ -37,7 +41,8 @@ inline void to_json(nlohmann::json &j, const GetItemResult &p) {
  * @param j JSON object to construct the object from.
  * @param p GetItemResult object to construct.
  */
-inline void from_json(const nlohmann::json &j, GetItemResult &p) {
+inline void from_json(const nlohmann::json& j, GetItemResult& p) {
+  nlohmann::from_json(j, static_cast<RpcResult&>(p));
   j.at("stored_value").get_to(p.stored_value);
   j.at("merkle_proof").get_to(p.merkle_proof);
 }

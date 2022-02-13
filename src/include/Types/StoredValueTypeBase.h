@@ -20,7 +20,7 @@ enum StoredValueType {
 struct StoredValueTypeBase {
   StoredValueType type;
   // TODO: Change default type below
-  StoredValueTypeBase() : type(StoredValueType::CLVALUE) {}
+  StoredValueTypeBase() {}
   StoredValueTypeBase(StoredValueType type) : type(type) {}
 };
 
@@ -41,7 +41,8 @@ inline void to_json(nlohmann::json& j, const StoredValueTypeBase& p) {
  * @param p StoredValueTypeBase object to construct.
  */
 inline void from_json(const nlohmann::json& j, StoredValueTypeBase& p) {
-  j.at("type").get_to(p.type);
+  if (!j.at("type").is_null())
+    j.at("type").get_to(p.type);
 }
 
 }  // namespace Casper

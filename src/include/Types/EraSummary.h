@@ -8,8 +8,10 @@
 namespace Casper {
 
 struct EraSummary {
-  EraSummary(std::string block_hash_, uint64_t era_id_,
-             StoredValue stored_value_, std::string state_root_hash_,
+  EraSummary(std::string block_hash_,
+             uint64_t era_id_,
+             StoredValue stored_value_,
+             std::string state_root_hash_,
              std::string merkle_proof_)
       : block_hash(block_hash_),
         era_id(era_id_),

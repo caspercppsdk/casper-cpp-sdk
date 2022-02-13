@@ -2,7 +2,6 @@
 
 #include "JsonRpc/ResultTypes/RpcResult.h"
 #include "Types/Definitions.h"  // big_int
-#include "nlohmann/json.hpp"
 
 /**
  * @brief Result for the "state_get_balance" rpc call.

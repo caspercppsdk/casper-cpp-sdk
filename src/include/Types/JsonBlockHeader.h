@@ -7,10 +7,15 @@
 namespace Casper {
 
 struct JsonBlockHeader {
-  JsonBlockHeader(std::string parent_hash_, std::string state_root_hash_,
-                  std::string body_hash_, bool random_bit_,
-                  std::string accumulated_seed_, std::string era_end_,
-                  std::string timestamp_, uint64_t era_id_, uint64_t height_,
+  JsonBlockHeader(std::string parent_hash_,
+                  std::string state_root_hash_,
+                  std::string body_hash_,
+                  bool random_bit_,
+                  std::string accumulated_seed_,
+                  std::string era_end_,
+                  std::string timestamp_,
+                  uint64_t era_id_,
+                  uint64_t height_,
                   std::string protocol_version_)
       : parent_hash(parent_hash_),
         state_root_hash(state_root_hash_),

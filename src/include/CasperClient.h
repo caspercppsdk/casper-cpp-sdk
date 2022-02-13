@@ -12,6 +12,7 @@
 #include "JsonRpc/ResultTypes/GetBlockTransfersResult.h"
 #include "JsonRpc/ResultTypes/GetDeployResult.h"
 #include "JsonRpc/ResultTypes/GetEraInfoResult.h"
+#include "JsonRpc/ResultTypes/GetItemResult.h"
 #include "JsonRpc/ResultTypes/GetStateRootHashResult.h"
 #include "JsonRpc/ResultTypes/GetStatus.h"
 #include "JsonRpc/ResultTypes/InfoGetPeersResult.h"
@@ -40,17 +41,20 @@ class Client {
 
   InfoGetPeersResult GetNodePeers();
   GetStateRootHashResult GetStateRootHash(uint64_t block_height);
-  GetStateRootHashResult GetStateRootHash(const std::string& block_hash = "");
-  GetDeployInfoResult GetDeployInfo(const std::string& deploy_hash);
+  GetStateRootHashResult GetStateRootHash(std::string block_hash = "");
+  GetDeployInfoResult GetDeployInfo(std::string deploy_hash);
   GetStatusInfoResult GetStatusInfo();
   GetBlockTransfersResult GetBlockTransfers(BlockIdentifier identifier);
   GetBlockTransfersResult GetBlockTransfers();
   GetBlockResult GetBlock(BlockIdentifier identifier);
   GetEraInfoResult GetEraInfoBySwitchBlock();
-  GetEraInfoResult GetEraInfoBySwitchBlock(std::string hash);
-  GetEraInfoResult GetEraInfoBySwitchBlock(uint64_t height);
+  GetEraInfoResult GetEraInfoBySwitchBlock(BlockIdentifier identifier);
 
   // stateGetItem
+  GetItemResult GetItem(
+      std::string state_root_hash,
+      std::string key,
+      std::vector<std::string> path = std::vector<std::string>());
   // stateGetDictionaryItem
   // TODO: GetAccountBalance stateRootHash should have a default value as empty
   // string however, there is a bug in the cpp file getstateroothash() because

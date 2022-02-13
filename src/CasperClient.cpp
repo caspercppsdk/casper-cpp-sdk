@@ -28,8 +28,8 @@ InfoGetPeersResult Client::GetNodePeers() {
  * @return GetStateRootHashResult that contains the state_root_hash as a string.
  */
 GetStateRootHashResult Client::GetStateRootHash(uint64_t block_height) {
-  nlohmann::json height{std::make_pair("Height", block_height)};
-  nlohmann::json block_identifier{std::make_pair("block_identifier", height)};
+  nlohmann::json heightJSON{{"Height", block_height}};
+  nlohmann::json block_identifier{{"block_identifier", heightJSON}};
 
   return mRpcClient.CallMethodNamed<GetStateRootHashResult>(
       1, "chain_get_state_root_hash", block_identifier);
@@ -42,9 +42,9 @@ GetStateRootHashResult Client::GetStateRootHash(uint64_t block_height) {
  * state root hash of the latest block.
  * @return GetStateRootHashResult that contains the state_root_hash as a string.
  */
-GetStateRootHashResult Client::GetStateRootHash(const std::string& block_hash) {
-  nlohmann::json hash{std::make_pair("Hash", block_hash)};
-  nlohmann::json block_identifier{std::make_pair("block_identifier", hash)};
+GetStateRootHashResult Client::GetStateRootHash(std::string block_hash) {
+  nlohmann::json hashJSON{{"Hash", block_hash}};
+  nlohmann::json block_identifier{{"block_identifier", hashJSON}};
 
   return mRpcClient.CallMethodNamed<GetStateRootHashResult>(
       1, "chain_get_state_root_hash", block_identifier);
@@ -56,11 +56,11 @@ GetStateRootHashResult Client::GetStateRootHash(const std::string& block_hash) {
  * @param deploy_hash Hash string of the smart contract.
  * @return GetDeployInfoResult that contains the deploy info as a string.
  */
-GetDeployInfoResult Client::GetDeployInfo(const std::string& deploy_hash) {
-  nlohmann::json hash{std::make_pair("deploy_hash", deploy_hash)};
+GetDeployInfoResult Client::GetDeployInfo(std::string deploy_hash) {
+  nlohmann::json hashJSON{{"deploy_hash", deploy_hash}};
 
   return mRpcClient.CallMethodNamed<GetDeployInfoResult>(1, "info_get_deploy",
-                                                         hash);
+                                                         hashJSON);
 }
 
 /**
@@ -123,25 +123,22 @@ GetEraInfoResult Client::GetEraInfoBySwitchBlock() {
  *
  * @return GetEraInfoBySwitchBlock that contains the era info.
  */
-GetEraInfoResult Client::GetEraInfoBySwitchBlock(std::string hash) {
-  nlohmann::json hashJSON{{"Hash", hash}};
-  nlohmann::json identifierJSON{{"block_identifier", hashJSON}};
+GetEraInfoResult Client::GetEraInfoBySwitchBlock(BlockIdentifier identifier) {
+  nlohmann::json identifierJSON{{"Hash", identifier.hash},
+                                {"Height", identifier.height}};
 
   return mRpcClient.CallMethodNamed<GetEraInfoResult>(
       1, "chain_get_era_info_by_switch_block", identifierJSON);
 }
 
-/**
- * @brief Returns the era information.
- *
- * @return GetEraInfoBySwitchBlock that contains the era info.
- */
-GetEraInfoResult Client::GetEraInfoBySwitchBlock(uint64_t height) {
-  nlohmann::json heightJSON{{"Height", height}};
-  nlohmann::json identifierJSON{{"block_identifier", heightJSON}};
+GetItemResult Client::GetItem(std::string state_root_hash,
+                              std::string key,
+                              std::vector<std::string> path) {
+  nlohmann::json paramsJSON{
+      {"state_root_hash", state_root_hash}, {"key", key}, {"path", path}};
 
-  return mRpcClient.CallMethodNamed<GetEraInfoResult>(
-      1, "chain_get_era_info_by_switch_block", identifierJSON);
+  return mRpcClient.CallMethodNamed<GetItemResult>(1, "state_get_item",
+                                                   paramsJSON);
 }
 
 /**
