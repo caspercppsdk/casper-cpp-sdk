@@ -100,12 +100,25 @@ GetBlockTransfersResult Client::GetBlockTransfers(BlockIdentifier identifier) {
  *
  * @return GetBlockResult that contains the block info.
  */
-GetBlockResult Client::GetBlock(BlockIdentifier identifier) {
-  nlohmann::json identifierJSON{{"Hash", identifier.hash},
-                                {"Height", identifier.height}};
+GetBlockResult Client::GetBlock(std::string block_hash) {
+  nlohmann::json hashJSON{{"Hash", block_hash}};
+  nlohmann::json block_identifier{{"block_identifier", hashJSON}};
 
   return mRpcClient.CallMethodNamed<GetBlockResult>(1, "chain_get_block",
-                                                    identifierJSON);
+                                                    block_identifier);
+}
+
+/**
+ * @brief Returns the block information.
+ *
+ * @return GetBlockResult that contains the block info.
+ */
+GetBlockResult Client::GetBlock(uint64_t block_height) {
+  nlohmann::json heightJSON{{"Height", block_height}};
+  nlohmann::json block_identifier{{"block_identifier", heightJSON}};
+
+  return mRpcClient.CallMethodNamed<GetBlockResult>(1, "chain_get_block",
+                                                    block_identifier);
 }
 
 /**

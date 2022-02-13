@@ -46,7 +46,8 @@ class Client {
   GetStatusInfoResult GetStatusInfo();
   GetBlockTransfersResult GetBlockTransfers(BlockIdentifier identifier);
   GetBlockTransfersResult GetBlockTransfers();
-  GetBlockResult GetBlock(BlockIdentifier identifier);
+  GetBlockResult GetBlock(std::string block_hash = "");
+  GetBlockResult GetBlock(uint64_t block_height);
   GetEraInfoResult GetEraInfoBySwitchBlock(std::string block_hash = "");
   GetEraInfoResult GetEraInfoBySwitchBlock(uint64_t block_height);
 

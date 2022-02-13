@@ -122,13 +122,11 @@ void chainGetBlock() {
   std::cout << "-----------------------------------------------" << std::endl;
   std::cout << "chain_get_block" << std::endl;
 
-  // helper function to print block info
-  Casper::GetStatusInfoResult status_result = casper_client.GetStatusInfo();
-
   /// Call GetBlockResult rpc function.
   Casper::GetBlockResult blockResult = casper_client.GetBlock(
-      {"acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330",
-       532041});
+      "acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330");
+  // or casper_client.GetBlock(532041);
+
   std::cout << "\napi_version: " << blockResult.api_version;
 
   if (!blockResult.block.body.proposer.empty()) {
@@ -171,9 +169,6 @@ void chainGetBlock() {
 void chainGetEraInfoBySwitchBlock() {
   std::cout << "-----------------------------------------------\n";
   std::cout << "chain_get_era_info_by_switch_block" << std::endl;
-
-  // helper function to get era info by switch block
-  Casper::GetStatusInfoResult status_result = casper_client.GetStatusInfo();
 
   /// Call chain_get_era_info_by_switch_block rpc function.
   Casper::GetEraInfoResult eraInfoResult =
@@ -236,11 +231,11 @@ int main() {
   // Milestone 2
   // infoGetDeploy();
 
-  // infoGetStatus();
+  infoGetStatus();
 
   // chainGetBlockTransfers();
 
-  // chainGetBlock();
+  chainGetBlock();
 
   chainGetEraInfoBySwitchBlock();
 

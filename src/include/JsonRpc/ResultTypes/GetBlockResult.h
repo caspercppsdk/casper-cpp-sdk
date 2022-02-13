@@ -16,9 +16,9 @@ struct GetBlockResult : public RpcResult {
    * @brief Construct a new GetBlockResult object.
    *
    */
-  GetBlockResult(JsonBlock block_) : block(block_) {}
-
   GetBlockResult() {}
+
+  GetBlockResult(JsonBlock block_) : block(block_) {}
 
   JsonBlock block;
 };
@@ -42,6 +42,7 @@ inline void to_json(nlohmann::json& j, const GetBlockResult& p) {
  */
 inline void from_json(const nlohmann::json& j, GetBlockResult& p) {
   nlohmann::from_json(j, static_cast<RpcResult&>(p));
-  j.at("block").get_to(p.block);
+  if (!j.at("block").is_null())
+    j.at("block").get_to(p.block);
 }
 }  // namespace Casper
