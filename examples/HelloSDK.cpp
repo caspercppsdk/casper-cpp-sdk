@@ -220,32 +220,54 @@ void stateGetAuctionInfo() {
   std::cout << "-----------------------------------------------\n";
   std::cout << "state_get_auction_info" << std::endl;
 
+  /// Call GetStateRootHash function with the height of the block.
+  Casper::GetAuctionInfoResult auction_result = casper_client.GetAuctionInfo(
+      "9f246c64116b5c686c8e6a6829fce36c86bb32437866b617d91ed7de9f6a8a16");
+  std::cout << "\nstate_root_hash: "
+            << auction_result.auction_state.state_root_hash
+            << "\nblock_height: " << auction_result.auction_state.block_height
+
+            << "\nera_validators:";
+
+  for (auto& validator : auction_result.auction_state.era_validators) {
+    std::cout << "\n" << validator.era_id;
+
+    // TODO: bid is missing
+    // TODO: public key in validator_weights is missing
+    /*
+    std::cout << "\nValidator Weights: ";
+    for (auto& weight : validator.validator_weights) {
+      std::cout << "\n" << weight.public_key.ToString() << " " << weight.weight;
+    }
+    */
+  }
+
   std::cout << std::endl;
 }
 
 int main() {
-  // infoGetPeers();
+  infoGetPeers();
 
-  // chainGetStateRootHash();
+  chainGetStateRootHash();
 
   // Milestone 2
-  // infoGetDeploy();
+  infoGetDeploy();
 
   infoGetStatus();
 
-  // chainGetBlockTransfers();
+  chainGetBlockTransfers();
 
   chainGetBlock();
 
   chainGetEraInfoBySwitchBlock();
 
-  // stateGetItem();
+  stateGetItem();
 
-   stateGetDictionaryItem();
+  stateGetDictionaryItem();
 
-  // stateGetBalance();
+  stateGetBalance();
 
-  // stateGetAuctionInfo();
+  stateGetAuctionInfo();
 
   // Milestone 3
   // PutDeploy(); TODO: implement

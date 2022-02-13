@@ -34,7 +34,7 @@ struct URef : public GlobalStateKey {
 
   SecByteBlock GetBytes();
 
-  std::string ToString();
+  std::string ToString() const;
 
  protected:
   SecByteBlock _GetRawBytesFromKey(std::string key);

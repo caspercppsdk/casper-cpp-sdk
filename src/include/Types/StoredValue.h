@@ -14,9 +14,10 @@
 namespace Casper {
 
 struct StoredValue {
-  StoredValue() {}
-
   StoredValueTypeBase value;
+
+  StoredValue() {}
+  StoredValue(StoredValueTypeBase value_) : value(value_) {}
 };
 
 /**

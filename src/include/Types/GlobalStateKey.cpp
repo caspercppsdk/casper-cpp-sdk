@@ -37,7 +37,7 @@ std::string GlobalStateKey::ToHexString() {
   return CEP57Checksum::Encode(raw_bytes);
 }
 
-GlobalStateKey GlobalStateKey::FromString(const std::string& value) {
+GlobalStateKey GlobalStateKey::FromString(std::string value) {
   if (StringUtil::startsWith(value, "account-hash-"))
     return AccountHashKey(value);
   if (StringUtil::startsWith(value, "hash-"))

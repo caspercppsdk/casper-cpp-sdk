@@ -94,7 +94,7 @@ struct GlobalStateKey {
   /// Converts a global state key from string to its specific key object.
   /// </summary>
 
-  static GlobalStateKey FromString(const std::string& value);
+  static GlobalStateKey FromString(std::string value);
 
   /// <summary>
   /// Converts a global state key from a byte array to its specific key object.

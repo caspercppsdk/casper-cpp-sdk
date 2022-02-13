@@ -90,7 +90,7 @@ CryptoPP::SecByteBlock URef::GetBytes() {
   return returned_bytes;
 }
 
-std::string URef::ToString() {
+std::string URef::ToString() const {
   return "uref-" + CEP57Checksum::Encode(raw_bytes) + "-" +
          std::to_string((uint8_t)access_rights);
 }

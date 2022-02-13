@@ -8,13 +8,12 @@
 #include "Types/URef.h"
 #include "Types/VestingSchedule.h"
 
+#include "Utils/CryptoUtil.h"
 namespace Casper {
 /// <summary>
 /// An entry in a founding validator map representing a bid.
 /// </summary>
 struct Bid : public StoredValueTypeBase {
-  const StoredValueType type;
-
   /// <summary>
   /// Validator public key
   /// </summary>
@@ -64,7 +63,7 @@ struct Bid : public StoredValueTypeBase {
       VestingSchedule vesting_schedule_,
       std::vector<Delegator> delegators_,
       bool inactive_)
-      : type(StoredValueType::BID),
+      : StoredValueTypeBase::StoredValueTypeBase(StoredValueType::BID),
         validator_public_key(validator_public_key_),
         bonding_purse(bonding_purse_),
         staked_amount(staked_amount_),
@@ -73,6 +72,51 @@ struct Bid : public StoredValueTypeBase {
         delegators(delegators_),
         inactive(inactive_) {}
 
-  Bid() : type(StoredValueType::BID) {}
+  Bid() : StoredValueTypeBase::StoredValueTypeBase(StoredValueType::BID) {}
 };
+
+/**
+ * @brief Construct a JSON object from a Bid object.
+ *
+ * @param j JSON object to construct.
+ * @param p Bid object to construct from.
+ */
+inline void to_json(nlohmann::json& j, const Bid& p) {
+  j = nlohmann::json{
+      {"validator_public_key", p.validator_public_key.ToAccountHex()},  // done
+      {"bonding_purse", p.bonding_purse.ToString()},                    // done
+      {"staked_amount", p.staked_amount.toString()},                    // done
+      {"delegation_rate", p.delegation_rate},                           // done
+      {"vesting_schedule", p.vesting_schedule},
+      {"delegators", p.delegators},
+      {"inactive", p.inactive},  // done
+  };
+  // TODO:[JsonConverter(typeof(BidsListConverter))]
+}
+
+/**
+ * @brief Construct a Bid object from a JSON object.
+ *
+ * @param j JSON object to construct the object from.
+ * @param p Bid object to construct.
+ */
+inline void from_json(const nlohmann::json& j, Bid& p) {
+  /*
+  p.validator_public_key =
+      PublicKey::FromHexString(j.at("validator_public_key"));
+
+  p.bonding_purse = URef(j.at("bonding_purse").get<std::string>());
+
+  p.staked_amount = j.at("staked_amount").get<std::string>();
+
+  p.delegation_rate = j.at("delegation_rate").get<unsigned int>();
+
+  p.vesting_schedule = j.at("vesting_schedule");
+  p.delegators = j.at("delegators");
+
+  p.inactive = j.at("inactive").get<bool>();
+  */
+  // TODO:[JsonConverter(typeof(BidsListConverter))]
+}
+
 }  // namespace Casper

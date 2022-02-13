@@ -155,7 +155,7 @@ struct PublicKey {
   /// <summary>
   /// Returns the Account Hash associated to this Public Key.
   /// </summary>
-  std::string GetAccountHash() {
+  std::string GetAccountHash() const {
     /*
     BLAKE2b hash(32u);
     std::string algo_str = KeyAlgo::GetName(key_algorithm);
@@ -181,7 +181,7 @@ struct PublicKey {
   /// the first position.
   /// </summary>
 
-  std::string ToAccountHex() {
+  std::string ToAccountHex() const {
     if (key_algorithm == KeyAlgo::ED25519) {
       return "01" + CEP57Checksum::Encode(raw_bytes);
     } else if (key_algorithm == KeyAlgo::SECP256K1) {
@@ -191,7 +191,7 @@ struct PublicKey {
     }
   }
 
-  std::string ToString() { return ToAccountHex(); }
+  std::string ToString() const { return ToAccountHex(); }
   /*
     bool Equals(object obj) {
       // Check for null and compare run-time types.
@@ -201,7 +201,7 @@ struct PublicKey {
       return pk.GetBytes().SequenceEqual(this.GetBytes());
     }
   */
-  int GetHashCode() {
+  int GetHashCode() const {
     // TODO:
     // return this->ToAccountHex().ToLower().GetHashCode();
     return 0;
