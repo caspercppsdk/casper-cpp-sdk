@@ -178,8 +178,7 @@ void chainGetEraInfoBySwitchBlock() {
   /// Call chain_get_era_info_by_switch_block rpc function.
   Casper::GetEraInfoResult eraInfoResult =
       casper_client.GetEraInfoBySwitchBlock(
-          {"acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330",
-           532041});
+          "acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330");
   std::cout << "\napi_version: " << eraInfoResult.api_version;
   std::cout << "\nblock_hash: " << eraInfoResult.era_summary.block_hash
             << "\nera_id: " << eraInfoResult.era_summary.era_id
@@ -232,14 +231,14 @@ void stateGetAuctionInfo() {
 int main() {
   // infoGetPeers();
 
-  chainGetStateRootHash();
+  // chainGetStateRootHash();
 
   // Milestone 2
-  infoGetDeploy();
+  // infoGetDeploy();
 
   // infoGetStatus();
 
-  chainGetBlockTransfers();
+  // chainGetBlockTransfers();
 
   // chainGetBlock();
 
@@ -249,7 +248,7 @@ int main() {
 
   // stateGetDictionaryItem();
 
-  stateGetBalance();
+  // stateGetBalance();
 
   // stateGetAuctionInfo();
 

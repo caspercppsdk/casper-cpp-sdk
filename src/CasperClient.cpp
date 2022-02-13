@@ -113,9 +113,12 @@ GetBlockResult Client::GetBlock(BlockIdentifier identifier) {
  *
  * @return GetEraInfoBySwitchBlock that contains the era info.
  */
-GetEraInfoResult Client::GetEraInfoBySwitchBlock() {
+GetEraInfoResult Client::GetEraInfoBySwitchBlock(std::string block_hash) {
+  nlohmann::json hashJSON{{"Hash", block_hash}};
+  nlohmann::json block_identifier{{"block_identifier", hashJSON}};
+
   return mRpcClient.CallMethodNamed<GetEraInfoResult>(
-      1, "chain_get_era_info_by_switch_block");
+      1, "chain_get_era_info_by_switch_block", block_identifier);
 }
 
 /**
@@ -123,12 +126,12 @@ GetEraInfoResult Client::GetEraInfoBySwitchBlock() {
  *
  * @return GetEraInfoBySwitchBlock that contains the era info.
  */
-GetEraInfoResult Client::GetEraInfoBySwitchBlock(BlockIdentifier identifier) {
-  nlohmann::json identifierJSON{{"Hash", identifier.hash},
-                                {"Height", identifier.height}};
+GetEraInfoResult Client::GetEraInfoBySwitchBlock(uint64_t block_height) {
+  nlohmann::json heightJSON{{"Height", block_height}};
+  nlohmann::json block_identifier{{"block_identifier", heightJSON}};
 
   return mRpcClient.CallMethodNamed<GetEraInfoResult>(
-      1, "chain_get_era_info_by_switch_block", identifierJSON);
+      1, "chain_get_era_info_by_switch_block", block_identifier);
 }
 
 GetItemResult Client::GetItem(std::string state_root_hash,
