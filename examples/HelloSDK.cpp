@@ -1,5 +1,6 @@
 #include "../src/include/CasperClient.h"  // To use Casper::Client features
 #include <iostream>
+#define CASPER_TEST_ADDRESS "http://185.246.84.43:7777"
 
 int main() {
   /// Construct a Casper::Client object
@@ -102,4 +103,5 @@ int main() {
 
 
   std::cout << "\n";
+  std::cout << "\nExamples have successfully run.\n";
 }

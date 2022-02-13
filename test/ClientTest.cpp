@@ -1,5 +1,6 @@
 #include "CasperClient.h"
 #include "acutest.h"
+#define CASPER_TEST_ADDRESS "http://185.246.84.43:7777"
 
 /**
  * @brief Check the "info_get_peers" rpc function. Size of the resulting array shouldn't be 0.
