@@ -157,6 +157,14 @@ GetItemResult Client::GetItem(std::string state_root_hash,
                                                    paramsJSON);
 }
 
+PutDeployResult Client::PutDeploy(Deploy deploy) {
+  nlohmann::json deploy_json;
+  to_json(deploy_json, deploy);
+  nlohmann::json paramsJSON{"deploy", deploy_json};
+
+  return mRpcClient.CallMethodNamed<PutDeployResult>(1, "account_put_deploy", paramsJSON);
+}
+
 /**
  * @brief Returns the balance of the account.
  *

@@ -16,11 +16,13 @@
 #include "JsonRpc/ResultTypes/GetStateRootHashResult.h"
 #include "JsonRpc/ResultTypes/GetStatus.h"
 #include "JsonRpc/ResultTypes/InfoGetPeersResult.h"
+#include "JsonRpc/ResultTypes/PutDeployResult.h"
 
 // param types
 #include "Types/BlockIdentifier.h"
 #include "Types/GlobalStateKey.h"
 #include "Types/URef.h"
+#include "Types/Deploy.h"
 
 // external libraries
 #include "jsonrpccxx/client.hpp"
@@ -50,6 +52,7 @@ class Client {
   GetBlockResult GetBlock(uint64_t block_height);
   GetEraInfoResult GetEraInfoBySwitchBlock(std::string block_hash = "");
   GetEraInfoResult GetEraInfoBySwitchBlock(uint64_t block_height);
+  PutDeployResult PutDeploy(Deploy deploy);
 
   // stateGetItem
   GetItemResult GetItem(
