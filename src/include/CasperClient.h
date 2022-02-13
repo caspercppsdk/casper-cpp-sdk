@@ -11,6 +11,7 @@
 #include "JsonRpc/ResultTypes/GetBlockResult.h"
 #include "JsonRpc/ResultTypes/GetBlockTransfersResult.h"
 #include "JsonRpc/ResultTypes/GetDeployResult.h"
+#include "JsonRpc/ResultTypes/GetDictionaryItemResult.h"
 #include "JsonRpc/ResultTypes/GetEraInfoResult.h"
 #include "JsonRpc/ResultTypes/GetItemResult.h"
 #include "JsonRpc/ResultTypes/GetStateRootHashResult.h"
@@ -55,17 +56,33 @@ class Client {
   GetEraInfoResult GetEraInfoBySwitchBlock(uint64_t block_height);
   PutDeployResult PutDeploy(Deploy deploy);
 
-  // stateGetItem
-  GetItemResult GetItem(
-      std::string state_root_hash,
-      std::string key,
-      std::vector<std::string> path = std::vector<std::string>());
-  // stateGetDictionaryItem
-  // TODO: GetAccountBalance stateRootHash should have a default value as empty
-  // string however, there is a bug in the cpp file getstateroothash() because
-  // there is no await process to wait the result
+  GetItemResult GetItem(std::string state_root_hash,
+                        std::string key,
+                        std::vector<std::string> path = {});
+
+  GetDictionaryItemResult GetDictionaryItem(std::string stateRootHash,
+                                            std::string dictionaryItem);
+  GetDictionaryItemResult GetDictionaryItemByAccount(
+      std::string stateRootHash,
+      std::string accountKey,
+      std::string dictionaryName,
+      std::string dictionaryItemKey);
+  GetDictionaryItemResult GetDictionaryItemByContract(
+      std::string stateRootHash,
+      std::string contractKey,
+      std::string dictionaryName,
+      std::string dictionaryItemKey);
+  GetDictionaryItemResult GetDictionaryItemByURef(
+      std::string stateRootHash,
+      std::string seedURef,
+      std::string dictionaryItemKey);
+
+  // TODO: GetAccountBalance stateRootHash should have a default value as
+  // empty string however, there is a bug in the cpp file getstateroothash()
+  // because there is no await process to wait the result
   GetBalanceResult GetAccountBalance(std::string purseURef,
                                      std::string stateRootHash);
+
   // stateGetAuctionInfo
 };
 

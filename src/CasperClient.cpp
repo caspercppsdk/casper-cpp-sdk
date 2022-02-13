@@ -195,4 +195,61 @@ if (!purseURef.StartsWith("uref-"))
                                                       paramsJSON);
 }
 
+GetDictionaryItemResult Client::GetDictionaryItem(std::string stateRootHash,
+                                                  std::string dictionaryItem) {
+  nlohmann::json dictionaryJSON{{"Dictionary", dictionaryItem}};
+
+  nlohmann::json paramsJSON{{"state_root_hash", stateRootHash},
+                            {"dictionary_identifier", dictionaryJSON}};
+
+  return mRpcClient.CallMethodNamed<GetDictionaryItemResult>(
+      1, "state_get_dictionary_item", paramsJSON);
+}
+
+GetDictionaryItemResult Client::GetDictionaryItemByAccount(
+    std::string stateRootHash,
+    std::string accountKey,
+    std::string dictionaryName,
+    std::string dictionaryItemKey) {
+  nlohmann::json accountNamedKey{{"key", accountKey},
+                                 {"dictionary_name", dictionaryName},
+                                 {"dictionary_item_key", dictionaryItemKey}};
+  nlohmann::json accountNamedKeyJSON{{"AccountNamedKey", accountNamedKey}};
+  nlohmann::json paramsJSON{{"state_root_hash", stateRootHash},
+                            {"dictionary_identifier", accountNamedKeyJSON}};
+
+  return mRpcClient.CallMethodNamed<GetDictionaryItemResult>(
+      1, "state_get_dictionary_item", paramsJSON);
+}
+
+GetDictionaryItemResult Client::GetDictionaryItemByContract(
+    std::string stateRootHash,
+    std::string contractKey,
+    std::string dictionaryName,
+    std::string dictionaryItemKey) {
+  nlohmann::json contractNamedKey{{"key", contractKey},
+                                  {"dictionary_name", dictionaryName},
+                                  {"dictionary_item_key", dictionaryItemKey}};
+  nlohmann::json contractNamedKeyJSON{{"ContractNamedKey", contractNamedKey}};
+  nlohmann::json paramsJSON{{"state_root_hash", stateRootHash},
+                            {"dictionary_identifier", contractNamedKeyJSON}};
+
+  return mRpcClient.CallMethodNamed<GetDictionaryItemResult>(
+      1, "state_get_dictionary_item", paramsJSON);
+}
+
+GetDictionaryItemResult Client::GetDictionaryItemByURef(
+    std::string stateRootHash,
+    std::string seedURef,
+    std::string dictionaryItemKey) {
+  nlohmann::json urefIdentifier{{"seed_uref", seedURef},
+                                {"dictionary_item_key", dictionaryItemKey}};
+  nlohmann::json urefIdentifierJSON{{"URef", urefIdentifier}};
+  nlohmann::json paramsJSON{{"state_root_hash", stateRootHash},
+                            {"dictionary_identifier", urefIdentifierJSON}};
+
+  return mRpcClient.CallMethodNamed<GetDictionaryItemResult>(
+      1, "state_get_dictionary_item", paramsJSON);
+}
+
 }  // namespace Casper

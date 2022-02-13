@@ -241,7 +241,7 @@ int main() {
 
   // stateGetItem();
 
-  // stateGetDictionaryItem();
+   stateGetDictionaryItem();
 
   // stateGetBalance();
 
