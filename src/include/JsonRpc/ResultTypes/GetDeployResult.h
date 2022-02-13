@@ -14,7 +14,7 @@ struct GetDeployInfoResult : public RpcResult {
    *
    */
   GetDeployInfoResult() : deploy_info() {}
-
+  // TODO: change string to DeployInfo
   /// The deploy info as a string.
   std::string deploy_info;
 };

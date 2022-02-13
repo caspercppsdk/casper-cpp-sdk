@@ -24,20 +24,6 @@ InfoGetPeersResult Client::GetNodePeers() {
 /**
  * @brief Returns the state root hash at a given Block
  *
- * @param block_height The height of the block as a uint64_t.
- * @return GetStateRootHashResult that contains the state_root_hash as a string.
- */
-GetStateRootHashResult Client::GetStateRootHash(uint64_t block_height) {
-  nlohmann::json heightJSON{{"Height", block_height}};
-  nlohmann::json block_identifier{{"block_identifier", heightJSON}};
-
-  return mRpcClient.CallMethodNamed<GetStateRootHashResult>(
-      1, "chain_get_state_root_hash", block_identifier);
-}
-
-/**
- * @brief Returns the state root hash at a given Block
- *
  * @param block_hash Block hash string of the node. Use empty string to get the
  * state root hash of the latest block.
  * @return GetStateRootHashResult that contains the state_root_hash as a string.
@@ -45,6 +31,20 @@ GetStateRootHashResult Client::GetStateRootHash(uint64_t block_height) {
 GetStateRootHashResult Client::GetStateRootHash(std::string block_hash) {
   nlohmann::json hashJSON{{"Hash", block_hash}};
   nlohmann::json block_identifier{{"block_identifier", hashJSON}};
+
+  return mRpcClient.CallMethodNamed<GetStateRootHashResult>(
+      1, "chain_get_state_root_hash", block_identifier);
+}
+
+/**
+ * @brief Returns the state root hash at a given height
+ *
+ * @param block_height The height of the block as a uint64_t.
+ * @return GetStateRootHashResult that contains the state_root_hash as a string.
+ */
+GetStateRootHashResult Client::GetStateRootHash(uint64_t block_height) {
+  nlohmann::json heightJSON{{"Height", block_height}};
+  nlohmann::json block_identifier{{"block_identifier", heightJSON}};
 
   return mRpcClient.CallMethodNamed<GetStateRootHashResult>(
       1, "chain_get_state_root_hash", block_identifier);
@@ -162,7 +162,8 @@ PutDeployResult Client::PutDeploy(Deploy deploy) {
   to_json(deploy_json, deploy);
   nlohmann::json paramsJSON{"deploy", deploy_json};
 
-  return mRpcClient.CallMethodNamed<PutDeployResult>(1, "account_put_deploy", paramsJSON);
+  return mRpcClient.CallMethodNamed<PutDeployResult>(1, "account_put_deploy",
+                                                     paramsJSON);
 }
 
 /**

@@ -20,9 +20,9 @@
 
 // param types
 #include "Types/BlockIdentifier.h"
+#include "Types/Deploy.h"
 #include "Types/GlobalStateKey.h"
 #include "Types/URef.h"
-#include "Types/Deploy.h"
 
 // external libraries
 #include "jsonrpccxx/client.hpp"
@@ -42,8 +42,8 @@ class Client {
   Client(const std::string& address);
 
   InfoGetPeersResult GetNodePeers();
-  GetStateRootHashResult GetStateRootHash(uint64_t block_height);
   GetStateRootHashResult GetStateRootHash(std::string block_hash = "");
+  GetStateRootHashResult GetStateRootHash(uint64_t block_height);
   GetDeployInfoResult GetDeployInfo(std::string deploy_hash);
   GetStatusInfoResult GetStatusInfo();
   GetBlockTransfersResult GetBlockTransfers(BlockIdentifier identifier);
