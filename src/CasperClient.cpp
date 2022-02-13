@@ -157,44 +157,6 @@ GetItemResult Client::GetItem(std::string state_root_hash,
                                                    paramsJSON);
 }
 
-PutDeployResult Client::PutDeploy(Deploy deploy) {
-  nlohmann::json deploy_json;
-  to_json(deploy_json, deploy);
-  nlohmann::json paramsJSON{"deploy", deploy_json};
-
-  return mRpcClient.CallMethodNamed<PutDeployResult>(1, "account_put_deploy",
-                                                     paramsJSON);
-}
-
-/**
- * @brief Returns the balance of the account.
- *
- * @return GetBalanceResult that contains the balance and merkle_proof.
- */
-
-GetBalanceResult Client::GetAccountBalance(std::string purseURef,
-                                           std::string stateRootHash) {
-  /*
-// TODO:
-if (!purseURef.StartsWith("uref-"))
-            {
-                var response = await GetAccountInfo(purseURef);
-                purseURef = response.Result.GetProperty("account")
-                    .GetProperty("main_purse").GetString();
-            }
-
-
-  if (stateRootHash.empty()) {
-    stateRootHash = GetStateRootHash().state_root_hash;
-  }
-*/
-  nlohmann::json paramsJSON{{"state_root_hash", stateRootHash},
-                            {"purse_uref", purseURef}};
-
-  return mRpcClient.CallMethodNamed<GetBalanceResult>(1, "state_get_balance",
-                                                      paramsJSON);
-}
-
 GetDictionaryItemResult Client::GetDictionaryItem(std::string stateRootHash,
                                                   std::string dictionaryItem) {
   nlohmann::json dictionaryJSON{{"Dictionary", dictionaryItem}};
@@ -250,6 +212,60 @@ GetDictionaryItemResult Client::GetDictionaryItemByURef(
 
   return mRpcClient.CallMethodNamed<GetDictionaryItemResult>(
       1, "state_get_dictionary_item", paramsJSON);
+}
+
+/**
+ * @brief Returns the balance of the account.
+ *
+ * @return GetBalanceResult that contains the balance and merkle_proof.
+ */
+
+GetBalanceResult Client::GetAccountBalance(std::string purseURef,
+                                           std::string stateRootHash) {
+  /*
+// TODO:
+if (!purseURef.StartsWith("uref-"))
+            {
+                var response = await GetAccountInfo(purseURef);
+                purseURef = response.Result.GetProperty("account")
+                    .GetProperty("main_purse").GetString();
+            }
+
+
+  if (stateRootHash.empty()) {
+    stateRootHash = GetStateRootHash().state_root_hash;
+  }
+*/
+  nlohmann::json paramsJSON{{"state_root_hash", stateRootHash},
+                            {"purse_uref", purseURef}};
+
+  return mRpcClient.CallMethodNamed<GetBalanceResult>(1, "state_get_balance",
+                                                      paramsJSON);
+}
+
+GetAuctionInfoResult Client::GetAuctionInfo(std::string block_hash) {
+  nlohmann::json hashJSON{{"Hash", block_hash}};
+  nlohmann::json block_identifier{{"block_identifier", hashJSON}};
+
+  return mRpcClient.CallMethodNamed<GetAuctionInfoResult>(
+      1, "state_get_auction_info", block_identifier);
+}
+
+GetAuctionInfoResult Client::GetAuctionInfo(uint64_t block_height) {
+  nlohmann::json heightJSON{{"Height", block_height}};
+  nlohmann::json block_identifier{{"block_identifier", heightJSON}};
+
+  return mRpcClient.CallMethodNamed<GetAuctionInfoResult>(
+      1, "state_get_auction_info", block_identifier);
+}
+
+PutDeployResult Client::PutDeploy(Deploy deploy) {
+  nlohmann::json deploy_json;
+  to_json(deploy_json, deploy);
+  nlohmann::json paramsJSON{"deploy", deploy_json};
+
+  return mRpcClient.CallMethodNamed<PutDeployResult>(1, "account_put_deploy",
+                                                     paramsJSON);
 }
 
 }  // namespace Casper

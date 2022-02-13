@@ -1,6 +1,6 @@
 #pragma once
-#include <string>
-#include <vector>
+
+#include "Base.h"
 
 #include "Types/Bid.h"
 #include "Types/EraValidators.h"
@@ -8,9 +8,9 @@
 namespace Casper {
 struct AuctionState {
   /// <summary>
-  /// All bids contained within a vector.
+  /// Global state hash.
   /// </summary>
-  std::vector<Bid> bids;
+  std::string state_root_hash;
 
   /// <summary>
   /// Block height.
@@ -23,8 +23,36 @@ struct AuctionState {
   std::vector<EraValidators> era_validators;
 
   /// <summary>
-  /// Global state hash.
+  /// All bids contained within a vector.
   /// </summary>
-  std::string state_root_hash;
+  std::vector<Bid> bids;
 };
+
+/**
+ * @brief Construct a JSON object from a AuctionState object.
+ *
+ * @param j JSON object to construct.
+ * @param p AuctionState object to construct from.
+ */
+inline void to_json(nlohmann::json& j, const AuctionState& p) {
+  j = nlohmann::json{{"state_root_hash", p.state_root_hash},
+                     {"block_height", p.block_height},
+                     {"era_validators", p.era_validators},
+                     {"bids", p.bids}};
+  // TODO:[JsonConverter(typeof(BidsListConverter))]
+}
+
+/**
+ * @brief Construct a AuctionState object from a JSON object.
+ *
+ * @param j JSON object to construct the object from.
+ * @param p AuctionState object to construct.
+ */
+inline void from_json(const nlohmann::json& j, AuctionState& p) {
+  j.at("state_root_hash").get_to(p.state_root_hash);
+  j.at("block_height").get_to(p.block_height);
+  j.at("era_validators").get_to(p.era_validators);
+  // TODO:[JsonConverter(typeof(BidsListConverter))]
+  j.at("bids").get_to(p.bids);
+}
 }  // namespace Casper

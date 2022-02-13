@@ -7,6 +7,7 @@
 #include "JsonRpc/Connection/HttpLibConnector.h"
 
 // json rpc result types
+#include "JsonRpc/ResultTypes/GetAuctionInfoResult.h"
 #include "JsonRpc/ResultTypes/GetBalanceResult.h"
 #include "JsonRpc/ResultTypes/GetBlockResult.h"
 #include "JsonRpc/ResultTypes/GetBlockTransfersResult.h"
@@ -83,7 +84,8 @@ class Client {
   GetBalanceResult GetAccountBalance(std::string purseURef,
                                      std::string stateRootHash);
 
-  // stateGetAuctionInfo
+  GetAuctionInfoResult GetAuctionInfo(std::string block_hash = "");
+  GetAuctionInfoResult GetAuctionInfo(uint64_t block_height);
 };
 
 };  // namespace Casper

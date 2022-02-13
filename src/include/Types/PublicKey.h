@@ -18,6 +18,7 @@ struct PublicKey {
       : raw_bytes(raw_bytes_), key_algorithm(key_algorithm_) {}
 
  public:
+  PublicKey() {}
   /// <summary>
   /// Creates a PublicKey object from an hexadecimal string (containing the
   /// Key algorithm identifier).
