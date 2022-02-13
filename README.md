@@ -47,6 +47,8 @@ Change the CASPER_TEST_ADDRESS value in the CasperClient.h with an RPC Server ad
 1. https://github.com/nlohmann/json
 2. https://github.com/jsonrpcx/json-rpc-cxx
 3. https://github.com/yhirose/cpp-httplib
+4. https://github.com/weidai11/cryptopp
+5. https://github.com/Neargye/magic_enum
 
 ## TODO
 0. MacOS and Windows support

@@ -26,6 +26,7 @@
 
 // external libraries
 #include "jsonrpccxx/client.hpp"
+#include "magic_enum/magic_enum.hpp"
 #include "nlohmann/json.hpp"
 
 // casper server test address

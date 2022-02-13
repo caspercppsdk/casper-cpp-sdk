@@ -1,9 +1,10 @@
 #pragma once
 
+#include "magic_enum/magic_enum.hpp"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
-enum StoredValueType {
+enum class StoredValueType {
   CLVALUE = 1,
   ACCOUNT = 2,
   CONTRACTWASM = 3,
@@ -16,12 +17,17 @@ enum StoredValueType {
   WITHDRAW = 10
 };
 
+std::ostream& operator<<(std::ostream& os, const StoredValueType& obj) {
+  os << magic_enum::enum_name(obj);
+  return os;
+}
+
 // Defines the base type for StoredValue types.
 struct StoredValueTypeBase {
   StoredValueType type;
-  // TODO: Change default type below
-  StoredValueTypeBase() {}
+
   StoredValueTypeBase(StoredValueType type) : type(type) {}
+  StoredValueTypeBase() {}
 };
 
 /**
