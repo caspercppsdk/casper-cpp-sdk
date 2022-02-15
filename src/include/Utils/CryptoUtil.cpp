@@ -8,23 +8,21 @@
 #include "cryptopp/hex.h"
 
 namespace Casper {
-CryptoPP::SecByteBlock CryptoUtil::hexDecode(const std::string& hex) {
-  /*
-  std::string decoded;
-  StringSource ss(hex, true, new HexDecoder(new StringSink(decoded)));
-  return SecByteBlock(reinterpret_cast<const unsigned char*>(decoded.data()),
-                      decoded.size());
-                      */
-  return CryptoPP::SecByteBlock(1);
+CryptoPP::SecByteBlock CryptoUtil::hexDecode(std::string encoded) {
+  CryptoPP::StringSource ss(encoded, true, new CryptoPP::HexDecoder);
+  CryptoPP::SecByteBlock decoded((size_t)ss.MaxRetrievable());
+  ss.Get(decoded, decoded.size());
+  return decoded;
 }
 
-std::string CryptoUtil::hexEncode(const CryptoPP::SecByteBlock& bytes) {
-  /*
+std::string CryptoUtil::hexEncode(CryptoPP::SecByteBlock decoded) {
   std::string encoded;
-  StringSource ss(bytes.data(), bytes.size(), true,
-                  new HexEncoder(new StringSink(encoded)));
+
+  CryptoPP::StringSource ss(
+      decoded, decoded.size(), true,
+      new CryptoPP::HexEncoder(new CryptoPP::StringSink(encoded))  // HexEncoder
+  );  // StringSource
+
   return encoded;
-  */
-  return "";
 }
 }  // namespace Casper

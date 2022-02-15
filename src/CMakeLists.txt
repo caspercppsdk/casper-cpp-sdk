@@ -10,6 +10,6 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../lib/cryptopp
 )
 
-add_library(${LIB_NAME} SHARED CasperClient.cpp include/Types/GlobalStateKey.cpp include/Types/URef.cpp include/Utils/CryptoUtil.cpp include/Utils/StringUtil.cpp)
+add_library(${LIB_NAME} SHARED CasperClient.cpp include/Types/GlobalStateKey.cpp include/Types/URef.cpp include/Utils/CryptoUtil.cpp include/Utils/StringUtil.cpp include/Utils/CEP57Checksum.cpp)
 
 target_link_libraries(${LIB_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../lib/cryptopp/libcryptopp.a)

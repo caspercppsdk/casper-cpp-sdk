@@ -27,6 +27,9 @@
 #include "Types/GlobalStateKey.h"
 #include "Types/URef.h"
 
+// Utils
+#include "Utils/CryptoUtil.h"
+
 // external libraries
 #include "jsonrpccxx/client.hpp"
 #include "magic_enum/magic_enum.hpp"
