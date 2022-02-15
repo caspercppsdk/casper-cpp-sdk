@@ -17,7 +17,7 @@ GlobalStateKey::GlobalStateKey() {}
 /// <summary>
 /// Constructor for the GlobalStateKey class.
 /// </summary>
-GlobalStateKey::GlobalStateKey(std::string key_) : key{key_} {}
+GlobalStateKey::GlobalStateKey(std::string key_) : key{key_}, raw_bytes{} {}
 
 /// <summary>
 /// Constructor for the GlobalStateKey class with key prefix.
@@ -26,7 +26,7 @@ GlobalStateKey::GlobalStateKey(std::string key_, std::string key_prefix) {
   if (key_.rfind(key_prefix, 0) != 0)
     throw std::invalid_argument(
         "Key not valid. It should start with '{key_prefix}'.");
-
+  // TODO: Check this for URef
   CryptoPP::SecByteBlock res =
       CEP57Checksum::Decode(key_.substr(key_.find_last_of('-') + 1));
   key = key_prefix + CEP57Checksum::Encode(res);

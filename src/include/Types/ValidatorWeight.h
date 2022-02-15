@@ -5,7 +5,7 @@
 
 namespace Casper {
 struct ValidatorWeight {
-  PublicKey public_key;
+  std::string public_key;
   big_int weight;
   // TODO: Fill in this class
 };
@@ -17,7 +17,8 @@ struct ValidatorWeight {
  * @param p ValidatorWeight object to construct from.
  */
 inline void to_json(nlohmann::json& j, const ValidatorWeight& p) {
-  j = nlohmann::json{};
+  j = nlohmann::json{{"public_key", p.public_key},
+                     {"weight", p.weight.toString()}};
   // TODO: Fill in this function
 }
 
@@ -28,6 +29,8 @@ inline void to_json(nlohmann::json& j, const ValidatorWeight& p) {
  * @param p ValidatorWeight object to construct.
  */
 inline void from_json(const nlohmann::json& j, ValidatorWeight& p) {
+  j.at("public_key").get_to(p.public_key);
+  j.at("weight").get_to(p.weight);
   // TODO: Fill in this function
 }
 }  // namespace Casper

@@ -1,4 +1,5 @@
 #include "Utils/StringUtil.h"
+#include <algorithm>
 #include <sstream>
 
 namespace Casper {
@@ -17,5 +18,10 @@ std::vector<std::string> StringUtil::splitString(const std::string& str,
   }
 
   return result;
+}
+
+std::string StringUtil::toLower(std::string str) {
+  std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+  return str;
 }
 }  // namespace Casper

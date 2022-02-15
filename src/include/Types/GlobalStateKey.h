@@ -223,7 +223,7 @@ inline void to_json(nlohmann::json& j, const GlobalStateKey& p) {
  * @param p GlobalStateKey object to construct.
  */
 inline void from_json(const nlohmann::json& j, GlobalStateKey& p) {
-  p = GlobalStateKey::FromString(j.at("key").get<std::string>());
+    p = GlobalStateKey::FromString(j.at("key").get<std::string>());
   //  j.at("node_id").get_to(p.node_id);
   // TODO:
 }

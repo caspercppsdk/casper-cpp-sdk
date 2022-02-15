@@ -29,7 +29,7 @@ struct GetEraInfoResult : public RpcResult {
  */
 inline void to_json(nlohmann::json& j, const GetEraInfoResult& p) {
   j = static_cast<RpcResult>(p);
-  j["era_summary"] = p.era_summary;
+  // j["era_summary"] = p.era_summary;
 }
 
 /**
@@ -41,7 +41,7 @@ inline void to_json(nlohmann::json& j, const GetEraInfoResult& p) {
 inline void from_json(const nlohmann::json& j, GetEraInfoResult& p) {
   nlohmann::from_json(j, static_cast<RpcResult&>(p));
 
-  if (!j.at("era_summary").is_null())
+  if (j.find("era_summary") != j.end())
     j.at("era_summary").get_to(p.era_summary);
 }
 }  // namespace Casper

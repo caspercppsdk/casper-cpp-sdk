@@ -177,7 +177,7 @@ void chainGetEraInfoBySwitchBlock() {
   std::cout << "\napi_version: " << eraInfoResult.api_version;
   std::cout << "\nblock_hash: " << eraInfoResult.era_summary.block_hash
             << "\nera_id: " << eraInfoResult.era_summary.era_id
-            << "\nmarker_proof: " << eraInfoResult.era_summary.merkle_proof
+            << "\nmerkle_proof: " << eraInfoResult.era_summary.merkle_proof
             << "\nstate_root_hash: "
             << eraInfoResult.era_summary.state_root_hash << "\nstored_value: "
             << eraInfoResult.era_summary.stored_value.value.type;
@@ -234,12 +234,24 @@ void stateGetAuctionInfo() {
 
     // TODO: bid is missing
     // TODO: public key in validator_weights is missing
-    /*
+
     std::cout << "\nValidator Weights: ";
     for (auto& weight : validator.validator_weights) {
-      std::cout << "\n" << weight.public_key.ToString() << " " << weight.weight;
+      std::cout << "\n" << weight.public_key << " " << weight.weight.toString();
     }
-    */
+  }
+
+  for (auto& bid_res : auction_result.auction_state.bids) {
+    if (bid_res.public_key.empty()) {
+      std::cout << "\nbonding_purse: " << bid_res.bid.bonding_purse.ToString()
+                << "\ndelegation_rate: "
+                << unsigned(bid_res.bid.delegation_rate)
+                << "\ninactive: " << std::boolalpha << bid_res.bid.inactive
+                << "\nstaked_amount: " << bid_res.bid.staked_amount.toString()
+                << "\nvalidator_public_key: " << bid_res.public_key;
+    } else {
+      std::cout << "\npublic_key: " << bid_res.public_key;
+    }
   }
 
   std::cout << std::endl;

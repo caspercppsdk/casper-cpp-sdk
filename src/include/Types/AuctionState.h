@@ -2,8 +2,8 @@
 
 #include "Base.h"
 
-#include "Types/Bid.h"
 #include "Types/EraValidators.h"
+#include "Types/ValidatorBid.h"
 
 namespace Casper {
 struct AuctionState {
@@ -25,7 +25,7 @@ struct AuctionState {
   /// <summary>
   /// All bids contained within a vector.
   /// </summary>
-  std::vector<Bid> bids;
+  std::vector<ValidatorBid> bids;
 };
 
 /**
@@ -53,6 +53,7 @@ inline void from_json(const nlohmann::json& j, AuctionState& p) {
   j.at("block_height").get_to(p.block_height);
   j.at("era_validators").get_to(p.era_validators);
   // TODO:[JsonConverter(typeof(BidsListConverter))]
+
   j.at("bids").get_to(p.bids);
 }
 }  // namespace Casper
