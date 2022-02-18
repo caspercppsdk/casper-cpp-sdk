@@ -1,10 +1,8 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include "Base.h"
 
 #include "Types/URef.h"
-#include "Types/StoredValueTypeBase.h"
 
 namespace Casper {
 /// <summary>
@@ -14,10 +12,22 @@ struct DisabledVersion {
   /// <summary>
   /// Contract version.
   /// </summary>
-  unsigned int contract_version;
+  uint8_t contract_version;
 
-  unsigned int protocol_version_major;
+  uint8_t protocol_version_major;
 };
+
+// from_json of DisabledVersion
+inline void from_json(const nlohmann::json& j, DisabledVersion& p) {
+  j.at("contract_version").get_to(p.contract_version);
+  j.at("protocol_version_major").get_to(p.protocol_version_major);
+}
+
+// to_json of DisabledVersion
+inline void to_json(nlohmann::json& j, const DisabledVersion& p) {
+  j = {{"contract_version", p.contract_version},
+       {"protocol_version_major", p.protocol_version_major}};
+}
 
 /// <summary>
 /// Information related to an active version of a contract.
@@ -31,10 +41,24 @@ struct ContractVersion {
   /// <summary>
   /// Contract version.
   /// </summary>
-  unsigned int contract_version;
+  uint8_t contract_version;
 
-  unsigned int protocol_version_major;
+  uint8_t protocol_version_major;
 };
+
+// from_json of ContractVersion
+inline void from_json(const nlohmann::json& j, ContractVersion& p) {
+  j.at("contract_hash").get_to(p.contract_hash);
+  j.at("contract_version").get_to(p.contract_version);
+  j.at("protocol_version_major").get_to(p.protocol_version_major);
+}
+
+// to_json of ContractVersion
+inline void to_json(nlohmann::json& j, const ContractVersion& p) {
+  j = {{"contract_hash", p.contract_hash},
+       {"contract_version", p.contract_version},
+       {"protocol_version_major", p.protocol_version_major}};
+}
 
 /// <summary>
 /// Groups associate a set of URefs with a label.
@@ -51,13 +75,27 @@ struct Group {
   std::vector<URef> keys;
 };
 
+// from_json of Group
+inline void from_json(const nlohmann::json& j, Group& p) {
+  j.at("group").get_to(p.group);
+  j.at("keys").get_to(p.keys);
+}
+
+// to_json of Group
+inline void to_json(nlohmann::json& j, const Group& p) {
+  j = {{"group", p.group}, {"keys", p.keys}};
+}
+
 /// <summary>
 /// Contract definition, metadata, and security container.
 /// </summary>
-struct ContractPackage : StoredValueTypeBase {
-  const StoredValueType type;
-
+struct ContractPackage {
   URef access_key;
+
+  /// <summary>
+  /// List of active versions of a contract.
+  /// </summary>
+  std::vector<ContractVersion> versions;
 
   /// <summary>
   /// List of disabled versions of a contract.
@@ -72,11 +110,33 @@ struct ContractPackage : StoredValueTypeBase {
   /// </summary>
   std::vector<Group> groups;
 
-  /// <summary>
-  /// List of active versions of a contract.
-  /// </summary>
-  std::vector<ContractVersion> versions;
+  // TODO: check lock_status
 
-  ContractPackage () : type(StoredValueType::CONTRACTPACKAGE) {}
+  ContractPackage(URef access_key_,
+                  std::vector<ContractVersion> versions_,
+                  std::vector<DisabledVersion> disabled_versions_,
+                  std::vector<Group> groups_)
+      : access_key(access_key_),
+        versions(versions_),
+        disabled_versions(disabled_versions_),
+        groups(groups_) {}
+  ContractPackage() {}
 };
+
+// from_json of ContractPackage
+inline void from_json(const nlohmann::json& j, ContractPackage& p) {
+  j.at("access_key").get_to(p.access_key);
+  j.at("versions").get_to(p.versions);
+  j.at("disabled_versions").get_to(p.disabled_versions);
+  j.at("groups").get_to(p.groups);
+}
+
+// to_json of ContractPackage
+inline void to_json(nlohmann::json& j, const ContractPackage& p) {
+  j = {{"access_key", p.access_key},
+       {"versions", p.versions},
+       {"disabled_versions", p.disabled_versions},
+       {"groups", p.groups}};
+}
+
 }  // namespace Casper

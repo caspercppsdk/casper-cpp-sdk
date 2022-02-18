@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include "Base.h"
+#include "nlohmann/json.hpp"
 
 #include "Types/PublicKey.h"
 

@@ -6,11 +6,10 @@
 #include "Types/UnbondingPurse.h"
 
 namespace Casper {
-struct Withdraw : public StoredValueTypeBase {
-  const StoredValueType type;
+struct Withdraw {
 
   std::vector<UnbondingPurse> list;
 
-  Withdraw() : type(StoredValueType::WITHDRAW) {}
+  Withdraw() {}
 };
 }  // namespace Casper

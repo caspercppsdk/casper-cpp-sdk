@@ -3,7 +3,6 @@
 #include <string>
 
 #include "Types/Definitions.h"
-#include "Types/StoredValueTypeBase.h"
 #include "Types/URef.h"
 #include "nlohmann/json.hpp"
 
@@ -18,8 +17,7 @@ struct Transfer : public StoredValueTypeBase {
            URef source_,
            URef target_,
            std::string to_)
-      : StoredValueTypeBase(StoredValueType::TRANSFER),
-        amount(amount_),
+      : amount(amount_),
         deploy_hash(deploy_hash_),
         from(from_),
         gas(gas_),
@@ -28,7 +26,7 @@ struct Transfer : public StoredValueTypeBase {
         target(target_),
         to(to_) {}
 
-  Transfer() : StoredValueTypeBase(StoredValueType::TRANSFER) {}
+  Transfer() {}
 
   big_int amount;
   std::string deploy_hash;

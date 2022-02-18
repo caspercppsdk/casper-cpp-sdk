@@ -18,7 +18,6 @@ struct EraSummary {
         stored_value(stored_value_),
         state_root_hash(state_root_hash_),
         merkle_proof(merkle_proof_) {}
-
   EraSummary() {}
 
   std::string block_hash;

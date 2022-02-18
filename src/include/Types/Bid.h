@@ -83,13 +83,16 @@ struct Bid : public StoredValueTypeBase {
  */
 inline void to_json(nlohmann::json& j, const Bid& p) {
   j = nlohmann::json{
+      {"validator_public_key", p.validator_public_key},
       {"bonding_purse", p.bonding_purse.ToString()},
+      {"staked_amount", p.staked_amount.toString()},
+
       {"delegation_rate", p.delegation_rate},
+      {"vesting_schedule", p.vesting_schedule},
+
       {"delegators", p.delegators},
       {"inactive", p.inactive},
-      {"staked_amount", p.staked_amount.toString()},
-      {"validator_public_key", p.validator_public_key},
-      {"vesting_schedule", p.vesting_schedule},
+
   };
   // TODO:[JsonConverter(typeof(BidsListConverter))]
 }
@@ -101,13 +104,16 @@ inline void to_json(nlohmann::json& j, const Bid& p) {
  * @param p Bid object to construct.
  */
 inline void from_json(const nlohmann::json& j, Bid& p) {
+  std::cout << "\nbid from json\n";
+  j.at("validator_public_key").get_to(p.validator_public_key);
   j.at("bonding_purse").get_to(p.bonding_purse);
+  j.at("staked_amount").get_to(p.staked_amount);
+
   j.at("delegation_rate").get_to(p.delegation_rate);
+  j.at("vesting_schedule").get_to(p.vesting_schedule);
+
   j.at("delegators").get_to(p.delegators);
   j.at("inactive").get_to(p.inactive);
-  j.at("staked_amount").get_to(p.staked_amount);
-  j.at("validator_public_key").get_to(p.validator_public_key);
-  j.at("vesting_schedule").get_to(p.vesting_schedule);
 
   /*
   p.validator_public_key =

@@ -24,6 +24,7 @@
 #include "Types/Bid.h"
 #include "Types/BlockIdentifier.h"
 #include "Types/Deploy.h"
+#include "Types/EraSummary.h"
 #include "Types/GlobalStateKey.h"
 #include "Types/URef.h"
 

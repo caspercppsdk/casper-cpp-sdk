@@ -7,6 +7,7 @@
 
 namespace Casper {
 struct ValidatorBid {
+  // TODO: Make public key instead of string
   std::string public_key;
   Bid bid;
 

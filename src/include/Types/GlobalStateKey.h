@@ -211,7 +211,6 @@ struct DictionaryKey : public GlobalStateKey {
  * @param p GlobalStateKey object to construct from.
  */
 inline void to_json(nlohmann::json& j, const GlobalStateKey& p) {
-  // j = nlohmann::json{{"node_id", p.node_id}, {"address", p.address}};
   j = nlohmann::json{{"key", p.key}};
   // TODO:
 }
@@ -223,8 +222,9 @@ inline void to_json(nlohmann::json& j, const GlobalStateKey& p) {
  * @param p GlobalStateKey object to construct.
  */
 inline void from_json(const nlohmann::json& j, GlobalStateKey& p) {
-    p = GlobalStateKey::FromString(j.at("key").get<std::string>());
-  //  j.at("node_id").get_to(p.node_id);
+  std::string jKey = j.at("key");
+
+  p = GlobalStateKey::FromString(j.at("key").get<std::string>());
   // TODO:
 }
 }  // namespace Casper

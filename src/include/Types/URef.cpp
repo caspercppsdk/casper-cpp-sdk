@@ -12,7 +12,7 @@ URef::URef() {}
 
 URef::URef(std::string value) : GlobalStateKey::GlobalStateKey(value) {
   key_identifier = KeyIdentifier::UREF;
-
+  std::cout << "\n\n\nUREF(value), value = " << value << "\n\n\n";
   if (!StringUtil::startsWith(value, "uref-")) {
     throw std::runtime_error("Invalid URef format");
   }
@@ -30,7 +30,7 @@ URef::URef(std::string value) : GlobalStateKey::GlobalStateKey(value) {
         "A URef object must contain a 3 digit access "
         "rights suffix.");
   try {
-    CEP57Checksum::Decode(parts[0]);
+    raw_bytes = CEP57Checksum::Decode(parts[0]);
   } catch (std::exception& e) {
     throw "URef checksum mismatch.";
   }
@@ -91,13 +91,14 @@ CryptoPP::SecByteBlock URef::GetBytes() {
 }
 
 std::string URef::ToString() const {
-  return "uref-" + CEP57Checksum::Encode(raw_bytes) + "-" +
+  std::cout << "\n\n\n\ntestureftostring:" << key << "\n\n\n\n";
+  return "uref-" + CEP57Checksum::Encode(_GetRawBytesFromKey(key)) + "-" +
          std::to_string((uint8_t)access_rights);
 }
 
-CryptoPP::SecByteBlock URef::_GetRawBytesFromKey(std::string key) {
-  key = key.substr(0, key.find_last_of('-'));
-  return CryptoUtil::hexDecode(key.substr(key.find_last_of('-') + 1));
+CryptoPP::SecByteBlock URef::_GetRawBytesFromKey(std::string key) const {
+  std::string new_key = key.substr(0, key.find_last_of('-'));
+  return CryptoUtil::hexDecode(new_key.substr(new_key.find_last_of('-') + 1));
 }
 
 }  // namespace Casper

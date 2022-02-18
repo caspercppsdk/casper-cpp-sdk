@@ -175,12 +175,18 @@ void chainGetEraInfoBySwitchBlock() {
       casper_client.GetEraInfoBySwitchBlock(
           "acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330");
   std::cout << "\napi_version: " << eraInfoResult.api_version;
-  std::cout << "\nblock_hash: " << eraInfoResult.era_summary.block_hash
-            << "\nera_id: " << eraInfoResult.era_summary.era_id
-            << "\nmerkle_proof: " << eraInfoResult.era_summary.merkle_proof
-            << "\nstate_root_hash: "
-            << eraInfoResult.era_summary.state_root_hash << "\nstored_value: "
-            << eraInfoResult.era_summary.stored_value.value.type;
+
+  if (eraInfoResult.era_summary.has_value()) {
+    Casper::EraSummary eraSummary = eraInfoResult.era_summary.value();
+
+    std::cout << "\nblock_hash: " << eraSummary.block_hash
+              << "\nera_id: " << eraSummary.era_id
+              << "\nmerkle_proof: " << eraSummary.merkle_proof
+              << "\nstate_root_hash: " << eraSummary.state_root_hash
+              << "\nstored_value: ";
+    // TODO: add a toString function to the stored value class
+    // << eraInfoResult.era_summary.stored_value;  // TODO: std::visit ToString
+  }
 
   std::cout << std::endl;
 }

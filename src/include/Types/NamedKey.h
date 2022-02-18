@@ -1,14 +1,18 @@
 #pragma once
-#include <string>
-#include <vector>
+
+#include "Base.h"
 
 #include "Types/GlobalStateKey.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
 struct NamedKey {
+  NamedKey(std::string name, std::string key) : name(name), key(key) {}
+  NamedKey() {}
+
   std::string name;
-  GlobalStateKey key;
+  // TODO: Check -> GlobalStateKey key;
+  std::string key;
 };
 
 /**
@@ -18,8 +22,7 @@ struct NamedKey {
  * @param p Peer object to construct from.
  */
 inline void to_json(nlohmann::json& j, const NamedKey& p) {
-  j = nlohmann::json{{"name", p.name}, {"key", p.key}};
-  // j = nlohmann::json{{"node_id", p.node_id}, {"address", p.address}};
+  j = {{"name", p.name}, {"key", p.key}};
 }
 
 /**

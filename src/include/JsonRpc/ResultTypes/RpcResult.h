@@ -37,6 +37,8 @@ inline void to_json(nlohmann::json& j, const RpcResult& p) {
  * @param p RpcResult object to construct.
  */
 inline void from_json(const nlohmann::json& j, RpcResult& p) {
-  j.at("api_version").get_to(p.api_version);
+  if (!j.is_null() && j.find("api_version") != j.end()) {
+    j.at("api_version").get_to(p.api_version);
+  }
 }
 }  // namespace Casper

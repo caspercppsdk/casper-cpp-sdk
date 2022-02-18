@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include "RpcResult.h"
 #include "Types/EraSummary.h"
 
@@ -18,7 +19,7 @@ struct GetEraInfoResult : public RpcResult {
   GetEraInfoResult(EraSummary era_summary_) : era_summary(era_summary_) {}
   GetEraInfoResult() {}
 
-  EraSummary era_summary;  // Optional.
+  std::optional<EraSummary> era_summary = std::nullopt;  // Optional.
 };
 
 /**
@@ -29,7 +30,9 @@ struct GetEraInfoResult : public RpcResult {
  */
 inline void to_json(nlohmann::json& j, const GetEraInfoResult& p) {
   j = static_cast<RpcResult>(p);
-  // j["era_summary"] = p.era_summary;
+  if (p.era_summary.has_value()) {
+    j["era_summary"] = p.era_summary.value();
+  }
 }
 
 /**
@@ -41,7 +44,10 @@ inline void to_json(nlohmann::json& j, const GetEraInfoResult& p) {
 inline void from_json(const nlohmann::json& j, GetEraInfoResult& p) {
   nlohmann::from_json(j, static_cast<RpcResult&>(p));
 
-  if (j.find("era_summary") != j.end())
-    j.at("era_summary").get_to(p.era_summary);
+  if (!j.is_null() && j.find("era_summary") != j.end() &&
+      !j.at("era_summary").is_null())
+    j.at("era_summary").get_to(p.era_summary.value());
+  else
+    p.era_summary = std::nullopt;
 }
 }  // namespace Casper

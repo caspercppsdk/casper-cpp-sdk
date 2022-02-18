@@ -1,17 +1,13 @@
 #pragma once
-#include "Types/StoredValueTypeBase.h"
-#include <string>
 
-namespace Casper
-{
-struct CLValue : public StoredValueTypeBase
-{
-    const StoredValueType type;
-    std::string contract_wasm;
+#include "Base.h"
 
-    CLValue (std::string contract_wasm_) : type(StoredValueType::CONTRACTWASM) {
-        contract_wasm = contract_wasm_;
-    }
+namespace Casper {
+struct ContractWasm {
+  std::string contract_wasm;
+
+  ContractWasm(std::string contract_wasm_) : contract_wasm(contract_wasm_) {}
+  ContractWasm() {}
 };
 
-} // namespace Casper
+}  // namespace Casper

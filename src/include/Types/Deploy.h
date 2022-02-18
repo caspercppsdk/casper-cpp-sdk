@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include "Base.h"
+#include "nlohmann/json.hpp"
 
-#include "Types/PublicKey.h"
 #include "Types/ExecutableDeployItem.h"
+#include "Types/PublicKey.h"
 
 namespace Casper {
 /// <summary>
@@ -40,7 +40,7 @@ struct Deploy {
 
   ExecutableDeployItemBase session;
 
-  std::string secret_key; // optional
+  std::string secret_key;  // optional
 
   /// <summary>
   /// Public Key from the Account owning the Deploy.

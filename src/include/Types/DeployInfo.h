@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include "Base.h"
+#include "nlohmann/json.hpp"
 
 #include "Types/Definitions.h"
 #include "Types/GlobalStateKey.h"
@@ -18,14 +18,16 @@ struct DeployInfo {
   std::string deploy_hash;
 
   /// <summary>
-  /// Account identifier of the creator of the Deploy.
+  /// Transfer addresses performed by the Deploy.
   /// </summary>
-  std::string from;
+  // TODO: make TransferKey instead of std::string
+  std::vector<std::string> transfers;
 
   /// <summary>
-  /// Gas cost of executing the Deploy.
+  /// Account identifier of the creator of the Deploy.
   /// </summary>
-  big_int gas;
+  // TODO: make AccountHashKey  instead of std::string
+  std::string from;
 
   /// <summary>
   /// Source purse used for payment of the Deploy.
@@ -33,8 +35,26 @@ struct DeployInfo {
   URef source;
 
   /// <summary>
-  /// Transfer addresses performed by the Deploy.
+  /// Gas cost of executing the Deploy.
   /// </summary>
-  std::vector<std::string> transfers;
+  big_int gas;
 };
+
+// from_json of DeployInfo
+inline void from_json(const nlohmann::json& j, DeployInfo& p) {
+  j.at("deploy_hash").get_to(p.deploy_hash);
+  j.at("transfers").get_to(p.transfers);
+  j.at("from").get_to(p.from);
+  j.at("source").get_to(p.source);
+  j.at("gas").get_to(p.gas);
+}
+
+// to_json of DeployInfo
+inline void to_json(nlohmann::json& j, const DeployInfo& p) {
+  j = {{"deploy_hash", p.deploy_hash},
+       {"transfers", p.transfers},
+       {"from", p.from},
+       {"source", p.source},
+       {"gas", p.gas.toString()}};
+}
 }  // namespace Casper

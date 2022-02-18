@@ -1,7 +1,9 @@
 #pragma once
 
+#include "Base.h"
 #include "Types/PublicKey.h"
 #include "Types/Signature.h"
+#include "nlohmann/json.hpp"
 
 namespace Casper {
 /// <summary>
