@@ -346,29 +346,25 @@ void stateGetAuctionInfo() {
        i++) {
     Casper::ValidatorBid cur_validator_bid =
         auction_result.auction_state.bids[i];
-    if (cur_validator_bid.public_key.empty()) {
-      std::cout << "\nvalidator_public_key: "
-                << cur_validator_bid.bid.validator_public_key
-                << "\nbonding_purse: "
-                << cur_validator_bid.bid.bonding_purse.ToString()
-                << "\nstaked_amount: "
-                << cur_validator_bid.bid.staked_amount.toString()
-                << "\ndelegation_rate: "
-                << (uint8_t)cur_validator_bid.bid.delegation_rate;
-      if (cur_validator_bid.bid.vesting_schedule.has_value()) {
-        std::cout << "\nvesting_schedule initial_release_timestamp_millis: "
-                  << cur_validator_bid.bid.vesting_schedule.value()
-                         .initial_release_timestamp_millis
-                  << " locked_amounts: "
-                  << cur_validator_bid.bid.vesting_schedule.value()
-                         .locked_amounts.toString();
-      }
-      std::cout << "\ninactive: " << std::boolalpha
-                << cur_validator_bid.bid.inactive;
 
-    } else {
-      std::cout << "\npublic_key: " << cur_validator_bid.public_key;
+    std::cout << "\nvalidator_public_key: "
+              << cur_validator_bid.bid.validator_public_key
+              << "\nbonding_purse: "
+              << cur_validator_bid.bid.bonding_purse.ToString()
+              << "\nstaked_amount: "
+              << cur_validator_bid.bid.staked_amount.toString()
+              << "\ndelegation_rate: "
+              << unsigned(cur_validator_bid.bid.delegation_rate);
+    if (cur_validator_bid.bid.vesting_schedule.has_value()) {
+      std::cout << "\nvesting_schedule initial_release_timestamp_millis: "
+                << cur_validator_bid.bid.vesting_schedule.value()
+                       .initial_release_timestamp_millis
+                << " locked_amounts: "
+                << cur_validator_bid.bid.vesting_schedule.value()
+                       .locked_amounts.toString();
     }
+    std::cout << "\ninactive: " << std::boolalpha
+              << cur_validator_bid.bid.inactive;
   }
 
   std::cout << std::endl;
@@ -396,7 +392,7 @@ int main() {
 
   // stateGetBalance();
 
-  // stateGetAuctionInfo();
+  stateGetAuctionInfo();
 
   // Milestone 3
   // PutDeploy(); TODO: implement

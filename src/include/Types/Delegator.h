@@ -60,7 +60,7 @@ inline void from_json(const nlohmann::json& j, Delegator& p) {
   if (j.count("validator_public_key") != 0) {
     j.at("validator_public_key").get_to(p.validator_public_key);
   } else if (j.count("delegatee") != 0) {
-    j.at("validator_public_key").get_to(p.validator_public_key);
+    j.at("delegatee").get_to(p.validator_public_key);
   }
 
   if (j.count("vesting_schedule") != 0 && !j.at("vesting_schedule").is_null()) {

@@ -57,21 +57,6 @@ struct Bid {
   /// </summary>
   std::optional<VestingSchedule> vesting_schedule = std::nullopt;
 
-  Bid(URef bonding_purse_,
-      uint8_t delegation_rate_,
-      std::vector<Delegator> delegators_,
-      bool inactive_,
-      big_int staked_amount_,
-      std::string validator_public_key_,
-      VestingSchedule vesting_schedule_)
-      : bonding_purse(bonding_purse_),
-        delegation_rate(delegation_rate_),
-        delegators(delegators_),
-        inactive(inactive_),
-        staked_amount(staked_amount_),
-        validator_public_key(validator_public_key_),
-        vesting_schedule(vesting_schedule_) {}
-
   Bid() {}
 };
 
@@ -101,11 +86,16 @@ inline void to_json(nlohmann::json& j, const Bid& p) {
  * @param p Bid object to construct.
  */
 inline void from_json(const nlohmann::json& j, Bid& p) {
-  j.at("validator_public_key").get_to(p.validator_public_key);
+  if (j.count("delegator_public_key") != 0) {
+    j.at("validator_public_key").get_to(p.validator_public_key);
+  } else if (j.count("public_key") != 0) {
+    j.at("public_key").get_to(p.validator_public_key);
+  }
+
   j.at("bonding_purse").get_to(p.bonding_purse);
   j.at("staked_amount").get_to(p.staked_amount);
 
-  j.at("delegation_rate").get_to(p.delegation_rate);
+  p.delegation_rate = j.at("delegation_rate").get<uint8_t>();
 
   if (j.count("vesting_schedule") != 0 && !j.at("vesting_schedule").is_null()) {
     p.vesting_schedule = j.at("vesting_schedule").get<VestingSchedule>();
