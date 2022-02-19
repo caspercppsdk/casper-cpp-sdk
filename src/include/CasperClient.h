@@ -16,7 +16,7 @@
 #include "JsonRpc/ResultTypes/GetEraInfoResult.h"
 #include "JsonRpc/ResultTypes/GetItemResult.h"
 #include "JsonRpc/ResultTypes/GetStateRootHashResult.h"
-#include "JsonRpc/ResultTypes/GetStatus.h"
+#include "JsonRpc/ResultTypes/GetStatusResult.h"
 #include "JsonRpc/ResultTypes/InfoGetPeersResult.h"
 #include "JsonRpc/ResultTypes/PutDeployResult.h"
 
@@ -53,7 +53,7 @@ class Client {
   GetStateRootHashResult GetStateRootHash(std::string block_hash = "");
   GetStateRootHashResult GetStateRootHash(uint64_t block_height);
   GetDeployInfoResult GetDeployInfo(std::string deploy_hash);
-  GetStatusInfoResult GetStatusInfo();
+  GetStatusResult GetStatusInfo();
   GetBlockTransfersResult GetBlockTransfers(BlockIdentifier identifier);
   GetBlockTransfersResult GetBlockTransfers();
   GetBlockResult GetBlock(std::string block_hash = "");

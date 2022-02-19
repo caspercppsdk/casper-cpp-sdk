@@ -8,7 +8,7 @@
 
 namespace Casper {
 
-struct Transfer : public StoredValueTypeBase {
+struct Transfer {
   Transfer(big_int amount_,
            std::string deploy_hash_,
            std::string from_,

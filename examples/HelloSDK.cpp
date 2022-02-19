@@ -33,7 +33,7 @@ void chainGetStateRootHash() {
   /// Call GetStateRootHash function with the height of the block.
   Casper::GetStateRootHashResult height_result =
       casper_client.GetStateRootHash(10);
-  std::cout << "state_root_hash for block height 10: "
+  std::cout << "state_root_hash for block height: "
             << height_result.state_root_hash << "\n";
 
   /// Call GetStateRootHash function with the block hash of the block.
@@ -64,28 +64,42 @@ void infoGetStatus() {
   std::cout << "info_get_status" << std::endl;
 
   /// Call GetStatusInfo function.
-  Casper::GetStatusInfoResult status_result = casper_client.GetStatusInfo();
+  Casper::GetStatusResult status_result = casper_client.GetStatusInfo();
   std::cout << "\napi_version: " << status_result.api_version;
   std::cout << "\nchainspec_name: " << status_result.chainspec_name;
   std::cout << "\nstarting_state_root_hash: "
             << status_result.starting_state_root_hash;
-  for (std::size_t i = 0; i < status_result.peerList.size(); i++) {
+  for (std::size_t i = 0; i < status_result.peers.size(); i++) {
     std::cout << std::to_string(i + 1)
-              << "\nPeer: Address: " << status_result.peerList[i].address
-              << " - Node id:" << status_result.peerList[i].node_id;
+              << "\nPeer: Address: " << status_result.peers[i].address
+              << " - Node id:" << status_result.peers[i].node_id;
   }
-  std::cout << "\nBlock info: creator: "
-            << status_result.last_added_block_info.creator
-            << "\nera_id: " << status_result.last_added_block_info.era_id
-            << "\nhash: " << status_result.last_added_block_info.hash
-            << "\nheight: " << status_result.last_added_block_info.height
-            << "\nstate_root_hash: "
-            << status_result.last_added_block_info.state_root_hash
-            << "\ntimestamp: " << status_result.last_added_block_info.timestamp;
-  std::cout << "\nour_public_signing_key: "
-            << status_result.our_public_signing_key;
-  std::cout << "\nround_length: " << status_result.round_length;
-  std::cout << "\nnext_upgrade: " << status_result.next_upgrade;
+
+  if (status_result.last_added_block_info.has_value()) {
+    Casper::BlockInfo last_added_block_info =
+        status_result.last_added_block_info.value();
+
+    std::cout << "\nBlock info: creator: " << last_added_block_info.creator
+              << "\nera_id: " << last_added_block_info.era_id
+              << "\nhash: " << last_added_block_info.hash
+              << "\nheight: " << last_added_block_info.height
+              << "\nstate_root_hash: " << last_added_block_info.state_root_hash
+              << "\ntimestamp: " << last_added_block_info.timestamp;
+  }
+
+  if (status_result.our_public_signing_key.has_value()) {
+    std::cout << "\nour_public_signing_key: "
+              << status_result.our_public_signing_key.value();
+  }
+
+  if (status_result.round_length.has_value()) {
+    std::cout << "\nround_length: " << status_result.round_length.value();
+  }
+
+  if (status_result.next_upgrade.has_value()) {
+    std::cout << "\next_upgrade: " << status_result.next_upgrade.value();
+  }
+
   std::cout << "\nbuild_version: " << status_result.build_version;
   std::cout << "\nuptime: " << status_result.uptime;
 

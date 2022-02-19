@@ -66,10 +66,10 @@ GetDeployInfoResult Client::GetDeployInfo(std::string deploy_hash) {
 /**
  * @brief Returns the status info.
  *
- * @return GetStatusInfoResult that contains the status info as a string.
+ * @return GetStatusResult that contains the status info as a string.
  */
-GetStatusInfoResult Client::GetStatusInfo() {
-  return mRpcClient.CallMethodNamed<GetStatusInfoResult>(1, "info_get_status");
+GetStatusResult Client::GetStatusInfo() {
+  return mRpcClient.CallMethodNamed<GetStatusResult>(1, "info_get_status");
 }
 
 /**

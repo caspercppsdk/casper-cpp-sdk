@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Base.h"
-
 #include "Types/URef.h"
+#include "nlohmann/json.hpp"
 
 namespace Casper {
 /// <summary>

@@ -1,10 +1,10 @@
 #pragma once
-#include <vector>
+
+#include "Base.h"
 
 #include "Types/Definitions.h"
 #include "Types/Delegator.h"
 #include "Types/PublicKey.h"
-#include "Types/StoredValueTypeBase.h"
 #include "Types/URef.h"
 #include "Types/VestingSchedule.h"
 
@@ -13,7 +13,7 @@ namespace Casper {
 /// <summary>
 /// An entry in a founding validator map representing a bid.
 /// </summary>
-struct Bid : public StoredValueTypeBase {
+struct Bid {
   /// <summary>
   /// The purse that was used for bonding.
   /// </summary>
@@ -47,6 +47,7 @@ struct Bid : public StoredValueTypeBase {
   /// Validator public key
   /// </summary>
   // TODO: [JsonConverter(typeof(PublicKey.PublicKeyConverter))]
+  // TODO: Make public key instead of string
   std::string validator_public_key;
 
   /// <summary>
@@ -63,8 +64,7 @@ struct Bid : public StoredValueTypeBase {
       big_int staked_amount_,
       std::string validator_public_key_,
       VestingSchedule vesting_schedule_)
-      : StoredValueTypeBase::StoredValueTypeBase(StoredValueType::BID),
-        bonding_purse(bonding_purse_),
+      : bonding_purse(bonding_purse_),
         delegation_rate(delegation_rate_),
         delegators(delegators_),
         inactive(inactive_),
@@ -72,7 +72,7 @@ struct Bid : public StoredValueTypeBase {
         validator_public_key(validator_public_key_),
         vesting_schedule(vesting_schedule_) {}
 
-  Bid() : StoredValueTypeBase::StoredValueTypeBase(StoredValueType::BID) {}
+  Bid() {}
 };
 
 /**
@@ -104,7 +104,6 @@ inline void to_json(nlohmann::json& j, const Bid& p) {
  * @param p Bid object to construct.
  */
 inline void from_json(const nlohmann::json& j, Bid& p) {
-  std::cout << "\nbid from json\n";
   j.at("validator_public_key").get_to(p.validator_public_key);
   j.at("bonding_purse").get_to(p.bonding_purse);
   j.at("staked_amount").get_to(p.staked_amount);

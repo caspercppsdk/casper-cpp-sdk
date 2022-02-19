@@ -21,6 +21,9 @@ struct Signature {
 
   KeyAlgo key_algorithm;
 
+  // TODO: Check this ctor
+  Signature() {}
+
  protected:
   Signature(SecByteBlock raw_bytes_, KeyAlgo key_algorithm_)
       : raw_bytes(raw_bytes_), key_algorithm(key_algorithm_) {}
@@ -103,14 +106,14 @@ struct Signature {
   /// algorithm in the first position.
   /// </summary>
 
-  std::string ToHexString() {
+  std::string ToHexString() const {
     if (key_algorithm == KeyAlgo::ED25519)
       return "01" + CEP57Checksum::Encode(raw_bytes);
     else
       return "02" + CEP57Checksum::Encode(raw_bytes);
   }
 
-  std::string ToString() { return ToHexString(); }
+  std::string ToString() const { return ToHexString(); }
 
   /*
     class SignatureConverter : JsonConverter<Signature> {
@@ -135,4 +138,17 @@ struct Signature {
     }
     */
 };
+
+// to_json of Signature
+inline void to_json(nlohmann::json& j, const Signature& s) {
+  // j = s.ToHexString();
+  j = {};
+}
+
+// from_json of Signature
+inline void from_json(const nlohmann::json& j, Signature& s) {
+  // TODO: write the inner code of fromhexstring here
+  // s = Signature::FromHexString(j.get<std::string>());
+}
+
 }  // namespace Casper

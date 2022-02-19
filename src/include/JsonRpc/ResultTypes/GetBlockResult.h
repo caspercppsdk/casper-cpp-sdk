@@ -20,6 +20,7 @@ struct GetBlockResult : public RpcResult {
 
   GetBlockResult(JsonBlock block_) : block(block_) {}
 
+  // TODO: Make Block instead of JsonBlock
   JsonBlock block;
 };
 

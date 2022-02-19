@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "Types/SeigniorageAllocation.h"
-#include "Types/StoredValueTypeBase.h"
 
 namespace Casper {
 /// <summary>

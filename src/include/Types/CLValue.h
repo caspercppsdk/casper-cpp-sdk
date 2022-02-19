@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include "Types/StoredValueTypeBase.h"
 
 namespace Casper {
 struct CLValue {

@@ -4,7 +4,6 @@
 
 #include "Types/EntryPoint.h"
 #include "Types/NamedKey.h"
-#include "Types/StoredValueTypeBase.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
