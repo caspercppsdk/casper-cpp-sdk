@@ -22,3 +22,5 @@
         //rest of constructor here
     }
 
+### RPC JSON Examples
+    https://docs.rs/crate/casper-client/1.4.3
