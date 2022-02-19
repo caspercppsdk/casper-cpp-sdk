@@ -54,8 +54,8 @@ class Client {
   GetStateRootHashResult GetStateRootHash(uint64_t block_height);
   GetDeployInfoResult GetDeployInfo(std::string deploy_hash);
   GetStatusResult GetStatusInfo();
-  GetBlockTransfersResult GetBlockTransfers(BlockIdentifier identifier);
-  GetBlockTransfersResult GetBlockTransfers();
+  GetBlockTransfersResult GetBlockTransfers(std::string block_hash = "");
+  GetBlockTransfersResult GetBlockTransfers(uint64_t block_height);
   GetBlockResult GetBlock(std::string block_hash = "");
   GetBlockResult GetBlock(uint64_t block_height);
   GetEraInfoResult GetEraInfoBySwitchBlock(std::string block_hash = "");

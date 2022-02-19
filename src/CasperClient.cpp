@@ -77,9 +77,12 @@ GetStatusResult Client::GetStatusInfo() {
  *
  * @return GetBlockTransfersResult that contains the transfers info.
  */
-GetBlockTransfersResult Client::GetBlockTransfers() {
+GetBlockTransfersResult Client::GetBlockTransfers(std::string block_hash) {
+  nlohmann::json hashJSON{{"Hash", block_hash}};
+  nlohmann::json block_identifier{{"block_identifier", hashJSON}};
+
   return mRpcClient.CallMethodNamed<GetBlockTransfersResult>(
-      1, "chain_get_block_transfers");
+      1, "chain_get_block_transfers", block_identifier);
 }
 
 /**
@@ -87,12 +90,12 @@ GetBlockTransfersResult Client::GetBlockTransfers() {
  *
  * @return GetBlockTransfersResult that contains the transfers info.
  */
-GetBlockTransfersResult Client::GetBlockTransfers(BlockIdentifier identifier) {
-  nlohmann::json identifierJSON{{"Hash", identifier.hash},
-                                {"Height", identifier.height}};
+GetBlockTransfersResult Client::GetBlockTransfers(uint64_t block_height) {
+  nlohmann::json heightJSON{{"Height", block_height}};
+  nlohmann::json block_identifier{{"block_identifier", heightJSON}};
 
   return mRpcClient.CallMethodNamed<GetBlockTransfersResult>(
-      1, "chain_get_block_transfers", identifierJSON);
+      1, "chain_get_block_transfers", block_identifier);
 }
 
 /**

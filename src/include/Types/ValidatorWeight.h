@@ -5,6 +5,7 @@
 
 namespace Casper {
 struct ValidatorWeight {
+  // TODO: Make PublicKey instead of string
   std::string public_key;
   big_int weight;
   // TODO: Fill in this class

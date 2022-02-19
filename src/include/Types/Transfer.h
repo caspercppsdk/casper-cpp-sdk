@@ -1,6 +1,7 @@
 #pragma once
 
-#include <string>
+#include <optional>
+#include "Base.h"
 
 #include "Types/Definitions.h"
 #include "Types/URef.h"
@@ -9,33 +10,16 @@
 namespace Casper {
 
 struct Transfer {
-  Transfer(big_int amount_,
-           std::string deploy_hash_,
-           std::string from_,
-           big_int gas_,
-           uint64_t id_,
-           URef source_,
-           URef target_,
-           std::string to_)
-      : amount(amount_),
-        deploy_hash(deploy_hash_),
-        from(from_),
-        gas(gas_),
-        id(id_),
-        source(source_),
-        target(target_),
-        to(to_) {}
-
-  Transfer() {}
-
-  big_int amount;
   std::string deploy_hash;
   std::string from;
-  big_int gas;
-  uint64_t id;
+  std::optional<std::string> to = std::nullopt;
   URef source;
   URef target;
-  std::string to;
+  big_int amount;
+  big_int gas;
+  std::optional<uint64_t> id = std::nullopt;
+
+  Transfer() {}
 };
 
 /**
@@ -46,14 +30,20 @@ struct Transfer {
  */
 
 inline void to_json(nlohmann::json& j, const Transfer& p) {
-  j = nlohmann::json{{"amount", p.amount.toString()},
-                     {"deploy_hash", p.deploy_hash},
+  j = nlohmann::json{{"deploy_hash", p.deploy_hash},
                      {"from", p.from},
-                     {"gas", p.gas.toString()},
-                     {"id", p.id},
                      {"source", p.source},
                      {"target", p.target},
-                     {"to", p.to}};
+                     {"amount", p.amount.toString()},
+                     {"gas", p.gas.toString()}};
+
+  if (p.id.has_value()) {
+    j["id"] = p.id.value();
+  }
+
+  if (p.to.has_value()) {
+    j["to"] = p.to.value();
+  }
 }
 
 /**
@@ -64,14 +54,19 @@ inline void to_json(nlohmann::json& j, const Transfer& p) {
  */
 
 inline void from_json(const nlohmann::json& j, Transfer& p) {
-  j.at("amount").get_to(p.amount);
   j.at("deploy_hash").get_to(p.deploy_hash);
   j.at("from").get_to(p.from);
-  j.at("gas").get_to(p.gas);
-  j.at("id").get_to(p.id);
   j.at("source").get_to(p.source);
   j.at("target").get_to(p.target);
-  j.at("to").get_to(p.to);
+  j.at("amount").get_to(p.amount);
+  j.at("gas").get_to(p.gas);
+
+  if (j.count("id") != 0 && !j.at("id").is_null()) {
+    p.id = j.at("id").get<uint64_t>();
+  }
+  if (j.count("to") != 0 && !j.at("to").is_null()) {
+    p.to = j.at("to").get<std::string>();
+  }
 }
 
 }  // namespace Casper

@@ -24,3 +24,7 @@
 
 ### RPC JSON Examples
     https://docs.rs/crate/casper-client/1.4.3
+
+### Exceptional JSON Examples
+    Rust Enums -> StoredValue.h
+    Rust Option -> Delegator.h, Transfer.h

@@ -9,6 +9,7 @@
 
 namespace Casper {
 CryptoPP::SecByteBlock CryptoUtil::hexDecode(std::string encoded) {
+  // std::cout << "hexDecode: " << encoded << std::endl;
   CryptoPP::StringSource ss(encoded, true, new CryptoPP::HexDecoder);
   CryptoPP::SecByteBlock decoded((size_t)ss.MaxRetrievable());
   ss.Get(decoded, decoded.size());

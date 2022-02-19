@@ -1,25 +1,29 @@
 #include <iostream>
 
+#include <algorithm>
 #include "../src/include/CasperClient.h"  // To use Casper::Client features
 #include "../src/include/Types/GlobalStateKey.h"
-
 /// Construct a Casper::Client object
 Casper::Client casper_client(CASPER_TEST_ADDRESS);
 
 /// “info_get_peers” RPC.
 void infoGetPeers() {
   std::cout << "-----------------------------------------------" << std::endl;
-  std::cout << "info_get_peers" << std::endl;
+  std::cout << "info_get_peers\n";
   /// Call GetNodePeers function from the client object.
   Casper::InfoGetPeersResult peers_result = casper_client.GetNodePeers();
 
   /// Print the nodes in the network.
-  for (int i = 0; i < peers_result.peers.size(); i++) {
+  std::cout << "\npeers.size = " << peers_result.peers.size() << "\n";
+  // limited by 2 to improve readability
+  for (int i = 0; i < std::min(2, static_cast<int>(peers_result.peers.size()));
+       i++) {
     /// Print the node ID.
-    std::cout << i + 1 << ". Node ID: " << peers_result.peers[i].node_id;
+    std::cout << "Peer " << i + 1
+              << "\n\tnode_id: " << peers_result.peers[i].node_id;
 
     /// Print the node IP address.
-    std::cout << " Address: " << peers_result.peers[i].address << "\n";
+    std::cout << "\n\taddress: " << peers_result.peers[i].address << "\n";
   }
 
   std::cout << std::endl;
@@ -27,41 +31,38 @@ void infoGetPeers() {
 
 /// “chain_get_state_root_hash” RPC.
 void chainGetStateRootHash() {
-  std::cout << "-----------------------------------------------" << std::endl;
-  std::cout << "chain_get_state_root_hash" << std::endl;
+  std::cout << "-----------------------------------------------";
+  std::cout << "\nchain_get_state_root_hash\n";
 
   /// Call GetStateRootHash function with the height of the block.
   Casper::GetStateRootHashResult height_result =
       casper_client.GetStateRootHash(10);
-  std::cout << "state_root_hash for block height: "
-            << height_result.state_root_hash << "\n";
+  std::cout << "\nBlock Height: " << height_result.state_root_hash;
 
   /// Call GetStateRootHash function with the block hash of the block.
   Casper::GetStateRootHashResult hash_result = casper_client.GetStateRootHash(
       "acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330");
-  std::cout << "state_root_hash for given block hash: "
-            << hash_result.state_root_hash << "\n";
+  std::cout << "\nBlock Hash: " << hash_result.state_root_hash;
 
   /// Call GetStateRootHash function with empty string.
   Casper::GetStateRootHashResult recent_hash_result =
       casper_client.GetStateRootHash();
-  std::cout << "most recent state_root_hash: "
-            << recent_hash_result.state_root_hash << "\n";
+  std::cout << "\nMost Recent: " << recent_hash_result.state_root_hash;
 
   std::cout << std::endl;
 }
 
 void infoGetDeploy() {
   // TODO: fill in this function
-  std::cout << "-----------------------------------------------" << std::endl;
-  std::cout << "info_get_deploy" << std::endl;
+  std::cout << "-----------------------------------------------";
+  std::cout << "\ninfo_get_deploy\n";
 
   std::cout << std::endl;
 }
 
 void infoGetStatus() {
-  std::cout << "-----------------------------------------------" << std::endl;
-  std::cout << "info_get_status" << std::endl;
+  std::cout << "-----------------------------------------------";
+  std::cout << "\ninfo_get_status\n";
 
   /// Call GetStatusInfo function.
   Casper::GetStatusResult status_result = casper_client.GetStatusInfo();
@@ -69,10 +70,16 @@ void infoGetStatus() {
   std::cout << "\nchainspec_name: " << status_result.chainspec_name;
   std::cout << "\nstarting_state_root_hash: "
             << status_result.starting_state_root_hash;
-  for (std::size_t i = 0; i < status_result.peers.size(); i++) {
-    std::cout << std::to_string(i + 1)
-              << "\nPeer: Address: " << status_result.peers[i].address
-              << " - Node id:" << status_result.peers[i].node_id;
+
+  std::cout << "\n";
+
+  std::cout << "\npeers.size = " << status_result.peers.size() << "\n";
+  // limited by 2 to improve readability
+  for (std::size_t i = 0;
+       i < std::min(2, static_cast<int>(status_result.peers.size())); i++) {
+    std::cout << "Peer " << std::to_string(i + 1)
+              << "\n\tnode_id: " << status_result.peers[i].node_id
+              << "\n\taddress: " << status_result.peers[i].address << "\n";
   }
 
   if (status_result.last_added_block_info.has_value()) {
@@ -87,17 +94,21 @@ void infoGetStatus() {
               << "\ntimestamp: " << last_added_block_info.timestamp;
   }
 
+  std::cout << "\n";
+
   if (status_result.our_public_signing_key.has_value()) {
     std::cout << "\nour_public_signing_key: "
-              << status_result.our_public_signing_key.value();
+              << status_result.our_public_signing_key.value() << "\n";
   }
 
   if (status_result.round_length.has_value()) {
-    std::cout << "\nround_length: " << status_result.round_length.value();
+    std::cout << "\nround_length: " << status_result.round_length.value()
+              << "\n";
   }
 
   if (status_result.next_upgrade.has_value()) {
-    std::cout << "\next_upgrade: " << status_result.next_upgrade.value();
+    std::cout << "\next_upgrade: " << status_result.next_upgrade.value()
+              << "\n";
   }
 
   std::cout << "\nbuild_version: " << status_result.build_version;
@@ -111,22 +122,39 @@ void chainGetBlockTransfers() {
   std::cout << "chain_get_block_transfers" << std::endl;
 
   /// Call GetBlockTransfers function.
+  // https://testnet.cspr.live/deploy/8e535d2baed76141ab47fd93b04dd61f65a07893b7c950022978a2b29628edd7
   Casper::GetBlockTransfersResult transfersResult =
       casper_client.GetBlockTransfers(
-          {"acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330",
-           532041});
-  std::cout << "\napi_version: " << transfersResult.api_version
-            << "\nblock_hash: " << transfersResult.block_hash;
-  for (std::size_t i = 0; i < transfersResult.transfers.size(); i++) {
-    std::cout << std::to_string(i + 1) << "\nTransfer: deploy_hash: "
-              << transfersResult.transfers[i].deploy_hash
-              << "\nfrom:" << transfersResult.transfers[i].from
-              << "\nto: " << transfersResult.transfers[i].to
-              << "\nsource: " << transfersResult.transfers[i].source.ToString()
-              << "\ntarget: " << transfersResult.transfers[i].target.ToString()
-              << "\namount: " << transfersResult.transfers[i].amount
-              << "\ngas: " << transfersResult.transfers[i].gas
-              << "\nid: " << transfersResult.transfers[i].id;
+          "35f86b6ab5e13b823daee5d23f3373f6b35048e0b0ea993adfadc5ba8ee7aae5");
+  std::cout << "\napi_version: " << transfersResult.api_version;
+
+  if (transfersResult.block_hash.has_value()) {
+    std::cout << "\nblock_hash: " << transfersResult.block_hash.value() << "\n";
+  }
+
+  if (transfersResult.transfers.has_value()) {
+    std::vector<Casper::Transfer> transfers = transfersResult.transfers.value();
+    std::cout << "\ntransfers.size = " << transfers.size();
+    // limited by 2 to improve readability
+    for (std::size_t i = 0; i < std::min(2, static_cast<int>(transfers.size()));
+         i++) {
+      std::cout << "\nTransfer " << i + 1
+                << "\n\tdeploy_hash: " << transfers[i].deploy_hash
+                << "\n\tfrom: " << transfers[i].from;
+
+      if (transfers[i].to.has_value()) {
+        std::cout << "\n\tto: " << transfers[i].to.value() << "\n";
+      }
+
+      std::cout << "\n\tsource: " << transfers[i].source.ToString()
+                << "\n\ttarget: " << transfers[i].target.ToString()
+                << "\n\tamount: " << transfers[i].amount
+                << "\n\tgas: " << transfers[i].gas;
+
+      if (transfers[i].id.has_value()) {
+        std::cout << "\n\tid: " << transfers[i].id.value() << "\n";
+      }
+    }
   }
 
   std::cout << std::endl;
@@ -159,21 +187,43 @@ void chainGetBlock() {
               << blockResult.block.header.state_root_hash
               << "\ntimestamp: " << blockResult.block.header.timestamp;
 
-    for (std::size_t i = 0; i < blockResult.block.body.deploy_hashes.size();
+    std::cout << "\n";
+
+    std::cout << "\nblock.body.deploy_hashes.size = "
+              << blockResult.block.body.deploy_hashes.size();
+    // limited by 2 to improve readability
+    for (std::size_t i = 0;
+         i < std::min(2, static_cast<int>(
+                             blockResult.block.body.deploy_hashes.size()));
          i++) {
       std::cout << "\nDeploy hash: " << blockResult.block.body.deploy_hashes[i];
     }
 
-    for (std::size_t i = 0; i < blockResult.block.body.transfer_hashes.size();
+    std::cout << "\n";
+
+    std::cout << "\nblock.body.transfer_hashes.size = "
+              << blockResult.block.body.transfer_hashes.size();
+    // limited by 2 to improve readability
+    for (std::size_t i = 0;
+         i < std::min(2, static_cast<int>(
+                             blockResult.block.body.transfer_hashes.size()));
          i++) {
-      std::cout << "\nTransfer hash: "
+      std::cout << "\nTransfer Hash: "
                 << blockResult.block.body.transfer_hashes[i];
     }
 
-    for (std::size_t i = 0; i < blockResult.block.proofs.size(); i++) {
-      std::cout << "\nProof: PK: " << blockResult.block.proofs[i].public_key
-                << "\nSignature: " << blockResult.block.proofs[i].signature
-                << "\n";
+    std::cout << "\n";
+
+    std::cout << "\nblock.proofs.size = " << blockResult.block.proofs.size();
+    // limited by 2 to improve readability
+    for (std::size_t i = 0;
+         i < std::min(2, static_cast<int>(blockResult.block.proofs.size()));
+         i++) {
+      std::cout << "\n"
+                << i + 1
+                << ".Proof\n\tPK: " << blockResult.block.proofs[i].public_key
+                << "\n\tSignature: " << blockResult.block.proofs[i].signature;
+      std::cout << std::endl;
     }
   }
 
@@ -199,7 +249,8 @@ void chainGetEraInfoBySwitchBlock() {
               << "\nstate_root_hash: " << eraSummary.state_root_hash
               << "\nstored_value: ";
     // TODO: add a toString function to the stored value class
-    // << eraInfoResult.era_summary.stored_value;  // TODO: std::visit ToString
+    // << eraInfoResult.era_summary.stored_value;  // TODO: std::visit
+    // ToString
   }
 
   std::cout << std::endl;
@@ -243,34 +294,80 @@ void stateGetAuctionInfo() {
   /// Call GetStateRootHash function with the height of the block.
   Casper::GetAuctionInfoResult auction_result = casper_client.GetAuctionInfo(
       "9f246c64116b5c686c8e6a6829fce36c86bb32437866b617d91ed7de9f6a8a16");
-  std::cout << "\nstate_root_hash: "
+
+  std::cout << "\napi_version: " << auction_result.api_version;
+
+  std::cout << "\nauction_state"
+            << "\nstate_root_hash: "
             << auction_result.auction_state.state_root_hash
-            << "\nblock_height: " << auction_result.auction_state.block_height
+            << "\nblock_height: " << auction_result.auction_state.block_height;
 
-            << "\nera_validators:";
+  std::cout << "\n";
 
-  for (auto& validator : auction_result.auction_state.era_validators) {
-    std::cout << "\n" << validator.era_id;
+  std::cout << "\nera_validators.size = "
+            << auction_result.auction_state.era_validators.size() << "\n";
+  // limited by 2 to improve readability
+  for (size_t i = 0;
+       i < std::min(2, static_cast<int>(
+                           auction_result.auction_state.era_validators.size()));
+       i++) {
+    std::cout << "Era ID: "
+              << auction_result.auction_state.era_validators[i].era_id;
 
-    // TODO: bid is missing
-    // TODO: public key in validator_weights is missing
-
-    std::cout << "\nValidator Weights: ";
-    for (auto& weight : validator.validator_weights) {
-      std::cout << "\n" << weight.public_key << " " << weight.weight.toString();
+    std::cout << "\n\tera_validators.validator_weights.size =  "
+              << auction_result.auction_state.era_validators[i]
+                     .validator_weights.size();
+    // limited by 2 to improve readability
+    for (size_t j = 0;
+         j < std::min(2, static_cast<int>(
+                             auction_result.auction_state.era_validators[i]
+                                 .validator_weights.size()));
+         j++) {
+      std::cout << "\n\tValidator " << j + 1;
+      std::cout << "\n\t\tPublic Key: "
+                << auction_result.auction_state.era_validators[i]
+                       .validator_weights[j]
+                       .public_key
+                << "\n\t\tWeight: "
+                << auction_result.auction_state.era_validators[i]
+                       .validator_weights[j]
+                       .weight.toString();
     }
+    std::cout << "\n";
   }
 
-  for (auto& bid_res : auction_result.auction_state.bids) {
-    if (bid_res.public_key.empty()) {
-      std::cout << "\nbonding_purse: " << bid_res.bid.bonding_purse.ToString()
+  std::cout << "\n";
+
+  std::cout << "\nbids.size = " << auction_result.auction_state.bids.size();
+  // limited by 2 to improve readability
+  for (size_t i = 0;
+       i <
+       std::min(2, static_cast<int>(auction_result.auction_state.bids.size()));
+       i++) {
+    Casper::ValidatorBid cur_validator_bid =
+        auction_result.auction_state.bids[i];
+    if (cur_validator_bid.public_key.empty()) {
+      std::cout << "\nvalidator_public_key: "
+                << cur_validator_bid.bid.validator_public_key
+                << "\nbonding_purse: "
+                << cur_validator_bid.bid.bonding_purse.ToString()
+                << "\nstaked_amount: "
+                << cur_validator_bid.bid.staked_amount.toString()
                 << "\ndelegation_rate: "
-                << unsigned(bid_res.bid.delegation_rate)
-                << "\ninactive: " << std::boolalpha << bid_res.bid.inactive
-                << "\nstaked_amount: " << bid_res.bid.staked_amount.toString()
-                << "\nvalidator_public_key: " << bid_res.public_key;
+                << (uint8_t)cur_validator_bid.bid.delegation_rate;
+      if (cur_validator_bid.bid.vesting_schedule.has_value()) {
+        std::cout << "\nvesting_schedule initial_release_timestamp_millis: "
+                  << cur_validator_bid.bid.vesting_schedule.value()
+                         .initial_release_timestamp_millis
+                  << " locked_amounts: "
+                  << cur_validator_bid.bid.vesting_schedule.value()
+                         .locked_amounts.toString();
+      }
+      std::cout << "\ninactive: " << std::boolalpha
+                << cur_validator_bid.bid.inactive;
+
     } else {
-      std::cout << "\npublic_key: " << bid_res.public_key;
+      std::cout << "\npublic_key: " << cur_validator_bid.public_key;
     }
   }
 
@@ -278,28 +375,28 @@ void stateGetAuctionInfo() {
 }
 
 int main() {
-  infoGetPeers();
+  // infoGetPeers();
 
-  chainGetStateRootHash();
+  // chainGetStateRootHash();
 
   // Milestone 2
-  infoGetDeploy();
+  // infoGetDeploy();
 
-  infoGetStatus();
+  // infoGetStatus();
 
   chainGetBlockTransfers();
 
-  chainGetBlock();
+  // chainGetBlock();
 
-  chainGetEraInfoBySwitchBlock();
+  // chainGetEraInfoBySwitchBlock();
 
-  stateGetItem();
+  // stateGetItem();
 
-  stateGetDictionaryItem();
+  // stateGetDictionaryItem();
 
-  stateGetBalance();
+  // stateGetBalance();
 
-  stateGetAuctionInfo();
+  // stateGetAuctionInfo();
 
   // Milestone 3
   // PutDeploy(); TODO: implement

@@ -17,7 +17,8 @@ GlobalStateKey::GlobalStateKey() {}
 /// <summary>
 /// Constructor for the GlobalStateKey class.
 /// </summary>
-GlobalStateKey::GlobalStateKey(std::string key_) : key{key_}, raw_bytes{} {}
+GlobalStateKey::GlobalStateKey(std::string key_)
+    : key{key_}, raw_bytes{_GetRawBytesFromKey(key_)} {}
 
 /// <summary>
 /// Constructor for the GlobalStateKey class with key prefix.

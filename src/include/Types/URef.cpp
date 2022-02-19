@@ -12,12 +12,18 @@ URef::URef() {}
 
 URef::URef(std::string value) : GlobalStateKey::GlobalStateKey(value) {
   key_identifier = KeyIdentifier::UREF;
-  std::cout << "\n\n\nUREF(value), value = " << value << "\n\n\n";
+  // std::cout << "\n\n\nUREF(value), value = " << value << "\n\n\n";
   if (!StringUtil::startsWith(value, "uref-")) {
     throw std::runtime_error("Invalid URef format");
   }
 
   auto parts = StringUtil::splitString(value.substr(5), "-");
+
+  /*std::cout << "\nparts  upper\n";
+  for (auto part : parts) {
+    std::cout << part << "\n";
+  }
+  */
 
   if (parts.size() != 2)
     throw std::runtime_error(
@@ -29,10 +35,16 @@ URef::URef(std::string value) : GlobalStateKey::GlobalStateKey(value) {
     throw std::runtime_error(
         "A URef object must contain a 3 digit access "
         "rights suffix.");
+
   try {
     raw_bytes = CEP57Checksum::Decode(parts[0]);
   } catch (std::exception& e) {
-    throw "URef checksum mismatch.";
+    /*
+    std::cout << "\nparts\n";
+    for (auto part : parts) {
+      std::cout << part << "\n";
+    }*/
+    throw std::runtime_error("URef Invalid Checksum.");
   }
 
   std::istringstream reader(parts[1]);
@@ -91,9 +103,15 @@ CryptoPP::SecByteBlock URef::GetBytes() {
 }
 
 std::string URef::ToString() const {
-  std::cout << "\n\n\n\ntestureftostring:" << key << "\n\n\n\n";
+  // std::cout << "\n\n\n\ntestureftostring:" << key << "\n\n\n\n";
+  std::string access_rights_str = std::to_string((uint8_t)access_rights);
+  if (access_rights_str.length() == 1)
+    access_rights_str = "00" + access_rights_str;
+  else if (access_rights_str.length() == 2)
+    access_rights_str = "0" + access_rights_str;
+
   return "uref-" + CEP57Checksum::Encode(_GetRawBytesFromKey(key)) + "-" +
-         std::to_string((uint8_t)access_rights);
+         access_rights_str;
 }
 
 CryptoPP::SecByteBlock URef::_GetRawBytesFromKey(std::string key) const {

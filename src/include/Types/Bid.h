@@ -55,7 +55,7 @@ struct Bid {
   /// validator. `None` if non-genesis
   /// validator.
   /// </summary>
-  VestingSchedule vesting_schedule;
+  std::optional<VestingSchedule> vesting_schedule = std::nullopt;
 
   Bid(URef bonding_purse_,
       uint8_t delegation_rate_,
@@ -82,18 +82,15 @@ struct Bid {
  * @param p Bid object to construct from.
  */
 inline void to_json(nlohmann::json& j, const Bid& p) {
-  j = nlohmann::json{
-      {"validator_public_key", p.validator_public_key},
-      {"bonding_purse", p.bonding_purse.ToString()},
-      {"staked_amount", p.staked_amount.toString()},
-
-      {"delegation_rate", p.delegation_rate},
-      {"vesting_schedule", p.vesting_schedule},
-
-      {"delegators", p.delegators},
-      {"inactive", p.inactive},
-
-  };
+  j = {{"validator_public_key", p.validator_public_key},
+       {"bonding_purse", p.bonding_purse.ToString()},
+       {"staked_amount", p.staked_amount.toString()},
+       {"delegation_rate", p.delegation_rate},
+       {"delegators", p.delegators},
+       {"inactive", p.inactive}};
+  if (p.vesting_schedule.has_value()) {
+    j["vesting_schedule"] = p.vesting_schedule.value();
+  }
   // TODO:[JsonConverter(typeof(BidsListConverter))]
 }
 
@@ -109,7 +106,10 @@ inline void from_json(const nlohmann::json& j, Bid& p) {
   j.at("staked_amount").get_to(p.staked_amount);
 
   j.at("delegation_rate").get_to(p.delegation_rate);
-  j.at("vesting_schedule").get_to(p.vesting_schedule);
+
+  if (j.count("vesting_schedule") != 0 && !j.at("vesting_schedule").is_null()) {
+    p.vesting_schedule = j.at("vesting_schedule").get<VestingSchedule>();
+  }
 
   j.at("delegators").get_to(p.delegators);
   j.at("inactive").get_to(p.inactive);

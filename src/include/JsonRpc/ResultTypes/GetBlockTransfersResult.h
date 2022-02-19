@@ -21,8 +21,8 @@ struct GetBlockTransfersResult : public RpcResult {
 
   GetBlockTransfersResult() {}
 
-  std::string block_hash;
-  std::vector<Transfer> transfers;
+  std::optional<std::string> block_hash = std::nullopt;
+  std::optional<std::vector<Transfer>> transfers = std::nullopt;
 };
 
 /**
@@ -33,8 +33,13 @@ struct GetBlockTransfersResult : public RpcResult {
  */
 inline void to_json(nlohmann::json& j, const GetBlockTransfersResult& p) {
   j = static_cast<RpcResult>(p);
-  j["block_hash"] = p.block_hash;
-  j["transfers"] = p.transfers;
+  if (p.block_hash.has_value()) {
+    j["block_hash"] = p.block_hash.value();
+  }
+
+  if (p.transfers.has_value()) {
+    j["transfers"] = p.transfers.value();
+  }
 }
 
 /**
@@ -45,7 +50,12 @@ inline void to_json(nlohmann::json& j, const GetBlockTransfersResult& p) {
  */
 inline void from_json(const nlohmann::json& j, GetBlockTransfersResult& p) {
   nlohmann::from_json(j, static_cast<RpcResult&>(p));
-  j.at("block_hash").get_to(p.block_hash);
-  j.at("transfers").get_to(p.transfers);
+  if (j.count("block_hash") != 0) {
+    j.at("block_hash").get_to(p.block_hash);
+  }
+
+  if (j.count("transfers") != 0) {
+    p.transfers = j.at("transfers").get<std::vector<Transfer>>();
+  }
 }
 }  // namespace Casper

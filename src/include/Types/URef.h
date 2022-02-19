@@ -62,9 +62,10 @@ inline void to_json(nlohmann::json& j, const URef& p) {
  */
 
 inline void from_json(const nlohmann::json& j, URef& p) {
-  std::string value = j.dump();
+  std::string value = j.get<std::string>();
   p.key_identifier = KeyIdentifier::UREF;
-  std::cout << "\n\n\nUREF(value), value = " << value << "\n\n\n";
+  p.key = value;
+  // std::cout << "\n\n\nUREF(value), value = " << value << "\n\n\n";
   if (!StringUtil::startsWith(value, "uref-")) {
     throw std::runtime_error("Invalid URef format");
   }
@@ -84,7 +85,12 @@ inline void from_json(const nlohmann::json& j, URef& p) {
   try {
     p.raw_bytes = CEP57Checksum::Decode(parts[0]);
   } catch (std::exception& e) {
-    throw "URef checksum mismatch.";
+    /*std::cout << "\nparts\n";
+    for (auto part : parts) {
+      std::cout << part << "\n";
+    }
+    */
+    throw std::runtime_error("URef checksum mismatch.");
   }
 
   std::istringstream reader(parts[1]);
