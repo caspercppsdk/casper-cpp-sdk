@@ -1,9 +1,11 @@
 #pragma once
 
-#include <vector>
+#include "Base.h"
 
 #include "Types/Operation.h"
-#include "Types/Transform.h"
+#include "Types/TransformEntry.h"
+
+#include "nlohmann/json.hpp"
 
 namespace Casper {
 /// <summary>
@@ -18,6 +20,19 @@ struct ExecutionEffect {
   /// <summary>
   /// The journal of execution transforms.
   /// </summary>
-  std::vector<Transform> transforms;
+  std::vector<TransformEntry> transforms;
 };
+
+// to_json of ExecutionEffect
+inline void to_json(nlohmann::json& j, const ExecutionEffect& p) {
+  j = nlohmann::json{{"operations", p.operations},
+                     {"transforms", p.transforms}};
+}
+
+// from_json of ExecutionEffect
+inline void from_json(const nlohmann::json& j, ExecutionEffect& p) {
+  j.at("operations").get_to(p.operations);
+  j.at("transforms").get_to(p.transforms);
+}
+
 }  // namespace Casper

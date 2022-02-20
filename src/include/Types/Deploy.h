@@ -19,7 +19,7 @@ struct Deploy {
   /// <summary>
   ///
   /// </summary>
-  uint64_t ttl;
+  std::string ttl;
 
   /// <summary>
   /// Gas price
@@ -45,14 +45,15 @@ struct Deploy {
   /// <summary>
   /// Public Key from the Account owning the Deploy.
   /// </summary>
-  PublicKey account;
+  // TODO: Make PublicKey instead of string
+  std::optional<std::string> account;
 };
 
 /**
- * @brief Construct a JSON object from a BlockIdentifier object.
+ * @brief Construct a JSON object from a Deploy object.
  *
  * @param j JSON object to construct.
- * @param p BlockIdentifier object to construct from.
+ * @param p Deploy object to construct from.
  */
 inline void to_json(nlohmann::json& j, const Deploy& p) {
   j = nlohmann::json{

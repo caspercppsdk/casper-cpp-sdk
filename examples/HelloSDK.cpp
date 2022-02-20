@@ -57,6 +57,22 @@ void infoGetDeploy() {
   std::cout << "-----------------------------------------------";
   std::cout << "\ninfo_get_deploy\n";
 
+  Casper::GetDeployInfoResult deploy_result = casper_client.GetDeployInfo(
+      "82de2418977e117680bfacf0586a97e16ff94d664b11f219d582095445119554");
+  std::cout << "\napi_version: " << deploy_result.api_version;
+
+  std::vector<Casper::ExecutionResult> execution_results =
+      deploy_result.execution_results;
+
+  std::cout << "\nexecution_results.size: " << execution_results.size() << "\n";
+  for (size_t i = 0;
+       i < std::min(2, static_cast<int>(execution_results.size())); i++) {
+    std::cout << "ExecutionResult " << i + 1 << "\n";
+    nlohmann::json execution_results_json;
+    to_json(execution_results_json, execution_results[i]);
+    std::cout << execution_results_json.dump(2) << "\n";
+  }
+
   std::cout << std::endl;
 }
 
@@ -371,26 +387,26 @@ void stateGetAuctionInfo() {
 }
 
 int main() {
-  // infoGetPeers();
+  infoGetPeers();
 
-  // chainGetStateRootHash();
+  chainGetStateRootHash();
 
   // Milestone 2
-  // infoGetDeploy();
+  infoGetDeploy();
 
-  // infoGetStatus();
+  infoGetStatus();
 
   chainGetBlockTransfers();
 
-  // chainGetBlock();
+  chainGetBlock();
 
-  // chainGetEraInfoBySwitchBlock();
+  chainGetEraInfoBySwitchBlock();
 
-  // stateGetItem();
+  stateGetItem();
 
-  // stateGetDictionaryItem();
+  stateGetDictionaryItem();
 
-  // stateGetBalance();
+  stateGetBalance();
 
   stateGetAuctionInfo();
 
