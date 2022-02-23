@@ -14,8 +14,8 @@ namespace Casper {
             std::string accumulated_seed_,
             std::string era_end_,
             std::string timestamp_,
-            ulong era_id_,
-            ulong height_,
+            uint64_t era_id_,
+            uint64_t height_,
             std::string protocol_version_) :
         parent_hash(parent_hash_),
         state_root_hash(state_root_hash_),
@@ -37,8 +37,8 @@ namespace Casper {
         std::string accumulated_seed;
         std::string era_end; // Optional.
         std::string timestamp;
-        ulong era_id;
-        ulong height;
+        uint64_t era_id;
+        uint64_t height;
         std::string protocol_version;
     };
 

@@ -6,7 +6,7 @@
 namespace Casper {
 
     struct Transfer {
-        Transfer (std::string deploy_hash_, std::string from_, std::string to_, std::string source_, std::string target_, std::string amount_, std::string gas_, ulong id_)
+        Transfer (std::string deploy_hash_, std::string from_, std::string to_, std::string source_, std::string target_, std::string amount_, std::string gas_, uint64_t id_)
         : deploy_hash(deploy_hash_), from(from_), to(to_), source(source_), target(target_), amount(amount_), gas(gas_), id(id_) {}
 
         Transfer() {}
@@ -18,7 +18,7 @@ namespace Casper {
         std::string target;
         std::string amount;
         std::string gas;
-        ulong id;
+        uint64_t id;
     };
 
     /**
