@@ -11,42 +11,16 @@ namespace Casper {
 /// Header information of a Deploy.
 /// </summary>
 struct Deploy {
-  /// <summary>
-  /// Timestamp formatted as per RFC 3339
-  /// </summary>
-  uint64_t timestamp;
+  // TODO: check with CEP57 Checksum for json serialization
+  std::string hash;
 
-  /// <summary>
-  ///
-  /// </summary>
-  std::string ttl;
+  DeployHeader header;
 
-  /// <summary>
-  /// Gas price
-  /// </summary>
-  uint64_t gas_price;
+  ExecutableDeployItem payment;
 
-  /// <summary>
-  /// List of Deploy hashes.
-  /// </summary>
-  std::vector<std::string> dependencies;
+  ExecutableDeployItem session;
 
-  /// <summary>
-  /// Name of the chain where the deploy is executed.
-  /// </summary>
-  std::string chain_name;
-
-  ExecutableDeployItemBase payment;
-
-  ExecutableDeployItemBase session;
-
-  std::string secret_key;  // optional
-
-  /// <summary>
-  /// Public Key from the Account owning the Deploy.
-  /// </summary>
-  // TODO: Make PublicKey instead of string
-  std::optional<std::string> account;
+  std::vector<DeployApproval> approvals;
 };
 
 /**
@@ -55,11 +29,7 @@ struct Deploy {
  * @param j JSON object to construct.
  * @param p Deploy object to construct from.
  */
-inline void to_json(nlohmann::json& j, const Deploy& p) {
-  j = nlohmann::json{
-      {"chain_name", p.chain_name},
-  };
-}
+inline void to_json(nlohmann::json& j, const Deploy& p) {}
 
 /**
  * @brief Construct a Deploy object from a JSON object.
@@ -67,8 +37,6 @@ inline void to_json(nlohmann::json& j, const Deploy& p) {
  * @param j JSON object to construct the object from.
  * @param p Deploy object to construct.
  */
-inline void from_json(const nlohmann::json& j, Deploy& p) {
-  j.at("chain_name").get_to(p.chain_name);
-}
+inline void from_json(const nlohmann::json& j, Deploy& p) {}
 
 }  // namespace Casper

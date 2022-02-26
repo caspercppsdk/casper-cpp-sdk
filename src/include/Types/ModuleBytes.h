@@ -1,22 +1,17 @@
 #pragma once
 
-#include <string>
-
-#include "Types/Definitions.h"
-#include "Types/ExecutableDeployItem.h"
-#include "Types/URef.h"
+#include "Base.h"
+#include "Types/NamedArg.h"
+#include "cryptopp/secblock.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
 
-struct ModuleBytes : public ExecutableDeployItemBase {
-  ModuleBytes(std::vector<byte> module_bytes_, std::string args_)
-      : ExecutableDeployItemBase(ExecutableDeployItemType::MODULEBYTES), module_bytes(module_bytes_), args(args_) {}
+struct ModuleBytes {
+  std::vector<CryptoPP::SecByteBlock> module_bytes;
+  std::vector<NamedArg> args;
 
-  ModuleBytes() : ExecutableDeployItemBase(ExecutableDeployItemType::MODULEBYTES) {}
-
-  std::vector<byte> module_bytes;
-  std::string args;
+  ModuleBytes() {}
 };
 
 /**
@@ -27,7 +22,6 @@ struct ModuleBytes : public ExecutableDeployItemBase {
  */
 
 inline void to_json(nlohmann::json& j, const ModuleBytes& p) {
-  j = static_cast<ExecutableDeployItemBase>(p);
   j["module_bytes"] = p.module_bytes;
   j["args"] = p.args;
 }
@@ -40,7 +34,6 @@ inline void to_json(nlohmann::json& j, const ModuleBytes& p) {
  */
 
 inline void from_json(const nlohmann::json& j, ModuleBytes& p) {
-  nlohmann::from_json(j, static_cast<ExecutableDeployItemBase&>(p));
   j.at("module_bytes").get_to(p.module_bytes);
   j.at("args").get_to(p.args);
 }

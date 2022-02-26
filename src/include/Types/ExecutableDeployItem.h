@@ -1,52 +1,180 @@
 #pragma once
 
+#include <optional>
+#include "Base.h"
 #include "magic_enum/magic_enum.hpp"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
 
-enum class ExecutableDeployItemType {
-  MODULEBYTES = 1,
-  STOREDCONTRACTBYHASH = 2,
-  STOREDCONTRACYBYNAME = 3,
-  STOREDVERSIONEDCONTRACTBYHASH = 4,
-  STOREDVERSIONEDCONTRACTBYNAME = 5,
-  TRANSFER = 6,  // Defined below.
-};
 
-std::ostream& operator<<(std::ostream& os,
-                         const ExecutableDeployItemType& obj) {
-  os << magic_enum::enum_name(obj);
-  return os;
-}
-
-// Defines the base type for StoredValue types.
-struct ExecutableDeployItemBase {
-  ExecutableDeployItemType type;
-
-  ExecutableDeployItemBase(ExecutableDeployItemType type) : type(type) {}
-  ExecutableDeployItemBase() {}
+struct StoredContractByHashDeployItem {
+  // TODO:
 };
 
 /**
- * @brief Construct a JSON object from a StoredValueTypeBase object.
+ * @brief Construct a JSON object from a StoredContractByHashDeployItem object.
  *
  * @param j JSON object to construct.
- * @param p StoredValueTypeBase object to construct from.
+ * @param p StoredContractByHashDeployItem object to construct from.
  */
-inline void to_json(nlohmann::json& j, const ExecutableDeployItemBase& p) {
-  j = nlohmann::json{{"type", p.type}};
+inline void to_json(nlohmann::json& j,
+                    const StoredContractByHashDeployItem& p) {
+  // TODO:
 }
 
 /**
- * @brief Construct a ExecutableDeployItemBase object from a JSON object.
+ * @brief Construct a StoredContractByHashDeployItem object from a JSON object.
  *
  * @param j JSON object to construct the object from.
- * @param p ExecutableDeployItemBase object to construct.
+ * @param p StoredContractByHashDeployItem object to construct.
  */
-inline void from_json(const nlohmann::json& j, ExecutableDeployItemBase& p) {
-  if (!j.at("type").is_null())
-    j.at("type").get_to(p.type);
+inline void from_json(const nlohmann::json& j,
+                      StoredContractByHashDeployItem& p) {
+  // TODO:
+}
+
+struct StoredContractByNameDeployItem {
+  // TODO:
+};
+
+/**
+ * @brief Construct a JSON object from a StoredContractByNameDeployItem object.
+ *
+ * @param j JSON object to construct.
+ * @param p StoredContractByNameDeployItem object to construct from.
+ */
+inline void to_json(nlohmann::json& j,
+                    const StoredContractByNameDeployItem& p) {
+  // TODO:
+}
+
+/**
+ * @brief Construct a StoredContractByNameDeployItem object from a JSON object.
+ *
+ * @param j JSON object to construct the object from.
+ * @param p StoredContractByNameDeployItem object to construct.
+ */
+inline void from_json(const nlohmann::json& j,
+                      StoredContractByNameDeployItem& p) {
+  // TODO:
+}
+
+struct StoredVersionedContractByHashDeployItem {
+  // TODO:
+};
+
+/**
+ * @brief Construct a JSON object from a StoredVersionedContractByHashDeployItem
+ * object.
+ *
+ * @param j JSON object to construct.
+ * @param p StoredVersionedContractByHashDeployItem object to construct from.
+ */
+inline void to_json(nlohmann::json& j,
+                    const StoredVersionedContractByHashDeployItem& p) {
+  // TODO:
+}
+
+/**
+ * @brief Construct a StoredVersionedContractByHashDeployItem object from a JSON
+ * object.
+ *
+ * @param j JSON object to construct the object from.
+ * @param p StoredVersionedContractByHashDeployItem object to construct.
+ */
+inline void from_json(const nlohmann::json& j,
+                      StoredVersionedContractByHashDeployItem& p) {
+  // TODO:
+}
+
+struct StoredVersionedContractByNameDeployItem {
+  // TODO:
+};
+
+/**
+ * @brief Construct a JSON object from a StoredVersionedContractByNameDeployItem
+ * object.
+ *
+ * @param j JSON object to construct.
+ * @param p StoredVersionedContractByNameDeployItem object to construct from.
+ */
+inline void to_json(nlohmann::json& j,
+                    const StoredVersionedContractByNameDeployItem& p) {
+  // TODO:
+}
+
+/**
+ * @brief Construct a StoredVersionedContractByNameDeployItem object from a JSON
+ * object.
+ *
+ * @param j JSON object to construct the object from.
+ * @param p StoredVersionedContractByNameDeployItem object to construct.
+ */
+inline void from_json(const nlohmann::json& j,
+                      StoredVersionedContractByNameDeployItem& p) {
+  // TODO:
+}
+
+struct TransferDeployItem {
+  // TODO:
+};
+
+/**
+ * @brief Construct a JSON object from a TransferDeployItem
+ * object.
+ *
+ * @param j JSON object to construct.
+ * @param p TransferDeployItem object to construct from.
+ */
+inline void to_json(nlohmann::json& j, const TransferDeployItem& p) {
+  // TODO:
+}
+
+/**
+ * @brief Construct a TransferDeployItem object from a JSON
+ * object.
+ *
+ * @param j JSON object to construct the object from.
+ * @param p TransferDeployItem object to construct.
+ */
+inline void from_json(const nlohmann::json& j, TransferDeployItem& p) {
+  // TODO:
+}
+
+struct ExecutableDeployItem {
+  std::optional<ModuleBytesDeployItem> module_bytes = std::nullopt;
+  std::optional<StoredContractByHashDeployItem> stored_contract_by_hash =
+      std::nullopt;
+  std::optional<StoredContractByNameDeployItem> stored_contract_by_name =
+      std::nullopt;
+  std::optional<StoredVersionedContractByHashDeployItem>
+      stored_versioned_contract_by_hash = std::nullopt;
+  std::optional<StoredVersionedContractByNameDeployItem>
+      stored_versioned_contract_by_name = std::nullopt;
+  std::optional<TransferDeployItem> transfer = std::nullopt;
+
+  ExecutableDeployItem() {}
+};
+
+/**
+ * @brief Construct a JSON object from a ExecutableDeployItem object.
+ *
+ * @param j JSON object to construct.
+ * @param p ExecutableDeployItem object to construct from.
+ */
+inline void to_json(nlohmann::json& j, const ExecutableDeployItem& p) {
+  // TODO:
+}
+
+/**
+ * @brief Construct a ExecutableDeployItem object from a JSON object.
+ *
+ * @param j JSON object to construct the object from.
+ * @param p ExecutableDeployItem object to construct.
+ */
+inline void from_json(const nlohmann::json& j, ExecutableDeployItem& p) {
+  // TODO:
 }
 
 }  // namespace Casper
