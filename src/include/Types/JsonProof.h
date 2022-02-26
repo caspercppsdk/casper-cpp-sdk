@@ -1,19 +1,15 @@
 #pragma once
 
-#include <string>
-
+#include "Base.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
 
 struct JsonProof {
-  JsonProof(std::string public_key_, std::string signature_)
-      : public_key(public_key_), signature(signature_) {}
-
-  JsonProof() {}
-
   std::string public_key;
   std::string signature;
+
+  JsonProof() {}
 };
 
 /**

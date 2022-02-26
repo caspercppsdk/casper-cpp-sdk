@@ -1,35 +1,11 @@
 #pragma once
 
-#include <string>
-
+#include "Base.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
 
 struct JsonBlockHeader {
-  JsonBlockHeader(std::string parent_hash_,
-                  std::string state_root_hash_,
-                  std::string body_hash_,
-                  bool random_bit_,
-                  std::string accumulated_seed_,
-                  std::string era_end_,
-                  std::string timestamp_,
-                  uint64_t era_id_,
-                  uint64_t height_,
-                  std::string protocol_version_)
-      : parent_hash(parent_hash_),
-        state_root_hash(state_root_hash_),
-        body_hash(body_hash_),
-        random_bit(random_bit_),
-        accumulated_seed(accumulated_seed_),
-        era_end(era_end_),
-        timestamp(timestamp_),
-        era_id(era_id_),
-        height(height_),
-        protocol_version(protocol_version_) {}
-
-  JsonBlockHeader() {}
-
   std::string parent_hash;
   std::string state_root_hash;
   std::string body_hash;
@@ -40,6 +16,8 @@ struct JsonBlockHeader {
   uint64_t era_id;
   uint64_t height;
   std::string protocol_version;
+
+  JsonBlockHeader() {}
 };
 
 /**
@@ -75,7 +53,7 @@ inline void from_json(const nlohmann::json& j, JsonBlockHeader& p) {
   j.at("body_hash").get_to(p.body_hash);
   j.at("random_bit").get_to(p.random_bit);
   j.at("accumulated_seed").get_to(p.accumulated_seed);
-
+  // TODO: check era_end is optional instead of is_null
   if (!j.at("era_end").is_null()) j.at("era_end").get_to(p.era_end);
 
   j.at("timestamp").get_to(p.timestamp);

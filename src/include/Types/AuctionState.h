@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Base.h"
-
 #include "Types/EraValidators.h"
 #include "Types/ValidatorBid.h"
 
@@ -26,6 +25,8 @@ struct AuctionState {
   /// All bids contained within a vector.
   /// </summary>
   std::vector<ValidatorBid> bids;
+
+  AuctionState() {}
 };
 
 /**

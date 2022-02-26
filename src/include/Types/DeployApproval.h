@@ -21,6 +21,8 @@ struct DeployApproval {
   /// </summary>
   // TODO: [JsonConverter(typeof(Signature.SignatureConverter))]
   Signature signature;
+
+  DeployApproval() {}
 };
 
 // to_json of DeployApproval

@@ -1,6 +1,5 @@
 #pragma once
-#include <string>
-
+#include "Base.h"
 #include "nlohmann/json.hpp"
 
 /**

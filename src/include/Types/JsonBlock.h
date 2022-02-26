@@ -1,8 +1,6 @@
 #pragma once
 
-#include <string>
-#include <vector>
-
+#include "Base.h"
 #include "Types/JsonBlockBody.h"
 #include "Types/JsonBlockHeader.h"
 #include "Types/JsonProof.h"
@@ -11,16 +9,12 @@
 namespace Casper {
 
 struct JsonBlock {
-  JsonBlock(std::string hash_, JsonBlockHeader header_, JsonBlockBody body_,
-            std::vector<JsonProof> proofs_)
-      : hash(hash_), header(header_), body(body_), proofs(proofs_) {}
-
-  JsonBlock() {}
-
   std::string hash;
   JsonBlockHeader header;
   JsonBlockBody body;
   std::vector<JsonProof> proofs;
+
+  JsonBlock() {}
 };
 
 /**

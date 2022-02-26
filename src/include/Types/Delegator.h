@@ -1,14 +1,11 @@
 #pragma once
 
-#include "Base.h"
-
 #include <optional>
 
+#include "Base.h"
 #include "Definitions.h"
-
 #include "Types/URef.h"
 #include "Types/VestingSchedule.h"
-
 #include "nlohmann/json.hpp"
 
 namespace Casper {
@@ -19,6 +16,8 @@ struct Delegator {
   URef bonding_purse;
   std::string validator_public_key;
   std::optional<VestingSchedule> vesting_schedule = std::nullopt;
+
+  Delegator() {}
 };
 /**
  * @brief Construct a JSON object from a Delegator object.

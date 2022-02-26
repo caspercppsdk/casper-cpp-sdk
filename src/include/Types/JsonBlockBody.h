@@ -1,24 +1,16 @@
 #pragma once
 
-#include <string>
-#include <vector>
-
+#include "Base.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
 
 struct JsonBlockBody {
-  JsonBlockBody(std::vector<std::string> deploy_hashes_, std::string proposer_,
-                std::vector<std::string> transfer_hashes_)
-      : deploy_hashes(deploy_hashes_),
-        proposer(proposer_),
-        transfer_hashes(transfer_hashes_) {}
-
-  JsonBlockBody() {}
-
   std::vector<std::string> deploy_hashes;
   std::string proposer;
   std::vector<std::string> transfer_hashes;
+
+  JsonBlockBody() {}
 };
 
 /**

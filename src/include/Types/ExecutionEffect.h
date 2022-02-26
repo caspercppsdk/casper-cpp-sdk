@@ -1,10 +1,8 @@
 #pragma once
 
 #include "Base.h"
-
 #include "Types/Operation.h"
 #include "Types/TransformEntry.h"
-
 #include "nlohmann/json.hpp"
 
 namespace Casper {
@@ -21,6 +19,8 @@ struct ExecutionEffect {
   /// The journal of execution transforms.
   /// </summary>
   std::vector<TransformEntry> transforms;
+
+  ExecutionEffect() {}
 };
 
 // to_json of ExecutionEffect

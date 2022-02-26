@@ -1,8 +1,7 @@
 #pragma once
 #include <optional>
-#include <string>
-#include <vector>
 
+#include "Base.h"
 #include "Types/Account.h"
 #include "Types/Bid.h"
 #include "Types/CLValue.h"
@@ -29,6 +28,17 @@ Example
 */
 namespace Casper {
 struct StoredValue {
+  std::optional<CLValue> cl_value = std::nullopt;
+  std::optional<Account> account = std::nullopt;
+  std::optional<std::string> contract_wasm = std::nullopt;
+  std::optional<Contract> contract = std::nullopt;
+  std::optional<ContractPackage> contract_package = std::nullopt;
+  std::optional<Transfer> transfer = std::nullopt;
+  std::optional<DeployInfo> deploy_info = std::nullopt;
+  std::optional<EraInfo> era_info = std::nullopt;
+  std::optional<Bid> bid = std::nullopt;
+  std::optional<std::vector<UnbondingPurse>> withdraw = std::nullopt;
+
   StoredValue() {}
   StoredValue(CLValue cl_value_) : cl_value(cl_value_) {}
   StoredValue(Account account_) : account(account_) {}
@@ -41,17 +51,6 @@ struct StoredValue {
   StoredValue(EraInfo era_info_) : era_info(era_info_) {}
   StoredValue(Bid bid_) : bid(bid_) {}
   StoredValue(std::vector<UnbondingPurse> withdraw_) : withdraw(withdraw_) {}
-
-  std::optional<CLValue> cl_value = std::nullopt;
-  std::optional<Account> account = std::nullopt;
-  std::optional<std::string> contract_wasm = std::nullopt;
-  std::optional<Contract> contract = std::nullopt;
-  std::optional<ContractPackage> contract_package = std::nullopt;
-  std::optional<Transfer> transfer = std::nullopt;
-  std::optional<DeployInfo> deploy_info = std::nullopt;
-  std::optional<EraInfo> era_info = std::nullopt;
-  std::optional<Bid> bid = std::nullopt;
-  std::optional<std::vector<UnbondingPurse>> withdraw = std::nullopt;
 };
 
 /**

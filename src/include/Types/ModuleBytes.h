@@ -8,6 +8,7 @@
 namespace Casper {
 
 struct ModuleBytes {
+  // TODO: [JsonConverter(typeof(HexBytesConverter))]
   std::vector<CryptoPP::SecByteBlock> module_bytes;
   std::vector<NamedArg> args;
 
@@ -34,7 +35,8 @@ inline void to_json(nlohmann::json& j, const ModuleBytes& p) {
  */
 
 inline void from_json(const nlohmann::json& j, ModuleBytes& p) {
-  j.at("module_bytes").get_to(p.module_bytes);
+  // TODO: uncomment this
+  // j.at("module_bytes").get_to(p.module_bytes);
   j.at("args").get_to(p.args);
 }
 

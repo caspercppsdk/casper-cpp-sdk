@@ -1,10 +1,9 @@
 #pragma once
 
 #include "Base.h"
-#include "nlohmann/json.hpp"
-
 #include "Types/EraEnd.h"
 #include "Types/Signature.h"
+#include "nlohmann/json.hpp"
 
 namespace Casper {
 /// <summary>
@@ -60,6 +59,8 @@ struct BlockHeader {
   /// The block timestamp.
   /// </summary>
   std::string timestamp;
+
+  BlockHeader() {}
 };
 
 // to_json of BlockHeader
@@ -109,6 +110,8 @@ struct BlockBody {
   /// List of Transfer hashes included in the block
   /// </summary>
   std::vector<std::string> transfer_hashes;
+
+  BlockBody() {}
 };
 
 // to_json  of BlockBody
@@ -142,9 +145,6 @@ struct BlockProof {
   /// </summary>
   Signature signature;
 
-  BlockProof(std::string public_key_, Signature signature_)
-      : public_key(public_key), signature(signature_) {}
-  // TODO: Check this ctor
   BlockProof() {}
 };
 
@@ -182,6 +182,8 @@ struct Block {
   /// List of proofs for this block.
   /// </summary>
   std::vector<BlockProof> proofs;
+
+  Block() {}
 };
 
 // to_json  of Block

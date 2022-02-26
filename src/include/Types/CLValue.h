@@ -1,20 +1,21 @@
 #pragma once
-#include <string>
+
+#include "Base.h"
+#include "nlohmann/json.hpp"
 
 namespace Casper {
 struct CLValue {
-  std::string temp;
-
+  // TODO: Fill here
   CLValue() {}
 };
 // to json
 inline void to_json(nlohmann::json& j, const CLValue& p) {
-  // j = nlohmann::json{{"temp", p.temp}};
+  // fill here
 }
 
 // from json
 inline void from_json(const nlohmann::json& j, CLValue& p) {
-  // j.at("temp").get_to(p.temp);
+  // fill here
 }
 
 }  // namespace Casper

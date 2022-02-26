@@ -1,11 +1,10 @@
 #pragma once
 
 #include "Base.h"
-#include "nlohmann/json.hpp"
-
 #include "Types/Definitions.h"
 #include "Types/GlobalStateKey.h"
 #include "Types/URef.h"
+#include "nlohmann/json.hpp"
 
 namespace Casper {
 /// <summary>
@@ -38,6 +37,8 @@ struct DeployInfo {
   /// Gas cost of executing the Deploy.
   /// </summary>
   big_int gas;
+
+  DeployInfo() {}
 };
 
 // from_json of DeployInfo

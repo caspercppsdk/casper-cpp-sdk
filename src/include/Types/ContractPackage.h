@@ -15,6 +15,8 @@ struct DisabledVersion {
   uint8_t contract_version;
 
   uint8_t protocol_version_major;
+
+  DisabledVersion() {}
 };
 
 // from_json of DisabledVersion
@@ -44,6 +46,8 @@ struct ContractVersion {
   uint8_t contract_version;
 
   uint8_t protocol_version_major;
+
+  ContractVersion() {}
 };
 
 // from_json of ContractVersion
@@ -73,6 +77,8 @@ struct Group {
   /// List of URefs associated with the group label.
   /// </summary>
   std::vector<URef> keys;
+
+  Group() {}
 };
 
 // from_json of Group
@@ -111,15 +117,6 @@ struct ContractPackage {
   std::vector<Group> groups;
 
   // TODO: check lock_status
-
-  ContractPackage(URef access_key_,
-                  std::vector<ContractVersion> versions_,
-                  std::vector<DisabledVersion> disabled_versions_,
-                  std::vector<Group> groups_)
-      : access_key(access_key_),
-        versions(versions_),
-        disabled_versions(disabled_versions_),
-        groups(groups_) {}
   ContractPackage() {}
 };
 

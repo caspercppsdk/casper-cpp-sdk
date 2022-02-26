@@ -28,6 +28,8 @@ struct EntryPointAccess {
   /// </summary>
 
   std::vector<std::string> groups;
+
+  EntryPointAccess() {}
 };
 
 /**
@@ -99,6 +101,8 @@ struct Parameter {
   /// </summary>
   // TODO: [JsonConverter(typeof(CLTypeInfoConverter))]
   CLTypeInfo cl_type;
+
+  Parameter() {}
 };
 
 /**
@@ -154,6 +158,8 @@ struct EntryPoint {
   /// </summary>
   // TODO: [JsonConverter(typeof(CLTypeInfoConverter))]
   CLTypeInfo ret;
+
+  EntryPoint() {}
 };
 
 /**

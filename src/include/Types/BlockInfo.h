@@ -7,24 +7,14 @@
 namespace Casper {
 
 struct BlockInfo {
-  BlockInfo(std::string creator_, uint64_t era_id_, std::string hash_,
-            uint64_t height_, std::string state_root_hash_,
-            std::string timestamp_)
-      : creator(creator_),
-        era_id(era_id_),
-        hash(hash_),
-        height(height_),
-        state_root_hash(state_root_hash_),
-        timestamp(timestamp_) {}
-
-  BlockInfo() {}
-
   std::string creator;
   uint64_t era_id;
   std::string hash;
   uint64_t height;
   std::string state_root_hash;
   std::string timestamp;
+
+  BlockInfo() {}
 };
 
 /**

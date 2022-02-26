@@ -1,7 +1,6 @@
 #pragma once
 
-#include <string>
-
+#include "Base.h"
 #include "Types/KeyAlgo.h"
 #include "Utils/CEP57Checksum.h"
 #include "cryptopp/hex.h"
@@ -142,13 +141,16 @@ struct Signature {
 // to_json of Signature
 inline void to_json(nlohmann::json& j, const Signature& s) {
   // j = s.ToHexString();
-  j = {};
+  // TODO:fill here
+  // j
 }
 
 // from_json of Signature
 inline void from_json(const nlohmann::json& j, Signature& s) {
-  // TODO: write the inner code of fromhexstring here
-  // s = Signature::FromHexString(j.get<std::string>());
+  // s
+  //  TODO: write the inner code of fromhexstring here
+  //  TODO: fill here
+  //  s = Signature::FromHexString(j.get<std::string>());
 }
 
 }  // namespace Casper

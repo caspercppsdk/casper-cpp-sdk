@@ -1,7 +1,6 @@
 #pragma once
 
-#include <string>
-
+#include "Base.h"
 #include "Types/PublicKey.h"
 
 namespace Casper {
@@ -37,6 +36,9 @@ struct MinimalBlockInfo {
   /// <summary>
   /// Validator node's public key
   /// </summary>
-  PublicKey creator;
+  // TODO: Make PublicKey instead of std::string
+  std::string creator;
+
+  MinimalBlockInfo() {}
 };
 }  // namespace Casper

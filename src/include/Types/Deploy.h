@@ -22,6 +22,8 @@ struct Deploy {
   ExecutableDeployItem session;
 
   std::vector<DeployApproval> approvals;
+
+  Deploy() {}
 };
 
 /**

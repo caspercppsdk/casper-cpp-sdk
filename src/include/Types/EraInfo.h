@@ -1,8 +1,8 @@
 #pragma once
 
-#include <vector>
-
+#include "Base.h"
 #include "Types/SeigniorageAllocation.h"
+#include "nlohmann/json.hpp"
 
 namespace Casper {
 /// <summary>

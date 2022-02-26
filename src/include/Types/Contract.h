@@ -1,7 +1,5 @@
 #pragma once
-#include <string>
-#include <vector>
-
+#include "Base.h"
 #include "Types/EntryPoint.h"
 #include "Types/NamedKey.h"
 #include "nlohmann/json.hpp"
@@ -13,17 +11,6 @@ struct Contract {
   std::vector<NamedKey> named_keys;
   std::vector<EntryPoint> entry_points;
   std::string protocol_version;
-
-  Contract(std::string contract_package_hash_,
-           std::string contract_wasm_hash_,
-           std::vector<NamedKey> named_keys_,
-           std::vector<EntryPoint> entry_points_,
-           std::string protocol_version_)
-      : contract_package_hash(contract_package_hash_),
-        contract_wasm_hash(contract_wasm_hash_),
-        named_keys(named_keys_),
-        entry_points(entry_points_),
-        protocol_version(protocol_version_) {}
 
   Contract() {}
 };

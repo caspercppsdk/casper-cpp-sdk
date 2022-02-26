@@ -1,11 +1,9 @@
 #pragma once
 
-#include <string>
-#include <vector>
-
+#include "Base.h"
 #include "Types/PublicKey.h"
 #include "Types/ValidatorWeight.h"
-
+#include "nlohmann/json.hpp"
 namespace Casper {
 /// <summary>
 /// A validator reward
@@ -21,6 +19,8 @@ struct Reward {
   /// </summary>
   // TODO: Make PublicKey instead of std::string
   std::string validator;
+
+  Reward() {}
 };
 
 // to_json of Reward
@@ -57,6 +57,8 @@ struct EraReport {
   /// List of validators with rewards
   /// </summary>
   std::vector<Reward> rewards;
+
+  EraReport() {}
 };
 
 // to_json of EraReport
@@ -88,6 +90,8 @@ struct EraEnd {
   /// A list of validator weights for the next era
   /// </summary>
   std::vector<ValidatorWeight> next_era_validator_weights;
+
+  EraEnd() {}
 };
 
 // to_json of EraEnd

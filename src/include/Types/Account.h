@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Base.h"
-
 #include "Types/GlobalStateKey.h"
 #include "Types/NamedKey.h"
 #include "Types/StoredValue.h"
@@ -18,6 +17,8 @@ struct ActionThresholds {
   /// Threshold that has to be met for a key management action
   /// </summary>
   uint8_t key_management;  // key_management
+
+  ActionThresholds() {}
 };
 
 /**
@@ -53,6 +54,8 @@ struct AssociatedKey {
   /// Weight of the associated key
   /// </summary>
   uint8_t weight;
+
+  AssociatedKey() {}
 };
 
 /**
@@ -80,19 +83,6 @@ inline void from_json(const nlohmann::json& j, AssociatedKey& p) {
 /// Structure representing a user's account, stored in global state.
 /// </summary>
 struct Account {
-  Account(std::string account_hash_,
-          std::vector<NamedKey> named_keys_,
-          URef main_purse_,
-          std::vector<AssociatedKey> associated_keys_,
-          ActionThresholds action_thresholds_)
-      : account_hash(account_hash_),
-        named_keys(named_keys_),
-        main_purse(main_purse_),
-        associated_keys(associated_keys_),
-        action_thresholds(action_thresholds_) {}
-
-  Account() {}
-
   /// <summary>
   /// Account identity key
   /// </summary>
@@ -119,6 +109,8 @@ struct Account {
   /// type.
   /// </summary>
   ActionThresholds action_thresholds;
+
+  Account() {}
 };
 
 /**
