@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Types/Definitions.h"
-
 #include "Types/PublicKey.h"
 #include "Types/URef.h"
 
@@ -32,9 +31,19 @@ struct UnbondingPurse {
   /// <summary>
   /// Unbonding Amount.
   /// </summary>
-
   big_int amount;
+
+  UnbondingPurse() {}
 };
+
+// to_json of UnbondingPurse
+inline void to_json(nlohmann::json& j, const UnbondingPurse& p) {
+  j = {{"bonding_purse", p.bonding_purse},
+       {"validator_public_key", p.validator_public_key},
+       {"unbonder_public_key", p.unbonder_public_key},
+       {"era_of_creation", p.era_of_creation},
+       {"amount", p.amount.toString()}};
+}
 
 // from_json of UnbondingPurse
 inline void from_json(const nlohmann::json& j, UnbondingPurse& p) {
@@ -45,12 +54,4 @@ inline void from_json(const nlohmann::json& j, UnbondingPurse& p) {
   j.at("amount").get_to(p.amount);
 }
 
-// to_json of UnbondingPurse
-inline void to_json(nlohmann::json& j, const UnbondingPurse& p) {
-  j = {{"bonding_purse", p.bonding_purse},
-       {"validator_public_key", p.validator_public_key},
-       {"unbonder_public_key", p.unbonder_public_key},
-       {"era_of_creation", p.era_of_creation},
-       {"amount", p.amount.toString()}};
-}
 }  // namespace Casper

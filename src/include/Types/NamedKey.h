@@ -1,18 +1,16 @@
 #pragma once
 
 #include "Base.h"
-
 #include "Types/GlobalStateKey.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
 struct NamedKey {
-  NamedKey(std::string name, std::string key) : name(name), key(key) {}
-  NamedKey() {}
-
   std::string name;
-  // TODO: Check -> GlobalStateKey key;
+  // TODO: Make key GlobalStateKey instead of std::string
   std::string key;
+
+  NamedKey() {}
 };
 
 /**

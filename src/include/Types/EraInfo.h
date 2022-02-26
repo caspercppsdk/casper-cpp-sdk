@@ -13,8 +13,7 @@ struct EraInfo {
   /// List of rewards allocated to delegators and validators.
   /// </summary>
   std::vector<SeigniorageAllocation> seigniorage_allocations;
-  EraInfo(std::vector<SeigniorageAllocation> seigniorage_allocations_)
-      : seigniorage_allocations(seigniorage_allocations_) {}
+
   EraInfo() {}
 };
 

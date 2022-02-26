@@ -1,14 +1,15 @@
 #pragma once
 
-#include <vector>
-
-#include "ValidatorWeight.h"
+#include "Base.h"
+#include "Types/ValidatorWeight.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
 struct EraValidators {
   uint64_t era_id;
   std::vector<ValidatorWeight> validator_weights;
+
+  EraValidators() {}
 };
 
 /**

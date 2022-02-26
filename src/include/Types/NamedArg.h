@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Base.h"
-
 #include "nlohmann/json.hpp"
 
 namespace Casper {

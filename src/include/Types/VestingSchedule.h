@@ -9,12 +9,8 @@
 namespace Casper {
 struct VestingSchedule {
   uint64_t initial_release_timestamp_millis;
-  big_int locked_amounts;
+  std::vector<big_int> locked_amounts;
 
-  VestingSchedule(uint64_t initial_release_timestamp_millis_,
-                  big_int locked_amounts_)
-      : initial_release_timestamp_millis(initial_release_timestamp_millis_),
-        locked_amounts(locked_amounts_) {}
   VestingSchedule() {}
 };
 
@@ -28,7 +24,10 @@ inline void to_json(nlohmann::json& j, const VestingSchedule& p) {
   // TODO: fill this in
   j = nlohmann::json{"initial_release_timestamp_millis",
                      p.initial_release_timestamp_millis, "locked_amounts",
-                     p.locked_amounts.toString()};
+                     nlohmann::json::array()};
+  for (const auto& amount : p.locked_amounts) {
+    j["locked_amounts"].push_back(amount.toString());
+  }
 }
 
 /**

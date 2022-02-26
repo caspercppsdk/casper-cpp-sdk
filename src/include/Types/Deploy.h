@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Base.h"
-#include "nlohmann/json.hpp"
-
+#include "Types/DeployApproval.h"
+#include "Types/DeployHeader.h"
 #include "Types/ExecutableDeployItem.h"
 #include "Types/PublicKey.h"
+#include "nlohmann/json.hpp"
 
 namespace Casper {
 /// <summary>
@@ -29,7 +30,9 @@ struct Deploy {
  * @param j JSON object to construct.
  * @param p Deploy object to construct from.
  */
-inline void to_json(nlohmann::json& j, const Deploy& p) {}
+inline void to_json(nlohmann::json& j, const Deploy& p) {
+  // TODO: fill here
+}
 
 /**
  * @brief Construct a Deploy object from a JSON object.
@@ -37,6 +40,8 @@ inline void to_json(nlohmann::json& j, const Deploy& p) {}
  * @param j JSON object to construct the object from.
  * @param p Deploy object to construct.
  */
-inline void from_json(const nlohmann::json& j, Deploy& p) {}
+inline void from_json(const nlohmann::json& j, Deploy& p) {
+  // TODO: fill here
+}
 
 }  // namespace Casper

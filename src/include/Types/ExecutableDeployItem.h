@@ -1,12 +1,12 @@
 #pragma once
 
 #include <optional>
+
 #include "Base.h"
+#include "Types/ModuleBytes.h"
 #include "magic_enum/magic_enum.hpp"
 #include "nlohmann/json.hpp"
-
 namespace Casper {
-
 
 struct StoredContractByHashDeployItem {
   // TODO:
@@ -31,7 +31,7 @@ inline void to_json(nlohmann::json& j,
  */
 inline void from_json(const nlohmann::json& j,
                       StoredContractByHashDeployItem& p) {
-  // TODO:
+  // TODO: fill here
 }
 
 struct StoredContractByNameDeployItem {
@@ -143,7 +143,7 @@ inline void from_json(const nlohmann::json& j, TransferDeployItem& p) {
 }
 
 struct ExecutableDeployItem {
-  std::optional<ModuleBytesDeployItem> module_bytes = std::nullopt;
+  std::optional<ModuleBytes> module_bytes = std::nullopt;
   std::optional<StoredContractByHashDeployItem> stored_contract_by_hash =
       std::nullopt;
   std::optional<StoredContractByNameDeployItem> stored_contract_by_name =

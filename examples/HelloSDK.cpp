@@ -1,6 +1,6 @@
+#include <algorithm>
 #include <iostream>
 
-#include <algorithm>
 #include "../src/include/CasperClient.h"  // To use Casper::Client features
 #include "../src/include/Types/GlobalStateKey.h"
 /// Construct a Casper::Client object
@@ -372,12 +372,15 @@ void stateGetAuctionInfo() {
               << "\ndelegation_rate: "
               << unsigned(cur_validator_bid.bid.delegation_rate);
     if (cur_validator_bid.bid.vesting_schedule.has_value()) {
+      Casper::VestingSchedule cur_vesting_schedule =
+          cur_validator_bid.bid.vesting_schedule.value();
       std::cout << "\nvesting_schedule initial_release_timestamp_millis: "
-                << cur_validator_bid.bid.vesting_schedule.value()
-                       .initial_release_timestamp_millis
-                << " locked_amounts: "
-                << cur_validator_bid.bid.vesting_schedule.value()
-                       .locked_amounts.toString();
+                << cur_vesting_schedule.initial_release_timestamp_millis
+                << " locked_amounts: \n";
+      for (size_t j = 0; j < cur_vesting_schedule.locked_amounts.size(); j++) {
+        std::cout << j + 1 << ". "
+                  << cur_vesting_schedule.locked_amounts[j].toString() << "\n";
+      }
     }
     std::cout << "\ninactive: " << std::boolalpha
               << cur_validator_bid.bid.inactive;

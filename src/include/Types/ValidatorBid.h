@@ -12,8 +12,6 @@ struct ValidatorBid {
   Bid bid;
 
   ValidatorBid() {}
-  ValidatorBid(std::string public_key_, Bid bid_)
-      : public_key(public_key_), bid(bid_) {}
 };
 
 /**

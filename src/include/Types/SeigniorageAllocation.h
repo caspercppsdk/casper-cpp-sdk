@@ -11,6 +11,8 @@ struct SeigniorageAllocation {
   std::string delegator_public_key;
   std::string validator_public_key;
   big_int amount;
+
+  SeigniorageAllocation() {}
 };
 
 // to_json of SeigniorageAllocation
