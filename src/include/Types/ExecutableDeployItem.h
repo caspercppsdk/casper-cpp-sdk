@@ -78,5 +78,6 @@ inline void from_json(const nlohmann::json& j, ExecutableDeployItem& p) {
     throw std::runtime_error("Invalid ExecutableDeployItem");
   }
   // TODO: maybe not throw if no value is set?
+}
 
 }  // namespace Casper
