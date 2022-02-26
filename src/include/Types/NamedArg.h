@@ -6,7 +6,10 @@
 namespace Casper {
 struct NamedArg {
   std::string name;
-  CLValue value;
+  // TODO: Uncomment this
+  // CLValue value;
+
+  NamedArg() {}
 };
 
 // to_json of NamedArg
