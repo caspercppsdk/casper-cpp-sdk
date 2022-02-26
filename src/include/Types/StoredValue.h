@@ -60,8 +60,31 @@ struct StoredValue {
  * @param p StoredValue object to construct from.
  */
 inline void to_json(nlohmann::json& j, const StoredValue& p) {
-  // TODO: NOT IMPLEMENTED
   j = nlohmann::json{};
+
+  if (p.cl_value.has_value()) {
+    j["CLValue"] = p.cl_value.value();
+  } else if (p.account.has_value()) {
+    j["Account"] = p.account.value();
+  } else if (p.contract_wasm.has_value()) {
+    j["ContractWasm"] = p.contract_wasm.value();
+  } else if (p.contract.has_value()) {
+    j["Contract"] = p.contract.value();
+  } else if (p.contract_package.has_value()) {
+    j["ContractPackage"] = p.contract_package.value();
+  } else if (p.transfer.has_value()) {
+    j["Transfer"] = p.transfer.value();
+  } else if (p.deploy_info.has_value()) {
+    j["DeployInfo"] = p.deploy_info.value();
+  } else if (p.era_info.has_value()) {
+    j["EraInfo"] = p.era_info.value();
+  } else if (p.bid.has_value()) {
+    j["Bid"] = p.bid.value();
+  } else if (p.withdraw.has_value()) {
+    j["Withdraw"] = p.withdraw.value();
+  } else {
+    j = {{"error", "STORED_VALUE_NOT_FOUND"}};
+  }
 }
 
 /**

@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
-
+#include "magic_enum/magic_enum.hpp"
+#include "nlohmann/json.hpp"
 namespace Casper {
 enum struct AccessRights : uint8_t {
   /// <summary>
@@ -37,4 +38,8 @@ enum struct AccessRights : uint8_t {
   READ_ADD_WRITE = 0b111
 };
 
+// to_json of AccessRights
+inline void to_json(nlohmann::json& j, const AccessRights& p) {
+  j = nlohmann::json{{"AccessRights", magic_enum::enum_name(p)}};
+}
 }  // namespace Casper

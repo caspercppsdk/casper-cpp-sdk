@@ -7,19 +7,14 @@
  *
  */
 namespace Casper {
-
 struct GetAuctionInfoResult : public RpcResult {
   /**
    * @brief Construct a new GetAuctionInfoResult object.
    *
    */
-
-  GetAuctionInfoResult(AuctionState auction_state_)
-      : auction_state{auction_state_} {}
+  AuctionState auction_state;
 
   GetAuctionInfoResult() {}
-
-  AuctionState auction_state;
 };
 
 /**

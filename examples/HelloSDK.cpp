@@ -276,8 +276,13 @@ void stateGetItem() {
   // TODO: implement
   std::cout << "-----------------------------------------------\n";
   std::cout << "state_get_item" << std::endl;
-
-  std::cout << std::endl;
+  Casper::GetItemResult itemResult = casper_client.GetItem(
+      "39f2800688b94f68ca640b26c7d0f50a90d2ce9af55c9484e66151b544345303",
+      "transfer-"
+      "9f5fe878c29fc3bf537c0509ec5abe1781a72bb6a3197a440e3e68247fba5909");
+  nlohmann::json itemJSON;
+  to_json(itemJSON, itemResult.stored_value);
+  std::cout << itemJSON.dump(2) << std::endl;
 }
 
 void stateGetDictionaryItem() {
@@ -309,7 +314,7 @@ void stateGetAuctionInfo() {
 
   /// Call GetStateRootHash function with the height of the block.
   Casper::GetAuctionInfoResult auction_result = casper_client.GetAuctionInfo(
-      "9f246c64116b5c686c8e6a6829fce36c86bb32437866b617d91ed7de9f6a8a16");
+      "a5ce9e1ea4ff786cf1eb9dfbe3a79f70ae33d723134a060910a2db80daf85bab");
 
   std::cout << "\napi_version: " << auction_result.api_version;
 
@@ -383,7 +388,7 @@ void stateGetAuctionInfo() {
       }
     }
     std::cout << "\ninactive: " << std::boolalpha
-              << cur_validator_bid.bid.inactive;
+              << cur_validator_bid.bid.inactive << "\n";
   }
 
   std::cout << std::endl;

@@ -32,7 +32,12 @@ inline void to_json(nlohmann::json& j, const ValidatorWeight& p) {
 inline void from_json(const nlohmann::json& j, ValidatorWeight& p) {
   // TODO: PublicKey = PublicKey.FromHexString(publicKey),
   j.at("public_key").get_to(p.public_key);
-  j.at("weight").get_to(p.weight);
+  std::string weightString = j.at("weight").get<std::string>();
+  if (weightString.size() > 0) {
+    p.weight = weightString;
+  } else {
+    p.weight = 0;
+  }
   // TODO: Fill in this function
 }
 }  // namespace Casper

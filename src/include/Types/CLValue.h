@@ -10,7 +10,7 @@ struct CLValue {
 };
 // to json
 inline void to_json(nlohmann::json& j, const CLValue& p) {
-  // fill here
+  j = nlohmann::json{"CLValue"};
 }
 
 // from json

@@ -14,13 +14,11 @@ struct GetItemResult : public RpcResult {
    * @brief Construct a new GetItemResult object.
    *
    */
-  GetItemResult(StoredValue stored_value_, const std::string& merkle_proof_)
-      : stored_value(stored_value_), merkle_proof(merkle_proof_) {}
-
-  GetItemResult() {}
 
   StoredValue stored_value;
   std::string merkle_proof;
+
+  GetItemResult() {}
 };
 
 /**
