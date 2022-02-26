@@ -26,7 +26,8 @@ struct StoredVersionedContractByHash {
 
 inline void to_json(nlohmann::json& j, const StoredVersionedContractByHash& p) {
   j = nlohmann::json{
-      {"hash", p.hash} {"entry_point", p.entry_point},
+      {"hash", p.hash},
+      {"entry_point", p.entry_point},
       {"args", p.args},
   };
 
