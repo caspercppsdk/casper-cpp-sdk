@@ -33,7 +33,22 @@ struct ExecutableDeployItem {
  * @param p ExecutableDeployItem object to construct from.
  */
 inline void to_json(nlohmann::json& j, const ExecutableDeployItem& p) {
-  
+  if (p.module_bytes.has_value()) {
+    j["ModuleBytes"] = p.module_bytes.value();
+  } else if (p.stored_contract_by_hash.has_value()) {
+    j["StoredContractByHash"] = p.stored_contract_by_hash.value();
+  } else if (p.stored_contract_by_name.has_value()) {
+    j["StoredContractByName"] = p.stored_contract_by_name.value();
+  } else if (p.stored_versioned_contract_by_hash.has_value()) {
+    j["StoredVersionedContractByHash"] =
+        p.stored_versioned_contract_by_hash.value();
+  } else if (p.stored_versioned_contract_by_name.has_value()) {
+    j["StoredVersionedContractByName"] =
+        p.stored_versioned_contract_by_name.value();
+  } else if (p.transfer.has_value()) {
+    j["Transfer"] = p.transfer.value();
+  }
+  // TODO: maybe return "null" if no value is set?
 }
 
 /**
@@ -43,7 +58,25 @@ inline void to_json(nlohmann::json& j, const ExecutableDeployItem& p) {
  * @param p ExecutableDeployItem object to construct.
  */
 inline void from_json(const nlohmann::json& j, ExecutableDeployItem& p) {
-  // TODO:
-}
+  if (j.find("ModuleBytes") != j.end()) {
+    p.module_bytes = j["ModuleBytes"].get<ModuleBytes>();
+  } else if (j.find("StoredContractByHash") != j.end()) {
+    p.stored_contract_by_hash =
+        j["StoredContractByHash"].get<StoredContractByHash>();
+  } else if (j.find("StoredContractByName") != j.end()) {
+    p.stored_contract_by_name =
+        j["StoredContractByName"].get<StoredContractByName>();
+  } else if (j.find("StoredVersionedContractByHash") != j.end()) {
+    p.stored_versioned_contract_by_hash =
+        j["StoredVersionedContractByHash"].get<StoredVersionedContractByHash>();
+  } else if (j.find("StoredVersionedContractByName") != j.end()) {
+    p.stored_versioned_contract_by_name =
+        j["StoredVersionedContractByName"].get<StoredVersionedContractByName>();
+  } else if (j.find("Transfer") != j.end()) {
+    p.transfer = j["Transfer"].get<TransferDeployItem>();
+  } else {
+    throw std::runtime_error("Invalid ExecutableDeployItem");
+  }
+  // TODO: maybe not throw if no value is set?
 
 }  // namespace Casper
