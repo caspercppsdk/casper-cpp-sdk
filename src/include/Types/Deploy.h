@@ -47,10 +47,10 @@ inline void to_json(nlohmann::json& j, const Deploy& p) {
  * @param p Deploy object to construct.
  */
 inline void from_json(const nlohmann::json& j, Deploy& p) {
-  p.hash = j.at("hash").get<std::string>();
+  j.at("hash").get_to(p.hash);
   j.at("header").get_to(p.header);
-  // j.at("payment").get_to(p.payment);
-  // j.at("session").get_to(p.session);
+  j.at("payment").get_to(p.payment);
+  j.at("session").get_to(p.session);
   j.at("approvals").get_to(p.approvals);
 }
 

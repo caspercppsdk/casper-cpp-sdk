@@ -19,7 +19,6 @@ struct DeployApproval {
   /// <summary>
   /// Signature of a deploy.
   /// </summary>
-  // TODO: [JsonConverter(typeof(Signature.SignatureConverter))]
   Signature signature;
 
   DeployApproval() {}
@@ -32,7 +31,6 @@ inline void to_json(nlohmann::json& j, const DeployApproval& p) {
 
 // from_json of DeployApproval
 inline void from_json(const nlohmann::json& j, DeployApproval& p) {
-  // TODO: Make signer PublicKey instead of std::string
   j.at("signer").get_to(p.signer);
   j.at("signature").get_to(p.signature);
 }
