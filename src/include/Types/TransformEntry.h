@@ -23,7 +23,7 @@ inline void to_json(nlohmann::json& j, const TransformEntry& p) {
   j["key"] = p.key;
 
   if (p.transform.Identity.has_value()) {
-    j["transform"]["Identity"] = p.transform.Identity.value();
+    j["transform"] = p.transform.Identity.value();
   } else {
     j["transform"] = p.transform;
   }

@@ -18,13 +18,13 @@ struct DeployHeader {
   /// <summary>
   /// Timestamp formatted as per RFC 3339
   /// </summary>
-  uint64_t timestamp;
+  std::string timestamp;
 
   /// <summary>
   /// Duration of the Deploy in milliseconds (from timestamp).
   /// </summary>
   // TODO: [JsonConverter(typeof(HumanizeTTLConverter))]
-  uint64_t ttl;
+  std::string ttl;
 
   /// <summary>
   /// Gas price

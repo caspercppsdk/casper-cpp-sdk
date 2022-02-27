@@ -33,7 +33,11 @@ struct Deploy {
  * @param p Deploy object to construct from.
  */
 inline void to_json(nlohmann::json& j, const Deploy& p) {
-  // TODO: fill here
+  j = nlohmann::json{{"hash", p.hash},
+                     {"header", p.header},
+                     {"payment", p.payment},
+                     {"session", p.session},
+                     {"approvals", p.approvals}};
 }
 
 /**
@@ -43,7 +47,11 @@ inline void to_json(nlohmann::json& j, const Deploy& p) {
  * @param p Deploy object to construct.
  */
 inline void from_json(const nlohmann::json& j, Deploy& p) {
-  // TODO: fill here
+  p.hash = j.at("hash").get<std::string>();
+  j.at("header").get_to(p.header);
+  // j.at("payment").get_to(p.payment);
+  // j.at("session").get_to(p.session);
+  j.at("approvals").get_to(p.approvals);
 }
 
 }  // namespace Casper
