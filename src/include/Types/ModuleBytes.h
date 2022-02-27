@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "Types/NamedArg.h"
+#include "Utils/CryptoUtil.h"
 #include "cryptopp/secblock.h"
 #include "nlohmann/json.hpp"
 
@@ -9,7 +10,7 @@ namespace Casper {
 
 struct ModuleBytes {
   // TODO: [JsonConverter(typeof(HexBytesConverter))]
-  std::vector<CryptoPP::SecByteBlock> module_bytes;
+  CryptoPP::SecByteBlock module_bytes;
   std::vector<NamedArg> args;
 
   ModuleBytes() {}
@@ -23,7 +24,7 @@ struct ModuleBytes {
  */
 
 inline void to_json(nlohmann::json& j, const ModuleBytes& p) {
-  j["module_bytes"] = p.module_bytes;
+  j["module_bytes"] = CryptoUtil::hexEncode(p.module_bytes);
   j["args"] = p.args;
 }
 
@@ -35,8 +36,9 @@ inline void to_json(nlohmann::json& j, const ModuleBytes& p) {
  */
 
 inline void from_json(const nlohmann::json& j, ModuleBytes& p) {
-  // TODO: uncomment this
-  // j.at("module_bytes").get_to(p.module_bytes);
+  std::string bytesString = j["module_bytes"].get<std::string>();
+  p.module_bytes = CryptoUtil::hexDecode(bytesString);
+
   j.at("args").get_to(p.args);
 }
 
