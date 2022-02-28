@@ -67,15 +67,16 @@ void infoGetDeploy() {
   std::vector<Casper::ExecutionResult> execution_results =
       deploy_result.execution_results;
   // TODO: uncomment below
-  /*
-    std::cout << "\nexecution_results.size: " << execution_results.size() <<
-    "\n"; for (size_t i = 0; i < std::min(2,
-    static_cast<int>(execution_results.size())); i++) { std::cout <<
-    "ExecutionResult " << i + 1 << "\n"; nlohmann::json execution_results_json;
-      to_json(execution_results_json, execution_results[i]);
-      std::cout << execution_results_json.dump(2) << "\n";
-    }
-  */
+
+  std::cout << "\nexecution_results.size: " << execution_results.size() << "\n";
+  for (size_t i = 0;
+       i < std::min(2, static_cast<int>(execution_results.size())); i++) {
+    std::cout << "ExecutionResult " << i + 1 << "\n";
+    nlohmann::json execution_results_json;
+    to_json(execution_results_json, execution_results[i]);
+    std::cout << execution_results_json.dump(2) << "\n";
+  }
+
   std::cout << std::endl;
 }
 

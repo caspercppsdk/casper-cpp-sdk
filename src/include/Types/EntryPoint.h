@@ -7,7 +7,7 @@
 #include "magic_enum/magic_enum.hpp"
 
 // types
-#include "Types/CLTypeInfo.h"
+#include "Types/CLType.h"
 
 namespace Casper {
 /// <summary>
@@ -100,7 +100,7 @@ struct Parameter {
   /// The type of the parameter in the entry point.
   /// </summary>
   // TODO: [JsonConverter(typeof(CLTypeInfoConverter))]
-  CLTypeInfo cl_type;
+  CLType cl_type;
 
   Parameter() {}
 };
@@ -157,7 +157,7 @@ struct EntryPoint {
   /// Returned value
   /// </summary>
   // TODO: [JsonConverter(typeof(CLTypeInfoConverter))]
-  CLTypeInfo ret;
+  CLType ret;
 
   EntryPoint() {}
 };
