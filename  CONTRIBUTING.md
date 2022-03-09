@@ -2,6 +2,14 @@
 
 The following is a set of rules and guidelines for contributing to this repository. Please feel free to propose changes to this document in a pull request.
 
+#### Table Of Contents
+
+[Submitting issues](#submitting-issues)
+
+[Guidelines](#guidelines)
+
+[Contributing to Casper C++ SDK](#how-to-contribute)
+
 ## Submitting issues
 If you have questions about how to use Casper C++ SDK, please direct these to the related discord channels:
 * [#smart-contracts](https://discord.gg/casperblockchain)
@@ -13,7 +21,7 @@ If you have questions about how to use Casper C++ SDK, please direct these to th
   - You can also filter by appending e. g. "state:open" to the search string.
   - More info on [search syntax within GitHub](https://help.github.com/articles/searching-issues)
 
-## Contributing to Casper C++ SDK
+## How to contribute
 
 All contributions to this repository are considered to be licensed under Apache License 2.0.
 
