@@ -31,11 +31,6 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
     sudo make install
 
 ---
-**NOTE**
-
-Change the CASPER_TEST_ADDRESS value in the CasperClient.h with an RPC Server address to run the examples and the tests.
-
----
 ## How to use
     1. Include the header file to the application file.
         #include "CasperClient.h"
