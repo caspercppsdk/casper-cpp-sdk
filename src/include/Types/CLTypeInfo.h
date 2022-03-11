@@ -136,16 +136,14 @@ inline void from_json(const nlohmann::json& j, CLTypeInfo& p) {
   }
 }
 
-struct CLType;
-
 struct CLMapTypeInfo : public CLTypeInfo {
-  CLTypeInfo key_type;
-  CLTypeInfo value_type;
+  std::string key_type;
+  std::string value_type;
 
-  CLMapTypeInfo(CLTypeInfo key_type, CLTypeInfo value_type)
+  CLMapTypeInfo(std::string key_type_, std::string value_type_)
       : CLTypeInfo(CLTypeEnum::Map),
-        key_type(key_type),
-        value_type(value_type) {}
+        key_type(key_type_),
+        value_type(value_type_) {}
   CLMapTypeInfo() : CLTypeInfo(CLTypeEnum::Map) {}
 };
 
@@ -156,8 +154,30 @@ inline void to_json(nlohmann::json& j, const CLMapTypeInfo& p) {
 
 // from_json
 inline void from_json(const nlohmann::json& j, CLMapTypeInfo& p) {
-  p.key_type = j.at("key").get<CLTypeInfo>();
-  p.value_type = j.at("value").get<CLTypeInfo>();
+  p.key_type = j.at("key").get<std::string>();
+  p.value_type = j.at("value").get<std::string>();
+}
+
+struct CLResultTypeInfo : public CLTypeInfo {
+  std::string ok_type;
+  std::string err_type;
+
+  CLResultTypeInfo(std::string ok_type_, std::string err_type_)
+      : CLTypeInfo(CLTypeEnum::Result),
+        ok_type(ok_type_),
+        err_type(err_type_) {}
+  CLResultTypeInfo() : CLTypeInfo(CLTypeEnum::Result) {}
+};
+
+// to_json
+inline void to_json(nlohmann::json& j, const CLResultTypeInfo& p) {
+  j = nlohmann::json{{"ok", p.ok_type}, {"err", p.err_type}};
+}
+
+// from_json
+inline void from_json(const nlohmann::json& j, CLResultTypeInfo& p) {
+  p.ok_type = j.at("ok").get<std::string>();
+  p.err_type = j.at("err").get<std::string>();
 }
 
 }  // namespace Casper
