@@ -1,5 +1,7 @@
 #pragma once
 
+#include <tuple>
+
 #include "Base.h"
 #include "magic_enum/magic_enum.hpp"
 #include "nlohmann/json.hpp"
@@ -178,6 +180,123 @@ inline void to_json(nlohmann::json& j, const CLResultTypeInfo& p) {
 inline void from_json(const nlohmann::json& j, CLResultTypeInfo& p) {
   p.ok_type = j.at("ok").get<std::string>();
   p.err_type = j.at("err").get<std::string>();
+}
+
+struct CLOptionTypeInfo : public CLTypeInfo {
+  std::string option_type;
+
+  CLOptionTypeInfo(std::string option_type_)
+      : CLTypeInfo(CLTypeEnum::Option), option_type(option_type_) {}
+  CLOptionTypeInfo() : CLTypeInfo(CLTypeEnum::Option) {}
+};
+
+// to_json
+inline void to_json(nlohmann::json& j, const CLOptionTypeInfo& p) {
+  j = nlohmann::json{{p.option_type}};
+}
+
+// from_json
+inline void from_json(const nlohmann::json& j, CLOptionTypeInfo& p) {
+  p.option_type = j.get<std::string>();
+}
+
+struct CLListTypeInfo : public CLTypeInfo {
+  std::string list_type;
+
+  CLListTypeInfo(std::string list_type_)
+      : CLTypeInfo(CLTypeEnum::List), list_type(list_type_) {}
+  CLListTypeInfo() : CLTypeInfo(CLTypeEnum::List) {}
+};
+
+// to_json
+inline void to_json(nlohmann::json& j, const CLListTypeInfo& p) {
+  j = nlohmann::json{{p.list_type}};
+}
+
+// from_json
+inline void from_json(const nlohmann::json& j, CLListTypeInfo& p) {
+  p.list_type = j.get<std::string>();
+}
+
+struct CLByteArrayTypeInfo : public CLTypeInfo {
+  int size;
+
+  CLByteArrayTypeInfo(int size_)
+      : CLTypeInfo(CLTypeEnum::ByteArray), size(size_) {}
+  CLByteArrayTypeInfo() : CLTypeInfo(CLTypeEnum::ByteArray) {}
+};
+
+// to_json
+inline void to_json(nlohmann::json& j, const CLByteArrayTypeInfo& p) {
+  j = nlohmann::json{{p.size}};
+}
+
+// from_json
+inline void from_json(const nlohmann::json& j, CLByteArrayTypeInfo& p) {
+  p.size = j.get<uint32_t>();
+}
+
+struct CLTuple1TypeInfo : public CLTypeInfo {
+  std::string type0;
+
+  CLTuple1TypeInfo(std::string type0_)
+      : CLTypeInfo(CLTypeEnum::Tuple1), type0(type0_) {}
+  CLTuple1TypeInfo() : CLTypeInfo(CLTypeEnum::Tuple1) {}
+};
+
+// to_json
+inline void to_json(nlohmann::json& j, const CLTuple1TypeInfo& p) {
+  j = nlohmann::json{{p.type0}};
+}
+
+// from_json
+inline void from_json(const nlohmann::json& j, CLTuple1TypeInfo& p) {
+  p.type0 = j.get<std::string>();
+}
+
+struct CLTuple2TypeInfo : public CLTypeInfo {
+  std::string type0;
+  std::string type1;
+
+  CLTuple2TypeInfo(std::string type0_, std::string type1_)
+      : CLTypeInfo(CLTypeEnum::Tuple2), type0(type0_), type1(type1_) {}
+  CLTuple2TypeInfo() : CLTypeInfo(CLTypeEnum::Tuple2) {}
+};
+
+// to_json
+inline void to_json(nlohmann::json& j, const CLTuple2TypeInfo& p) {
+  j = nlohmann::json{{p.type0}, {p.type1}};
+}
+
+// from_json
+inline void from_json(const nlohmann::json& j, CLTuple2TypeInfo& p) {
+  p.type0 = j[0].get<std::string>();
+  p.type1 = j[1].get<std::string>();
+}
+
+struct CLTuple3TypeInfo : public CLTypeInfo {
+  std::string type0;
+  std::string type1;
+  std::string type2;
+
+  CLTuple3TypeInfo(std::string type0_, std::string type1_, std::string type2_)
+      : CLTypeInfo(CLTypeEnum::Tuple3),
+        type0(type0_),
+        type1(type1_),
+        type2(type2_) {}
+  CLTuple3TypeInfo() : CLTypeInfo(CLTypeEnum::Tuple3) {}
+};
+
+// to_json
+inline void to_json(nlohmann::json& j, const CLTuple3TypeInfo& p) {
+  j = nlohmann::json{{p.type0}, {p.type1}, {p.type2}};
+}
+
+// from_json
+inline void from_json(const nlohmann::json& j, CLTuple3TypeInfo& p) {
+  p.type0 = j[0].get<std::string>();
+  p.type1 = j[1].get<std::string>();
+  p.type2 = j[2].get<std::string>();
 }
 
 }  // namespace Casper
