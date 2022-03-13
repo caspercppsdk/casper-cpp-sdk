@@ -22,7 +22,30 @@ struct CLType {
   std::optional<CLTuple2TypeInfo> tuple2_type_info = std::nullopt;
   std::optional<CLTuple3TypeInfo> tuple3_type_info = std::nullopt;
 
-  operator CLTypeEnum() const { return CLTypeEnum::Map; }
+  operator CLTypeEnum() const {
+    if (type_info.has_value()) {
+      return type_info.value().type;
+    } else if (map_type_info.has_value()) {
+      return CLTypeEnum::Map;
+    } else if (option_type_info.has_value()) {
+      return CLTypeEnum::Option;
+    } else if (list_type_info.has_value()) {
+      return CLTypeEnum::List;
+    } else if (byte_array_type_info.has_value()) {
+      return CLTypeEnum::ByteArray;
+    } else if (result_type_info.has_value()) {
+      return CLTypeEnum::Result;
+    } else if (tuple1_type_info.has_value()) {
+      return CLTypeEnum::Tuple1;
+    } else if (tuple2_type_info.has_value()) {
+      return CLTypeEnum::Tuple2;
+    } else if (tuple3_type_info.has_value()) {
+      return CLTypeEnum::Tuple3;
+    } else {
+      // TODO: add Unit and
+      return CLTypeEnum::Any;
+    }
+  }
 
   CLType() {}
 };
