@@ -17,14 +17,14 @@ struct EraInfo {
   EraInfo() {}
 };
 
-// from_json of EraInfo
-inline void from_json(const nlohmann::json& j, EraInfo& p) {
-  j.at("seigniorage_allocations").get_to(p.seigniorage_allocations);
-}
-
 // to_json of EraInfo
 inline void to_json(nlohmann::json& j, const EraInfo& p) {
   j = {{"seigniorage_allocations", p.seigniorage_allocations}};
+}
+
+// from_json of EraInfo
+inline void from_json(const nlohmann::json& j, EraInfo& p) {
+  j.at("seigniorage_allocations").get_to(p.seigniorage_allocations);
 }
 
 }  // namespace Casper

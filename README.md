@@ -49,14 +49,6 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 0. MacOS and Windows support
 1. The following RPC methods will be fully implemented in the C++ SDK
     * infoGetDeploy
-    * infoGetStatus
-    * chainGetBlockTransfers
-    * chainGetBlock
-    * chainGetEraInfoBySwitchBlock
-    * stateGetItem
-    * stateGetDictionaryItem
-    * stateGetBalance
-    * stateGetAuctionInfo
 
 2. Documentation
 3. C++ version of CLType primitives

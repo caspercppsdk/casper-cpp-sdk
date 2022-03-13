@@ -95,7 +95,7 @@ inline void to_json(nlohmann::json& j, const StoredValue& p) {
  */
 inline void from_json(const nlohmann::json& j, StoredValue& p) {
   if (j.count("CLValue") != 0) {
-    j.at("CLValue").get_to(p.cl_value.value());
+    p.cl_value = j.at("CLValue").get<CLValue>();
   } else if (j.count("Account") != 0) {
     p.account = j.at("Account").get<Account>();
   } else if (j.count("ContractWasm") != 0) {

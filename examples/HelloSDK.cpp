@@ -6,6 +6,15 @@
 /// Construct a Casper::Client object
 Casper::Client casper_client(CASPER_TEST_ADDRESS);
 
+template <typename T>
+void printResult(const T& result, int indent = 2) {
+  nlohmann::json resultJSON;
+  nlohmann::to_json(resultJSON, result);
+
+  std::cout << resultJSON.dump(indent);
+  std::cout << std::endl;
+}
+
 /// “info_get_peers” RPC.
 void infoGetPeers() {
   std::cout << "-----------------------------------------------" << std::endl;
@@ -257,27 +266,12 @@ void chainGetEraInfoBySwitchBlock() {
   /// Call chain_get_era_info_by_switch_block rpc function.
   Casper::GetEraInfoResult eraInfoResult =
       casper_client.GetEraInfoBySwitchBlock(
-          "acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330");
-  std::cout << "\napi_version: " << eraInfoResult.api_version;
+          "d2077716e5b8796723c5720237239720f54e6ada54e3357f2c4896f2a51a6d8f");
 
-  if (eraInfoResult.era_summary.has_value()) {
-    Casper::EraSummary eraSummary = eraInfoResult.era_summary.value();
-
-    std::cout << "\nblock_hash: " << eraSummary.block_hash
-              << "\nera_id: " << eraSummary.era_id
-              << "\nmerkle_proof: " << eraSummary.merkle_proof
-              << "\nstate_root_hash: " << eraSummary.state_root_hash
-              << "\nstored_value: ";
-    // TODO: add a toString function to the stored value class
-    // << eraInfoResult.era_summary.stored_value;  // TODO: std::visit
-    // ToString
-  }
-
-  std::cout << std::endl;
+  printResult(eraInfoResult);
 }
 
 void stateGetItem() {
-  // TODO: implement
   std::cout << "-----------------------------------------------\n";
   std::cout << "state_get_item" << std::endl;
   Casper::GetItemResult itemResult = casper_client.GetItem(
@@ -290,11 +284,22 @@ void stateGetItem() {
 }
 
 void stateGetDictionaryItem() {
-  // TODO: implement
   std::cout << "-----------------------------------------------\n";
   std::cout << "state_get_dictionary_item" << std::endl;
 
-  std::cout << std::endl;
+  std::string state_root_hash =
+      "322b8d17faea2ee780b9b952a25a86520d36a78e20113f0658ae0b29a68a7384";
+
+  std::string item_key =
+      "dictionary-"
+      "5d3e90f064798d54e5e53643c4fce0cbb1024aadcad1586cc4b7c1358a530373";
+
+  Casper::GetDictionaryItemResult dictionaryItemResult =
+      casper_client.GetDictionaryItem(state_root_hash, item_key);
+
+  nlohmann::json itemJSON;
+  to_json(itemJSON, dictionaryItemResult.stored_value);
+  std::cout << itemJSON.dump(2) << std::endl;
 }
 
 void stateGetBalance() {
@@ -303,11 +308,10 @@ void stateGetBalance() {
 
   /// Call state_get_balance rpc function.
   Casper::GetBalanceResult balanceResult = casper_client.GetAccountBalance(
-      "uref-ca7f8a20800e189b3509952c84db91efa04df7bb73c43ae34a5598d88ac7a783-"
+      "uref-54fd72455872082a254b0160e94a86245acd0c441f526688bda1261d0969057a-"
       "007",
-      "f5abb3964382e0dde4bc3ec38414f43f325f5dcc6493d5a7c4037972793fb302");
+      "66eb7e43886c908aae8246ba2d22aa30d21e1c187a38fa3093f14e4a4219dd6c");
   std::cout << "\nbalanceResult: " << balanceResult.balance_value;
-
   std::cout << std::endl;
 }
 
@@ -404,7 +408,7 @@ int main() {
   // chainGetStateRootHash();
 
   // Milestone 2
-  infoGetDeploy();
+  // infoGetDeploy();
 
   // infoGetStatus();
 

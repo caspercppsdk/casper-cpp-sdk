@@ -44,10 +44,9 @@ inline void to_json(nlohmann::json& j, const GetEraInfoResult& p) {
 inline void from_json(const nlohmann::json& j, GetEraInfoResult& p) {
   nlohmann::from_json(j, static_cast<RpcResult&>(p));
 
-  if (!j.is_null() && j.find("era_summary") != j.end() &&
-      !j.at("era_summary").is_null())
-    j.at("era_summary").get_to(p.era_summary.value());
-  else
-    p.era_summary = std::nullopt;
+  if (j.count("era_summary") != 0) {
+    p.era_summary = j.at("era_summary").get<EraSummary>();
+  }
 }
+
 }  // namespace Casper
