@@ -59,7 +59,7 @@ void get_status_info_test() {
   TEST_ASSERT(result.starting_state_root_hash != "");
   TEST_ASSERT(result.peers.size() != 0);
   TEST_ASSERT(result.build_version != "");
-  TEST_ASSERT(result.uptime != "");
+  TEST_ASSERT(result.uptime > 0);
 }
 
 /**

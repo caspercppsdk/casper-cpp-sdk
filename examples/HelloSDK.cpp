@@ -95,55 +95,9 @@ void infoGetStatus() {
 
   /// Call GetStatusInfo function.
   Casper::GetStatusResult status_result = casper_client.GetStatusInfo();
-  std::cout << "\napi_version: " << status_result.api_version;
-  std::cout << "\nchainspec_name: " << status_result.chainspec_name;
-  std::cout << "\nstarting_state_root_hash: "
-            << status_result.starting_state_root_hash;
-
-  std::cout << "\n";
-
-  std::cout << "\npeers.size = " << status_result.peers.size() << "\n";
-  // limited by 2 to improve readability
-  for (std::size_t i = 0;
-       i < std::min(2, static_cast<int>(status_result.peers.size())); i++) {
-    std::cout << "Peer " << std::to_string(i + 1)
-              << "\n\tnode_id: " << status_result.peers[i].node_id
-              << "\n\taddress: " << status_result.peers[i].address << "\n";
-  }
-
-  if (status_result.last_added_block_info.has_value()) {
-    Casper::BlockInfo last_added_block_info =
-        status_result.last_added_block_info.value();
-
-    std::cout << "\nBlock info: creator: " << last_added_block_info.creator
-              << "\nera_id: " << last_added_block_info.era_id
-              << "\nhash: " << last_added_block_info.hash
-              << "\nheight: " << last_added_block_info.height
-              << "\nstate_root_hash: " << last_added_block_info.state_root_hash
-              << "\ntimestamp: " << last_added_block_info.timestamp;
-  }
-
-  std::cout << "\n";
-
-  if (status_result.our_public_signing_key.has_value()) {
-    std::cout << "\nour_public_signing_key: "
-              << status_result.our_public_signing_key.value() << "\n";
-  }
-
-  if (status_result.round_length.has_value()) {
-    std::cout << "\nround_length: " << status_result.round_length.value()
-              << "\n";
-  }
-
-  if (status_result.next_upgrade.has_value()) {
-    std::cout << "\next_upgrade: " << status_result.next_upgrade.value()
-              << "\n";
-  }
-
-  std::cout << "\nbuild_version: " << status_result.build_version;
-  std::cout << "\nuptime: " << status_result.uptime;
-
-  std::cout << std::endl;
+  nlohmann::json j;
+  to_json(j, status_result);
+  std::cout << "\n" << j.dump() << "\n";
 }
 
 void chainGetBlockTransfers() {
@@ -410,7 +364,7 @@ int main() {
   // Milestone 2
   // infoGetDeploy();
 
-  // infoGetStatus();
+  infoGetStatus();
 
   // chainGetBlockTransfers();
 
