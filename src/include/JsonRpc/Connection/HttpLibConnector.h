@@ -1,9 +1,9 @@
 #pragma once
+#include <string>
+
+#include "JsonRpc/Connection/httplib.h"
 #include "jsonrpccxx/iclientconnector.hpp"
 #include "jsonrpccxx/server.hpp"
-
-#include <string>
-#include "httplib.h"
 
 /**
  * @brief Wrapper class for the Http Client Connection class in jsonrpccxx.

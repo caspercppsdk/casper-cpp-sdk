@@ -1,7 +1,9 @@
 #pragma once
 
-#include "RpcResult.h"
-
+#include "Base.h"
+#include "JsonRpc/ResultTypes/RpcResult.h"
+#include "Types/Deploy.h"
+#include "Types/ExecutionResult.h"
 /**
  * @brief Result for the "info_get_deploy" rpc call.
  *
@@ -13,10 +15,10 @@ struct GetDeployInfoResult : public RpcResult {
    * @brief Construct a new GetDeployResult object.
    *
    */
-  GetDeployInfoResult() : deploy_info() {}
+  Deploy deploy;
+  std::vector<ExecutionResult> execution_results;
 
-  /// The deploy info as a string.
-  std::string deploy_info;
+  GetDeployInfoResult() {}
 };
 
 /**
@@ -26,7 +28,9 @@ struct GetDeployInfoResult : public RpcResult {
  * @param p GetDeployInfoResult Result object to construct from.
  */
 inline void to_json(nlohmann::json& j, const GetDeployInfoResult& p) {
-  j = nlohmann::json{{"deploy_info", p.deploy_info}};
+  j = static_cast<RpcResult>(p);
+  j["deploy"] = p.deploy;
+  j["execution_results"] = p.execution_results;
 }
 
 /**
@@ -36,6 +40,8 @@ inline void to_json(nlohmann::json& j, const GetDeployInfoResult& p) {
  * @param p GetDeployInfoResult object to construct.
  */
 inline void from_json(const nlohmann::json& j, GetDeployInfoResult& p) {
-  j.at("deploy_info").get_to(p.deploy_info);
+  nlohmann::from_json(j, static_cast<RpcResult&>(p));
+  j.at("deploy").get_to(p.deploy);
+  j.at("execution_results").get_to(p.execution_results);
 }
 }  // namespace Casper

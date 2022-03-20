@@ -55,3 +55,12 @@ Testing/Temporary
 
 # Install output
 install_manifest.txt
+
+cryptopp-build
+cryptopp-prefix
+LIBCRYPTOPP-prefix
+test/Testing
+examples/example
+
+lib/cryptopp/adhoc.cpp
+.DS_Store

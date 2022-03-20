@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "Base.h"
 #include "nlohmann/json.hpp"
 
 /**
@@ -14,8 +14,8 @@ struct RpcResult {
    * @brief Construct a new Rpc Result object
    *
    */
-  RpcResult() : api_version() {}
-
+  RpcResult() {}
+  RpcResult(std::string api_version_) : api_version(api_version_) {}
   /// The API version as a string.
   std::string api_version;
 };
@@ -37,6 +37,8 @@ inline void to_json(nlohmann::json& j, const RpcResult& p) {
  * @param p RpcResult object to construct.
  */
 inline void from_json(const nlohmann::json& j, RpcResult& p) {
-  j.at("api_version").get_to(p.api_version);
+  if (!j.is_null() && j.find("api_version") != j.end()) {
+    j.at("api_version").get_to(p.api_version);
+  }
 }
 }  // namespace Casper

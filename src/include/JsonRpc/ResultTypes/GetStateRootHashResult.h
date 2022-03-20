@@ -13,8 +13,8 @@ struct GetStateRootHashResult : public RpcResult {
    * @brief Construct a new GetStateRootHashResult object.
    *
    */
-  GetStateRootHashResult() : state_root_hash() {}
-
+  GetStateRootHashResult() {}
+  GetStateRootHashResult(std::string hash_) : state_root_hash(hash_) {}
   /// The state root hash as a string.
   std::string state_root_hash;
 };
@@ -26,7 +26,8 @@ struct GetStateRootHashResult : public RpcResult {
  * @param p GetStateRootHash Result object to construct from.
  */
 inline void to_json(nlohmann::json& j, const GetStateRootHashResult& p) {
-  j = nlohmann::json{{"state_root_hash", p.state_root_hash}};
+  j = static_cast<RpcResult>(p);
+  j["state_root_hash"] = p.state_root_hash;
 }
 
 /**
@@ -36,6 +37,8 @@ inline void to_json(nlohmann::json& j, const GetStateRootHashResult& p) {
  * @param p GetStateRootHashResult object to construct.
  */
 inline void from_json(const nlohmann::json& j, GetStateRootHashResult& p) {
+  nlohmann::from_json(j, static_cast<RpcResult&>(p));
   j.at("state_root_hash").get_to(p.state_root_hash);
 }
+
 }  // namespace Casper

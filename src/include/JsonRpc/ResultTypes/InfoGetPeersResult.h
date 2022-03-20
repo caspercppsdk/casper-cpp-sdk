@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+
 #include "RpcResult.h"
 #include "Types/Peer.h"
 
@@ -15,8 +16,9 @@ struct InfoGetPeersResult : public RpcResult {
    * @brief Construct a new InfoGetPeersResult object.
    *
    */
-  InfoGetPeersResult() : peers() {}
-
+  InfoGetPeersResult() {}
+  InfoGetPeersResult(std::vector<Peer> peers_) : peers(peers_) {}
+  
   /// The peers as a vector of Peer objects.
   std::vector<Peer> peers;
 };
@@ -28,7 +30,8 @@ struct InfoGetPeersResult : public RpcResult {
  * @param p InfoGetPeersResult Result object to construct from.
  */
 inline void to_json(nlohmann::json& j, const InfoGetPeersResult& p) {
-  j = nlohmann::json{{"peers", p.peers}};
+  j = static_cast<RpcResult>(p);
+  j["peers"] = p.peers;
 }
 
 /**
@@ -38,6 +41,7 @@ inline void to_json(nlohmann::json& j, const InfoGetPeersResult& p) {
  * @param p InfoGetPeersResult object to construct.
  */
 inline void from_json(const nlohmann::json& j, InfoGetPeersResult& p) {
+  nlohmann::from_json(j, static_cast<RpcResult&>(p));
   j.at("peers").get_to(p.peers);
 }
 }  // namespace Casper

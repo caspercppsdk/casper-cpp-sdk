@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include "RpcResult.h"
 #include "Types/EraSummary.h"
 
@@ -15,11 +16,10 @@ struct GetEraInfoResult : public RpcResult {
    * @brief Construct a new GetEraInfoResult object.
    *
    */
+  GetEraInfoResult(EraSummary era_summary_) : era_summary(era_summary_) {}
   GetEraInfoResult() {}
 
-  /// The state root hash as a string.
-  std::string api_version;
-  EraSummary era_summary; // Optional.
+  std::optional<EraSummary> era_summary = std::nullopt;  // Optional.
 };
 
 /**
@@ -29,7 +29,10 @@ struct GetEraInfoResult : public RpcResult {
  * @param p GetStateRootHash Result object to construct from.
  */
 inline void to_json(nlohmann::json& j, const GetEraInfoResult& p) {
-  j = nlohmann::json{{"api_version", p.api_version}};
+  j = static_cast<RpcResult>(p);
+  if (p.era_summary.has_value()) {
+    j["era_summary"] = p.era_summary.value();
+  }
 }
 
 /**
@@ -39,9 +42,11 @@ inline void to_json(nlohmann::json& j, const GetEraInfoResult& p) {
  * @param p GetEraInfoResult object to construct.
  */
 inline void from_json(const nlohmann::json& j, GetEraInfoResult& p) {
-  j.at("api_version").get_to(p.api_version);
+  nlohmann::from_json(j, static_cast<RpcResult&>(p));
 
-  if (!j.at("era_summary").is_null())
-    from_json(j.at("era_summary"), p.era_summary);
+  if (j.count("era_summary") != 0) {
+    p.era_summary = j.at("era_summary").get<EraSummary>();
+  }
 }
+
 }  // namespace Casper
