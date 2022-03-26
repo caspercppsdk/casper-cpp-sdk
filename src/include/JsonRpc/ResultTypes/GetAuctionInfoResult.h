@@ -2,18 +2,21 @@
 
 #include "JsonRpc/ResultTypes/RpcResult.h"
 #include "Types/AuctionState.h"
+
+namespace Casper {
+
 /**
  * @brief Result for the "state_get_auction_info" rpc call.
  *
  */
-namespace Casper {
 struct GetAuctionInfoResult : public RpcResult {
+  /// The auction state.
+  AuctionState auction_state;
+
   /**
    * @brief Construct a new GetAuctionInfoResult object.
    *
    */
-  AuctionState auction_state;
-
   GetAuctionInfoResult() {}
 };
 

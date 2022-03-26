@@ -1,15 +1,15 @@
 #pragma once
 
 #include <optional>
+
 #include "RpcResult.h"
 #include "Types/EraSummary.h"
 
+namespace Casper {
 /**
  * @brief Result for the "chain_get_era_info_by_switch_block" rpc call.
  *
  */
-namespace Casper {
-
 struct GetEraInfoResult : public RpcResult {
  public:
   /**

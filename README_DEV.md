@@ -28,3 +28,7 @@
 ### Exceptional JSON Examples
     Rust Enums -> StoredValue.h
     Rust Option -> Delegator.h, Transfer.h
+
+### Optional TODO
+    1. MacOS and Windows support
+    2. Doxygen examples support (https://www.doxygen.nl/manual/commands.html#cmdexample)

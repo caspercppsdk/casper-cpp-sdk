@@ -2,11 +2,11 @@
 
 #include "RpcResult.h"
 
+namespace Casper {
 /**
  * @brief Result for the "chain_get_state_root_hash" rpc call.
  *
  */
-namespace Casper {
 struct PutDeployResult : public RpcResult {
  public:
   /**

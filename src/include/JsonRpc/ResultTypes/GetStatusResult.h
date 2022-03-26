@@ -2,14 +2,14 @@
 
 #include "RpcResult.h"
 #include "Types/BlockInfo.h"
-#include "Types/Peer.h"
 #include "Types/Definitions.h"
+#include "Types/Peer.h"
 
+namespace Casper {
 /**
  * @brief Result for the "info_get_status" rpc call.
  *
  */
-namespace Casper {
 struct GetStatusResult : public RpcResult {
  public:
   /**

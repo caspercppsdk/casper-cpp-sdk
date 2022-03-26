@@ -3,11 +3,11 @@
 #include "JsonRpc/ResultTypes/RpcResult.h"
 #include "Types/StoredValue.h"
 
+namespace Casper {
 /**
  * @brief Result for the "state_get_item" rpc call.
  *
  */
-namespace Casper {
 struct GetItemResult : public RpcResult {
  public:
   /**

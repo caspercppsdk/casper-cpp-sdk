@@ -4,11 +4,11 @@
 #include "JsonRpc/ResultTypes/RpcResult.h"
 #include "Types/Transfer.h"
 
+namespace Casper {
 /**
  * @brief Result for the "chain_get_block_transfers" rpc call.
  *
  */
-namespace Casper {
 struct GetBlockTransfersResult : public RpcResult {
  public:
   /**

@@ -19,23 +19,11 @@ void printResult(const T& result, int indent = 2) {
 void infoGetPeers() {
   std::cout << "-----------------------------------------------" << std::endl;
   std::cout << "info_get_peers\n";
+
   /// Call GetNodePeers function from the client object.
   Casper::InfoGetPeersResult peers_result = casper_client.GetNodePeers();
 
-  /// Print the nodes in the network.
-  std::cout << "\npeers.size = " << peers_result.peers.size() << "\n";
-  // limited by 2 to improve readability
-  for (int i = 0; i < std::min(2, static_cast<int>(peers_result.peers.size()));
-       i++) {
-    /// Print the node ID.
-    std::cout << "Peer " << i + 1
-              << "\n\tnode_id: " << peers_result.peers[i].node_id;
-
-    /// Print the node IP address.
-    std::cout << "\n\taddress: " << peers_result.peers[i].address << "\n";
-  }
-
-  std::cout << std::endl;
+  printResult(peers_result);
 }
 
 /// “chain_get_state_root_hash” RPC.
@@ -75,7 +63,6 @@ void infoGetDeploy() {
   std::cout << "\ndeploy: " << deployJSON.dump(2);
   std::vector<Casper::ExecutionResult> execution_results =
       deploy_result.execution_results;
-  // TODO: uncomment below
 
   std::cout << "\nexecution_results.size: " << execution_results.size() << "\n";
   for (size_t i = 0;

@@ -64,3 +64,5 @@ examples/example
 
 lib/cryptopp/adhoc.cpp
 .DS_Store
+docs/html
+docs/latex

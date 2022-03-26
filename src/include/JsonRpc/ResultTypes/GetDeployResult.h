@@ -4,11 +4,12 @@
 #include "JsonRpc/ResultTypes/RpcResult.h"
 #include "Types/Deploy.h"
 #include "Types/ExecutionResult.h"
+
+namespace Casper {
 /**
  * @brief Result for the "info_get_deploy" rpc call.
  *
  */
-namespace Casper {
 struct GetDeployInfoResult : public RpcResult {
  public:
   /**
