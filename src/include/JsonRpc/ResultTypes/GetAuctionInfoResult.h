@@ -10,12 +10,13 @@ namespace Casper {
  *
  */
 struct GetAuctionInfoResult : public RpcResult {
+  /// The auction state.
+  AuctionState auction_state;
+
   /**
    * @brief Construct a new GetAuctionInfoResult object.
    *
    */
-  AuctionState auction_state;
-
   GetAuctionInfoResult() {}
 };
 
