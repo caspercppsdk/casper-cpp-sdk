@@ -3,6 +3,7 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 
 ## Dependencies
 1. [CMake Version 3.0.0 or newer](https://cmake.org)
+2. [Doxygen Version 1.8.8 or newer](https://www.doxygen.nl)
 
 
 ## Build
@@ -53,10 +54,8 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 1. The following RPC methods will be fully implemented in the C++ SDK
     * infoGetDeploy
 
-2. Documentation
-3. C++ version of CLType primitives
-4. C++ version for Casper Domain Specific Objects
-5. Serialization of Casper Domain Specific Objects
-6. ED25519/SECP256K1 key pairs  Wrappers
-7. PutDeploy RPC call implemented
-8. Refactoring C++ SDK calls to return Casper Domain Specific Objects
+2. C++ version of CLType primitives
+3. C++ version for Casper Domain Specific Objects
+4. Serialization of Casper Domain Specific Objects
+5. ED25519/SECP256K1 key pairs  Wrappers
+6. PutDeploy RPC call implemented

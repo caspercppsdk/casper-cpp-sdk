@@ -32,3 +32,4 @@
 ### Optional TODO
     1. MacOS and Windows support
     2. Doxygen examples support (https://www.doxygen.nl/manual/commands.html#cmdexample)
+    3. "sudo apt-get install graphviz -y" can be added to dependencies
