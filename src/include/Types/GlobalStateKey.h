@@ -75,6 +75,7 @@ struct GlobalStateKey {
  protected:
   virtual CryptoPP::SecByteBlock _GetRawBytesFromKey(std::string key);
 
+ public:
   GlobalStateKey();
 
   /// <summary>
@@ -87,7 +88,6 @@ struct GlobalStateKey {
   /// </summary>
   GlobalStateKey(std::string key_, std::string key_prefix);
 
- public:
   std::string ToHexString();
 
   /// <summary>
