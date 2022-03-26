@@ -2,6 +2,8 @@
 #include "Base.h"
 #include "nlohmann/json.hpp"
 
+namespace Casper {
+
 /**
  * @brief A node in the network.
  *
@@ -42,3 +44,5 @@ inline void from_json(const nlohmann::json& j, Peer& p) {
   j.at("node_id").get_to(p.node_id);
   j.at("address").get_to(p.address);
 }
+
+}  // namespace Casper
