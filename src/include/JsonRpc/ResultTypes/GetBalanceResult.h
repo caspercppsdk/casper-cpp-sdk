@@ -3,12 +3,11 @@
 #include "JsonRpc/ResultTypes/RpcResult.h"
 #include "Types/Definitions.h"  // big_int
 
+namespace Casper {
 /**
  * @brief Result for the "state_get_balance" rpc call.
  *
  */
-namespace Casper {
-
 struct GetBalanceResult : public RpcResult {
   /**
    * @brief Construct a new GetBalanceResult object.

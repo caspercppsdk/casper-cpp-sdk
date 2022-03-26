@@ -6,11 +6,11 @@
 #include "Types/Transfer.h"
 #include "nlohmann/json.hpp"
 
+namespace Casper {
 /**
  * @brief Result for the "chain_get_block" rpc call.
  *
  */
-namespace Casper {
 struct GetBlockResult : public RpcResult {
   /**
    * @brief Construct a new GetBlockResult object.

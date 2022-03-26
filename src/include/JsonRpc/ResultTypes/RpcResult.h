@@ -3,11 +3,11 @@
 #include "Base.h"
 #include "nlohmann/json.hpp"
 
+namespace Casper {
 /**
  * @brief Base struct for all RPC result types.
  *
  */
-namespace Casper {
 struct RpcResult {
  public:
   /**

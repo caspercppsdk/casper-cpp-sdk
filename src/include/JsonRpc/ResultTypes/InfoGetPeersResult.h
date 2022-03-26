@@ -5,11 +5,11 @@
 #include "RpcResult.h"
 #include "Types/Peer.h"
 
+namespace Casper {
 /**
  * @brief Result for the "info_get_peers" rpc call.
  *
  */
-namespace Casper {
 struct InfoGetPeersResult : public RpcResult {
  public:
   /**
