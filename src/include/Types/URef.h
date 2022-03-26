@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Base.h"
-
 #include "Types/AccessRights.h"
 #include "Types/GlobalStateKey.h"
 #include "Utils/CEP57Checksum.h"
@@ -51,7 +50,7 @@ struct URef : public GlobalStateKey {
 
 inline void to_json(nlohmann::json& j, const URef& p) {
   nlohmann::to_json(j, static_cast<GlobalStateKey>(p));
-  j.update({{"access_rights", p.access_rights}});
+  j.update(p.access_rights);
 }
 
 /**
