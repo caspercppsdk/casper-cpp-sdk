@@ -5,6 +5,9 @@
 #include "Types/ValidatorBid.h"
 
 namespace Casper {
+/// <summary>
+/// Auction contract data.
+/// </summary>
 struct AuctionState {
   /// <summary>
   /// Global state hash.
@@ -40,7 +43,6 @@ inline void to_json(nlohmann::json& j, const AuctionState& p) {
                      {"block_height", p.block_height},
                      {"era_validators", p.era_validators},
                      {"bids", p.bids}};
-  // TODO:[JsonConverter(typeof(BidsListConverter))]
 }
 
 /**
@@ -53,8 +55,6 @@ inline void from_json(const nlohmann::json& j, AuctionState& p) {
   j.at("state_root_hash").get_to(p.state_root_hash);
   j.at("block_height").get_to(p.block_height);
   j.at("era_validators").get_to(p.era_validators);
-  // TODO:[JsonConverter(typeof(BidsListConverter))]
-
   j.at("bids").get_to(p.bids);
 }
 }  // namespace Casper

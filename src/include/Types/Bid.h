@@ -1,13 +1,11 @@
 #pragma once
 
 #include "Base.h"
-
 #include "Types/Definitions.h"
 #include "Types/Delegator.h"
 #include "Types/PublicKey.h"
 #include "Types/URef.h"
 #include "Types/VestingSchedule.h"
-
 #include "Utils/CryptoUtil.h"
 namespace Casper {
 /// <summary>
@@ -28,7 +26,6 @@ struct Bid {
   /// <summary>
   /// The delegators.
   /// </summary>
-
   std::vector<Delegator> delegators;
 
   /// <summary>
@@ -40,7 +37,6 @@ struct Bid {
   /// The amount of tokens staked by a validator (not including
   /// delegators).
   /// </summary>
-  // TODO: [JsonConverter(typeof(BigIntegerConverter))]
   big_int staked_amount;
 
   /// <summary>
@@ -76,7 +72,6 @@ inline void to_json(nlohmann::json& j, const Bid& p) {
   if (p.vesting_schedule.has_value()) {
     j["vesting_schedule"] = p.vesting_schedule.value();
   }
-  // TODO:[JsonConverter(typeof(BidsListConverter))]
 }
 
 /**
@@ -103,23 +98,6 @@ inline void from_json(const nlohmann::json& j, Bid& p) {
 
   j.at("delegators").get_to(p.delegators);
   j.at("inactive").get_to(p.inactive);
-
-  /*
-  p.validator_public_key =
-      PublicKey::FromHexString(j.at("validator_public_key"));
-
-  p.bonding_purse = URef(j.at("bonding_purse").get<std::string>());
-
-  p.staked_amount = j.at("staked_amount").get<std::string>();
-
-  p.delegation_rate = j.at("delegation_rate").get<unsigned int>();
-
-  p.vesting_schedule = j.at("vesting_schedule");
-  p.delegators = j.at("delegators");
-
-  p.inactive = j.at("inactive").get<bool>();
-  */
-  // TODO:[JsonConverter(typeof(BidsListConverter))]
 }
 
 }  // namespace Casper

@@ -7,16 +7,20 @@
 #include "Types/URef.h"
 
 namespace Casper {
+
+/// <summary>
+/// Thresholds that have to be met when executing an action of a certain type.
+/// </summary>
 struct ActionThresholds {
   /// <summary>
   /// Threshold that has to be met for a deployment action
   /// </summary>
-  uint8_t deployment;  // deployment
+  uint8_t deployment;
 
   /// <summary>
   /// Threshold that has to be met for a key management action
   /// </summary>
-  uint8_t key_management;  // key_management
+  uint8_t key_management;
 
   ActionThresholds() {}
 };
@@ -41,8 +45,9 @@ inline void from_json(const nlohmann::json& j, ActionThresholds& p) {
   j.at("deployment").get_to(p.deployment);
   j.at("key_management").get_to(p.key_management);
 }
+
 /// <summary>
-/// public key allowed to provide signatures on deploys for the account
+/// Public Key allowed to provide signatures on deploys for the account
 /// </summary>
 struct AssociatedKey {
   /// <summary>
