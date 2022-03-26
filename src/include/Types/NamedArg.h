@@ -5,8 +5,18 @@
 #include "nlohmann/json.hpp"
 
 namespace Casper {
+/// <summary>
+/// Named arguments passed as input in a Deploy item.
+/// </summary>
 struct NamedArg {
+  /// <summary>
+  /// The name of the argument.
+  /// </summary>
   std::string name;
+
+  /// <summary>
+  /// The value of the argument.
+  /// </summary>
   CLValue value;
 
   NamedArg() {}

@@ -4,9 +4,19 @@
 #include "nlohmann/json.hpp"
 
 namespace Casper {
+/// <summary>
+/// A validator's weight.
+/// </summary>
 struct ValidatorWeight {
   // TODO: Make PublicKey instead of string
+  /// <summary>
+  /// Validator's Public Key.
+  /// </summary>
   std::string public_key;
+
+  /// <summary>
+  /// Validator's weight.
+  /// </summary>
   big_int weight;
 
   ValidatorWeight() {}

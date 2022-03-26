@@ -7,8 +7,18 @@
 #include "nlohmann/json.hpp"
 
 namespace Casper {
+/// <summary>
+/// Vesting schedule for a genesis validator. `None` if non-genesis validator.
+/// </summary>
 struct VestingSchedule {
+  /// <summary>
+  /// Timestamp as milliseconds since epoch.
+  /// </summary>
   uint64_t initial_release_timestamp_millis;
+
+  /// <summary>
+  /// Amount of locked tokens.
+  /// </summary>
   std::vector<big_int> locked_amounts;
 
   VestingSchedule() {}
