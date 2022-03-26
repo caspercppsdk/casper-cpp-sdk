@@ -4,21 +4,18 @@
 
 namespace Casper {
 
-/**
- * @brief A node in the network.
- *
- */
+/// <summary>
+/// A node in the network.
+/// </summary>
 struct Peer {
- public:
-  /**
-   * @brief Construct a new Peer object
-   *
-   */
-
-  /// The node ID as a string.
+  /// <summary>
+  /// Node Id.
+  /// </summary>
   std::string node_id;
 
+  /// <summary>
   /// Concatenation of the Node IP address and the port as a string.
+  /// </summary>
   std::string address;
 
   Peer() {}

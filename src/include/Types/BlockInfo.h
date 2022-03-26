@@ -1,17 +1,43 @@
 #pragma once
 
-#include <string>
-
+#include "Base.h"
+#include "Types/PublicKey.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
-
+/// <summary>
+/// Minimal info of a `Block`.
+/// </summary>
 struct BlockInfo {
+  /// <summary>
+  /// Validator node's public key
+  /// </summary>
+  // TODO: Make PublicKey instead of std::string
   std::string creator;
+
+  /// <summary>
+  /// The block era id.
+  /// </summary>
   uint64_t era_id;
+
+  /// <summary>
+  /// Block hash
+  /// </summary>
   std::string hash;
+
+  /// <summary>
+  /// Height of the block
+  /// </summary>
   uint64_t height;
+
+  /// <summary>
+  /// The state root hash.
+  /// </summary>
   std::string state_root_hash;
+
+  /// <summary>
+  /// The block timestamp.
+  /// </summary>
   std::string timestamp;
 
   BlockInfo() {}

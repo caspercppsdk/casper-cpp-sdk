@@ -1,16 +1,27 @@
 #pragma once
 #include "Base.h"
-#include "nlohmann/json.hpp"
-
 #include "Types/GlobalStateKey.h"
 #include "magic_enum/magic_enum.hpp"
+#include "nlohmann/json.hpp"
 
 namespace Casper {
+/// <summary>
+/// The type of operation performed while executing a deploy.
+/// </summary>
 enum class OpKind { Read, Write, Add, NoOp };
 
+/// <summary>
+/// An operation performed while executing a deploy.
+/// </summary>
 struct Operation {
-  // TODO: Make GlobalStateKey instead of string
-  std::string key;
+  /// <summary>
+  /// The formatted string of the `GlobalStateKey`.
+  /// </summary>
+  GlobalStateKey key;
+
+  /// <summary>
+  /// The type of operation.
+  /// </summary>
   OpKind kind;
 
   Operation() {}

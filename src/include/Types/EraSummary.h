@@ -6,11 +6,33 @@
 
 namespace Casper {
 
+/// <summary>
+/// The summary of an era
+/// </summary>
 struct EraSummary {
+  /// <summary>
+  /// The block hash
+  /// </summary>
   std::string block_hash;
+
+  /// <summary>
+  /// The Era Id
+  /// </summary>
   uint64_t era_id;
+
+  /// <summary>
+  /// The StoredValue containing era information.
+  /// </summary>
   StoredValue stored_value;
+
+  /// <summary>
+  /// Hex-encoded hash of the state root.
+  /// </summary>
   std::string state_root_hash;
+
+  /// <summary>
+  /// The merkle proof.
+  /// </summary>
   std::string merkle_proof;
 
   EraSummary() {}

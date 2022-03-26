@@ -4,12 +4,29 @@
 #include "nlohmann/json.hpp"
 
 namespace Casper {
+/// <summary>
+/// Information about a seigniorage allocation
+/// </summary>
 struct SeigniorageAllocation {
+  /// <summary>
+  /// True if a delegator reward allocation.
+  /// </summary>
   bool is_delegator;
 
   // TODO: make public key instead of string
+  /// <summary>
+  /// Public key of the delegator.
+  /// </summary>
   std::string delegator_public_key;
+
+  /// <summary>
+  /// Public key of the validator
+  /// </summary>
   std::string validator_public_key;
+
+  /// <summary>
+  /// Amount allocated as a reward
+  /// </summary>
   big_int amount;
 
   SeigniorageAllocation() {}

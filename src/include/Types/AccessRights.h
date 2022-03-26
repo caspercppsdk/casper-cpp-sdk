@@ -1,8 +1,14 @@
 #pragma once
 #include <cstdint>
+
 #include "magic_enum/magic_enum.hpp"
 #include "nlohmann/json.hpp"
+
 namespace Casper {
+/**
+ * @brief The access rights of an account as a binary value enum.
+ *
+ */
 enum struct AccessRights : uint8_t {
   /// <summary>
   /// No permissions
@@ -40,6 +46,12 @@ enum struct AccessRights : uint8_t {
 
 // to_json of AccessRights
 inline void to_json(nlohmann::json& j, const AccessRights& p) {
-  j = nlohmann::json{{"AccessRights", magic_enum::enum_name(p)}};
+  j = nlohmann::json{{"access_rights", magic_enum::enum_name(p)}};
 }
+
+// from_json of AccessRights
+// inline void from_json(const nlohmann::json& j, AccessRights& p) {
+//    Not implemented
+// }
+
 }  // namespace Casper

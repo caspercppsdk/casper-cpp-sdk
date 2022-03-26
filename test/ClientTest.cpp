@@ -200,7 +200,7 @@ void get_item_test() {
 
   TEST_ASSERT(result.stored_value.transfer.has_value());
   TEST_ASSERT(result.stored_value.transfer.value().deploy_hash != "");
-  TEST_ASSERT(result.stored_value.transfer.value().from != "");
+  TEST_ASSERT(result.stored_value.transfer.value().from.ToString() != "");
   TEST_ASSERT(result.stored_value.transfer.value().source.ToString() != "");
   TEST_ASSERT(result.stored_value.transfer.value().target.ToString() != "");
   TEST_ASSERT(result.stored_value.transfer.value().amount >= 0);

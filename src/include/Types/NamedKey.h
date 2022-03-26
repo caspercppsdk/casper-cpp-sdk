@@ -5,10 +5,16 @@
 #include "nlohmann/json.hpp"
 
 namespace Casper {
+/**
+ * @brief A named key in an Account or Contract.
+ *
+ */
 struct NamedKey {
+  /// The name of the entry.
   std::string name;
-  // TODO: Make key GlobalStateKey instead of std::string
-  std::string key;
+
+  /// The value of the entry: a Casper GlobalStateKey type.
+  GlobalStateKey key;
 
   NamedKey() {}
 };
@@ -17,7 +23,7 @@ struct NamedKey {
  * @brief Construct a JSON object from a NamedKey object.
  *
  * @param j JSON object to construct.
- * @param p Peer object to construct from.
+ * @param p NamedKey object to construct from.
  */
 inline void to_json(nlohmann::json& j, const NamedKey& p) {
   j = {{"name", p.name}, {"key", p.key}};
@@ -27,7 +33,7 @@ inline void to_json(nlohmann::json& j, const NamedKey& p) {
  * @brief Construct a NamedKey object from a JSON object.
  *
  * @param j JSON object to construct the object from.
- * @param p Peer object to construct.
+ * @param p NamedKey object to construct.
  */
 inline void from_json(const nlohmann::json& j, NamedKey& p) {
   j.at("name").get_to(p.name);

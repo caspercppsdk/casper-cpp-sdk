@@ -18,6 +18,9 @@ struct Signature {
   /// </summary>
   SecByteBlock raw_bytes;
 
+  /// <summary>
+  /// The Key algorithm used to create the signature.
+  /// </summary>
   KeyAlgo key_algorithm;
 
   Signature() {}
@@ -46,7 +49,6 @@ struct Signature {
   /// Creates a PublicKey object from a byte array (containing the
   /// Key algorithm identifier).
   /// </summary>
-
   static Signature FromBytes(SecByteBlock bytes) {
     if (bytes.empty())
       throw std::invalid_argument("Signature bytes cannot be empty.");

@@ -9,12 +9,31 @@
 #include "nlohmann/json.hpp"
 
 namespace Casper {
+/// <summary>
+/// A delegator associated with the given validator.
+/// </summary>
 struct Delegator {
   // TODO: make PublicKey instead of std::string
+  /// <summary>
+  /// Public Key of the delegator
+  /// </summary>
   std::string delegator_public_key;
+
+  /// <summary>
+  /// Amount of Casper token delegated
+  /// </summary>
   big_int staked_amount;
+
+  /// <summary>
+  /// The purse that was used for delegating.
+  /// </summary>
   URef bonding_purse;
+
+  /// <summary>
+  /// Public key of the validator
+  /// </summary>
   std::string validator_public_key;
+
   std::optional<VestingSchedule> vesting_schedule = std::nullopt;
 
   Delegator() {}

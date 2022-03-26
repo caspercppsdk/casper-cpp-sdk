@@ -1,22 +1,56 @@
 #pragma once
 
 #include <optional>
-#include "Base.h"
 
+#include "Base.h"
 #include "Types/Definitions.h"
 #include "Types/URef.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
 
+/// <summary>
+/// Represents a transfer from one purse to another
+/// </summary>
 struct Transfer {
+  /// <summary>
+  /// Deploy that created the transfer
+  /// </summary>
   std::string deploy_hash;
-  std::string from;
-  std::optional<std::string> to = std::nullopt;
+
+  /// <summary>
+  /// Account hash from which transfer was executed
+  /// </summary>
+  AccountHashKey from;
+
+  /// <summary>
+  /// Account to which funds are transferred
+  /// </summary>
+  std::optional<AccountHashKey> to = std::nullopt;
+
+  /// <summary>
+  /// Source purse
+  /// </summary>
   URef source;
+
+  /// <summary>
+  /// Target purse
+  /// </summary>
   URef target;
+
+  /// <summary>
+  /// Transfer amount
+  /// </summary>
   big_int amount;
+
+  /// <summary>
+  /// Gas
+  /// </summary>
   big_int gas;
+
+  /// <summary>
+  /// User-defined id
+  /// </summary>
   std::optional<uint64_t> id = std::nullopt;
 
   Transfer() {}
