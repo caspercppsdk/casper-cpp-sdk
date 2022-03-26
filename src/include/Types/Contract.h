@@ -5,11 +5,37 @@
 #include "nlohmann/json.hpp"
 
 namespace Casper {
+// Information, entry points and named keys belonging to a Contract
+
+/**
+ * @brief Structure that contains information about a contract such as its entry
+ * points and named keys
+ *
+ */
 struct Contract {
+  /// <summary>
+  /// Key of the ContractPackage object
+  /// </summary>
   std::string contract_package_hash;
+
+  /// <summary>
+  /// Key of the ContractWasm object
+  /// </summary>
   std::string contract_wasm_hash;
+
+  /// <summary>
+  ///  List of NamedKeys in the contract
+  /// </summary>
   std::vector<NamedKey> named_keys;
+
+  /// <summary>
+  /// List of entry points or methods in the contract
+  /// </summary>
   std::vector<EntryPoint> entry_points;
+
+  /// <summary>
+  /// The protocol version when the contract was deployed
+  /// </summary>
   std::string protocol_version;
 
   Contract() {}
@@ -42,4 +68,5 @@ inline void from_json(const nlohmann::json& j, Contract& p) {
   j.at("entry_points").get_to(p.entry_points);
   j.at("protocol_version").get_to(p.protocol_version);
 }
+
 }  // namespace Casper

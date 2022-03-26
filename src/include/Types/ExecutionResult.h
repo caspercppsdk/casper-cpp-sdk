@@ -2,17 +2,34 @@
 
 #include "Base.h"
 #include "Definitions.h"
-
 #include "Types/ExecutionEffect.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
 
+/// <summary>
+/// The failure result of executing a single deploy.
+/// </summary>
 struct ExecutionResultFailure {
+  /// <summary>
+  /// The effect of executing the deploy.
+  /// </summary>
   ExecutionEffect effect;
+
   // TODO: Make TransferKey instead of std::string
+  /// <summary>
+  /// A record of Transfers performed while executing the deploy.
+  /// </summary>
   std::vector<std::string> transfers;
+
+  /// <summary>
+  /// The cost of executing the deploy.
+  /// </summary>
   big_int cost;
+
+  /// <summary>
+  /// The error message associated with executing the deploy.
+  /// </summary>
   std::string error_message;
 
   ExecutionResultFailure() {}
@@ -34,10 +51,24 @@ inline void from_json(const nlohmann::json& j, ExecutionResultFailure& p) {
   j.at("error_message").get_to(p.error_message);
 }
 
+/// <summary>
+/// The success result of executing a single deploy.
+/// </summary>
 struct ExecutionResultSuccess {
+  /// <summary>
+  /// The effect of executing the deploy.
+  /// </summary>
   ExecutionEffect effect;
+
   // TODO: Make TransferKey instead of std::string
+  /// <summary>
+  /// A record of Transfers performed while executing the deploy.
+  /// </summary>
   std::vector<std::string> transfers;
+
+  /// <summary>
+  /// The cost of executing the deploy.
+  /// </summary>
   big_int cost;
 
   ExecutionResultSuccess() {}
@@ -57,9 +88,23 @@ inline void from_json(const nlohmann::json& j, ExecutionResultSuccess& p) {
   j.at("cost").get_to(p.cost);
 }
 
+/// <summary>
+/// The result of executing a single deploy.
+/// </summary>
 struct ExecutionResult {
+  /// <summary>
+  /// Failure result of executing the deploy.
+  /// </summary>
   std::optional<ExecutionResultFailure> failure = std::nullopt;
+
+  /// <summary>
+  /// Success result of executing the deploy.
+  /// </summary>
   std::optional<ExecutionResultSuccess> success = std::nullopt;
+
+  /// <summary>
+  /// The block hash.
+  /// </summary>
   std::string block_hash;
 
   ExecutionResult() {}

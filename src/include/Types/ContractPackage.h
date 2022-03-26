@@ -14,6 +14,9 @@ struct DisabledVersion {
   /// </summary>
   uint8_t contract_version;
 
+  /// <summary>
+  /// Contract protocol major version.
+  /// </summary>
   uint8_t protocol_version_major;
 
   DisabledVersion() {}
@@ -45,6 +48,9 @@ struct ContractVersion {
   /// </summary>
   uint8_t contract_version;
 
+  /// <summary>
+  /// Contract protocol major version.
+  /// </summary>
   uint8_t protocol_version_major;
 
   ContractVersion() {}
@@ -116,7 +122,6 @@ struct ContractPackage {
   /// </summary>
   std::vector<Group> groups;
 
-  // TODO: check lock_status
   ContractPackage() {}
 };
 

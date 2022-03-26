@@ -5,8 +5,18 @@
 #include "nlohmann/json.hpp"
 
 namespace Casper {
+/// <summary>
+/// Validator and weights for an Era.
+/// </summary>
 struct EraValidators {
+  /// <summary>
+  /// The Era Id.
+  /// </summary>
   uint64_t era_id;
+
+  /// <summary>
+  /// List with each validator weight in the Era
+  /// </summary>
   std::vector<ValidatorWeight> validator_weights;
 
   EraValidators() {}
@@ -21,7 +31,6 @@ struct EraValidators {
 inline void to_json(nlohmann::json& j, const EraValidators& p) {
   j = nlohmann::json{{"era_id", p.era_id},
                      {"validator_weights", p.validator_weights}};
-  // j = nlohmann::json{{"node_id", p.node_id}, {"address", p.address}};
 }
 
 /**

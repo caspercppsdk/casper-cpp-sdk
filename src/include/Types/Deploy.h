@@ -13,14 +13,29 @@ namespace Casper {
 /// </summary>
 struct Deploy {
   // TODO: check with CEP57 Checksum for json serialization
+  /// <summary>
+  /// A hash over the header of the deploy.
+  /// </summary>
   std::string hash;
 
+  /// <summary>
+  /// Contains metadata about the deploy.
+  /// </summary>
   DeployHeader header;
 
+  /// <summary>
+  /// Contains the payment amount for the deploy.
+  /// </summary>
   ExecutableDeployItem payment;
 
+  /// <summary>
+  /// Contains the session information for the deploy.
+  /// </summary>
   ExecutableDeployItem session;
 
+  /// <summary>
+  /// List of signers and signatures for this Deploy.
+  /// </summary>
   std::vector<DeployApproval> approvals;
 
   Deploy() {}
