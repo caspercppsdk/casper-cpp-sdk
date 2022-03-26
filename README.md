@@ -38,6 +38,10 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
         add_executable(ApplicationName main.cpp)
         target_link_libraries(ApplicationName PUBLIC CasperSDK)
 
+## Documentation
+    cd docs
+    doxygen Doxyfile
+
 ## External Libraries
 1. https://github.com/nlohmann/json
 2. https://github.com/jsonrpcx/json-rpc-cxx
@@ -46,7 +50,6 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 5. https://github.com/Neargye/magic_enum
 
 ## TODO
-0. MacOS and Windows support
 1. The following RPC methods will be fully implemented in the C++ SDK
     * infoGetDeploy
 
