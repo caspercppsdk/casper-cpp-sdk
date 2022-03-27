@@ -59,7 +59,7 @@ void get_status_info_test() {
   TEST_ASSERT(result.starting_state_root_hash != "");
   TEST_ASSERT(result.peers.size() != 0);
   TEST_ASSERT(result.build_version != "");
-  TEST_ASSERT(result.uptime > 0);
+  TEST_ASSERT(result.uptime != "");
 }
 
 /**
@@ -97,27 +97,30 @@ void get_block_test() {
   Casper::GetBlockResult blockResult = client.GetBlock(block_hash);
 
   TEST_ASSERT(blockResult.api_version != "");
-  TEST_ASSERT(blockResult.block.hash != "");
+
+  TEST_ASSERT(blockResult.block.has_value());
+
+  TEST_ASSERT(blockResult.block.value().hash != "");
 
   // block header
-  TEST_ASSERT(blockResult.block.header.parent_hash != "");
-  TEST_ASSERT(blockResult.block.header.state_root_hash != "");
-  TEST_ASSERT(blockResult.block.header.body_hash != "");
-  TEST_ASSERT(blockResult.block.header.accumulated_seed != "");
-  TEST_ASSERT(blockResult.block.header.timestamp != "");
-  TEST_ASSERT(blockResult.block.header.era_id != 0);
-  TEST_ASSERT(blockResult.block.header.height != 0);
-  TEST_ASSERT(blockResult.block.header.protocol_version != "");
+  TEST_ASSERT(blockResult.block.value().header.parent_hash != "");
+  TEST_ASSERT(blockResult.block.value().header.state_root_hash != "");
+  TEST_ASSERT(blockResult.block.value().header.body_hash != "");
+  TEST_ASSERT(blockResult.block.value().header.accumulated_seed != "");
+  TEST_ASSERT(blockResult.block.value().header.timestamp != "");
+  TEST_ASSERT(blockResult.block.value().header.era_id != 0);
+  TEST_ASSERT(blockResult.block.value().header.height != 0);
+  TEST_ASSERT(blockResult.block.value().header.protocol_version != "");
 
   // block body
-  TEST_ASSERT(blockResult.block.body.deploy_hashes.size() >= 0);
-  TEST_ASSERT(blockResult.block.body.proposer != "");
-  TEST_ASSERT(blockResult.block.body.transfer_hashes.size() >= 0);
+  TEST_ASSERT(blockResult.block.value().body.deploy_hashes.size() >= 0);
+  TEST_ASSERT(blockResult.block.value().body.proposer.ToString() != "");
+  TEST_ASSERT(blockResult.block.value().body.transfer_hashes.size() >= 0);
 
   // block proofs
-  TEST_ASSERT(blockResult.block.proofs.size() > 0);
-  TEST_ASSERT(blockResult.block.proofs[0].public_key != "");
-  TEST_ASSERT(blockResult.block.proofs[0].signature != "");
+  TEST_ASSERT(blockResult.block.value().proofs.size() > 0);
+  TEST_ASSERT(blockResult.block.value().proofs[0].public_key.ToString() != "");
+  TEST_ASSERT(blockResult.block.value().proofs[0].signature.ToString() != "");
 }
 
 /**
@@ -161,7 +164,7 @@ void get_era_info_by_switch_block_test() {
       TEST_ASSERT(result.era_summary.value()
                       .stored_value.era_info.value()
                       .seigniorage_allocations[i]
-                      .delegator_public_key != "");
+                      .delegator_public_key.ToString() != "");
       TEST_ASSERT(result.era_summary.value()
                       .stored_value.era_info.value()
                       .seigniorage_allocations[i]
@@ -171,7 +174,7 @@ void get_era_info_by_switch_block_test() {
       TEST_ASSERT(result.era_summary.value()
                       .stored_value.era_info.value()
                       .seigniorage_allocations[i]
-                      .validator_public_key != "");
+                      .validator_public_key.ToString() != "");
       TEST_ASSERT(result.era_summary.value()
                       .stored_value.era_info.value()
                       .seigniorage_allocations[i]
@@ -286,16 +289,16 @@ void get_auction_info_test() {
       0);
   TEST_ASSERT(auction_result.auction_state.era_validators[0]
                   .validator_weights[0]
-                  .public_key != "");
+                  .public_key.ToString() != "");
   TEST_ASSERT(auction_result.auction_state.era_validators[0]
                   .validator_weights[0]
                   .weight > 0);
 
   TEST_ASSERT(auction_result.auction_state.bids.size() > 0);
-  TEST_ASSERT(auction_result.auction_state.bids[0].public_key != "");
+  TEST_ASSERT(auction_result.auction_state.bids[0].public_key.ToString() != "");
 
-  TEST_ASSERT(auction_result.auction_state.bids[0].bid.validator_public_key !=
-              "");
+  TEST_ASSERT(auction_result.auction_state.bids[0]
+                  .bid.validator_public_key.ToString() != "");
   TEST_ASSERT(
       auction_result.auction_state.bids[0].bid.bonding_purse.ToString() != "");
   TEST_ASSERT(auction_result.auction_state.bids[0].bid.staked_amount > 0);

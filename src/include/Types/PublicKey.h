@@ -66,7 +66,7 @@ struct PublicKey {
         CryptoPP::ed25519PublicKey k1;
         k1.Load(fs1);
         SecByteBlock rawBytes(k1.GetPublicElement().MinEncodedSize());
-        k1.GetPublicElement().Encode(rawBytes);
+        k1.GetPublicElement().Encode(rawBytes, rawBytes.size());
         return PublicKey(rawBytes, KeyAlgo::ED25519);
       }
     } catch (std::exception& e) {
@@ -137,32 +137,32 @@ struct PublicKey {
     if (File::Exists(filePath))
       throw std::runtime_error(
           "Target file already exists. Will not overwrite.\nFile: " + filePath);
+    /*
+        CryptoPP::ECDSA<ECP, SHA256>::PublicKey publicKey;
+        publicKey.Initialize(CryptoPP::ASN1::secp256k1(), raw_bytes.begin(),
+                             raw_bytes.size());
 
-    CryptoPP::ECDSA<ECP, SHA256>::PublicKey publicKey;
-    publicKey.Initialize(CryptoPP::ASN1::secp256k1(), raw_bytes.begin(),
-                         raw_bytes.size());
+        using(var textWriter = File.CreateText(filePath)) {
+          var writer = new PemWriter(textWriter);
 
-    using(var textWriter = File.CreateText(filePath)) {
-      var writer = new PemWriter(textWriter);
+          if (key_algorithm == KeyAlgo.ED25519) {
+            Ed25519PublicKeyParameters pk =
+                new Ed25519PublicKeyParameters(RawBytes, 0);
+            writer.WriteObject(pk);
+            return;
+          } else if (key_algorithm == KeyAlgo.SECP256K1) {
+            var curve = ECNamedCurveTable.GetByName("secp256k1");
+            var domainParams = new ECDomainParameters(curve.Curve, curve.G,
+       curve.N, curve.H, curve.GetSeed());
 
-      if (key_algorithm == KeyAlgo.ED25519) {
-        Ed25519PublicKeyParameters pk =
-            new Ed25519PublicKeyParameters(RawBytes, 0);
-        writer.WriteObject(pk);
-        return;
-      } else if (key_algorithm == KeyAlgo.SECP256K1) {
-        var curve = ECNamedCurveTable.GetByName("secp256k1");
-        var domainParams = new ECDomainParameters(curve.Curve, curve.G, curve.N,
-                                                  curve.H, curve.GetSeed());
+            ECPoint q = curve.Curve.DecodePoint(RawBytes);
+            ECPublicKeyParameters pk = new ECPublicKeyParameters(q,
+       domainParams); writer.WriteObject(pk); return;
+          }
 
-        ECPoint q = curve.Curve.DecodePoint(RawBytes);
-        ECPublicKeyParameters pk = new ECPublicKeyParameters(q, domainParams);
-        writer.WriteObject(pk);
-        return;
-      }
-
-      throw std::runtime_error("Unsupported key type.");
-    }
+          throw std::runtime_error("Unsupported key type.");
+        }
+        */
   }
 
   /// <summary>
@@ -282,6 +282,17 @@ struct PublicKey {
     return os;
   }
 };
+
+// to_json of PublicKey
+inline void to_json(nlohmann::json& j, const PublicKey& p) {
+  j = p.ToAccountHex();
+}
+
+// from_json of PublicKey
+inline void from_json(const nlohmann::json& j, PublicKey& p) {
+  std::string pk_str = j.get<std::string>();
+  p = PublicKey::FromHexString(pk_str);
+}
 
 /*
 /// <summary>
