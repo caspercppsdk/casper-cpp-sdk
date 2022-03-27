@@ -23,7 +23,7 @@ struct BlockHeader {
   /// <summary>
   /// The era end.
   /// </summary>
-  EraEnd era_end;
+  std::optional<EraEnd> era_end;
 
   /// <summary>
   /// The block era id.
@@ -67,7 +67,6 @@ struct BlockHeader {
 inline void to_json(nlohmann::json& j, const BlockHeader& p) {
   j = nlohmann::json{{"accumulated_seed", p.accumulated_seed},
                      {"body_hash", p.body_hash},
-                     {"era_end", p.era_end},
                      {"era_id", p.era_id},
                      {"height", p.height},
                      {"parent_hash", p.parent_hash},
@@ -75,13 +74,21 @@ inline void to_json(nlohmann::json& j, const BlockHeader& p) {
                      {"random_bit", p.random_bit},
                      {"state_root_hash", p.state_root_hash},
                      {"timestamp", p.timestamp}};
+
+  if (p.era_end.has_value()) {
+    j["era_end"] = p.era_end.value();
+  }
 }
 
 // from_json of BlockHeader
 inline void from_json(const nlohmann::json& j, BlockHeader& p) {
   j.at("accumulated_seed").get_to(p.accumulated_seed);
   j.at("body_hash").get_to(p.body_hash);
-  j.at("era_end").get_to(p.era_end);
+
+  if (j.find("era_end") != j.end() && !j.at("era_end").is_null()) {
+    p.era_end = j.at("era_end").get<EraEnd>();
+  }
+
   j.at("era_id").get_to(p.era_id);
   j.at("height").get_to(p.height);
   j.at("parent_hash").get_to(p.parent_hash);
@@ -103,8 +110,7 @@ struct BlockBody {
   /// <summary>
   /// Public key of the validator that proposed the block
   /// </summary>
-  // TODO: Make PublicKey instead of std::string
-  std::string proposer;
+  PublicKey proposer;
 
   /// <summary>
   /// List of Transfer hashes included in the block
@@ -118,6 +124,7 @@ struct BlockBody {
 inline void to_json(nlohmann::json& j, const BlockBody& p) {
   j = nlohmann::json{
       {"deploy_hashes", p.deploy_hashes},
+
       {"proposer", p.proposer},
       {"transfer_hashes", p.transfer_hashes},
   };
@@ -137,8 +144,7 @@ struct BlockProof {
   /// <summary>
   /// Validator public key
   /// </summary>
-  // TODO: make PublicKey instead of std::string
-  std::string public_key;
+  PublicKey public_key;
 
   /// <summary>
   /// Validator signature
