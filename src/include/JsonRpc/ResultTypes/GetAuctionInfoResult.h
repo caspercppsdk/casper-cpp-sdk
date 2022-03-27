@@ -5,18 +5,13 @@
 
 namespace Casper {
 
-/**
- * @brief Result for the "state_get_auction_info" rpc call.
- *
- */
+/// Result for "state_get_auction_info" RPC response.
 struct GetAuctionInfoResult : public RpcResult {
+  /// <summary>
   /// The auction state.
+  /// </summary>
   AuctionState auction_state;
 
-  /**
-   * @brief Construct a new GetAuctionInfoResult object.
-   *
-   */
   GetAuctionInfoResult() {}
 };
 

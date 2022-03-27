@@ -6,17 +6,17 @@
 #include "Types/ExecutionResult.h"
 
 namespace Casper {
-/**
- * @brief Result for the "info_get_deploy" rpc call.
- *
- */
+
+/// Result for the "info_get_deploy" rpc call.
 struct GetDeployInfoResult : public RpcResult {
- public:
-  /**
-   * @brief Construct a new GetDeployResult object.
-   *
-   */
+  /// <summary>
+  /// The deploy.
+  /// </summary>
   Deploy deploy;
+
+  /// <summary>
+  /// The map of block hash to execution result.
+  /// </summary>
   std::vector<ExecutionResult> execution_results;
 
   GetDeployInfoResult() {}
@@ -45,4 +45,5 @@ inline void from_json(const nlohmann::json& j, GetDeployInfoResult& p) {
   j.at("deploy").get_to(p.deploy);
   j.at("execution_results").get_to(p.execution_results);
 }
+
 }  // namespace Casper

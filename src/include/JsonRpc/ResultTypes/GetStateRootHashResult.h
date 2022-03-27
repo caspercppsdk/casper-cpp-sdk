@@ -3,27 +3,22 @@
 #include "RpcResult.h"
 
 namespace Casper {
-/**
- * @brief Result for the "chain_get_state_root_hash" rpc call.
- *
- */
+
+/// Result for the "chain_get_state_root_hash" rpc call.
 struct GetStateRootHashResult : public RpcResult {
- public:
-  /**
-   * @brief Construct a new GetStateRootHashResult object.
-   *
-   */
-  GetStateRootHashResult() {}
-  GetStateRootHashResult(std::string hash_) : state_root_hash(hash_) {}
-  /// The state root hash as a string.
+  /// <summary>
+  /// Hex-encoded hash of the state root.
+  /// </summary>
   std::string state_root_hash;
+
+  GetStateRootHashResult() {}
 };
 
 /**
  * @brief Construct a JSON object from a GetStateRootHashResult object.
  *
  * @param j JSON object to construct.
- * @param p GetStateRootHash Result object to construct from.
+ * @param p GetStateRootHashResult object to construct from.
  */
 inline void to_json(nlohmann::json& j, const GetStateRootHashResult& p) {
   j = static_cast<RpcResult>(p);

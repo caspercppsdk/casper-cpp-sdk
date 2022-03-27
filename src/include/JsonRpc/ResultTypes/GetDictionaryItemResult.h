@@ -4,28 +4,25 @@
 #include "Types/StoredValue.h"
 
 namespace Casper {
-/**
- * @brief Result for the "state_get_dictionary_item" rpc call.
- *
- */
+
+/// Result for the "state_get_dictionary_item" rpc call.
 struct GetDictionaryItemResult : public RpcResult {
- public:
-  /**
-   * @brief Construct a new GetDictionaryItemResult object.
-   *
-   */
-  GetDictionaryItemResult(std::string dictionary_key_,
-                          StoredValue stored_value_,
-                          std::string merkle_proof_)
-      : dictionary_key(dictionary_key_),
-        stored_value(stored_value_),
-        merkle_proof(merkle_proof_) {}
+  /// <summary>
+  /// The key under which the value is stored.
+  /// </summary>
+  std::string dictionary_key;
+
+  /// <summary>
+  /// The stored value.
+  /// </summary>
+  StoredValue stored_value;
+
+  /// <summary>
+  /// The merkle proof.
+  /// </summary>
+  std::string merkle_proof;
 
   GetDictionaryItemResult() {}
-
-  std::string dictionary_key;
-  StoredValue stored_value;
-  std::string merkle_proof;
 };
 
 /**
@@ -53,4 +50,5 @@ inline void from_json(const nlohmann::json& j, GetDictionaryItemResult& p) {
   j.at("stored_value").get_to(p.stored_value);
   j.at("merkle_proof").get_to(p.merkle_proof);
 }
+
 }  // namespace Casper

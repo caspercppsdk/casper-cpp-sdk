@@ -6,20 +6,15 @@
 #include "Types/EraSummary.h"
 
 namespace Casper {
-/**
- * @brief Result for the "chain_get_era_info_by_switch_block" rpc call.
- *
- */
-struct GetEraInfoResult : public RpcResult {
- public:
-  /**
-   * @brief Construct a new GetEraInfoResult object.
-   *
-   */
-  GetEraInfoResult(EraSummary era_summary_) : era_summary(era_summary_) {}
-  GetEraInfoResult() {}
 
-  std::optional<EraSummary> era_summary = std::nullopt;  // Optional.
+/// Result for the "chain_get_era_info_by_switch_block" rpc call.
+struct GetEraInfoResult : public RpcResult {
+  /// <summary>
+  /// The era summary.
+  /// </summary>
+  std::optional<EraSummary> era_summary = std::nullopt;
+
+  GetEraInfoResult() {}
 };
 
 /**
@@ -44,7 +39,7 @@ inline void to_json(nlohmann::json& j, const GetEraInfoResult& p) {
 inline void from_json(const nlohmann::json& j, GetEraInfoResult& p) {
   nlohmann::from_json(j, static_cast<RpcResult&>(p));
 
-  if (j.count("era_summary") != 0) {
+  if (j.find("era_summary") != j.end() && !j.at("era_summary").is_null()) {
     p.era_summary = j.at("era_summary").get<EraSummary>();
   }
 }

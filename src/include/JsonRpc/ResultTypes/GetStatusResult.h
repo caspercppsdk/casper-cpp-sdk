@@ -3,30 +3,59 @@
 #include "RpcResult.h"
 #include "Types/BlockInfo.h"
 #include "Types/Definitions.h"
+#include "Types/NextUpgrade.h"
 #include "Types/Peer.h"
 
 namespace Casper {
-/**
- * @brief Result for the "info_get_status" rpc call.
- *
- */
-struct GetStatusResult : public RpcResult {
- public:
-  /**
-   * @brief Construct a new GetStatusResult  object.
-   *
-   */
-  GetStatusResult() {}
 
+/// Result for "info_get_status" RPC response.
+struct GetStatusResult : public RpcResult {
+  /// <summary>
+  /// The chainspec name.
+  /// </summary>
   std::string chainspec_name;
+
+  /// <summary>
+  /// The state root hash used at the start of the current session.
+  /// </summary>
   std::string starting_state_root_hash;
+
+  /// <summary>
+  /// The node ID and network address of each connected peer.
+  /// </summary>
   std::vector<Peer> peers;
+
+  /// <summary>
+  /// The minimal info of the last block from the linear chain.
+  /// </summary>
   std::optional<BlockInfo> last_added_block_info = std::nullopt;
-  std::optional<std::string> our_public_signing_key = std::nullopt;
-  std::optional<TimeDiff> round_length = std::nullopt;
-  std::optional<std::string> next_upgrade = std::nullopt;
+
+  /// <summary>
+  /// Our public signing key.
+  /// </summary>
+  std::optional<PublicKey> our_public_signing_key = std::nullopt;
+
+  /// <summary>
+  /// The next round length if this node is a validator.
+  /// </summary>
+  std::optional<std::string> round_length = std::nullopt;
+
+  /// <summary>
+  /// Information about the next scheduled upgrade.
+  /// </summary>
+  std::optional<NextUpgrade> next_upgrade = std::nullopt;
+
+  /// <summary>
+  /// The compiled node version.
+  /// </summary>
   std::string build_version;
-  TimeDiff uptime = 0;
+
+  /// <summary>
+  /// Time that passed since the node has started.
+  /// </summary>
+  std::string uptime;
+
+  GetStatusResult() {}
 };
 
 /**
@@ -48,7 +77,6 @@ inline void to_json(nlohmann::json& j, const GetStatusResult& p) {
   if (p.our_public_signing_key.has_value()) {
     j["our_public_signing_key"] = p.our_public_signing_key.value();
   }
-
   if (p.round_length.has_value()) {
     j["round_length"] = p.round_length.value();
   }
@@ -69,26 +97,31 @@ inline void to_json(nlohmann::json& j, const GetStatusResult& p) {
  */
 inline void from_json(const nlohmann::json& j, GetStatusResult& p) {
   nlohmann::from_json(j, static_cast<RpcResult&>(p));
-  p.chainspec_name = j.at("chainspec_name");
-  p.starting_state_root_hash = j.at("starting_state_root_hash");
 
+  j.at("chainspec_name").get_to(p.chainspec_name);
+  j.at("starting_state_root_hash").get_to(p.starting_state_root_hash);
   j.at("peers").get_to(p.peers);
 
-  if (j.contains("last_added_block_info") && !j.at("last_added_block_info").is_null())
-    p.last_added_block_info = BlockInfo();
-    j.at("last_added_block_info").get_to(p.last_added_block_info.value());
+  if (j.find("last_added_block_info") != j.end() &&
+      !j.at("last_added_block_info").is_null()) {
+    p.last_added_block_info = j.at("last_added_block_info").get<BlockInfo>();
+  }
 
-  if (j.contains("our_public_signing_key") && !j.at("our_public_signing_key").is_null())
-    p.our_public_signing_key = j.at("our_public_signing_key");
+  if (j.find("our_public_signing_key") != j.end() &&
+      !j.at("our_public_signing_key").is_null()) {
+    p.our_public_signing_key = j.at("our_public_signing_key").get<PublicKey>();
+  }
 
-  if (j.contains("round_length") && !j.at("round_length").is_null())
-    p.round_length = string_to_timediff(j.at("round_length"));
+  if (j.find("round_length") != j.end() && !j.at("round_length").is_null()) {
+    p.round_length = j.at("round_length").get<std::string>();
+  }
 
-  if (j.contains("next_upgrade") && !j.at("next_upgrade").is_null())
-    p.next_upgrade = j.at("next_upgrade");
+  if (j.find("next_upgrade") != j.end() && !j.at("next_upgrade").is_null()) {
+    p.next_upgrade = j.at("next_upgrade").get<NextUpgrade>();
+  }
 
-  p.build_version = j.at("build_version");
-
-  p.uptime = string_to_timediff(j.at("uptime"));
+  j.at("build_version").get_to(p.build_version);
+  j.at("uptime").get_to(p.uptime);
 }
+
 }  // namespace Casper

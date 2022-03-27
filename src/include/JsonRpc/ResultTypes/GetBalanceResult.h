@@ -1,29 +1,23 @@
 #pragma once
 
 #include "JsonRpc/ResultTypes/RpcResult.h"
-#include "Types/Definitions.h"  // big_int
+#include "Types/Definitions.h"
 
 namespace Casper {
-/**
- * @brief Result for the "state_get_balance" rpc call.
- *
- */
+
+/// Result for the "state_get_balance" rpc call.
 struct GetBalanceResult : public RpcResult {
-  /**
-   * @brief Construct a new GetBalanceResult object.
-   *
-   */
-
-  GetBalanceResult(big_int balanceValue, std::string merkleProof)
-      : balance_value{balanceValue}, merkle_proof{merkleProof} {}
-
-  GetBalanceResult() {}
-
+  /// <summary>
   /// The balance value as a big integer.
+  /// </summary>
   big_int balance_value;
 
+  /// <summary>
   /// The merkle proof as a string
+  /// </summary>
   std::string merkle_proof;
+
+  GetBalanceResult() {}
 };
 
 /**

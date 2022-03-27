@@ -5,24 +5,20 @@
 #include "Types/Transfer.h"
 
 namespace Casper {
-/**
- * @brief Result for the "chain_get_block_transfers" rpc call.
- *
- */
+
+/// Result for the "chain_get_block_transfers" rpc call.
 struct GetBlockTransfersResult : public RpcResult {
- public:
-  /**
-   * @brief Construct a new GetBlockTransfersResult object.
-   *
-   */
-  GetBlockTransfersResult(std::string blockHash,
-                          std::vector<Transfer> transfers)
-      : block_hash(blockHash), transfers(transfers) {}
+  /// <summary>
+  /// The block hash, if found.
+  /// </summary>
+  std::optional<std::string> block_hash = std::nullopt;
+
+  /// <summary>
+  /// The block's transfers, if found.
+  /// </summary>
+  std::optional<std::vector<Transfer>> transfers = std::nullopt;
 
   GetBlockTransfersResult() {}
-
-  std::optional<std::string> block_hash = std::nullopt;
-  std::optional<std::vector<Transfer>> transfers = std::nullopt;
 };
 
 /**
@@ -33,6 +29,7 @@ struct GetBlockTransfersResult : public RpcResult {
  */
 inline void to_json(nlohmann::json& j, const GetBlockTransfersResult& p) {
   j = static_cast<RpcResult>(p);
+
   if (p.block_hash.has_value()) {
     j["block_hash"] = p.block_hash.value();
   }
@@ -50,12 +47,13 @@ inline void to_json(nlohmann::json& j, const GetBlockTransfersResult& p) {
  */
 inline void from_json(const nlohmann::json& j, GetBlockTransfersResult& p) {
   nlohmann::from_json(j, static_cast<RpcResult&>(p));
-  if (j.count("block_hash") != 0) {
+  if (j.find("block_hash") != j.end() && !j.at("block_hash").is_null()) {
     j.at("block_hash").get_to(p.block_hash);
   }
 
-  if (j.count("transfers") != 0) {
+  if (j.find("transfers") != j.end() && !j.at("transfers").is_null()) {
     p.transfers = j.at("transfers").get<std::vector<Transfer>>();
   }
 }
+
 }  // namespace Casper
