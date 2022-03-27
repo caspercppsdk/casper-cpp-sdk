@@ -40,7 +40,6 @@ inline void to_json(nlohmann::json& j, const ValidatorWeight& p) {
  * @param p ValidatorWeight object to construct.
  */
 inline void from_json(const nlohmann::json& j, ValidatorWeight& p) {
-  // TODO: PublicKey = PublicKey.FromHexString(publicKey),
   std::string weightString = j.at("weight").get<std::string>();
   if (weightString.size() > 0) {
     p.weight = weightString;

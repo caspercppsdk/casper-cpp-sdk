@@ -117,7 +117,7 @@ struct GlobalStateKey {
 /// </summary>
 struct AccountHashKey : public GlobalStateKey {
   AccountHashKey(std::string key);
-  AccountHashKey() {};
+  AccountHashKey(){};
   AccountHashKey(PublicKey publicKey);
 };
 
@@ -210,10 +210,7 @@ struct DictionaryKey : public GlobalStateKey {
  * @param j JSON object to construct.
  * @param p GlobalStateKey object to construct from.
  */
-inline void to_json(nlohmann::json& j, const GlobalStateKey& p) {
-  j = nlohmann::json{{"key", p.key}};
-  // TODO:
-}
+inline void to_json(nlohmann::json& j, const GlobalStateKey& p) { j = p.key; }
 
 /**
  * @brief Construct a GlobalStateKey object from a JSON object.
@@ -225,6 +222,5 @@ inline void from_json(const nlohmann::json& j, GlobalStateKey& p) {
   std::string jKey = j.at("key");
 
   p = GlobalStateKey::FromString(j.at("key").get<std::string>());
-  // TODO:
 }
 }  // namespace Casper
