@@ -1,9 +1,11 @@
 #include "Utils/StringUtil.h"
+
 #include <algorithm>
 #include <sstream>
 
 namespace Casper {
-bool StringUtil::startsWith(std::string str, std::string cmp) {
+
+bool StringUtil::startsWith(const std::string& str, const std::string& cmp) {
   return str.compare(0, cmp.length(), cmp) == 0;
 }
 
@@ -20,8 +22,9 @@ std::vector<std::string> StringUtil::splitString(std::string str,
   return result;
 }
 
-std::string StringUtil::toLower(std::string str) {
+std::string StringUtil::toLower(std::string& str) {
   std::transform(str.begin(), str.end(), str.begin(), ::tolower);
   return str;
 }
+
 }  // namespace Casper

@@ -1,5 +1,6 @@
 #include "CasperClient.h"
 #include "Types/GlobalStateKey.cpp"
+#include "Types/PublicKey.h"
 #include "Utils/CryptoUtil.h"
 #include "acutest.h"
 
@@ -305,6 +306,37 @@ void get_auction_info_test() {
   TEST_ASSERT(auction_result.auction_state.bids[0].bid.delegation_rate > 0);
 }
 
+/// <summary>
+/// Check the Casper lower-case convert function
+/// </summary>
+void string_util_toLower_test() {
+  std::string str = "Hello World";
+  std::string str_lower = "hello world";
+  TEST_ASSERT(str_lower == Casper::StringUtil::toLower(str));
+}
+
+/// <summary>
+/// Check the public key to account hash convert function
+/// </summary>
+void publicKeyGetAccountHashTest() {
+  Casper::PublicKey publicKey = Casper::PublicKey::FromHexString(
+      "01cd807fb41345d8dd5a61da7991e1468173acbee53920e4dfe0d28cb8825ac664");
+
+  std::string lower_case_account_hash = publicKey.GetAccountHash();
+  Casper::StringUtil::toLower(lower_case_account_hash);
+
+  std::string expected_account_hash =
+      "account-hash-"
+      "998c5fd4e7b568bedd78e05555c83c61893dc5d8546ce0bec8b30e1c570f21aa";
+
+  TEST_ASSERT(lower_case_account_hash == expected_account_hash);
+}
+
+// Optional TODO:
+// 1. CryptoUtil functions tests
+// 2. Other StringUtil functions tests
+// 3. CEP57 Checksum tests
+
 TEST_LIST = {
     {"peers", get_peers_test},
     {"root hash 1", get_state_root_hash_block_height_test},
@@ -318,4 +350,6 @@ TEST_LIST = {
     {"stateGetDictionaryItem", get_dictionary_item_test},
     {"stateGetBalance", get_balance_test},
     {"stateGetAuctionInfo", get_auction_info_test},
+    {"StringUtil - ToLower", string_util_toLower_test},
+    {"PublicKey - GetAccountHash", publicKeyGetAccountHashTest},
     {NULL, NULL}};
