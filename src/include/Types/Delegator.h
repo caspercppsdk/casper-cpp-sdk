@@ -13,11 +13,10 @@ namespace Casper {
 /// A delegator associated with the given validator.
 /// </summary>
 struct Delegator {
-  // TODO: make PublicKey instead of std::string
   /// <summary>
   /// Public Key of the delegator
   /// </summary>
-  std::string delegator_public_key;
+  PublicKey delegator_public_key;
 
   /// <summary>
   /// Amount of Casper token delegated
@@ -32,7 +31,7 @@ struct Delegator {
   /// <summary>
   /// Public key of the validator
   /// </summary>
-  std::string validator_public_key;
+  PublicKey validator_public_key;
 
   std::optional<VestingSchedule> vesting_schedule = std::nullopt;
 
@@ -49,6 +48,7 @@ inline void to_json(nlohmann::json& j, const Delegator& p) {
                      {"staked_amount", p.staked_amount.toString()},
                      {"bonding_purse", p.bonding_purse},
                      {"validator_public_key", p.validator_public_key}};
+
   if (p.vesting_schedule.has_value()) {
     j["vesting_schedule"] = p.vesting_schedule.value();
   }
@@ -81,7 +81,8 @@ inline void from_json(const nlohmann::json& j, Delegator& p) {
     j.at("delegatee").get_to(p.validator_public_key);
   }
 
-  if (j.count("vesting_schedule") != 0 && !j.at("vesting_schedule").is_null()) {
+  if (j.find("vesting_schedule") != j.end() &&
+      !j.at("vesting_schedule").is_null()) {
     p.vesting_schedule = j.at("vesting_schedule").get<VestingSchedule>();
   }
 }

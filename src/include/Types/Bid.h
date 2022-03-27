@@ -42,9 +42,7 @@ struct Bid {
   /// <summary>
   /// Validator public key
   /// </summary>
-  // TODO: [JsonConverter(typeof(PublicKey.PublicKeyConverter))]
-  // TODO: Make public key instead of string
-  std::string validator_public_key;
+  PublicKey validator_public_key;
 
   /// <summary>
   /// Vesting schedule for a genesis
@@ -92,7 +90,8 @@ inline void from_json(const nlohmann::json& j, Bid& p) {
 
   p.delegation_rate = j.at("delegation_rate").get<uint8_t>();
 
-  if (j.count("vesting_schedule") != 0 && !j.at("vesting_schedule").is_null()) {
+  if (j.find("vesting_schedule") != j.end() &&
+      !j.at("vesting_schedule").is_null()) {
     p.vesting_schedule = j.at("vesting_schedule").get<VestingSchedule>();
   }
 

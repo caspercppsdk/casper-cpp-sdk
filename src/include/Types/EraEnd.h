@@ -17,8 +17,7 @@ struct Reward {
   /// <summary>
   /// Validator public key
   /// </summary>
-  // TODO: Make PublicKey instead of std::string
-  std::string validator;
+  PublicKey validator;
 
   Reward() {}
 };
@@ -44,14 +43,12 @@ struct EraReport {
   /// <summary>
   /// List of public keys of the equivocators
   /// </summary>
-  // TODO: Make PublicKey instead of std::string in std::vector
-  std::vector<std::string> equivocators;
+  std::vector<PublicKey> equivocators;
 
   /// <summary>
   /// List of public keys of inactive validators
   /// </summary>
-  // TODO: Make PublicKey instead of std::string in std::vector
-  std::vector<std::string> inactive_validators;
+  std::vector<PublicKey> inactive_validators;
 
   /// <summary>
   /// List of validators with rewards
