@@ -6,6 +6,7 @@
 #include "Types/KeyAlgo.h"
 #include "Utils/CEP57Checksum.h"
 #include "Utils/File.h"
+#include "cryptopp/pem.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
@@ -19,55 +20,64 @@ struct PublicKey {
 
  public:
   PublicKey() {}
+
   /// <summary>
   /// Creates a PublicKey object from an hexadecimal string (containing the
   /// Key algorithm identifier).
   /// </summary>
   static PublicKey FromHexString(const std::string& hexBytes) {
-    // TODO: add try catch blocks
-    SecByteBlock rawBytes = CEP57Checksum::Decode(hexBytes.substr(2));
-    /*
-      if (checksumResult == CEP57Checksum.InvalidChecksum)
-        throw std::invalid_argument("Public key checksum mismatch.");
-  */
-    if (hexBytes.substr(0, 2) == "01") {
-      return FromRawBytes(rawBytes, KeyAlgo::ED25519);
-    } else if (hexBytes.substr(0, 2) == "02") {
-      return FromRawBytes(rawBytes, KeyAlgo::SECP256K1);
-    } else {
-      throw std::invalid_argument("Invalid key algorithm identifier.");
+    try {
+      SecByteBlock rawBytes = CEP57Checksum::Decode(hexBytes.substr(2));
+      if (hexBytes.substr(0, 2) == "01") {
+        return FromRawBytes(rawBytes, KeyAlgo::ED25519);
+      } else if (hexBytes.substr(0, 2) == "02") {
+        return FromRawBytes(rawBytes, KeyAlgo::SECP256K1);
+      } else {
+        throw std::invalid_argument("Wrong public algorithm identifier.");
+      }
+    } catch (std::exception& e) {
+      std::cerr << e.what() << std::endl;
     }
+    return PublicKey();
   }
 
   /// <summary>
   /// Loads a PublicKey from a PEM file
   /// </summary>
-  /*
-  static PublicKey FromPem(std::string filePath) {
-    using(TextReader textReader =
-              new StringReader(File.ReadAllText(filePath))) {
-      var reader = new PemReader(textReader);
+  static PublicKey FromPemFile(const std::string& pemFilePath) {
+    try {
+      CryptoPP::FileSource fs1("rsa-pub.pem", true);
+      if (CryptoPP::PEM_GetType(fs1) == CryptoPP::PEM_EC_PUBLIC_KEY) {
+        CryptoPP::ECDSA<ECP, SHA256>::PublicKey publicKey;
 
-      var pemObject = reader.ReadObject();
+        publicKey.Load(fs1);
 
-      if (pemObject is Ed25519PublicKeyParameters edPk) {
-        byte[] rawBytes = edPk.GetEncoded();
-        return new PublicKey(rawBytes, KeyAlgo.ED25519);
+        // TODO: Check the false below if any error occurs
+        SecByteBlock rawBytes(
+            publicKey.GetGroupParameters().GetEncodedElementSize(false));
+
+        // TODO: Check the false below if any error occurs
+        publicKey.GetGroupParameters().EncodeElement(
+            false, publicKey.GetPublicElement(), rawBytes);
+
+        return PublicKey(rawBytes, KeyAlgo::SECP256K1);
+
+      } else {
+        CryptoPP::ed25519PublicKey k1;
+        k1.Load(fs1);
+        SecByteBlock rawBytes(k1.GetPublicElement().MinEncodedSize());
+        k1.GetPublicElement().Encode(rawBytes);
+        return PublicKey(rawBytes, KeyAlgo::ED25519);
       }
-
-      if (pemObject is ECPublicKeyParameters ecPk) {
-        byte[] compressed = ecPk.Q.GetEncoded(true);
-        return PublicKey(compressed, KeyAlgo.SECP256K1);
-      }
-
-      throw std::invalid_argument(
-          "Unsupported key format or it's not a private key PEM object.");
+    } catch (std::exception& e) {
+      std::cerr << "Unsupported key format or it's not a public key PEM object."
+                << std::endl;
     }
   }
-*/
+
   /// <summary>
-  /// Creates a PublicKey object from a byte array. First byte in the array must
-  /// contain the key algorithm identifier.
+  /// Creates a PublicKey object from a byte array. First byte in the array
+  /// must contain the key algorithm identifier.
   /// </summary>
   static PublicKey FromBytes(const SecByteBlock& bytes) {
     if (bytes.empty())
@@ -114,7 +124,7 @@ struct PublicKey {
             std::to_string(expectedPublicKeySize));
       }
     } catch (std::exception& e) {
-      // throw std::exception(e.what());
+      std::cout << e.what() << std::endl;
     }
     return PublicKey(rawBytes, keyAlgo);
   }
@@ -122,36 +132,39 @@ struct PublicKey {
   /// <summary>
   /// Saves the public key to a PEM file.
   /// </summary>
-  /*
-    void WriteToPem(const std::string& filePath) {
-      if (File::Exists(filePath))
-        throw std::runtime_error(
-            "Target file already exists. Will not overwrite.\nFile: " +
-    filePath);
 
-      using(var textWriter = File.CreateText(filePath)) {
-        var writer = new PemWriter(textWriter);
+  void WriteToPem(const std::string& filePath) {
+    if (File::Exists(filePath))
+      throw std::runtime_error(
+          "Target file already exists. Will not overwrite.\nFile: " + filePath);
 
-        if (key_algorithm == KeyAlgo.ED25519) {
-          Ed25519PublicKeyParameters pk =
-              new Ed25519PublicKeyParameters(RawBytes, 0);
-          writer.WriteObject(pk);
-          return;
-        } else if (key_algorithm == KeyAlgo.SECP256K1) {
-          var curve = ECNamedCurveTable.GetByName("secp256k1");
-          var domainParams = new ECDomainParameters(curve.Curve, curve.G,
-    curve.N, curve.H, curve.GetSeed());
+    CryptoPP::ECDSA<ECP, SHA256>::PublicKey publicKey;
+    publicKey.Initialize(CryptoPP::ASN1::secp256k1(), raw_bytes.begin(),
+                         raw_bytes.size());
 
-          ECPoint q = curve.Curve.DecodePoint(RawBytes);
-          ECPublicKeyParameters pk = new ECPublicKeyParameters(q, domainParams);
-          writer.WriteObject(pk);
-          return;
-        }
+    using(var textWriter = File.CreateText(filePath)) {
+      var writer = new PemWriter(textWriter);
 
-        throw std::runtime_error("Unsupported key type.");
+      if (key_algorithm == KeyAlgo.ED25519) {
+        Ed25519PublicKeyParameters pk =
+            new Ed25519PublicKeyParameters(RawBytes, 0);
+        writer.WriteObject(pk);
+        return;
+      } else if (key_algorithm == KeyAlgo.SECP256K1) {
+        var curve = ECNamedCurveTable.GetByName("secp256k1");
+        var domainParams = new ECDomainParameters(curve.Curve, curve.G, curve.N,
+                                                  curve.H, curve.GetSeed());
+
+        ECPoint q = curve.Curve.DecodePoint(RawBytes);
+        ECPublicKeyParameters pk = new ECPublicKeyParameters(q, domainParams);
+        writer.WriteObject(pk);
+        return;
       }
+
+      throw std::runtime_error("Unsupported key type.");
     }
-  */
+  }
+
   /// <summary>
   /// Returns the Account Hash associated to this Public Key.
   /// </summary>
