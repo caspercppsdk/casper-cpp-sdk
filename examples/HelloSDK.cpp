@@ -51,30 +51,13 @@ void chainGetStateRootHash() {
 
 /// "info_get_deploy" RPC function call example
 void infoGetDeploy() {
-  // TODO: fill in this function
   std::cout << "-----------------------------------------------";
   std::cout << "\ninfo_get_deploy\n";
 
-  Casper::GetDeployInfoResult deploy_result = casper_client.GetDeployInfo(
+  nlohmann::json deploy_result = casper_client.GetDeployInfo(
       "8e535d2baed76141ab47fd93b04dd61f65a07893b7c950022978a2b29628edd7");
-  std::cout << "\napi_version: " << deploy_result.api_version;
 
-  nlohmann::json deployJSON;
-  nlohmann::to_json(deployJSON, deploy_result.deploy);
-  std::cout << "\ndeploy: " << deployJSON.dump(2);
-  std::vector<Casper::ExecutionResult> execution_results =
-      deploy_result.execution_results;
-
-  std::cout << "\nexecution_results.size: " << execution_results.size() << "\n";
-  for (size_t i = 0;
-       i < std::min(2, static_cast<int>(execution_results.size())); i++) {
-    std::cout << "ExecutionResult " << i + 1 << "\n";
-    nlohmann::json execution_results_json;
-    to_json(execution_results_json, execution_results[i]);
-    std::cout << execution_results_json.dump(2) << "\n";
-  }
-
-  std::cout << std::endl;
+  std::cout << deploy_result.dump(2) << std::endl;
 }
 
 /// "info_get_status" RPC function call example
@@ -174,28 +157,30 @@ void stateGetAuctionInfo() {
 }
 
 int main() {
+  // Milestone 1
   // infoGetPeers();
 
   // chainGetStateRootHash();
+  // ---------------------------------------------------------------------------
 
   // Milestone 2
-  // infoGetDeploy();
+  infoGetDeploy();
 
   infoGetStatus();
 
-  // chainGetBlockTransfers();
+  chainGetBlockTransfers();
 
-  // chainGetBlock();
+  chainGetBlock();
 
-  // chainGetEraInfoBySwitchBlock();
+  chainGetEraInfoBySwitchBlock();
 
-  // stateGetItem();
+  stateGetItem();
 
-  // stateGetDictionaryItem();
+  stateGetDictionaryItem();
 
-  // stateGetBalance();
+  stateGetBalance();
 
-  // stateGetAuctionInfo();
+  stateGetAuctionInfo();
 
   // Milestone 3
   // PutDeploy(); TODO: implement

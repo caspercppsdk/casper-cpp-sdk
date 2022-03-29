@@ -4,25 +4,70 @@
 #include "Utils/CryptoUtil.h"
 #include "acutest.h"
 
-/**
- * @brief Check the "info_get_peers" rpc function. Size of the resulting array
- * shouldn't be 0.
- *
- */
-void get_peers_test(void) {
-  Casper::Client client(CASPER_TEST_ADDRESS);
-  TEST_ASSERT(client.GetNodePeers().peers.size() != 0);
+// Helper function to compare two strings in a case insensitive way
+bool iequals(const std::string& a, const std::string& b) {
+  return std::equal(a.begin(), a.end(), b.begin(), b.end(),
+                    [](char a, char b) { return tolower(a) == tolower(b); });
+}
+
+/// Helper function to print a result object
+template <typename T>
+void printResult(const T& result, const std::string& rpc_call_name,
+                 int indent = 2) {
+  std::cout << "-----------------------------------------------" << std::endl;
+  std::cout << rpc_call_name << std::endl;
+
+  nlohmann::json resultJSON;
+  nlohmann::to_json(resultJSON, result);
+
+  std::cout << resultJSON.dump(indent) << std::endl;
 }
 
 /**
- * @brief Check the "get_state_root_hash" rpc function with a variable. Compare
- * the result with an empty string.
+ * @brief Check the "info_get_peers" rpc function. The size of the return value
+ * should be greater than 0.
  *
  */
-void get_state_root_hash_block_height_test(void) {
+void infoGetPeersTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
+
+  auto result = client.GetNodePeers();
+  size_t result_size = result.peers.size();
+
+  TEST_ASSERT(result_size > 0);
+}
+
+/**
+ * @brief Check the "get_state_root_hash" rpc function with an example height.
+ * Compare the result with the expected hash of the state.
+ *
+ */
+void getStateRootHashBlockHeightTest() {
+  Casper::Client client(CASPER_TEST_ADDRESS);
+
   uint64_t block_height = 10;
-  TEST_ASSERT(client.GetStateRootHash(block_height).state_root_hash != "");
+  std::string result = client.GetStateRootHash(block_height).state_root_hash;
+  std::string expected_result =
+      "4d180287e6eb3dad5173864e30d7653c01fcdef8bc3ee31db4a0707367154ccf";
+
+  TEST_ASSERT(iequals(result, expected_result));
+}
+
+/**
+ * @brief Check the "get_state_root_hash" rpc function with an example block
+ * hash. Compare the result with the expected hash of the state.
+ *
+ */
+void getStateRootHashBlockHashTest() {
+  Casper::Client client(CASPER_TEST_ADDRESS);
+
+  std::string block_hash =
+      "9511adf5ed36ccba48d71840fd558d4397c9eb0470d1e25711b5419632a6f55a";
+  std::string result = client.GetStateRootHash(block_hash).state_root_hash;
+  std::string expected_result =
+      "9aa3c10d4db2e02adb464458c7a09d1df2ed551be02d2c7bbdbe847d3731e84f";
+
+  TEST_ASSERT(iequals(result, expected_result));
 }
 
 /**
@@ -30,9 +75,12 @@ void get_state_root_hash_block_height_test(void) {
  * Compare the result with an empty string.
  *
  */
-void get_state_root_hash_test() {
+void getStateRootHashLastBlockTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
-  TEST_ASSERT(client.GetStateRootHash().state_root_hash != "");
+
+  std::string result = client.GetStateRootHash().state_root_hash;
+
+  TEST_ASSERT(result != "");
 }
 
 /**
@@ -41,9 +89,29 @@ void get_state_root_hash_test() {
  */
 void get_deploy_test() {
   Casper::Client client(CASPER_TEST_ADDRESS);
-  // Casper::GetDeployInfoResult result = client.GetDeployInfo();
+  std::string deploy_hash =
+      "8e535d2baed76141ab47fd93b04dd61f65a07893b7c950022978a2b29628edd7";
 
-  // TEST_ASSERT(result.api_version != "");
+  nlohmann::json deploy_result = client.GetDeployInfo(deploy_hash);
+
+  TEST_ASSERT(deploy_result.at("api_version") != "");
+  TEST_ASSERT(deploy_result.find("deploy") != deploy_result.end());
+
+  nlohmann::json& deploy_info = deploy_result.at("deploy");
+  TEST_ASSERT(iequals(
+      deploy_info.at("hash"),
+      "8e535d2baed76141ab47fd93b04dd61f65a07893b7c950022978a2b29628edd7"));
+
+  nlohmann::json& deploy_header = deploy_info.at("header");
+  TEST_ASSERT(iequals(
+      deploy_header.at("account"),
+      "011fa7f49ed9887f1bd0bceac567dd6a38087e2896411d74d3f8d1c03a3f325828"));
+
+  TEST_ASSERT(iequals(
+      deploy_header.at("body_hash"),
+      "11f5a10f791fd6ac8b12d52298b7d1db7bd91e8c15b5d1330fd16d792257693c"));
+  TEST_ASSERT(iequals(deploy_header.at("chain_name"), "casper-test"));
+  TEST_ASSERT(deploy_header.at("gas_price") == 1);
 }
 
 /**
@@ -51,14 +119,35 @@ void get_deploy_test() {
  * variables.
  *
  */
-void get_status_info_test() {
+void getStatusInfoTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
   Casper::GetStatusResult result = client.GetStatusInfo();
 
   TEST_ASSERT(result.api_version != "");
-  TEST_ASSERT(result.chainspec_name != "");
+
+  std::string expected_chainspec_name = "casper-test";
+  TEST_ASSERT(iequals(result.chainspec_name, expected_chainspec_name));
+
   TEST_ASSERT(result.starting_state_root_hash != "");
-  TEST_ASSERT(result.peers.size() != 0);
+
+  if (result.our_public_signing_key.has_value()) {
+    TEST_ASSERT(result.our_public_signing_key.value().ToString() != "");
+  }
+
+  if (result.last_added_block_info.has_value()) {
+    auto& last_block = result.last_added_block_info.value();
+    TEST_ASSERT(last_block.hash != "");
+    TEST_ASSERT(last_block.height >= 0);
+    TEST_ASSERT(last_block.timestamp != "");
+    TEST_ASSERT(last_block.state_root_hash != "");
+    TEST_ASSERT(last_block.creator.ToString() != "");
+  }
+
+  if (result.peers.size() > 0) {
+    TEST_ASSERT(result.peers[0].address != "");
+    TEST_ASSERT(result.peers[0].node_id != "");
+  }
+
   TEST_ASSERT(result.build_version != "");
   TEST_ASSERT(result.uptime != "");
 }
@@ -67,68 +156,126 @@ void get_status_info_test() {
  * @brief Check the "chain_get_block_transfers" rpc function.
  *
  */
-void get_block_transfers_test() {
+void getBlockTransfersTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
-  Casper::GetBlockTransfersResult result = client.GetBlockTransfers(
-      "35f86b6ab5e13b823daee5d23f3373f6b35048e0b0ea993adfadc5ba8ee7aae5");
+
+  // Call the rpc function
+  std::string block_hash =
+      "35f86b6ab5e13b823daee5d23f3373f6b35048e0b0ea993adfadc5ba8ee7aae5";
+  Casper::StringUtil::toLower(block_hash);
+  Casper::GetBlockTransfersResult result = client.GetBlockTransfers(block_hash);
+
+  // Expected Values
+  std::string expected_block_hash = block_hash;
+  big_int expected_amount = 199000000000;
+  std::string expected_deploy_hash =
+      "8e535d2baed76141ab47fd93b04dd61f65a07893b7c950022978a2b29628edd7";
+  std::string expected_from =
+      "account-hash-"
+      "308d2a0eCF66bDAcAC5Cf6184C732D83DCeB48A859169e5680FE17cF32Bb974F";
+  big_int expected_gas = 0;
+  std::string expected_source =
+      "uref-5ce1d189e8ccafdd5a959088ffd870f54b29bd5afeb05950dddcc12ec7dcbe90-"
+      "007";
+  std::string expected_target =
+      "uref-c9733355d61aa2a36721d9d1081eebcfe5dde94f82386b3d75163fee894d292a-"
+      "007";
 
   TEST_ASSERT(result.api_version != "");
 
   TEST_ASSERT(result.block_hash.has_value());
-  TEST_ASSERT(result.block_hash.value() != "");
+  TEST_ASSERT(iequals(result.block_hash.value(), expected_block_hash));
 
+  // check transfers
   TEST_ASSERT(result.transfers.has_value());
-  TEST_ASSERT(result.transfers.value().size() != 0);
-  TEST_ASSERT(result.transfers.value()[0].deploy_hash != "");
-  TEST_ASSERT(result.transfers.value()[0].source.ToString() != "");
-  TEST_ASSERT(result.transfers.value()[0].target.ToString() != "");
-  TEST_ASSERT(result.transfers.value()[0].amount != 0);
-  TEST_ASSERT(result.transfers.value()[0].gas == 0);
+  TEST_ASSERT(result.transfers.value().size() > 0);
+
+  auto& transfers = result.transfers.value();
+  auto test_transfer = std::find_if(
+      transfers.begin(), transfers.end(), [&](const Casper::Transfer& x) {
+        return iequals(x.deploy_hash, expected_deploy_hash);
+      });
+  TEST_ASSERT(test_transfer != transfers.end());
+
+  // Actual Values
+  big_int current_amount = test_transfer->amount;
+  std::string current_deploy_hash = test_transfer->deploy_hash;
+  std::string current_from = test_transfer->from.ToString();
+  big_int current_gas = test_transfer->gas;
+  std::string current_source = test_transfer->source.ToString();
+  std::string current_target = test_transfer->target.ToString();
+
+  // tests for the first transfer
+  TEST_ASSERT(current_amount == expected_amount);
+  TEST_ASSERT(iequals(current_deploy_hash, expected_deploy_hash));
+  TEST_ASSERT(iequals(current_from, expected_from));
+  TEST_ASSERT(current_gas == expected_gas);
+  TEST_ASSERT(iequals(current_source, expected_source));
+  TEST_ASSERT(iequals(current_target, expected_target));
 }
 
 /**
  * @brief Check the "chain_get_block" rpc function
  *
  */
-void get_block_test() {
+void getBlockTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
+
   std::string block_hash =
       "acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330";
-
   Casper::GetBlockResult blockResult = client.GetBlock(block_hash);
 
   TEST_ASSERT(blockResult.api_version != "");
 
   TEST_ASSERT(blockResult.block.has_value());
+  auto& current_block = blockResult.block.value();
 
-  TEST_ASSERT(blockResult.block.value().hash != "");
+  TEST_ASSERT(iequals(
+      current_block.hash,
+      "acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330"));
 
   // block header
-  TEST_ASSERT(blockResult.block.value().header.parent_hash != "");
-  TEST_ASSERT(blockResult.block.value().header.state_root_hash != "");
-  TEST_ASSERT(blockResult.block.value().header.body_hash != "");
-  TEST_ASSERT(blockResult.block.value().header.accumulated_seed != "");
-  TEST_ASSERT(blockResult.block.value().header.timestamp != "");
-  TEST_ASSERT(blockResult.block.value().header.era_id != 0);
-  TEST_ASSERT(blockResult.block.value().header.height != 0);
-  TEST_ASSERT(blockResult.block.value().header.protocol_version != "");
+  TEST_ASSERT(iequals(
+      current_block.header.parent_hash,
+      "e23b5f98258aff36716a8f60ca8d57c049216eedd88e6c7e14df7a6cfbadca73"));
+
+  TEST_ASSERT(iequals(
+      current_block.header.state_root_hash,
+      "f5abb3964382e0dde4bc3ec38414f43f325f5dcc6493d5a7c4037972793fb302"));
+
+  TEST_ASSERT(iequals(
+      current_block.header.body_hash,
+      "e1786ce884cf41abbc758b0795ee3223daec5fb8015791ced0f8ee66deec8ee3"));
+
+  TEST_ASSERT(iequals(
+      current_block.header.accumulated_seed,
+      "35b5d33db0b43df3971831880f51023b37a468ad54494316ec26af4c61904532"));
+
+  TEST_ASSERT(current_block.header.timestamp != "");
+  TEST_ASSERT(current_block.header.era_id != 0);
+  TEST_ASSERT(current_block.header.height == 532041);
+  TEST_ASSERT(current_block.header.protocol_version != "");
 
   // block body
-  TEST_ASSERT(blockResult.block.value().body.deploy_hashes.size() >= 0);
-  TEST_ASSERT(blockResult.block.value().body.proposer.ToString() != "");
-  TEST_ASSERT(blockResult.block.value().body.transfer_hashes.size() >= 0);
+  TEST_ASSERT(current_block.body.deploy_hashes.size() >= 0);
+
+  TEST_ASSERT(iequals(
+      current_block.body.proposer.ToString(),
+      "01cd807fb41345d8dD5A61da7991e1468173acbEE53920E4DFe0D28Cb8825AC664"));
+
+  TEST_ASSERT(current_block.body.transfer_hashes.size() >= 0);
 
   // block proofs
-  TEST_ASSERT(blockResult.block.value().proofs.size() > 0);
-  TEST_ASSERT(blockResult.block.value().proofs[0].public_key.ToString() != "");
-  TEST_ASSERT(blockResult.block.value().proofs[0].signature.ToString() != "");
+  TEST_ASSERT(current_block.proofs.size() > 0);
+  TEST_ASSERT(current_block.proofs[0].public_key.ToString() != "");
+  TEST_ASSERT(current_block.proofs[0].signature.ToString() != "");
 }
 
 /**
  * @brief Check the "chain_get_era_info_by_switch_block" rpc function
  *
  */
-void get_era_info_by_switch_block_test() {
+void getEraInfoBySwitchBlockTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
   Casper::GetEraInfoResult result = client.GetEraInfoBySwitchBlock(
       "d2077716e5b8796723c5720237239720f54e6ada54e3357f2c4896f2a51a6d8f");
@@ -188,7 +335,7 @@ void get_era_info_by_switch_block_test() {
  * @brief Check the "state_get_item" rpc function
  *
  */
-void get_item_test() {
+void getItemTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
   std::string state_root_hash =
       "39f2800688b94f68ca640b26c7d0f50a90d2ce9af55c9484e66151b544345303";
@@ -196,29 +343,46 @@ void get_item_test() {
       "transfer-"
       "9f5fe878c29fc3bf537c0509ec5abe1781a72bb6a3197a440e3e68247fba5909";
 
-  // std::vector<std::string> path can be empty
-
   Casper::GetItemResult result = client.GetItem(state_root_hash, key);
 
+  // tests
   TEST_ASSERT(result.api_version != "");
+  TEST_ASSERT(result.merkle_proof != "");
 
   TEST_ASSERT(result.stored_value.transfer.has_value());
-  TEST_ASSERT(result.stored_value.transfer.value().deploy_hash != "");
-  TEST_ASSERT(result.stored_value.transfer.value().from.ToString() != "");
-  TEST_ASSERT(result.stored_value.transfer.value().source.ToString() != "");
-  TEST_ASSERT(result.stored_value.transfer.value().target.ToString() != "");
-  TEST_ASSERT(result.stored_value.transfer.value().amount >= 0);
-  TEST_ASSERT(result.stored_value.transfer.value().gas >= 0);
 
-  TEST_ASSERT(result.merkle_proof != "");
+  auto& current_transfer = result.stored_value.transfer.value();
+
+  TEST_ASSERT(iequals(
+      current_transfer.deploy_hash,
+      "8e535d2baed76141ab47fd93b04dd61f65a07893b7c950022978a2b29628edd7"));
+
+  TEST_ASSERT(iequals(
+      current_transfer.from.ToString(),
+      "account-hash-"
+      "308d2a0eCF66bDAcAC5Cf6184C732D83DCeB48A859169e5680FE17cF32Bb974F"));
+
+  TEST_ASSERT(iequals(
+      current_transfer.source.ToString(),
+      "uref-5ce1d189e8ccafdd5a959088ffd870f54b29bd5afeb05950dddcc12ec7dcbe90-"
+      "007"));
+
+  TEST_ASSERT(iequals(
+      current_transfer.target.ToString(),
+      "uref-c9733355d61aa2a36721d9d1081eebcfe5dde94f82386b3d75163fee894d292a-"
+      "007"));
+
+  TEST_ASSERT(current_transfer.amount == 199000000000);
+  TEST_ASSERT(current_transfer.gas == 0);
 }
 
+// TODO: Check this when the CLValue is implemented
 // TODO: Write the other tests such as by NamedKey, Dictionary, etc.
 /**
  * @brief Check the "state_get_dictionary_item" rpc function by URef
  *
  */
-void get_dictionary_item_test() {
+void getDictionaryItemTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
   std::string state_root_hash =
       "322b8d17faea2ee780b9b952a25a86520d36a78e20113f0658ae0b29a68a7384";
@@ -250,8 +414,9 @@ void get_dictionary_item_test() {
  * @brief Check the "state_get_balance" rpc function
  *
  */
-void get_balance_test() {
+void getBalanceTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
+
   std::string purse_uref =
       "uref-54fd72455872082a254b0160e94a86245acd0c441f526688bda1261d0969057a-"
       "007";
@@ -270,7 +435,7 @@ void get_balance_test() {
  * @brief Check the "state_get_auction_info" rpc function
  *
  */
-void get_auction_info_test() {
+void getAuctionInfoTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
 
   std::string block_hash =
@@ -279,9 +444,14 @@ void get_auction_info_test() {
   Casper::GetAuctionInfoResult auction_result =
       client.GetAuctionInfo(block_hash);
 
+  // tests
   TEST_ASSERT(auction_result.api_version != "");
-  TEST_ASSERT(auction_result.auction_state.state_root_hash != "");
-  TEST_ASSERT(auction_result.auction_state.block_height > 0);
+
+  TEST_ASSERT(iequals(
+      auction_result.auction_state.state_root_hash,
+      "fb9847a919b0745e3bea1cc25f3ad4ad5fee0e18fe4bebd303a9e7a93508ddb8"));
+
+  TEST_ASSERT(auction_result.auction_state.block_height == 569706);
 
   TEST_ASSERT(auction_result.auction_state.era_validators.size() > 0);
   TEST_ASSERT(auction_result.auction_state.era_validators[0].era_id > 0);
@@ -309,7 +479,7 @@ void get_auction_info_test() {
 /// <summary>
 /// Check the Casper lower-case convert function
 /// </summary>
-void string_util_toLower_test() {
+void stringUtilToLowerTest() {
   std::string str = "Hello World";
   std::string str_lower = "hello world";
   TEST_ASSERT(str_lower == Casper::StringUtil::toLower(str));
@@ -338,18 +508,19 @@ void publicKeyGetAccountHashTest() {
 // 3. CEP57 Checksum tests
 
 TEST_LIST = {
-    {"peers", get_peers_test},
-    {"root hash 1", get_state_root_hash_block_height_test},
-    {"root hash 2", get_state_root_hash_test},
+    {"infoGetPeers", infoGetPeersTest},
+    {"chainGetStateRootHash - Height", getStateRootHashBlockHeightTest},
+    {"chainGetStateRootHash - Hash", getStateRootHashBlockHashTest},
+    {"chainGetStateRootHash - Last Block", getStateRootHashLastBlockTest},
     {"infoGetDeploy", get_deploy_test},
-    {"infoGetStatus", get_status_info_test},
-    {"infoGetBlockTransfers", get_block_transfers_test},
-    {"chainGetBlock", get_block_test},
-    {"chainGetEraInfoBySwitchBlock", get_era_info_by_switch_block_test},
-    {"stateGetItem", get_item_test},
-    {"stateGetDictionaryItem", get_dictionary_item_test},
-    {"stateGetBalance", get_balance_test},
-    {"stateGetAuctionInfo", get_auction_info_test},
-    {"StringUtil - ToLower", string_util_toLower_test},
+    {"infoGetStatus", getStatusInfoTest},
+    {"infoGetBlockTransfers", getBlockTransfersTest},
+    {"chainGetBlock", getBlockTest},
+    {"chainGetEraInfoBySwitchBlock", getEraInfoBySwitchBlockTest},
+    {"stateGetItem", getItemTest},
+    {"stateGetDictionaryItem", getDictionaryItemTest},
+    {"stateGetBalance", getBalanceTest},
+    {"stateGetAuctionInfo(may take a while)", getAuctionInfoTest},
+    {"StringUtil - ToLower", stringUtilToLowerTest},
     {"PublicKey - GetAccountHash", publicKeyGetAccountHashTest},
     {NULL, NULL}};

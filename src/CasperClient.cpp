@@ -2,15 +2,18 @@
 
 namespace Casper {
 
+/// Construct a new Casper Client object
 Client::Client(const std::string& address)
     : mAddress{address},
       mHttpConnector{mAddress},
       mRpcClient{mHttpConnector, jsonrpccxx::version::v2} {}
 
+/// Get a list of the nodes.
 InfoGetPeersResult Client::GetNodePeers() {
   return mRpcClient.CallMethod<InfoGetPeersResult>(1, "info_get_peers", {});
 }
 
+/// Returns the state root hash at a given block
 GetStateRootHashResult Client::GetStateRootHash(std::string block_hash) {
   nlohmann::json hashJSON{{"Hash", block_hash}};
   nlohmann::json block_identifier{{"block_identifier", hashJSON}};
@@ -19,6 +22,7 @@ GetStateRootHashResult Client::GetStateRootHash(std::string block_hash) {
       1, "chain_get_state_root_hash", block_identifier);
 }
 
+/// Returns the state root hash at a given height
 GetStateRootHashResult Client::GetStateRootHash(uint64_t block_height) {
   nlohmann::json heightJSON{{"Height", block_height}};
   nlohmann::json block_identifier{{"block_identifier", heightJSON}};
@@ -27,17 +31,20 @@ GetStateRootHashResult Client::GetStateRootHash(uint64_t block_height) {
       1, "chain_get_state_root_hash", block_identifier);
 }
 
-GetDeployInfoResult Client::GetDeployInfo(std::string deploy_hash) {
+/// Returns the deploy info.
+nlohmann::json Client::GetDeployInfo(std::string deploy_hash) {
   nlohmann::json hashJSON{{"deploy_hash", deploy_hash}};
 
-  return mRpcClient.CallMethodNamed<GetDeployInfoResult>(1, "info_get_deploy",
-                                                         hashJSON);
+  return mRpcClient.CallMethodNamed<nlohmann::json>(1, "info_get_deploy",
+                                                    hashJSON);
 }
 
+/// Returns the status info.
 GetStatusResult Client::GetStatusInfo() {
   return mRpcClient.CallMethodNamed<GetStatusResult>(1, "info_get_status");
 }
 
+/// Returns the transfers at the block given by the block hash.
 GetBlockTransfersResult Client::GetBlockTransfers(std::string block_hash) {
   nlohmann::json hashJSON{{"Hash", block_hash}};
   nlohmann::json block_identifier{{"block_identifier", hashJSON}};
@@ -46,6 +53,7 @@ GetBlockTransfersResult Client::GetBlockTransfers(std::string block_hash) {
       1, "chain_get_block_transfers", block_identifier);
 }
 
+/// Returns the transfers at the block given by the block height.
 GetBlockTransfersResult Client::GetBlockTransfers(uint64_t block_height) {
   nlohmann::json heightJSON{{"Height", block_height}};
   nlohmann::json block_identifier{{"block_identifier", heightJSON}};
@@ -54,6 +62,7 @@ GetBlockTransfersResult Client::GetBlockTransfers(uint64_t block_height) {
       1, "chain_get_block_transfers", block_identifier);
 }
 
+/// Returns the block at the block given by the block hash.
 GetBlockResult Client::GetBlock(std::string block_hash) {
   nlohmann::json hashJSON{{"Hash", block_hash}};
   nlohmann::json block_identifier{{"block_identifier", hashJSON}};
@@ -62,6 +71,7 @@ GetBlockResult Client::GetBlock(std::string block_hash) {
                                                     block_identifier);
 }
 
+/// Returns the block at the block given by the block height.
 GetBlockResult Client::GetBlock(uint64_t block_height) {
   nlohmann::json heightJSON{{"Height", block_height}};
   nlohmann::json block_identifier{{"block_identifier", heightJSON}};
@@ -70,6 +80,7 @@ GetBlockResult Client::GetBlock(uint64_t block_height) {
                                                     block_identifier);
 }
 
+/// Returns the era information at the block given by the block hash.
 GetEraInfoResult Client::GetEraInfoBySwitchBlock(std::string block_hash) {
   nlohmann::json hashJSON{{"Hash", block_hash}};
   nlohmann::json block_identifier{{"block_identifier", hashJSON}};
@@ -78,6 +89,7 @@ GetEraInfoResult Client::GetEraInfoBySwitchBlock(std::string block_hash) {
       1, "chain_get_era_info_by_switch_block", block_identifier);
 }
 
+/// Returns the era information at the block given by the block height.
 GetEraInfoResult Client::GetEraInfoBySwitchBlock(uint64_t block_height) {
   nlohmann::json heightJSON{{"Height", block_height}};
   nlohmann::json block_identifier{{"block_identifier", heightJSON}};
@@ -86,6 +98,7 @@ GetEraInfoResult Client::GetEraInfoBySwitchBlock(uint64_t block_height) {
       1, "chain_get_era_info_by_switch_block", block_identifier);
 }
 
+/// Returns the item at the given address with the given key.
 GetItemResult Client::GetItem(std::string state_root_hash, std::string key,
                               std::vector<std::string> path) {
   nlohmann::json paramsJSON{
@@ -95,6 +108,7 @@ GetItemResult Client::GetItem(std::string state_root_hash, std::string key,
                                                    paramsJSON);
 }
 
+/// Returns the dictionary item with the given key and state root hash.
 GetDictionaryItemResult Client::GetDictionaryItem(std::string stateRootHash,
                                                   std::string dictionaryItem) {
   nlohmann::json dictionaryJSON{{"Dictionary", dictionaryItem}};
@@ -106,6 +120,7 @@ GetDictionaryItemResult Client::GetDictionaryItem(std::string stateRootHash,
       1, "state_get_dictionary_item", paramsJSON);
 }
 
+/// Returns the dictionary item with the given account key and item key.
 GetDictionaryItemResult Client::GetDictionaryItemByAccount(
     std::string stateRootHash, std::string accountKey,
     std::string dictionaryName, std::string dictionaryItemKey) {
@@ -120,6 +135,7 @@ GetDictionaryItemResult Client::GetDictionaryItemByAccount(
       1, "state_get_dictionary_item", paramsJSON);
 }
 
+/// Returns the dictionary item with the given contract.
 GetDictionaryItemResult Client::GetDictionaryItemByContract(
     std::string stateRootHash, std::string contractKey,
     std::string dictionaryName, std::string dictionaryItemKey) {
@@ -134,6 +150,7 @@ GetDictionaryItemResult Client::GetDictionaryItemByContract(
       1, "state_get_dictionary_item", paramsJSON);
 }
 
+/// Returns the dictionary item with the given URef.
 GetDictionaryItemResult Client::GetDictionaryItemByURef(
     std::string stateRootHash, std::string seedURef,
     std::string dictionaryItemKey) {
@@ -147,22 +164,9 @@ GetDictionaryItemResult Client::GetDictionaryItemByURef(
       1, "state_get_dictionary_item", paramsJSON);
 }
 
+/// Returns the balance of the given account.
 GetBalanceResult Client::GetAccountBalance(std::string purseURef,
                                            std::string stateRootHash) {
-  /*
-// TODO:
-if (!purseURef.StartsWith("uref-"))
-            {
-                var response = await GetAccountInfo(purseURef);
-                purseURef = response.Result.GetProperty("account")
-                    .GetProperty("main_purse").GetString();
-            }
-
-
-  if (stateRootHash.empty()) {
-    stateRootHash = GetStateRootHash().state_root_hash;
-  }
-*/
   nlohmann::json paramsJSON{{"state_root_hash", stateRootHash},
                             {"purse_uref", purseURef}};
 
@@ -170,6 +174,7 @@ if (!purseURef.StartsWith("uref-"))
                                                       paramsJSON);
 }
 
+/// Returns the auction information for the given block hash.
 GetAuctionInfoResult Client::GetAuctionInfo(std::string block_hash) {
   nlohmann::json hashJSON{{"Hash", block_hash}};
   nlohmann::json block_identifier{{"block_identifier", hashJSON}};
@@ -178,6 +183,7 @@ GetAuctionInfoResult Client::GetAuctionInfo(std::string block_hash) {
       1, "state_get_auction_info", block_identifier);
 }
 
+/// Returns the auction information for the given block height.
 GetAuctionInfoResult Client::GetAuctionInfo(uint64_t block_height) {
   nlohmann::json heightJSON{{"Height", block_height}};
   nlohmann::json block_identifier{{"block_identifier", heightJSON}};
@@ -186,6 +192,7 @@ GetAuctionInfoResult Client::GetAuctionInfo(uint64_t block_height) {
       1, "state_get_auction_info", block_identifier);
 }
 
+/// TODO: Not implemented yet.(MS3)
 PutDeployResult Client::PutDeploy(Deploy deploy) {
   nlohmann::json deploy_json;
   to_json(deploy_json, deploy);
