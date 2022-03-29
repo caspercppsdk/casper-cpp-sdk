@@ -14,14 +14,12 @@ struct UnbondingPurse {
   /// <summary>
   /// Validators public key.
   /// </summary>
-  // TODO: make PublicKey instead of string
-  std::string validator_public_key;
+  PublicKey validator_public_key;
 
   /// <summary>
   /// Unbonder public key.
   /// </summary>
-  // TODO: make PublicKey instead of string
-  std::string unbonder_public_key;
+  PublicKey unbonder_public_key;
 
   /// <summary>
   /// Era in which this unbonding request was created.

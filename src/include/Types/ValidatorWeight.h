@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Definitions.h"
+#include "Types/PublicKey.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
@@ -8,11 +9,10 @@ namespace Casper {
 /// A validator's weight.
 /// </summary>
 struct ValidatorWeight {
-  // TODO: Make PublicKey instead of string
   /// <summary>
   /// Validator's Public Key.
   /// </summary>
-  std::string public_key;
+  PublicKey public_key;
 
   /// <summary>
   /// Validator's weight.
@@ -40,14 +40,13 @@ inline void to_json(nlohmann::json& j, const ValidatorWeight& p) {
  * @param p ValidatorWeight object to construct.
  */
 inline void from_json(const nlohmann::json& j, ValidatorWeight& p) {
-  // TODO: PublicKey = PublicKey.FromHexString(publicKey),
-  j.at("public_key").get_to(p.public_key);
   std::string weightString = j.at("weight").get<std::string>();
   if (weightString.size() > 0) {
     p.weight = weightString;
   } else {
     p.weight = 0;
   }
-  // TODO: Fill in this function
+
+  j.at("public_key").get_to(p.public_key);
 }
 }  // namespace Casper

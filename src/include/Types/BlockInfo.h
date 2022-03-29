@@ -12,8 +12,7 @@ struct BlockInfo {
   /// <summary>
   /// Validator node's public key
   /// </summary>
-  // TODO: Make PublicKey instead of std::string
-  std::string creator;
+  PublicKey creator;
 
   /// <summary>
   /// The block era id.

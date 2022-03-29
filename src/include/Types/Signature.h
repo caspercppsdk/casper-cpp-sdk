@@ -30,6 +30,10 @@ struct Signature {
       : raw_bytes(raw_bytes_), key_algorithm(key_algorithm_) {}
 
  public:
+  /// <summary>
+  /// Creates a Signature object from a hexadecimal string (containing the
+  /// Key algorithm identifier).
+  /// </summary>
   static Signature FromHexString(std::string signature) {
     try {
       SecByteBlock rawBytes = CEP57Checksum::Decode(signature.substr(2));
@@ -43,10 +47,11 @@ struct Signature {
     } catch (const std::exception& e) {
       std::cout << "FromHexString() Exception: " << e.what() << '\n';
     }
+    return Signature();
   }
 
   /// <summary>
-  /// Creates a PublicKey object from a byte array (containing the
+  /// Creates a Signature object from a byte array (containing the
   /// Key algorithm identifier).
   /// </summary>
   static Signature FromBytes(SecByteBlock bytes) {
@@ -54,7 +59,6 @@ struct Signature {
       throw std::invalid_argument("Signature bytes cannot be empty.");
 
     KeyAlgo algoIdent;
-
     if (bytes[0] == 0x01) {
       algoIdent = KeyAlgo::ED25519;
     } else if (algoIdent == 0x02) {
@@ -65,7 +69,6 @@ struct Signature {
 
     SecByteBlock data_bytes(bytes.size() - 1);
     std::copy(bytes.begin() + 1, bytes.end(), data_bytes.begin());
-    // TODO: copy check
     return Signature(data_bytes, algoIdent);
   }
 
@@ -73,7 +76,6 @@ struct Signature {
   /// Creates a Signature object from a byte array and the key algorithm
   /// identifier.
   /// </summary>
-
   static Signature FromRawBytes(SecByteBlock rawBytes, KeyAlgo keyAlgo) {
     return Signature(rawBytes, keyAlgo);
   }
@@ -82,7 +84,6 @@ struct Signature {
   /// Returns the bytes of the signature, including the Key algorithm as the
   /// first byte.
   /// </summary>
-
   SecByteBlock GetBytes() {
     SecByteBlock bytes = SecByteBlock(raw_bytes.size() + 1);
     if (key_algorithm == KeyAlgo::ED25519) {
@@ -96,6 +97,10 @@ struct Signature {
     return bytes;
   }
 
+  /// <summary>
+  /// Returns the signature as an hexadecimal string, including the key
+  /// algorithm in the first position.
+  /// </summary>
   std::string ToHexString() const {
     if (key_algorithm == KeyAlgo::ED25519)
       return "01" + CEP57Checksum::Encode(raw_bytes);
@@ -114,6 +119,9 @@ inline void to_json(nlohmann::json& j, const Signature& s) {
 // from_json of Signature
 inline void from_json(const nlohmann::json& j, Signature& s) {
   std::string signatureStr = j.get<std::string>();
+  s = Signature::FromHexString(signatureStr);
+
+  /*
   SecByteBlock rawBytes = CEP57Checksum::Decode(signatureStr.substr(2));
 
   try {
@@ -127,6 +135,7 @@ inline void from_json(const nlohmann::json& j, Signature& s) {
   } catch (const std::exception& e) {
     std::cout << "FromHexString() Exception: " << e.what() << '\n';
   }
+  */
 }
 
 }  // namespace Casper

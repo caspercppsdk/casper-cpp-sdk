@@ -4,20 +4,15 @@
 #include "nlohmann/json.hpp"
 
 namespace Casper {
-/**
- * @brief Base struct for all RPC result types.
- *
- */
+
+/// Base struct for all RPC result types.
 struct RpcResult {
- public:
-  /**
-   * @brief Construct a new Rpc Result object
-   *
-   */
-  RpcResult() {}
-  RpcResult(std::string api_version_) : api_version(api_version_) {}
-  /// The API version as a string.
+  /// <summary>
+  /// The RPC API version.
+  /// </summary>
   std::string api_version;
+
+  RpcResult() {}
 };
 
 /**
@@ -37,8 +32,10 @@ inline void to_json(nlohmann::json& j, const RpcResult& p) {
  * @param p RpcResult object to construct.
  */
 inline void from_json(const nlohmann::json& j, RpcResult& p) {
-  if (!j.is_null() && j.find("api_version") != j.end()) {
+  if (!j.is_null() && j.find("api_version") != j.end() &&
+      !j.at("api_version").is_null()) {
     j.at("api_version").get_to(p.api_version);
   }
 }
+
 }  // namespace Casper

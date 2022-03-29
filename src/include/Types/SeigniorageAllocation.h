@@ -13,16 +13,15 @@ struct SeigniorageAllocation {
   /// </summary>
   bool is_delegator;
 
-  // TODO: make public key instead of string
   /// <summary>
   /// Public key of the delegator.
   /// </summary>
-  std::string delegator_public_key;
+  PublicKey delegator_public_key;
 
   /// <summary>
   /// Public key of the validator
   /// </summary>
-  std::string validator_public_key;
+  PublicKey validator_public_key;
 
   /// <summary>
   /// Amount allocated as a reward

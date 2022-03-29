@@ -1,5 +1,6 @@
 #include "CasperClient.h"
 #include "Types/GlobalStateKey.cpp"
+#include "Types/PublicKey.h"
 #include "Utils/CryptoUtil.h"
 #include "acutest.h"
 
@@ -59,7 +60,7 @@ void get_status_info_test() {
   TEST_ASSERT(result.starting_state_root_hash != "");
   TEST_ASSERT(result.peers.size() != 0);
   TEST_ASSERT(result.build_version != "");
-  TEST_ASSERT(result.uptime > 0);
+  TEST_ASSERT(result.uptime != "");
 }
 
 /**
@@ -97,27 +98,30 @@ void get_block_test() {
   Casper::GetBlockResult blockResult = client.GetBlock(block_hash);
 
   TEST_ASSERT(blockResult.api_version != "");
-  TEST_ASSERT(blockResult.block.hash != "");
+
+  TEST_ASSERT(blockResult.block.has_value());
+
+  TEST_ASSERT(blockResult.block.value().hash != "");
 
   // block header
-  TEST_ASSERT(blockResult.block.header.parent_hash != "");
-  TEST_ASSERT(blockResult.block.header.state_root_hash != "");
-  TEST_ASSERT(blockResult.block.header.body_hash != "");
-  TEST_ASSERT(blockResult.block.header.accumulated_seed != "");
-  TEST_ASSERT(blockResult.block.header.timestamp != "");
-  TEST_ASSERT(blockResult.block.header.era_id != 0);
-  TEST_ASSERT(blockResult.block.header.height != 0);
-  TEST_ASSERT(blockResult.block.header.protocol_version != "");
+  TEST_ASSERT(blockResult.block.value().header.parent_hash != "");
+  TEST_ASSERT(blockResult.block.value().header.state_root_hash != "");
+  TEST_ASSERT(blockResult.block.value().header.body_hash != "");
+  TEST_ASSERT(blockResult.block.value().header.accumulated_seed != "");
+  TEST_ASSERT(blockResult.block.value().header.timestamp != "");
+  TEST_ASSERT(blockResult.block.value().header.era_id != 0);
+  TEST_ASSERT(blockResult.block.value().header.height != 0);
+  TEST_ASSERT(blockResult.block.value().header.protocol_version != "");
 
   // block body
-  TEST_ASSERT(blockResult.block.body.deploy_hashes.size() >= 0);
-  TEST_ASSERT(blockResult.block.body.proposer != "");
-  TEST_ASSERT(blockResult.block.body.transfer_hashes.size() >= 0);
+  TEST_ASSERT(blockResult.block.value().body.deploy_hashes.size() >= 0);
+  TEST_ASSERT(blockResult.block.value().body.proposer.ToString() != "");
+  TEST_ASSERT(blockResult.block.value().body.transfer_hashes.size() >= 0);
 
   // block proofs
-  TEST_ASSERT(blockResult.block.proofs.size() > 0);
-  TEST_ASSERT(blockResult.block.proofs[0].public_key != "");
-  TEST_ASSERT(blockResult.block.proofs[0].signature != "");
+  TEST_ASSERT(blockResult.block.value().proofs.size() > 0);
+  TEST_ASSERT(blockResult.block.value().proofs[0].public_key.ToString() != "");
+  TEST_ASSERT(blockResult.block.value().proofs[0].signature.ToString() != "");
 }
 
 /**
@@ -161,7 +165,7 @@ void get_era_info_by_switch_block_test() {
       TEST_ASSERT(result.era_summary.value()
                       .stored_value.era_info.value()
                       .seigniorage_allocations[i]
-                      .delegator_public_key != "");
+                      .delegator_public_key.ToString() != "");
       TEST_ASSERT(result.era_summary.value()
                       .stored_value.era_info.value()
                       .seigniorage_allocations[i]
@@ -171,7 +175,7 @@ void get_era_info_by_switch_block_test() {
       TEST_ASSERT(result.era_summary.value()
                       .stored_value.era_info.value()
                       .seigniorage_allocations[i]
-                      .validator_public_key != "");
+                      .validator_public_key.ToString() != "");
       TEST_ASSERT(result.era_summary.value()
                       .stored_value.era_info.value()
                       .seigniorage_allocations[i]
@@ -286,21 +290,52 @@ void get_auction_info_test() {
       0);
   TEST_ASSERT(auction_result.auction_state.era_validators[0]
                   .validator_weights[0]
-                  .public_key != "");
+                  .public_key.ToString() != "");
   TEST_ASSERT(auction_result.auction_state.era_validators[0]
                   .validator_weights[0]
                   .weight > 0);
 
   TEST_ASSERT(auction_result.auction_state.bids.size() > 0);
-  TEST_ASSERT(auction_result.auction_state.bids[0].public_key != "");
+  TEST_ASSERT(auction_result.auction_state.bids[0].public_key.ToString() != "");
 
-  TEST_ASSERT(auction_result.auction_state.bids[0].bid.validator_public_key !=
-              "");
+  TEST_ASSERT(auction_result.auction_state.bids[0]
+                  .bid.validator_public_key.ToString() != "");
   TEST_ASSERT(
       auction_result.auction_state.bids[0].bid.bonding_purse.ToString() != "");
   TEST_ASSERT(auction_result.auction_state.bids[0].bid.staked_amount > 0);
   TEST_ASSERT(auction_result.auction_state.bids[0].bid.delegation_rate > 0);
 }
+
+/// <summary>
+/// Check the Casper lower-case convert function
+/// </summary>
+void string_util_toLower_test() {
+  std::string str = "Hello World";
+  std::string str_lower = "hello world";
+  TEST_ASSERT(str_lower == Casper::StringUtil::toLower(str));
+}
+
+/// <summary>
+/// Check the public key to account hash convert function
+/// </summary>
+void publicKeyGetAccountHashTest() {
+  Casper::PublicKey publicKey = Casper::PublicKey::FromHexString(
+      "01cd807fb41345d8dd5a61da7991e1468173acbee53920e4dfe0d28cb8825ac664");
+
+  std::string lower_case_account_hash = publicKey.GetAccountHash();
+  Casper::StringUtil::toLower(lower_case_account_hash);
+
+  std::string expected_account_hash =
+      "account-hash-"
+      "998c5fd4e7b568bedd78e05555c83c61893dc5d8546ce0bec8b30e1c570f21aa";
+
+  TEST_ASSERT(lower_case_account_hash == expected_account_hash);
+}
+
+// Optional TODO:
+// 1. CryptoUtil functions tests
+// 2. Other StringUtil functions tests
+// 3. CEP57 Checksum tests
 
 TEST_LIST = {
     {"peers", get_peers_test},
@@ -315,4 +350,6 @@ TEST_LIST = {
     {"stateGetDictionaryItem", get_dictionary_item_test},
     {"stateGetBalance", get_balance_test},
     {"stateGetAuctionInfo", get_auction_info_test},
+    {"StringUtil - ToLower", string_util_toLower_test},
+    {"PublicKey - GetAccountHash", publicKeyGetAccountHashTest},
     {NULL, NULL}};

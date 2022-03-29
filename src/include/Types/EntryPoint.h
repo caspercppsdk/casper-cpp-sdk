@@ -99,7 +99,6 @@ struct Parameter {
   /// <summary>
   /// The type of the parameter in the entry point.
   /// </summary>
-  // TODO: [JsonConverter(typeof(CLTypeInfoConverter))]
   CLType cl_type;
 
   Parameter() {}
@@ -145,7 +144,6 @@ struct EntryPoint {
   /// <summary>
   /// Context of method execution
   /// </summary>
-  // TODO: [JsonConverter(typeof(JsonStringEnumConverter))]
   EntryPointType entry_point_type;
 
   /// <summary>
@@ -156,7 +154,6 @@ struct EntryPoint {
   /// <summary>
   /// Returned value
   /// </summary>
-  // TODO: [JsonConverter(typeof(CLTypeInfoConverter))]
   CLType ret;
 
   EntryPoint() {}

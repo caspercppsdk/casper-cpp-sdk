@@ -1,27 +1,23 @@
 #pragma once
 
+#include <optional>
+
 #include "Base.h"
 #include "JsonRpc/ResultTypes/RpcResult.h"
-#include "Types/JsonBlock.h"
+#include "Types/Block.h"
 #include "Types/Transfer.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
-/**
- * @brief Result for the "chain_get_block" rpc call.
- *
- */
+
+/// Result for the "chain_get_block" rpc call.
 struct GetBlockResult : public RpcResult {
-  /**
-   * @brief Construct a new GetBlockResult object.
-   *
-   */
+  /// <summary>
+  /// The block as a JSON-friendly object.
+  /// </summary>
+  std::optional<Block> block = std::nullopt;
+
   GetBlockResult() {}
-
-  GetBlockResult(JsonBlock block_) : block(block_) {}
-
-  // TODO: Make Block instead of JsonBlock
-  JsonBlock block;
 };
 
 /**
@@ -32,7 +28,9 @@ struct GetBlockResult : public RpcResult {
  */
 inline void to_json(nlohmann::json& j, const GetBlockResult& p) {
   j = static_cast<RpcResult>(p);
-  j["block"] = p.block;
+  if (p.block.has_value()) {
+    j["block"] = p.block.value();
+  }
 }
 
 /**
@@ -43,7 +41,9 @@ inline void to_json(nlohmann::json& j, const GetBlockResult& p) {
  */
 inline void from_json(const nlohmann::json& j, GetBlockResult& p) {
   nlohmann::from_json(j, static_cast<RpcResult&>(p));
-  if (!j.at("block").is_null())
-    j.at("block").get_to(p.block);
+  if (j.find("block") != j.end() && !j.at("block").is_null()) {
+    p.block = j.at("block").get<Block>();
+  }
 }
+
 }  // namespace Casper

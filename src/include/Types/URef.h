@@ -49,8 +49,8 @@ struct URef : public GlobalStateKey {
  */
 
 inline void to_json(nlohmann::json& j, const URef& p) {
-  nlohmann::to_json(j, static_cast<GlobalStateKey>(p));
-  j.update(p.access_rights);
+  j = static_cast<GlobalStateKey>(p);
+  // j.update(p.access_rights);
 }
 
 /**
@@ -64,31 +64,32 @@ inline void from_json(const nlohmann::json& j, URef& p) {
   std::string value = j.get<std::string>();
   p.key_identifier = KeyIdentifier::UREF;
   p.key = value;
-  // std::cout << "\n\n\nUREF(value), value = " << value << "\n\n\n";
+
   if (!StringUtil::startsWith(value, "uref-")) {
     throw std::runtime_error("Invalid URef format");
   }
 
   auto parts = StringUtil::splitString(value.substr(5), "-");
 
-  if (parts.size() != 2)
+  if (parts.size() != 2) {
     throw std::runtime_error(
         "A URef object must end with an access rights suffix.");
-  if (parts[0].length() !=
-      64)  // TODO: check if this is correct, 32 may be the correct size
+  }
+
+  // TODO: check if this is correct, 32 may be the correct size
+  if (parts[0].length() != 64) {
     throw std::runtime_error("A URef object must contain a 32 byte value.");
-  if (parts[1].length() != 3)
+  }
+
+  if (parts[1].length() != 3) {
     throw std::runtime_error(
         "A URef object must contain a 3 digit access "
         "rights suffix.");
+  }
+
   try {
     p.raw_bytes = CEP57Checksum::Decode(parts[0]);
   } catch (std::exception& e) {
-    /*std::cout << "\nparts\n";
-    for (auto part : parts) {
-      std::cout << part << "\n";
-    }
-    */
     throw std::runtime_error("URef checksum mismatch.");
   }
 

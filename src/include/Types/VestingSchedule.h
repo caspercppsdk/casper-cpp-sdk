@@ -31,7 +31,6 @@ struct VestingSchedule {
  * @param p VestingSchedule object to construct from.
  */
 inline void to_json(nlohmann::json& j, const VestingSchedule& p) {
-  // TODO: fill this in
   j = nlohmann::json{"initial_release_timestamp_millis",
                      p.initial_release_timestamp_millis, "locked_amounts",
                      nlohmann::json::array()};

@@ -4,18 +4,17 @@
 #include "Types/StoredValue.h"
 
 namespace Casper {
-/**
- * @brief Result for the "state_get_item" rpc call.
- *
- */
-struct GetItemResult : public RpcResult {
- public:
-  /**
-   * @brief Construct a new GetItemResult object.
-   *
-   */
 
+/// Result for the "state_get_item" rpc call.
+struct GetItemResult : public RpcResult {
+  /// <summary>
+  /// The stored value.
+  /// </summary>
   StoredValue stored_value;
+
+  /// <summary>
+  /// The merkle proof.
+  /// </summary>
   std::string merkle_proof;
 
   GetItemResult() {}
@@ -44,4 +43,5 @@ inline void from_json(const nlohmann::json& j, GetItemResult& p) {
   j.at("stored_value").get_to(p.stored_value);
   j.at("merkle_proof").get_to(p.merkle_proof);
 }
+
 }  // namespace Casper
