@@ -93,7 +93,6 @@ void get_deploy_test() {
       "8e535d2baed76141ab47fd93b04dd61f65a07893b7c950022978a2b29628edd7";
 
   nlohmann::json deploy_result = client.GetDeployInfo(deploy_hash);
-  std::cout << deploy_result.dump(2) << std::endl;
 
   TEST_ASSERT(deploy_result.at("api_version") != "");
   TEST_ASSERT(deploy_result.find("deploy") != deploy_result.end());
@@ -112,7 +111,7 @@ void get_deploy_test() {
       deploy_header.at("body_hash"),
       "11f5a10f791fd6ac8b12d52298b7d1db7bd91e8c15b5d1330fd16d792257693c"));
   TEST_ASSERT(iequals(deploy_header.at("chain_name"), "casper-test"));
-  TEST_ASSERT(iequals(deploy_header.at("gas_price"), "1"));
+  TEST_ASSERT(deploy_header.at("gas_price") == 1);
 }
 
 /**
