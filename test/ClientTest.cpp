@@ -89,9 +89,30 @@ void getStateRootHashLastBlockTest() {
  */
 void get_deploy_test() {
   Casper::Client client(CASPER_TEST_ADDRESS);
-  // Casper::GetDeployInfoResult result = client.GetDeployInfo();
+  std::string deploy_hash =
+      "8e535d2baed76141ab47fd93b04dd61f65a07893b7c950022978a2b29628edd7";
 
-  // TEST_ASSERT(result.api_version != "");
+  nlohmann::json deploy_result = client.GetDeployInfo(deploy_hash);
+  std::cout << deploy_result.dump(2) << std::endl;
+
+  TEST_ASSERT(deploy_result.at("api_version") != "");
+  TEST_ASSERT(deploy_result.find("deploy") != deploy_result.end());
+
+  nlohmann::json& deploy_info = deploy_result.at("deploy");
+  TEST_ASSERT(iequals(
+      deploy_info.at("hash"),
+      "8e535d2baed76141ab47fd93b04dd61f65a07893b7c950022978a2b29628edd7"));
+
+  nlohmann::json& deploy_header = deploy_info.at("header");
+  TEST_ASSERT(iequals(
+      deploy_header.at("account"),
+      "011fa7f49ed9887f1bd0bceac567dd6a38087e2896411d74d3f8d1c03a3f325828"));
+
+  TEST_ASSERT(iequals(
+      deploy_header.at("body_hash"),
+      "11f5a10f791fd6ac8b12d52298b7d1db7bd91e8c15b5d1330fd16d792257693c"));
+  TEST_ASSERT(iequals(deploy_header.at("chain_name"), "casper-test"));
+  TEST_ASSERT(iequals(deploy_header.at("gas_price"), "1"));
 }
 
 /**

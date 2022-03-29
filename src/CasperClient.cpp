@@ -27,11 +27,11 @@ GetStateRootHashResult Client::GetStateRootHash(uint64_t block_height) {
       1, "chain_get_state_root_hash", block_identifier);
 }
 
-GetDeployInfoResult Client::GetDeployInfo(std::string deploy_hash) {
+nlohmann::json Client::GetDeployInfo(std::string deploy_hash) {
   nlohmann::json hashJSON{{"deploy_hash", deploy_hash}};
 
-  return mRpcClient.CallMethodNamed<GetDeployInfoResult>(1, "info_get_deploy",
-                                                         hashJSON);
+  return mRpcClient.CallMethodNamed<nlohmann::json>(1, "info_get_deploy",
+                                                    hashJSON);
 }
 
 GetStatusResult Client::GetStatusInfo() {
