@@ -159,9 +159,11 @@ void stateGetAuctionInfo() {
 }
 
 int main() {
+  // Milestone 1
   // infoGetPeers();
 
   // chainGetStateRootHash();
+  // ---------------------------------------------------------------------------
 
   // Milestone 2
   infoGetDeploy();
