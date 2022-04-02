@@ -51,11 +51,8 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 5. https://github.com/Neargye/magic_enum
 
 ## TODO
-1. The following RPC methods will be fully implemented in the C++ SDK
-    * infoGetDeploy
-
-2. C++ version of CLType primitives
-3. C++ version for Casper Domain Specific Objects
-4. Serialization of Casper Domain Specific Objects
-5. ED25519/SECP256K1 key pairs  Wrappers
-6. PutDeploy RPC call implemented
+1. C++ version of CLType primitives
+2. C++ version for Casper Domain Specific Objects
+3. Serialization of Casper Domain Specific Objects
+4. ED25519/SECP256K1 key pairs  Wrappers
+5. PutDeploy RPC call implemented
