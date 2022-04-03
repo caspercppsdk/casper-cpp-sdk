@@ -54,6 +54,25 @@ void getStateRootHashBlockHeightTest() {
 }
 
 /**
+ * @brief Negative test of the "get_state_root_hash" rpc function with an
+ * example height.
+ *
+ *
+ */
+void negativeGetStateRootHashBlockHeightTest() {
+  Casper::Client client(CASPER_TEST_ADDRESS);
+
+  uint64_t block_height = 100000000;
+  try {
+    std::string result = client.GetStateRootHash(block_height).state_root_hash;
+  } catch (const jsonrpccxx::JsonRpcException& e) {
+    return;
+  }
+
+  TEST_ASSERT(false);
+}
+
+/**
  * @brief Check the "get_state_root_hash" rpc function with an example block
  * hash. Compare the result with the expected hash of the state.
  *
@@ -87,7 +106,7 @@ void getStateRootHashLastBlockTest() {
  * @brief Check the "info_get_deploy" rpc function
  *
  */
-void get_deploy_test() {
+void getDeployTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
   std::string deploy_hash =
       "8e535d2baed76141ab47fd93b04dd61f65a07893b7c950022978a2b29628edd7";
@@ -112,6 +131,22 @@ void get_deploy_test() {
       "11f5a10f791fd6ac8b12d52298b7d1db7bd91e8c15b5d1330fd16d792257693c"));
   TEST_ASSERT(iequals(deploy_header.at("chain_name"), "casper-test"));
   TEST_ASSERT(deploy_header.at("gas_price") == 1);
+}
+
+/**
+ * @brief Negative test of the "info_get_deploy" rpc function
+ *
+ */
+void negativeGetDeployTest() {
+  Casper::Client client(CASPER_TEST_ADDRESS);
+  std::string deploy_hash = "ffffffffffffffffffff";
+
+  try {
+    nlohmann::json deploy_result = client.GetDeployInfo(deploy_hash);
+  } catch (const jsonrpccxx::JsonRpcException& e) {
+    return;
+  }
+  TEST_ASSERT(false);
 }
 
 /**
@@ -376,8 +411,22 @@ void getItemTest() {
   TEST_ASSERT(current_transfer.gas == 0);
 }
 
-// TODO: Check this when the CLValue is implemented
-// TODO: Write the other tests such as by NamedKey, Dictionary, etc.
+/**
+ * @brief Negative test of the "state_get_item" rpc function
+ *
+ */
+void negativeGetItemTest() {
+  Casper::Client client(CASPER_TEST_ADDRESS);
+  std::string state_root_hash = "NOT_EXIST_STATE_ROOT_HASH";
+  std::string key = "NON_EXISTING_KEY";
+  try {
+    Casper::GetItemResult result = client.GetItem(state_root_hash, key);
+  } catch (const jsonrpccxx::JsonRpcException& e) {
+    return;
+  }
+  TEST_ASSERT(false);
+}
+
 /**
  * @brief Check the "state_get_dictionary_item" rpc function by URef
  *
@@ -429,6 +478,24 @@ void getBalanceTest() {
   TEST_ASSERT(result.api_version != "");
   TEST_ASSERT(result.balance_value >= 0);
   TEST_ASSERT(result.merkle_proof != "");
+}
+
+/**
+ * @brief Negative test of the "state_get_balance" rpc function
+ *
+ */
+void negativeGetBalanceTest() {
+  Casper::Client client(CASPER_TEST_ADDRESS);
+
+  std::string purse_uref = "non-uref-ffff";
+  std::string state_root_hash = "ffff";
+  try {
+    Casper::GetBalanceResult result =
+        client.GetAccountBalance(purse_uref, state_root_hash);
+  } catch (const jsonrpccxx::JsonRpcException& e) {
+    return;
+  }
+  TEST_ASSERT(false);
 }
 
 /**
@@ -502,24 +569,24 @@ void publicKeyGetAccountHashTest() {
   TEST_ASSERT(lower_case_account_hash == expected_account_hash);
 }
 
-// Optional TODO:
-// 1. CryptoUtil functions tests
-// 2. Other StringUtil functions tests
-// 3. CEP57 Checksum tests
-
 TEST_LIST = {
     {"infoGetPeers", infoGetPeersTest},
     {"chainGetStateRootHash - Height", getStateRootHashBlockHeightTest},
+    {"negativeChainGetStateRootHash - Height",
+     negativeGetStateRootHashBlockHeightTest},
     {"chainGetStateRootHash - Hash", getStateRootHashBlockHashTest},
     {"chainGetStateRootHash - Last Block", getStateRootHashLastBlockTest},
-    {"infoGetDeploy", get_deploy_test},
+    {"infoGetDeploy", getDeployTest},
+    {"negativeInfoGetDeploy", negativeGetDeployTest},
     {"infoGetStatus", getStatusInfoTest},
     {"infoGetBlockTransfers", getBlockTransfersTest},
     {"chainGetBlock", getBlockTest},
     {"chainGetEraInfoBySwitchBlock", getEraInfoBySwitchBlockTest},
     {"stateGetItem", getItemTest},
+    {"negativeStateGetItem", negativeGetItemTest},
     {"stateGetDictionaryItem", getDictionaryItemTest},
     {"stateGetBalance", getBalanceTest},
+    {"negativeStateGetBalance", negativeGetBalanceTest},
     {"stateGetAuctionInfo(may take a while)", getAuctionInfoTest},
     {"StringUtil - ToLower", stringUtilToLowerTest},
     {"PublicKey - GetAccountHash", publicKeyGetAccountHashTest},
