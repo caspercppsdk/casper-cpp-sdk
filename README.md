@@ -19,12 +19,12 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 ## Test
     cmake -DCMAKE_BUILD_TYPE=Debug .
     make all
-    make test
+    ./test/CasperSDK_test
 
-## Run Example
+## Run Examples
     cmake -DCMAKE_BUILD_TYPE=Debug .
     make all
-    ./examples/HelloSDK
+    ./examples/example
 
 ## Install
     cmake -DCMAKE_BUILD_TYPE=Release .
@@ -42,6 +42,8 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 ## Documentation
     cd docs
     doxygen Doxyfile
+    
+    The documentation will be available in the "docs/html/index.html" file.
 
 ## External Libraries
 1. https://github.com/nlohmann/json
