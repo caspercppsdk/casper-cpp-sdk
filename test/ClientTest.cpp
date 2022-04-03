@@ -2,6 +2,8 @@
 #include "Types/GlobalStateKey.cpp"
 #include "Types/PublicKey.h"
 #include "Utils/CryptoUtil.h"
+
+#include <sstream>
 #include "acutest.h"
 
 // Helper function to compare two strings in a case insensitive way
@@ -401,13 +403,15 @@ void getDictionaryItemTest() {
   TEST_ASSERT(dictionaryItemResult.stored_value.cl_value.has_value());
   TEST_ASSERT(dictionaryItemResult.stored_value.cl_value.value().bytes.size() >
               0);
-  TEST_ASSERT(dictionaryItemResult.stored_value.cl_value.value()
-                  .cl_type.type_info.has_value());
-  uint8_t cl_type_val =
-      static_cast<uint8_t>(dictionaryItemResult.stored_value.cl_value.value()
-                               .cl_type.type_info.value()
-                               .type);
-  TEST_ASSERT(cl_type_val == 10);
+  /*
+TEST_ASSERT(dictionaryItemResult.stored_value.cl_value.value()
+      .cl_type.type_info.has_value());
+uint8_t cl_type_val =
+static_cast<uint8_t>(dictionaryItemResult.stored_value.cl_value.value()
+                   .cl_type.type_info.value()
+                   .type);
+TEST_ASSERT(cl_type_val == 10);
+*/
 }
 
 /**
@@ -502,6 +506,302 @@ void publicKeyGetAccountHashTest() {
   TEST_ASSERT(lower_case_account_hash == expected_account_hash);
 }
 
+void serializeBoolTest() {
+  // TODO: find examples
+  std::string bool_bytes1 = "00";
+  bool expected_value1 = false;
+  bool actual_value1;  // hexToBool(bool_bytes1);
+  TEST_ASSERT(expected_value1 == actual_value1);
+
+  std::string bool_bytes2 = "01";
+  bool expected_value2 = true;
+  bool actual_value2;  // hexToBool(bool_bytes2);
+  TEST_ASSERT(expected_value2 == actual_value2);
+}
+
+void serializeStringTest() {
+  std::string deposit_bytes = "070000006465706f736974";
+  std::string hello_world_bytes = "0d00000048656c6c6f2c20576f726c6421";
+
+  std::string expected_deposit = "deposit";
+  std::string actual_deposit = Casper::StringUtil::hexToString(deposit_bytes);
+  TEST_ASSERT(expected_deposit == actual_deposit);
+
+  std::string expected_hello_world = "Hello, World!";
+  std::string actual_hello_world =
+      Casper::StringUtil::hexToString(hello_world_bytes);
+  TEST_ASSERT(expected_hello_world == actual_hello_world);
+}
+
+/*
+Numeric values consisting of 64 bits or less serialize in the two's complement
+representation with little-endian byte order, and the appropriate number of
+bytes for the bit-width.
+*/
+
+template <typename T>
+T hexToInteger(const std::string& hex) {
+  CryptoPP::SecByteBlock bytes = Casper::CEP57Checksum::Decode(hex);
+  T val = *(reinterpret_cast<T*>(bytes.data()));
+  return val;
+}
+
+void serializeU8Test() {
+  std::string u8_bytes1 = "07";
+  uint8_t expected_value1 = 7;
+  uint8_t actual_value1 = hexToInteger<uint8_t>(u8_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+}
+
+void serializeU16Test() {
+  // TODO:
+
+  /*
+  std::string u16_bytes1 = "";
+  uint16_t expected_value1 = 0;
+  uint16_t actual_value1 =
+          hexToInteger<uint16_t>(u16_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+  */
+}
+
+void serializeU32Test() {
+  std::string u32_bytes1 = "01000000";
+  uint32_t expected_value1 = 1;
+  uint32_t actual_value1 = hexToInteger<uint32_t>(u32_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string u32_bytes2 = "00040000";
+  uint32_t expected_value2 = 1024;
+  uint32_t actual_value2 = hexToInteger<uint32_t>(u32_bytes2);
+  TEST_ASSERT(actual_value2 == expected_value2);
+}
+void serializeU64Test() {
+  std::string u64_bytes1 = "39f37bf07f010000";
+  uint64_t expected_value1 = 1649007129401;
+
+  uint64_t actual_value1 = hexToInteger<uint64_t>(u64_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string u64_bytes2 = "be7ab73d80010000";
+  uint64_t expected_value2 = 1650302876350;
+  uint64_t actual_value2 = hexToInteger<uint64_t>(u64_bytes2);
+  TEST_ASSERT(actual_value2 == expected_value2);
+}
+
+/*
+Wider numeric values (i.e. U128, U256, U512) serialize as one byte given the
+length of the next number (in bytes), followed by the two's complement
+representation with little-endian byte order. The number of bytes should be
+chosen as small as possible to represent the given number. This is done to
+reduce the serialization size when small numbers are represented within a wide
+data type.
+
+*/
+void serializeU128Test() {
+  std::string u128_bytes1 = "";
+  big_int expected_value1{""};
+  big_int actual_value1;  // = Casper::StringUtil::hexToU128(u128_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+}
+
+void serializeU256Test() {
+  std::string u256_bytes1 =
+      "20ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+  big_int expected_value1{
+      "115792089237316195423570985008687907853269984665640564039457584007913129"
+      "639935"};
+  big_int actual_value1;  // = Casper::StringUtil::hexToU256(u256_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string u256_bytes2 = "0100000002f206";
+  big_int expected_value2{"1778"};
+  big_int actual_value2;  // = Casper::StringUtil::hexToU256(u256_bytes2);
+  TEST_ASSERT(actual_value2 == expected_value2);
+}
+
+void serializeU512Test() {
+  std::string u512_bytes1 = "050e2389f603";
+  big_int expected_value1{"17021084430"};
+  big_int actual_value1;  // = Casper::StringUtil::hexToU512(u512_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string u512_bytes2 = "00";
+  big_int expected_value2{"0"};
+  big_int actual_value2;  // = Casper::StringUtil::hexToU512(u512_bytes2);
+  TEST_ASSERT(actual_value2 == expected_value2);
+
+  std::string u512_bytes3 = "050e6b1623e8";
+  big_int expected_value3{"997021084430"};
+  big_int actual_value3;  // = Casper::StringUtil::hexToU512(u512_bytes2);
+  TEST_ASSERT(actual_value3 == expected_value3);
+}
+
+void serializeOptionTest() {
+  /*
+
+  Optional values serialize with a single byte tag, followed by the
+  serialization of the value itself. The tag is equal to 0 if the value is
+  missing, and 1 if it is present.
+
+    E.g. None serializes as 0x00
+    E.g. Some(10u32) serializes as 0x010a000000
+*/
+
+  /*
+{
+  "bytes": "0101000000140000007a627974652d32352d536f74686562795f312d32",
+  "parsed": [
+    "zbyte-25-Sotheby_1-2"
+  ],
+  "cl_type": {
+    "Option": {
+      "List": "String"
+    }
+  }
+}
+  */
+}
+
+/*
+"cl_type":{
+  "ByteArray":32
+}
+*/
+void serializeByteArrayTest() {
+  std::string byte_array_bytes1 =
+      "8541116c667bb15b43464a70fa681f8a50dcdf876f43a86b074de9597ca010e1";
+  std::vector<uint8_t> expected_value1{
+      0x85, 0x41, 0x11, 0x6c, 0x66, 0x7b, 0x15, 0xb4, 0x34, 0x64, 0xa7,
+      0x0a, 0x68, 0x1f, 0x8a, 0x50, 0xdc, 0xdf, 0x87, 0x6f, 0x43, 0xa8,
+      0x6b, 0x07, 0x4d, 0xe9, 0x59, 0x7c, 0xa0, 0x10, 0xe1};
+  std::vector<uint8_t>
+      actual_value1;  // = Casper::xx::hexToByteArray(byte_array_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+}
+
+void serializeMapTest() {
+  /*
+  {
+  "bytes":
+"0500000015000000636f6e74726163745f7061636b6167655f6861736840000000633236373761303834363632336362393235633563433241393265463539373544466436636338326439463831433864433034414445393835313733353546440a0000006576656e745f7479706507000000617070726f7665050000006f776e65724e0000004b65793a3a4163636f756e74283335623636353632646139393637336237303331376433344633354234456536364639353734304333653231313666346563316138373232353532463434643829070000007370656e6465724b0000004b65793a3a486173682832334344343335343330344634654231644436373339434241363664343135373939333665324345433135353330393644393761413465464236423636316536290500000076616c75654e000000313135373932303839323337333136313935343233353730393835303038363837393037383533323639393834363635363430353634303339343537353834303037393133313239363339393335",
+  "parsed": [
+    {
+      "key": "contract_package_hash",
+      "value":
+"c2677a0846623cb925c5cC2A92eF5975DFd6cc82d9F81C8dC04ADE98517355FD"
+    },
+    {
+      "key": "event_type",
+      "value": "approve"
+    },
+    {
+      "key": "owner",
+      "value":
+"Key::Account(35b66562da99673b70317d34F35B4Ee66F95740C3e2116f4ec1a8722552F44d8)"
+    },
+    {
+      "key": "spender",
+      "value":
+"Key::Hash(23CD4354304F4eB1dD6739CBA66d41579936e2CEC1553096D97aA4eFB6B661e6)"
+    },
+    {
+      "key": "value",
+      "value":
+"115792089237316195423570985008687907853269984665640564039457584007913129639935"
+    }
+  ],
+  "cl_type": {
+    "Map": {
+      "key": "String",
+      "value": "String"
+    }
+  }
+}
+
+  */
+
+  // example2
+
+  /*
+ {
+   "bytes":
+ "0500000015000000636f6e74726163745f7061636b6167655f6861736840000000633236373761303834363632336362393235633563433241393265463539373544466436636338326439463831433864433034414445393835313733353546440a0000006576656e745f74797065070000006465706f736974090000007372635f7075727365560000005552656628454232383666333938396531416242353132626361436432623164374343644261396165303333633362343966453543393036363343423731623063443664382c20524541445f4144445f57524954452902000000746f4e0000004b65793a3a4163636f756e742865313964423836364431433437383945303735613066363634664337334234343031373066643534334164373844453535376534463233394434363836324544290500000076616c75650c000000393539303231303834343330",
+   "parsed": [
+     {
+       "key": "contract_package_hash",
+       "value":
+ "c2677a0846623cb925c5cC2A92eF5975DFd6cc82d9F81C8dC04ADE98517355FD"
+     },
+     {
+       "key": "event_type",
+       "value": "deposit"
+     },
+     {
+       "key": "src_purse",
+       "value":
+ "URef(EB286f3989e1AbB512bcaCd2b1d7CCdBa9ae033c3b49fE5C90663CB71b0cD6d8,
+ READ_ADD_WRITE)"
+     },
+     {
+       "key": "to",
+       "value":
+ "Key::Account(e19dB866D1C4789E075a0f664fC73B440170fd543Ad78DE557e4F239D46862ED)"
+     },
+     {
+       "key": "value",
+       "value": "959021084430"
+     }
+   ],
+   "cl_type": {
+     "Map": {
+       "key": "String",
+       "value": "String"
+     }
+   }
+ }
+  */
+}
+
+void serializeKeyTest() {
+  /*
+{
+  "bytes": "0123cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6",
+  "parsed": {
+    "Hash":
+"hash-23cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6"
+  },
+  "cl_type": "Key"
+}
+  */
+}
+
+void serializeAnyTest() {
+  /*
+{
+  "bytes":
+"06000000050e6f1c4adf07200000008bf67d697b785deb0a6569c7210c80f90b0388a592a83cd66287e1dcb5a3905d2c000000414f4764754762527848696542316f505a6b2f484f305142635031554f74654e3556666b386a6e5561474c74",
+  "parsed": null,
+  "cl_type": "Any"
+}
+  */
+}
+
+void serializeUnitTest() {
+  /*
+  {
+  "bytes": "",
+  "parsed": null,
+  "cl_type": "Unit"
+}
+  */
+
+  /*
+ Unit serializes to an empty byte array.
+  */
+}
+
+//
 // Optional TODO:
 // 1. CryptoUtil functions tests
 // 2. Other StringUtil functions tests
@@ -520,7 +820,11 @@ TEST_LIST = {
     {"stateGetItem", getItemTest},
     {"stateGetDictionaryItem", getDictionaryItemTest},
     {"stateGetBalance", getBalanceTest},
-    {"stateGetAuctionInfo(may take a while)", getAuctionInfoTest},
+    // {"stateGetAuctionInfo(may take a while)", getAuctionInfoTest},
     {"StringUtil - ToLower", stringUtilToLowerTest},
     {"PublicKey - GetAccountHash", publicKeyGetAccountHashTest},
+    {"Serialize - String", serializeStringTest},
+    {"Serialize - U8", serializeU8Test},
+    {"Serialize - U32", serializeU32Test},
+    {"Serialize - U64", serializeU64Test},
     {NULL, NULL}};

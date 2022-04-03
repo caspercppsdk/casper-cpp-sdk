@@ -10,6 +10,12 @@ struct StringUtil {
   static std::vector<std::string> splitString(std::string str,
                                               std::string delim);
   static std::string toLower(std::string& str);
+
+  static uint32_t hexStrToUint32(const std::string& str);
+
+  static std::string hexToUTF8(const std::string& str);
+
+  static std::string hexToString(const std::string& bytes_str);
 };
 
 }  // namespace Casper
