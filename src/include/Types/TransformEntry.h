@@ -10,6 +10,7 @@
 #include "Types/Transform.h"
 
 namespace Casper {
+/// Intermediary structure for a transform.
 struct TransformEntry {
   std::string key;
   Transform transform;

@@ -13,6 +13,7 @@
 #include "nlohmann/json.hpp"
 
 namespace Casper {
+/// Represents possible variants of an executable deploy.
 struct ExecutableDeployItem {
   std::optional<ModuleBytes> module_bytes = std::nullopt;
   std::optional<StoredContractByHash> stored_contract_by_hash = std::nullopt;

@@ -7,10 +7,13 @@
 #include "nlohmann/json.hpp"
 
 namespace Casper {
-
+/// Executable specified as raw bytes that represent WASM code and an instance
+/// of [`RuntimeArgs`].
 struct ModuleBytes {
   // TODOMS3: [JsonConverter(typeof(HexBytesConverter))]
+  /// Raw WASM module bytes with assumed "call" export as an entrypoint.
   CryptoPP::SecByteBlock module_bytes;
+  /// Runtime arguments.
   std::vector<NamedArg> args;
 
   ModuleBytes() {}

@@ -27,16 +27,28 @@ Example
 }
 */
 namespace Casper {
+/// StoredValue represents all possible variants of values stored in Global
+/// State.
 struct StoredValue {
+  /// Variant that stores [`CLValue`].
   std::optional<CLValue> cl_value = std::nullopt;
+  /// Variant that stores [`Account`].
   std::optional<Account> account = std::nullopt;
+  /// Variant that stores [`ContractWasm`].
   std::optional<std::string> contract_wasm = std::nullopt;
+  /// Variant that stores [`Contract`].
   std::optional<Contract> contract = std::nullopt;
+  /// Variant that stores [`ContractPackage`].
   std::optional<ContractPackage> contract_package = std::nullopt;
+  /// Variant that stores [`Transfer`].
   std::optional<Transfer> transfer = std::nullopt;
+  /// Variant that stores [`DeployInfo`].
   std::optional<DeployInfo> deploy_info = std::nullopt;
+  /// Variant that stores [`EraInfo`].
   std::optional<EraInfo> era_info = std::nullopt;
+  /// Variant that stores [`Bid`].
   std::optional<Bid> bid = std::nullopt;
+  /// Variant that stores unbonding information.
   std::optional<std::vector<UnbondingPurse>> withdraw = std::nullopt;
 
   StoredValue() {}

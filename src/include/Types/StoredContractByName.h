@@ -5,10 +5,14 @@
 #include "nlohmann/json.hpp"
 
 namespace Casper {
-
+/// Stored contract referenced by a named key existing in the signer's account
+/// context, entry point and an instance of [`RuntimeArgs`].
 struct StoredContractByName {
+  /// Named key.
   std::string name;
+  /// Name of an entry point.
   std::string entry_point;
+  /// Runtime arguments.
   std::vector<NamedArg> args;
 
   StoredContractByName() {}

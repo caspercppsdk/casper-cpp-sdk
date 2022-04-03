@@ -8,10 +8,17 @@
 
 namespace Casper {
 
+/// Stored versioned contract referenced by its [`ContractPackageHash`], entry
+/// point and an instance of [`RuntimeArgs`].
 struct StoredVersionedContractByHash {
+  /// Contract package hash.
   std::string hash;
+  /// An optional version of the contract to call. It will default to the
+  /// highest enabled version if no value is specified.
   std::optional<uint32_t> version = std::nullopt;
+  /// Entry point name.
   std::string entry_point;
+  /// Runtime arguments.
   std::vector<NamedArg> args;
 
   StoredVersionedContractByHash() {}

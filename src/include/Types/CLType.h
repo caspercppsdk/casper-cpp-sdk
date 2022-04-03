@@ -10,7 +10,6 @@ namespace Casper {
 /// contracts. Provides a description of the underlying data type of a
 /// `CLValue`.
 /// </summary>
-
 struct CLType {
   std::optional<CLTypeInfo> type_info = std::nullopt;
   std::optional<CLMapTypeInfo> map_type_info = std::nullopt;
