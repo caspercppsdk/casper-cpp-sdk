@@ -48,7 +48,6 @@ inline void from_json(const nlohmann::json& j, ValidatorBid& p) {
     throw std::runtime_error("ValidatorBid: Bid not found");
   }
   p.bid.validator_public_key = p.public_key;
-  // TODO: p.bid.validator_public_key = PublicKey::fromHexString(p.public_key);"
 }
 
 }  // namespace Casper

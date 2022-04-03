@@ -9,7 +9,7 @@
 namespace Casper {
 
 struct ModuleBytes {
-  // TODO: [JsonConverter(typeof(HexBytesConverter))]
+  // TODOMS3: [JsonConverter(typeof(HexBytesConverter))]
   CryptoPP::SecByteBlock module_bytes;
   std::vector<NamedArg> args;
 

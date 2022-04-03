@@ -16,7 +16,7 @@ struct ExecutionResultFailure {
   /// </summary>
   ExecutionEffect effect;
 
-  // TODO: Make TransferKey instead of std::string
+  // TODOMS3: Make TransferKey instead of std::string
   /// <summary>
   /// A record of Transfers performed while executing the deploy.
   /// </summary>
@@ -60,7 +60,7 @@ struct ExecutionResultSuccess {
   /// </summary>
   ExecutionEffect effect;
 
-  // TODO: Make TransferKey instead of std::string
+  // TODOMS3: Make TransferKey instead of std::string
   /// <summary>
   /// A record of Transfers performed while executing the deploy.
   /// </summary>

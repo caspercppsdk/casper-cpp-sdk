@@ -60,11 +60,11 @@ struct PublicKey {
 
         publicKey.Load(fs1);
 
-        // TODO: Check the false below if any error occurs
+        // TODOMS3: Check the false below if any error occurs
         SecByteBlock rawBytes(
             publicKey.GetGroupParameters().GetEncodedElementSize(false));
 
-        // TODO: Check the false below if any error occurs
+        // TODOMS3: Check the false below if any error occurs
         publicKey.GetGroupParameters().EncodeElement(
             false, publicKey.GetPublicElement(), rawBytes);
 

@@ -12,7 +12,7 @@ namespace Casper {
 /// Header information of a Deploy.
 /// </summary>
 struct Deploy {
-  // TODO: check with CEP57 Checksum for json serialization
+  // TODOMS3: check with CEP57 Checksum for json serialization
   /// <summary>
   /// A hash over the header of the deploy.
   /// </summary>

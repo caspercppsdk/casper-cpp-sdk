@@ -192,7 +192,7 @@ GetAuctionInfoResult Client::GetAuctionInfo(uint64_t block_height) {
       1, "state_get_auction_info", block_identifier);
 }
 
-/// TODO: Not implemented yet.(MS3)
+/// TODOMS3: Not implemented yet.(MS3)
 PutDeployResult Client::PutDeploy(Deploy deploy) {
   nlohmann::json deploy_json;
   to_json(deploy_json, deploy);

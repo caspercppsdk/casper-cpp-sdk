@@ -48,7 +48,7 @@ inline void to_json(nlohmann::json& j, const ExecutableDeployItem& p) {
   } else if (p.transfer.has_value()) {
     j["Transfer"] = p.transfer.value();
   }
-  // TODO: maybe return "null" if no value is set?
+  // TODOMS3: maybe return "null" if no value is set?
 }
 
 /**
@@ -77,7 +77,7 @@ inline void from_json(const nlohmann::json& j, ExecutableDeployItem& p) {
   } else {
     throw std::runtime_error("Invalid ExecutableDeployItem");
   }
-  // TODO: maybe not throw if no value is set?
+  // TODOMS3: maybe not throw if no value is set?
 }
 
 }  // namespace Casper

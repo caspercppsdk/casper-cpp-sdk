@@ -53,7 +53,7 @@ inline void from_json(const nlohmann::json& j, JsonBlockHeader& p) {
   j.at("body_hash").get_to(p.body_hash);
   j.at("random_bit").get_to(p.random_bit);
   j.at("accumulated_seed").get_to(p.accumulated_seed);
-  // TODO: check era_end is optional instead of is_null
+
   if (!j.at("era_end").is_null()) j.at("era_end").get_to(p.era_end);
 
   j.at("timestamp").get_to(p.timestamp);

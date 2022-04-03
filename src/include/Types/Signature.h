@@ -120,22 +120,6 @@ inline void to_json(nlohmann::json& j, const Signature& s) {
 inline void from_json(const nlohmann::json& j, Signature& s) {
   std::string signatureStr = j.get<std::string>();
   s = Signature::FromHexString(signatureStr);
-
-  /*
-  SecByteBlock rawBytes = CEP57Checksum::Decode(signatureStr.substr(2));
-
-  try {
-    if (signatureStr.substr(0, 2) == "01") {
-      s = Signature::FromRawBytes(rawBytes, KeyAlgo::ED25519);
-    } else if (signatureStr.substr(0, 2) == "02") {
-      s = Signature::FromRawBytes(rawBytes, KeyAlgo::SECP256K1);
-    } else {
-      throw std::invalid_argument("Invalid key algorithm identifier.");
-    }
-  } catch (const std::exception& e) {
-    std::cout << "FromHexString() Exception: " << e.what() << '\n';
-  }
-  */
 }
 
 }  // namespace Casper

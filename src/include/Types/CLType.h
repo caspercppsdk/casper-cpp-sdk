@@ -42,7 +42,6 @@ struct CLType {
     } else if (tuple3_type_info.has_value()) {
       return CLTypeEnum::Tuple3;
     } else {
-      // TODO: add Unit and
       return CLTypeEnum::Any;
     }
   }
