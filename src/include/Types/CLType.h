@@ -3,6 +3,11 @@
 #include "Base.h"
 #include "Types/CLTypeInfo.h"
 #include "nlohmann/json.hpp"
+#include "Types/Definitions.h"
+#include "Types/GlobalStateKey.h"
+#include "Types/PublicKey.h"
+#include "Types/URef.h"
+
 #include <rva/variant.hpp>
 
 namespace Casper {
@@ -42,16 +47,16 @@ namespace Casper {
     Tuple3([Box<CLType>; 3]),
     Any,
 */
-using CLType = rva::variant<bool,      // Bool
-                            int32_t,   // I32
-                            int64_t,   // I64
-                            uint8_t,   // U8
-                            uint32_t,  // U32
-                            uint64_t,  // U64
-                            big_int,   // U128
-                            big_int,   // U256
-                            big_int,   // U512
-                            // Unit
+using CLType = rva::variant<bool,            // Bool
+                            int32_t,         // I32
+                            int64_t,         // I64
+                            uint8_t,         // U8
+                            uint32_t,        // U32
+                            uint64_t,        // U64
+                            big_int,         // U128
+                            big_int,         // U256
+                            big_int,         // U512
+                            std::string,     // Unit
                             std::string,     // String
                             GlobalStateKey,  // Key
                             URef,            // URef
@@ -84,7 +89,7 @@ inline void to_json(nlohmann::json& j, const CLType& p) {
 inline void from_json(const nlohmann::json& j, CLType& p) {
   if (j.is_string()) {
     std::string type_name = j.get<std::string>();
-    p = type_name;
+    p.emplace<10>(type_name);
   }
 }
 
