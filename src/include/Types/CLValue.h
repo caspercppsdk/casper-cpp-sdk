@@ -20,7 +20,7 @@ struct CLValue {
 inline void to_json(nlohmann::json& j, const CLValue& p) {
   j = nlohmann::json{};
 
-  j["cl_type"] = p.cl_type;
+  to_json(j["cl_type"], p.cl_type);
 
   try {
     j["bytes"] = CEP57Checksum::Encode(p.bytes);
@@ -33,8 +33,7 @@ inline void to_json(nlohmann::json& j, const CLValue& p) {
 
 // from json
 inline void from_json(const nlohmann::json& j, CLValue& p) {
-  j.at("cl_type").get_to(p.cl_type);
-
+  from_json(j.at("cl_type"), p.cl_type);
   try {
     std::string hex_bytes_str = j.at("bytes").get<std::string>();
     p.bytes = CEP57Checksum::Decode(hex_bytes_str);

@@ -87,7 +87,7 @@ class Client {
    * @return GetDeployInfoResult that contains the deploy information as a
    * string.
    */
-  nlohmann::json GetDeployInfo(std::string deploy_hash);
+  GetDeployInfoResult GetDeployInfo(std::string deploy_hash);
 
   /**
    * @brief Returns the status info.

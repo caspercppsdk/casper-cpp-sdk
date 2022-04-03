@@ -166,21 +166,21 @@ int main() {
   // Milestone 2
   infoGetDeploy();
 
-  infoGetStatus();
+  // infoGetStatus();
 
-  chainGetBlockTransfers();
+  // chainGetBlockTransfers();
 
-  chainGetBlock();
+  // chainGetBlock();
 
-  chainGetEraInfoBySwitchBlock();
+  // chainGetEraInfoBySwitchBlock();
 
   stateGetItem();
 
   stateGetDictionaryItem();
 
-  stateGetBalance();
+  // stateGetBalance();
 
-  stateGetAuctionInfo();
+  // stateGetAuctionInfo();
 
   // Milestone 3
   // PutDeploy(); TODO: implement
