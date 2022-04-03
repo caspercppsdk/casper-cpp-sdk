@@ -49,8 +49,8 @@ using CLType = rva::variant<bool,      // Bool
                             uint32_t,  // U32
                             uint64_t,  // U64
                             big_int,   // U128
-                                       // U256
-                            // U512
+                            big_int,   // U256
+                            big_int,   // U512
                             // Unit
                             std::string,     // String
                             GlobalStateKey,  // Key
