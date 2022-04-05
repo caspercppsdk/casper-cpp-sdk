@@ -506,19 +506,6 @@ void publicKeyGetAccountHashTest() {
   TEST_ASSERT(lower_case_account_hash == expected_account_hash);
 }
 
-void serializeBoolTest() {
-  // TODO: find examples
-  std::string bool_bytes1 = "00";
-  bool expected_value1 = false;
-  bool actual_value1;  // hexToBool(bool_bytes1);
-  TEST_ASSERT(expected_value1 == actual_value1);
-
-  std::string bool_bytes2 = "01";
-  bool expected_value2 = true;
-  bool actual_value2;  // hexToBool(bool_bytes2);
-  TEST_ASSERT(expected_value2 == actual_value2);
-}
-
 void serializeStringTest() {
   std::string deposit_bytes = "070000006465706f736974";
   std::string hello_world_bytes = "0d00000048656c6c6f2c20576f726c6421";
@@ -544,6 +531,37 @@ T hexToInteger(const std::string& hex) {
   CryptoPP::SecByteBlock bytes = Casper::CEP57Checksum::Decode(hex);
   T val = *(reinterpret_cast<T*>(bytes.data()));
   return val;
+}
+
+void serializeBoolTest() {
+  std::string bool_bytes1 = "00";
+  bool expected_value1 = false;
+  bool actual_value1 = hexToInteger<bool>(bool_bytes1);
+  TEST_ASSERT(expected_value1 == actual_value1);
+
+  std::string bool_bytes2 = "01";
+  bool expected_value2 = true;
+  bool actual_value2 = hexToInteger<bool>(bool_bytes2);
+  TEST_ASSERT(expected_value2 == actual_value2);
+}
+
+void serializeI32Test() {
+  std::string i32_bytes1 = "e8030000";
+  int32_t expected_value1 = 1000;
+  int32_t actual_value1 = hexToInteger<int32_t>(i32_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string i32_bytes2 = "1d290d71";
+  int32_t expected_value2 = 1896687901;
+  int32_t actual_value2 = hexToInteger<int32_t>(i32_bytes2);
+  TEST_ASSERT(actual_value2 == expected_value2);
+}
+
+void serializeI64Test() {
+  std::string i64_bytes1 = "7f33d9dcf601ab02";
+  int64_t expected_value1 = 192249568872182655;
+  int64_t actual_value1 = hexToInteger<int64_t>(i64_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
 }
 
 void serializeU8Test() {
@@ -823,6 +841,9 @@ TEST_LIST = {
     // {"stateGetAuctionInfo(may take a while)", getAuctionInfoTest},
     {"StringUtil - ToLower", stringUtilToLowerTest},
     {"PublicKey - GetAccountHash", publicKeyGetAccountHashTest},
+    {"Serialize - Bool", serializeBoolTest},
+    {"Serialize - I32", serializeI32Test},
+    {"Serialize - I64", serializeI64Test},
     {"Serialize - String", serializeStringTest},
     {"Serialize - U8", serializeU8Test},
     {"Serialize - U32", serializeU32Test},
