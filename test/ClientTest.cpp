@@ -648,11 +648,72 @@ reduce the serialization size when small numbers are represented within a wide
 data type.
 
 */
+
+big_int hexToBigInteger(const std::string& hex) {
+  if (hex.length() == 0 ||
+      std::count(hex.begin(), hex.end(), '0') == hex.length()) {
+    return big_int(0);
+  }
+
+  uint8_t bytes_length = 2 * hexToInteger<uint8_t>(hex.substr(0, 2));
+  std::string bytes_str = hex.substr(hex.length() - bytes_length);
+  std::reverse(bytes_str.begin(), bytes_str.end());
+  big_int ret = 0;
+
+  for (int i = 0; i < bytes_length / 2; i++) {
+    std::string byte_str = bytes_str.substr(i * 2, 2);
+    std::reverse(byte_str.begin(), byte_str.end());
+    uint8_t byte_val = hexToInteger<uint8_t>(byte_str);
+    ret *= 256;
+    ret += byte_val;
+  }
+
+  return ret;
+}
+
+std::uint8_t extract_one_byte(big_int& extract) {
+  // Will always return a value on the range [0, 255]
+  auto intermediate = (extract % 256).toInt();
+
+  std::uint8_t the_byte = static_cast<std::uint8_t>(intermediate);
+  extract /= 256;
+  return the_byte;
+}
+
+std::vector<std::uint8_t> to_bytes(const big_int& source) {
+  std::vector<std::uint8_t> ret;
+  // ret.reserve(#); //pick a decent amount to reserve.
+  big_int curr = source;
+  do {
+    ret.push_back(extract_one_byte(curr));
+  } while (curr != 0);
+
+  return ret;
+}
+
+std::string bigIntegerToHex(const big_int& val) {
+  if (val == 0) {
+    return "00";
+  }
+
+  std::vector<std::uint8_t> bytes = to_bytes(val);
+
+  CryptoPP::SecByteBlock byte_block(bytes.data(), bytes.size());
+  std::string bytes_str = Casper::CEP57Checksum::Encode(byte_block);
+
+  uint8_t bytes_length = bytes_str.size() / 2;
+  std::string bytes_length_str = integerToHex<uint8_t>(bytes_length);
+  return bytes_length_str + bytes_str;
+}
+
 void serializeU128Test() {
-  std::string u128_bytes1 = "";
-  big_int expected_value1{""};
-  big_int actual_value1;  // = Casper::StringUtil::hexToU128(u128_bytes1);
+  std::string u128_bytes1 = "060000C0D0E0F0";
+  big_int expected_value1{"264848365584384"};
+  big_int actual_value1 = hexToBigInteger(u128_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string encoded_value1 = bigIntegerToHex(expected_value1);
+  TEST_ASSERT(iequals(u128_bytes1, encoded_value1));
 }
 
 void serializeU256Test() {
@@ -661,30 +722,51 @@ void serializeU256Test() {
   big_int expected_value1{
       "115792089237316195423570985008687907853269984665640564039457584007913129"
       "639935"};
-  big_int actual_value1;  // = Casper::StringUtil::hexToU256(u256_bytes1);
+  big_int actual_value1 = hexToBigInteger(u256_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
 
-  std::string u256_bytes2 = "0100000002f206";
-  big_int expected_value2{"1778"};
-  big_int actual_value2;  // = Casper::StringUtil::hexToU256(u256_bytes2);
+  std::string encoded_value1 = bigIntegerToHex(expected_value1);
+  TEST_ASSERT(iequals(u256_bytes1, encoded_value1));
+
+  // ---
+
+  std::string u256_bytes2 = "020e08";
+  big_int expected_value2{"2062"};
+  big_int actual_value2 = hexToBigInteger(u256_bytes2);
   TEST_ASSERT(actual_value2 == expected_value2);
+
+  std::string encoded_value2 = bigIntegerToHex(expected_value2);
+  TEST_ASSERT(iequals(u256_bytes2, encoded_value2));
 }
 
 void serializeU512Test() {
   std::string u512_bytes1 = "050e2389f603";
   big_int expected_value1{"17021084430"};
-  big_int actual_value1;  // = Casper::StringUtil::hexToU512(u512_bytes1);
+  big_int actual_value1 = hexToBigInteger(u512_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string encoded_value1 = bigIntegerToHex(expected_value1);
+  TEST_ASSERT(iequals(u512_bytes1, encoded_value1));
+
+  // ---
 
   std::string u512_bytes2 = "00";
   big_int expected_value2{"0"};
-  big_int actual_value2;  // = Casper::StringUtil::hexToU512(u512_bytes2);
+  big_int actual_value2 = hexToBigInteger(u512_bytes2);
   TEST_ASSERT(actual_value2 == expected_value2);
+
+  std::string encoded_value2 = bigIntegerToHex(expected_value2);
+  TEST_ASSERT(iequals(u512_bytes2, encoded_value2));
+
+  // ---
 
   std::string u512_bytes3 = "050e6b1623e8";
   big_int expected_value3{"997021084430"};
-  big_int actual_value3;  // = Casper::StringUtil::hexToU512(u512_bytes2);
+  big_int actual_value3 = hexToBigInteger(u512_bytes3);
   TEST_ASSERT(actual_value3 == expected_value3);
+
+  std::string encoded_value3 = bigIntegerToHex(expected_value3);
+  TEST_ASSERT(iequals(u512_bytes3, encoded_value3));
 }
 
 void serializeOptionTest() {
@@ -880,4 +962,7 @@ TEST_LIST = {
     {"Serialize - U8", serializeU8Test},
     {"Serialize - U32", serializeU32Test},
     {"Serialize - U64", serializeU64Test},
+    {"Serialize - U128", serializeU128Test},
+    {"Serialize - U256", serializeU256Test},
+    {"Serialize - U512", serializeU512Test},
     {NULL, NULL}};
