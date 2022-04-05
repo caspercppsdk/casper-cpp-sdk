@@ -533,16 +533,31 @@ T hexToInteger(const std::string& hex) {
   return val;
 }
 
+template <typename T>
+std::string integerToHex(T val) {
+  CryptoPP::SecByteBlock bytes(sizeof(T));
+  memcpy(bytes.data(), &val, sizeof(T));
+  return Casper::CEP57Checksum::Encode(bytes);
+}
+
 void serializeBoolTest() {
   std::string bool_bytes1 = "00";
   bool expected_value1 = false;
   bool actual_value1 = hexToInteger<bool>(bool_bytes1);
   TEST_ASSERT(expected_value1 == actual_value1);
 
+  std::string encoded_value1 = integerToHex<bool>(expected_value1);
+  TEST_ASSERT(iequals(bool_bytes1, encoded_value1));
+
+  // ---
+
   std::string bool_bytes2 = "01";
   bool expected_value2 = true;
   bool actual_value2 = hexToInteger<bool>(bool_bytes2);
   TEST_ASSERT(expected_value2 == actual_value2);
+
+  std::string encoded_value2 = integerToHex<bool>(expected_value2);
+  TEST_ASSERT(iequals(bool_bytes2, encoded_value2));
 }
 
 void serializeI32Test() {
@@ -551,10 +566,18 @@ void serializeI32Test() {
   int32_t actual_value1 = hexToInteger<int32_t>(i32_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
 
+  std::string encoded_value1 = integerToHex<int32_t>(expected_value1);
+  TEST_ASSERT(iequals(i32_bytes1, encoded_value1));
+
+  // ---
+
   std::string i32_bytes2 = "1d290d71";
   int32_t expected_value2 = 1896687901;
   int32_t actual_value2 = hexToInteger<int32_t>(i32_bytes2);
   TEST_ASSERT(actual_value2 == expected_value2);
+
+  std::string encoded_value2 = integerToHex<int32_t>(expected_value2);
+  TEST_ASSERT(iequals(i32_bytes2, encoded_value2));
 }
 
 void serializeI64Test() {
@@ -562,6 +585,9 @@ void serializeI64Test() {
   int64_t expected_value1 = 192249568872182655;
   int64_t actual_value1 = hexToInteger<int64_t>(i64_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string encoded_value1 = integerToHex<int64_t>(expected_value1);
+  TEST_ASSERT(iequals(i64_bytes1, encoded_value1));
 }
 
 void serializeU8Test() {
@@ -569,18 +595,9 @@ void serializeU8Test() {
   uint8_t expected_value1 = 7;
   uint8_t actual_value1 = hexToInteger<uint8_t>(u8_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
-}
 
-void serializeU16Test() {
-  // TODO:
-
-  /*
-  std::string u16_bytes1 = "";
-  uint16_t expected_value1 = 0;
-  uint16_t actual_value1 =
-          hexToInteger<uint16_t>(u16_bytes1);
-  TEST_ASSERT(actual_value1 == expected_value1);
-  */
+  std::string encoded_value1 = integerToHex<uint8_t>(expected_value1);
+  TEST_ASSERT(iequals(u8_bytes1, encoded_value1));
 }
 
 void serializeU32Test() {
@@ -589,22 +606,37 @@ void serializeU32Test() {
   uint32_t actual_value1 = hexToInteger<uint32_t>(u32_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
 
+  std::string encoded_value1 = integerToHex<uint32_t>(expected_value1);
+  TEST_ASSERT(iequals(u32_bytes1, encoded_value1));
+
+  // ---
+
   std::string u32_bytes2 = "00040000";
   uint32_t expected_value2 = 1024;
   uint32_t actual_value2 = hexToInteger<uint32_t>(u32_bytes2);
   TEST_ASSERT(actual_value2 == expected_value2);
+
+  std::string encoded_value2 = integerToHex<uint32_t>(expected_value2);
+  TEST_ASSERT(iequals(u32_bytes2, encoded_value2));
 }
 void serializeU64Test() {
   std::string u64_bytes1 = "39f37bf07f010000";
   uint64_t expected_value1 = 1649007129401;
-
   uint64_t actual_value1 = hexToInteger<uint64_t>(u64_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string encoded_value1 = integerToHex<uint64_t>(expected_value1);
+  TEST_ASSERT(iequals(u64_bytes1, encoded_value1));
+
+  // ---
 
   std::string u64_bytes2 = "be7ab73d80010000";
   uint64_t expected_value2 = 1650302876350;
   uint64_t actual_value2 = hexToInteger<uint64_t>(u64_bytes2);
   TEST_ASSERT(actual_value2 == expected_value2);
+
+  std::string encoded_value2 = integerToHex<uint64_t>(expected_value2);
+  TEST_ASSERT(iequals(u64_bytes2, encoded_value2));
 }
 
 /*
