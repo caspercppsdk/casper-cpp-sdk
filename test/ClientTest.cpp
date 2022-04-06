@@ -506,20 +506,6 @@ void publicKeyGetAccountHashTest() {
   TEST_ASSERT(lower_case_account_hash == expected_account_hash);
 }
 
-void serializeStringTest() {
-  std::string deposit_bytes = "070000006465706f736974";
-  std::string hello_world_bytes = "0d00000048656c6c6f2c20576f726c6421";
-
-  std::string expected_deposit = "deposit";
-  std::string actual_deposit = Casper::StringUtil::hexToString(deposit_bytes);
-  TEST_ASSERT(expected_deposit == actual_deposit);
-
-  std::string expected_hello_world = "Hello, World!";
-  std::string actual_hello_world =
-      Casper::StringUtil::hexToString(hello_world_bytes);
-  TEST_ASSERT(expected_hello_world == actual_hello_world);
-}
-
 /*
 Numeric values consisting of 64 bits or less serialize in the two's complement
 representation with little-endian byte order, and the appropriate number of
@@ -619,6 +605,7 @@ void serializeU32Test() {
   std::string encoded_value2 = integerToHex<uint32_t>(expected_value2);
   TEST_ASSERT(iequals(u32_bytes2, encoded_value2));
 }
+
 void serializeU64Test() {
   std::string u64_bytes1 = "39f37bf07f010000";
   uint64_t expected_value1 = 1649007129401;
@@ -769,6 +756,34 @@ void serializeU512Test() {
   TEST_ASSERT(iequals(u512_bytes3, encoded_value3));
 }
 
+void serializeUnitTest() {
+  /*
+  {
+  "bytes": "",
+  "parsed": null,
+  "cl_type": "Unit"
+}
+  */
+
+  /*
+ Unit serializes to an empty byte array.
+  */
+}
+
+void serializeStringTest() {
+  std::string deposit_bytes = "070000006465706f736974";
+  std::string hello_world_bytes = "0d00000048656c6c6f2c20576f726c6421";
+
+  std::string expected_deposit = "deposit";
+  std::string actual_deposit = Casper::StringUtil::hexToString(deposit_bytes);
+  TEST_ASSERT(expected_deposit == actual_deposit);
+
+  std::string expected_hello_world = "Hello, World!";
+  std::string actual_hello_world =
+      Casper::StringUtil::hexToString(hello_world_bytes);
+  TEST_ASSERT(expected_hello_world == actual_hello_world);
+}
+
 void serializeOptionTest() {
   /*
 
@@ -800,16 +815,40 @@ void serializeOptionTest() {
   "ByteArray":32
 }
 */
+
+std::vector<uint8_t> hexToByteArray(const std::string& bytes_str) {
+  std::vector<uint8_t> ret;
+
+  for (int i = 0; i < bytes_str.length() / 2; i++) {
+    std::string byte_str = bytes_str.substr(i * 2, 2);
+    uint8_t byte = hexToInteger<uint8_t>(byte_str);
+    ret.push_back(byte);
+  }
+  return ret;
+}
+
+std::string byteArrayToHex(const std::vector<uint8_t>& bytes) {
+  std::string ret;
+  for (uint8_t byte : bytes) {
+    std::string byte_str = integerToHex<uint8_t>(byte);
+    ret += byte_str;
+  }
+  return ret;
+}
+
 void serializeByteArrayTest() {
   std::string byte_array_bytes1 =
       "8541116c667bb15b43464a70fa681f8a50dcdf876f43a86b074de9597ca010e1";
   std::vector<uint8_t> expected_value1{
-      0x85, 0x41, 0x11, 0x6c, 0x66, 0x7b, 0x15, 0xb4, 0x34, 0x64, 0xa7,
-      0x0a, 0x68, 0x1f, 0x8a, 0x50, 0xdc, 0xdf, 0x87, 0x6f, 0x43, 0xa8,
-      0x6b, 0x07, 0x4d, 0xe9, 0x59, 0x7c, 0xa0, 0x10, 0xe1};
-  std::vector<uint8_t>
-      actual_value1;  // = Casper::xx::hexToByteArray(byte_array_bytes1);
+      0x85, 0x41, 0x11, 0x6c, 0x66, 0x7b, 0xb1, 0x5b, 0x43, 0x46, 0x4a,
+      0x70, 0xfa, 0x68, 0x1f, 0x8a, 0x50, 0xdc, 0xdf, 0x87, 0x6f, 0x43,
+      0xa8, 0x6b, 0x07, 0x4d, 0xe9, 0x59, 0x7c, 0xa0, 0x10, 0xe1};
+
+  std::vector<uint8_t> actual_value1 = hexToByteArray(byte_array_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string encoded_value1 = byteArrayToHex(expected_value1);
+  TEST_ASSERT(iequals(byte_array_bytes1, encoded_value1));
 }
 
 void serializeMapTest() {
@@ -898,7 +937,8 @@ void serializeMapTest() {
 void serializeKeyTest() {
   /*
 {
-  "bytes": "0123cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6",
+  "bytes":
+"0123cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6",
   "parsed": {
     "Hash":
 "hash-23cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6"
@@ -916,20 +956,6 @@ void serializeAnyTest() {
   "parsed": null,
   "cl_type": "Any"
 }
-  */
-}
-
-void serializeUnitTest() {
-  /*
-  {
-  "bytes": "",
-  "parsed": null,
-  "cl_type": "Unit"
-}
-  */
-
-  /*
- Unit serializes to an empty byte array.
   */
 }
 
@@ -965,4 +991,5 @@ TEST_LIST = {
     {"Serialize - U128", serializeU128Test},
     {"Serialize - U256", serializeU256Test},
     {"Serialize - U512", serializeU512Test},
+    {"Serialize - ByteArray", serializeByteArrayTest},
     {NULL, NULL}};
