@@ -786,7 +786,6 @@ void serializeStringTest() {
 
 void serializeOptionTest() {
   /*
-
   Optional values serialize with a single byte tag, followed by the
   serialization of the value itself. The tag is equal to 0 if the value is
   missing, and 1 if it is present.
@@ -807,6 +806,16 @@ void serializeOptionTest() {
     }
   }
 }
+  */
+
+  /*
+ {
+   "bytes": "017ce8020000000000",
+   "parsed": 190588,
+   "cl_type": {
+     "Option": "U64"
+   }
+ }
   */
 }
 
@@ -836,6 +845,7 @@ std::string byteArrayToHex(const std::vector<uint8_t>& bytes) {
   return ret;
 }
 
+// 32 bytes fixed length - 64 hex characters
 void serializeByteArrayTest() {
   std::string byte_array_bytes1 =
       "8541116c667bb15b43464a70fa681f8a50dcdf876f43a86b074de9597ca010e1";
@@ -849,6 +859,18 @@ void serializeByteArrayTest() {
 
   std::string encoded_value1 = byteArrayToHex(expected_value1);
   TEST_ASSERT(iequals(byte_array_bytes1, encoded_value1));
+
+  /*
+  // TODO:
+  {
+  "bytes": "c2ca7eee6617ac22ddee0c2104477f359186517ba9a246cca445e4654e5562f5",
+  "parsed": "c2ca7eee6617ac22ddee0c2104477f359186517ba9a246cca445e4654e5562f5",
+  "cl_type": {
+    "ByteArray": 32
+  }
+}
+
+  */
 }
 
 void serializeMapTest() {
