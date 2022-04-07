@@ -440,23 +440,22 @@ void getDictionaryItemTest() {
       "dictionary-"
       "5d3e90f064798d54e5e53643c4fce0cbb1024aadcad1586cc4b7c1358a530373";
 
-  Casper::GetDictionaryItemResult dictionaryItemResult =
+  nlohmann::json dictionaryItemResult =
       client.GetDictionaryItem(state_root_hash, item_key);
 
-  TEST_ASSERT(dictionaryItemResult.api_version != "");
+  TEST_ASSERT(dictionaryItemResult.at("api_version") != "");
 
-  TEST_ASSERT(dictionaryItemResult.dictionary_key != "");
-  TEST_ASSERT(dictionaryItemResult.merkle_proof != "");
-  TEST_ASSERT(dictionaryItemResult.stored_value.cl_value.has_value());
-  TEST_ASSERT(dictionaryItemResult.stored_value.cl_value.value().bytes.size() >
-              0);
-  TEST_ASSERT(dictionaryItemResult.stored_value.cl_value.value()
-                  .cl_type.type_info.has_value());
-  uint8_t cl_type_val =
-      static_cast<uint8_t>(dictionaryItemResult.stored_value.cl_value.value()
-                               .cl_type.type_info.value()
-                               .type);
-  TEST_ASSERT(cl_type_val == 10);
+  TEST_ASSERT(dictionaryItemResult.at("dictionary_key") != "");
+  TEST_ASSERT(dictionaryItemResult.at("merkle_proof") != "");
+
+  TEST_ASSERT(!dictionaryItemResult.at("stored_value").at("CLValue").is_null());
+  TEST_ASSERT(
+      iequals(dictionaryItemResult.at("stored_value").at("CLValue").at("bytes"),
+              "090000006162635F76616c7565"));
+
+  TEST_ASSERT(iequals(
+      dictionaryItemResult.at("stored_value").at("CLValue").at("cl_type"),
+      "String"));
 }
 
 /**
