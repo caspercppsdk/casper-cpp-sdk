@@ -578,7 +578,7 @@ TEST_LIST = {
     {"infoGetDeploy", getDeployTest},
     {"negativeInfoGetDeploy", negativeGetDeployTest},
     {"infoGetStatus", getStatusInfoTest},
-    {"infoGetBlockTransfers", getBlockTransfersTest},
+    {"chainGetBlockTransfers", getBlockTransfersTest},
     {"chainGetBlock", getBlockTest},
     {"chainGetEraInfoBySwitchBlock", getEraInfoBySwitchBlockTest},
     {"stateGetItem", getItemTest},
