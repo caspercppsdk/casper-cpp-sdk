@@ -5,6 +5,8 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 1. [CMake Version 3.0.0 or newer](https://cmake.org)
 2. [Doxygen Version 1.8.8 or newer](https://www.doxygen.nl)
 
+## How to clone the SDK
+    git clone https://github.com/yusufketen/casper-cpp-sdk.git
 
 ## Build
 
@@ -59,6 +61,14 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 | GetDictionaryItem       	| Casper::GetDictionaryItemResult 	|
 | GetAccountBalance       	| Casper::GetBalanceResult        	|
 | GetAuctionInfo          	| Casper::GetAuctionInfoResult    	|
+
+## How to install doxygen for documentation
+On Ubuntu and Debian:
+    sudo apt-get install doxygen
+
+On CentOS and Rocky Linux:
+    sudo dnf config-manager --set-enabled powertools
+    sudo dnf install doxygen
 
 ## Documentation
     cd docs
