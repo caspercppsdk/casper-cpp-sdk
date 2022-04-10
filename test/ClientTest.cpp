@@ -2,7 +2,6 @@
 #include "Types/GlobalStateKey.cpp"
 #include "Types/PublicKey.h"
 #include "Utils/CryptoUtil.h"
-
 #include <sstream>
 #include "acutest.h"
 
@@ -30,7 +29,7 @@ void printResult(const T& result, const std::string& rpc_call_name,
  * should be greater than 0.
  *
  */
-void infoGetPeersTest() {
+void infoGetPeers_Test() {
   Casper::Client client(CASPER_TEST_ADDRESS);
 
   auto result = client.GetNodePeers();
@@ -44,7 +43,7 @@ void infoGetPeersTest() {
  * Compare the result with the expected hash of the state.
  *
  */
-void getStateRootHashBlockHeightTest() {
+void chainGetStateRootHash_with_blockHeightTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
 
   uint64_t block_height = 10;
@@ -56,11 +55,30 @@ void getStateRootHashBlockHeightTest() {
 }
 
 /**
+ * @brief Check "get_state_root_hash" rpc function with an
+ * invalid height.
+ *
+ *
+ */
+void chainGetStateRootHash_with_invalidBlockHeightTest() {
+  Casper::Client client(CASPER_TEST_ADDRESS);
+
+  uint64_t block_height = 100000000;
+  try {
+    std::string result = client.GetStateRootHash(block_height).state_root_hash;
+  } catch (const jsonrpccxx::JsonRpcException& e) {
+    return;
+  }
+
+  TEST_ASSERT(false);
+}
+
+/**
  * @brief Check the "get_state_root_hash" rpc function with an example block
  * hash. Compare the result with the expected hash of the state.
  *
  */
-void getStateRootHashBlockHashTest() {
+void chainGetStateRootHash_with_blockHashTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
 
   std::string block_hash =
@@ -77,7 +95,7 @@ void getStateRootHashBlockHashTest() {
  * Compare the result with an empty string.
  *
  */
-void getStateRootHashLastBlockTest() {
+void chainGetStateRootHash_with_emptyParameterTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
 
   std::string result = client.GetStateRootHash().state_root_hash;
@@ -89,7 +107,7 @@ void getStateRootHashLastBlockTest() {
  * @brief Check the "info_get_deploy" rpc function
  *
  */
-void get_deploy_test() {
+void infoGetDeploy_with_deployHashTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
   std::string deploy_hash =
       "8e535d2baed76141ab47fd93b04dd61f65a07893b7c950022978a2b29628edd7";
@@ -117,11 +135,28 @@ void get_deploy_test() {
 }
 
 /**
+ * @brief Check the "info_get_deploy" rpc function with an invalid deploy hash
+ * parameter
+ *
+ */
+void infoGetDeploy_with_invalidDeployHashTest() {
+  Casper::Client client(CASPER_TEST_ADDRESS);
+  std::string deploy_hash = "ffffffffffffffffffff";
+
+  try {
+    nlohmann::json deploy_result = client.GetDeployInfo(deploy_hash);
+  } catch (const jsonrpccxx::JsonRpcException& e) {
+    return;
+  }
+  TEST_ASSERT(false);
+}
+
+/**
  * @brief Check the "info_get_status" rpc function. Check the result
  * variables.
  *
  */
-void getStatusInfoTest() {
+void infoGetStatus_with_emptyParameterTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
   Casper::GetStatusResult result = client.GetStatusInfo();
 
@@ -158,7 +193,7 @@ void getStatusInfoTest() {
  * @brief Check the "chain_get_block_transfers" rpc function.
  *
  */
-void getBlockTransfersTest() {
+void chainGetBlockTransfers_with_blockHashTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
 
   // Call the rpc function
@@ -220,7 +255,7 @@ void getBlockTransfersTest() {
  * @brief Check the "chain_get_block" rpc function
  *
  */
-void getBlockTest() {
+void chainGetBlock_with_blockHashTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
 
   std::string block_hash =
@@ -277,7 +312,7 @@ void getBlockTest() {
  * @brief Check the "chain_get_era_info_by_switch_block" rpc function
  *
  */
-void getEraInfoBySwitchBlockTest() {
+void chainGetEraInfoBySwitchBlock_with_blockHashTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
   Casper::GetEraInfoResult result = client.GetEraInfoBySwitchBlock(
       "d2077716e5b8796723c5720237239720f54e6ada54e3357f2c4896f2a51a6d8f");
@@ -337,7 +372,7 @@ void getEraInfoBySwitchBlockTest() {
  * @brief Check the "state_get_item" rpc function
  *
  */
-void getItemTest() {
+void stateGetItem_with_keyTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
   std::string state_root_hash =
       "39f2800688b94f68ca640b26c7d0f50a90d2ce9af55c9484e66151b544345303";
@@ -378,13 +413,28 @@ void getItemTest() {
   TEST_ASSERT(current_transfer.gas == 0);
 }
 
-// TODO: Check this when the CLValue is implemented
-// TODO: Write the other tests such as by NamedKey, Dictionary, etc.
+/**
+ * @brief Check the "state_get_item" rpc function with an invalid key and a
+ * state root hash
+ *
+ */
+void stateGetItem_with_invalidKeyTest() {
+  Casper::Client client(CASPER_TEST_ADDRESS);
+  std::string state_root_hash = "NOT_EXIST_STATE_ROOT_HASH";
+  std::string key = "NON_EXISTING_KEY";
+  try {
+    Casper::GetItemResult result = client.GetItem(state_root_hash, key);
+  } catch (const jsonrpccxx::JsonRpcException& e) {
+    return;
+  }
+  TEST_ASSERT(false);
+}
+
 /**
  * @brief Check the "state_get_dictionary_item" rpc function by URef
  *
  */
-void getDictionaryItemTest() {
+void stateGetDictionaryItem_with_keyTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
   std::string state_root_hash =
       "322b8d17faea2ee780b9b952a25a86520d36a78e20113f0658ae0b29a68a7384";
@@ -393,32 +443,29 @@ void getDictionaryItemTest() {
       "dictionary-"
       "5d3e90f064798d54e5e53643c4fce0cbb1024aadcad1586cc4b7c1358a530373";
 
-  Casper::GetDictionaryItemResult dictionaryItemResult =
+  nlohmann::json dictionaryItemResult =
       client.GetDictionaryItem(state_root_hash, item_key);
 
-  TEST_ASSERT(dictionaryItemResult.api_version != "");
+  TEST_ASSERT(dictionaryItemResult.at("api_version") != "");
 
-  TEST_ASSERT(dictionaryItemResult.dictionary_key != "");
-  TEST_ASSERT(dictionaryItemResult.merkle_proof != "");
-  TEST_ASSERT(dictionaryItemResult.stored_value.cl_value.has_value());
-  TEST_ASSERT(dictionaryItemResult.stored_value.cl_value.value().bytes.size() >
-              0);
-  /*
-TEST_ASSERT(dictionaryItemResult.stored_value.cl_value.value()
-      .cl_type.type_info.has_value());
-uint8_t cl_type_val =
-static_cast<uint8_t>(dictionaryItemResult.stored_value.cl_value.value()
-                   .cl_type.type_info.value()
-                   .type);
-TEST_ASSERT(cl_type_val == 10);
-*/
+  TEST_ASSERT(dictionaryItemResult.at("dictionary_key") != "");
+  TEST_ASSERT(dictionaryItemResult.at("merkle_proof") != "");
+
+  TEST_ASSERT(!dictionaryItemResult.at("stored_value").at("CLValue").is_null());
+  TEST_ASSERT(
+      iequals(dictionaryItemResult.at("stored_value").at("CLValue").at("bytes"),
+              "090000006162635F76616c7565"));
+
+  TEST_ASSERT(iequals(
+      dictionaryItemResult.at("stored_value").at("CLValue").at("cl_type"),
+      "String"));
 }
 
 /**
  * @brief Check the "state_get_balance" rpc function
  *
  */
-void getBalanceTest() {
+void stateGetBalance_with_urefTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
 
   std::string purse_uref =
@@ -436,10 +483,29 @@ void getBalanceTest() {
 }
 
 /**
+ * @brief Check the "state_get_balance" rpc function with an invalid uref and a
+ * state root hash
+ *
+ */
+void stateGetBalance_with_invalidUrefTest() {
+  Casper::Client client(CASPER_TEST_ADDRESS);
+
+  std::string purse_uref = "non-uref-ffff";
+  std::string state_root_hash = "ffff";
+  try {
+    Casper::GetBalanceResult result =
+        client.GetAccountBalance(purse_uref, state_root_hash);
+  } catch (const jsonrpccxx::JsonRpcException& e) {
+    return;
+  }
+  TEST_ASSERT(false);
+}
+
+/**
  * @brief Check the "state_get_auction_info" rpc function
  *
  */
-void getAuctionInfoTest() {
+void stateGetAuctionInfo_with_blockHashTest() {
   Casper::Client client(CASPER_TEST_ADDRESS);
 
   std::string block_hash =
@@ -483,7 +549,7 @@ void getAuctionInfoTest() {
 /// <summary>
 /// Check the Casper lower-case convert function
 /// </summary>
-void stringUtilToLowerTest() {
+void stringUtil_toLowerTest() {
   std::string str = "Hello World";
   std::string str_lower = "hello world";
   TEST_ASSERT(str_lower == Casper::StringUtil::toLower(str));
@@ -492,7 +558,7 @@ void stringUtilToLowerTest() {
 /// <summary>
 /// Check the public key to account hash convert function
 /// </summary>
-void publicKeyGetAccountHashTest() {
+void publicKey_getAccountHashTest() {
   Casper::PublicKey publicKey = Casper::PublicKey::FromHexString(
       "01cd807fb41345d8dd5a61da7991e1468173acbee53920e4dfe0d28cb8825ac664");
 
@@ -633,7 +699,6 @@ representation with little-endian byte order. The number of bytes should be
 chosen as small as possible to represent the given number. This is done to
 reduce the serialization size when small numbers are represented within a wide
 data type.
-
 */
 
 big_int hexToBigInteger(const std::string& hex) {
@@ -789,7 +854,6 @@ void serializeOptionTest() {
   Optional values serialize with a single byte tag, followed by the
   serialization of the value itself. The tag is equal to 0 if the value is
   missing, and 1 if it is present.
-
     E.g. None serializes as 0x00
     E.g. Some(10u32) serializes as 0x010a000000
 */
@@ -819,13 +883,13 @@ void serializeOptionTest() {
   */
 }
 
-/*
-"cl_type":{
-  "ByteArray":32
-}
-*/
-
 std::vector<uint8_t> hexToByteArray(const std::string& bytes_str) {
+  /*
+  "cl_type":{
+    "ByteArray":32
+  }
+  */
+
   std::vector<uint8_t> ret;
 
   for (int i = 0; i < bytes_str.length() / 2; i++) {
@@ -869,7 +933,6 @@ void serializeByteArrayTest() {
     "ByteArray": 32
   }
 }
-
   */
 }
 
@@ -911,7 +974,6 @@ void serializeMapTest() {
     }
   }
 }
-
   */
 
   // example2
@@ -981,28 +1043,45 @@ void serializeAnyTest() {
   */
 }
 
-//
-// Optional TODO:
-// 1. CryptoUtil functions tests
-// 2. Other StringUtil functions tests
-// 3. CEP57 Checksum tests
-
 TEST_LIST = {
-    {"infoGetPeers", infoGetPeersTest},
-    {"chainGetStateRootHash - Height", getStateRootHashBlockHeightTest},
-    {"chainGetStateRootHash - Hash", getStateRootHashBlockHashTest},
-    {"chainGetStateRootHash - Last Block", getStateRootHashLastBlockTest},
-    {"infoGetDeploy", get_deploy_test},
-    {"infoGetStatus", getStatusInfoTest},
-    {"infoGetBlockTransfers", getBlockTransfersTest},
-    {"chainGetBlock", getBlockTest},
-    {"chainGetEraInfoBySwitchBlock", getEraInfoBySwitchBlockTest},
-    {"stateGetItem", getItemTest},
-    {"stateGetDictionaryItem", getDictionaryItemTest},
-    {"stateGetBalance", getBalanceTest},
-    // {"stateGetAuctionInfo(may take a while)", getAuctionInfoTest},
-    {"StringUtil - ToLower", stringUtilToLowerTest},
-    {"PublicKey - GetAccountHash", publicKeyGetAccountHashTest},
+    {"infoGetPeers checks node list size", infoGetPeers_Test},
+    {"chainGetStateRootHash using Block height parameter",
+     chainGetStateRootHash_with_blockHeightTest},
+    {"chainGetStateRootHash using invalid Block height parameter",
+     chainGetStateRootHash_with_invalidBlockHeightTest},
+    {"chainGetStateRootHash using Block hash parameter",
+     chainGetStateRootHash_with_blockHashTest},
+    {"chainGetStateRootHash using empty Block hash parameter",
+     chainGetStateRootHash_with_emptyParameterTest},
+    {"infoGetDeploy using Deploy hash parameter",
+     infoGetDeploy_with_deployHashTest},
+    {"infoGetDeploy using invalid Deploy hash parameter",
+     infoGetDeploy_with_invalidDeployHashTest},
+    {"infoGetStatus compares with a reference value",
+     infoGetStatus_with_emptyParameterTest},
+    {"chainGetBlockTransfers using Block hash parameter",
+     chainGetBlockTransfers_with_blockHashTest},
+    {"chainGetBlock using Block hash parameter",
+     chainGetBlock_with_blockHashTest},
+    {"chainGetEraInfoBySwitchBlock using Block hash parameter",
+     chainGetEraInfoBySwitchBlock_with_blockHashTest},
+    {"stateGetItem using state root hash and key parameters",
+     stateGetItem_with_keyTest},
+    {"stateGetItem using invalid state root hash and key parameters",
+     stateGetItem_with_invalidKeyTest},
+    {"stateGetDictionaryItem using state root hash and dictionary key "
+     "parameters",
+     stateGetDictionaryItem_with_keyTest},
+    {"stateGetBalance compares with a reference value",
+     stateGetBalance_with_urefTest},
+    {"stateGetBalance using invalid URef and state root hash "
+     "parameters",
+     stateGetBalance_with_invalidUrefTest},
+    {"stateGetAuctionInfo using Block hash parameter (may take a while)",
+     stateGetAuctionInfo_with_blockHashTest},
+    {"toLower checks internal lower case converter", stringUtil_toLowerTest},
+    {"getAccountHash checks internal PublicKey to AccountHash converter",
+     publicKey_getAccountHashTest},
     {"Serialize - Bool", serializeBoolTest},
     {"Serialize - I32", serializeI32Test},
     {"Serialize - I64", serializeI64Test},
