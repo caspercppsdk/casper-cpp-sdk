@@ -6,9 +6,14 @@
 
 namespace Casper {
 
+/// Stored contract referenced by its [`ContractHash`], entry point and an
+/// instance of [`RuntimeArgs`].
 struct StoredContractByHash {
+  /// Contract hash.
   std::string hash;
+  /// Name of an entry point.
   std::string entry_point;
+  /// Runtime arguments.
   std::vector<NamedArg> args;
 
   StoredContractByHash() {}

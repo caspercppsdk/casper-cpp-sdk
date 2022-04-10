@@ -11,20 +11,6 @@ SecByteBlock CEP57Checksum::_bytes_to_nibbles(SecByteBlock bytes) {
     nibbles[i * 2] = (bytes.data()[i] & 0xF0) >> 4;
     nibbles[i * 2 + 1] = bytes.data()[i] & 0x0F;
   }
-  // TODO: Check nible assignment correctness with the following code:
-  // 0xFO may be redundant
-  /*
-  try {
-    var writer = new BinaryWriter(new MemoryStream(nibbles));
-    foreach (var b in bytes) {
-      writer.Write((byte)(b >> 4));
-      writer.Write((byte)(b & 0x0F));
-    }
-  } catch (Exception e) {
-    Console.WriteLine(e);
-    throw;
-  }
-*/
   return nibbles;
 }
 
@@ -40,7 +26,6 @@ std::vector<bool> CEP57Checksum::_bytes_to_bits_cycle(SecByteBlock bytes) {
 bool CEP57Checksum::HasChecksum(std::string hex) {
   int mix = 0;
   for (auto& c : hex) {
-    // std::cout << "c = " << c << "\n";
     if (c >= '0' && c <= '9')
       mix |= 0x00;
     else if (c >= 'a' && c <= 'f')
@@ -50,7 +35,6 @@ bool CEP57Checksum::HasChecksum(std::string hex) {
     else
       throw std::invalid_argument("Invalid hex character.");
   }
-  //  std::cout << "mix = " << mix << "\n";
   return mix > 2;
 }
 
@@ -91,9 +75,7 @@ std::string CEP57Checksum::Encode(SecByteBlock decoded) {
 }
 
 SecByteBlock CEP57Checksum::Decode(std::string encoded) {
-  // std::cout << "\nDecoding: " << encoded << std::endl;
   CryptoPP::SecByteBlock decoded = CryptoUtil::hexDecode(encoded);
-  // std::cout << "Decoded size: " << decoded.size() << std::endl;
   if (decoded.size() > SMALL_BYTES_COUNT || !HasChecksum(encoded)) {
     return decoded;
   }

@@ -76,7 +76,6 @@ inline void from_json(const nlohmann::json& j, URef& p) {
         "A URef object must end with an access rights suffix.");
   }
 
-  // TODO: check if this is correct, 32 may be the correct size
   if (parts[0].length() != 64) {
     throw std::runtime_error("A URef object must contain a 32 byte value.");
   }

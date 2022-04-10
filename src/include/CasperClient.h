@@ -157,11 +157,11 @@ class Client {
    *
    * @param stateRootHash The hash of the state root.
    * @param dictionaryItem The dictionary item key to get the value of.
-   * @return GetDictionaryItemResult that contains the dictionary item
+   * @return json that contains the dictionary item
    * information.
    */
-  GetDictionaryItemResult GetDictionaryItem(std::string stateRootHash,
-                                            std::string dictionaryItem);
+  nlohmann::json GetDictionaryItem(std::string stateRootHash,
+                                   std::string dictionaryItem);
 
   /**
    * @brief Get the Dictionary Item by Account's named keys.

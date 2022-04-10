@@ -12,7 +12,7 @@ struct DeployHeader {
   /// <summary>
   /// Public Key from the Account owning the Deploy.
   /// </summary>
-  // TODO: Make PublicKey instead of std::string
+  // TODOMS3: Make PublicKey instead of std::string
   std::string account;
 
   /// <summary>
@@ -23,7 +23,7 @@ struct DeployHeader {
   /// <summary>
   /// Duration of the Deploy in milliseconds (from timestamp).
   /// </summary>
-  // TODO: [JsonConverter(typeof(HumanizeTTLConverter))]
+  // TODOMS3: [JsonConverter(typeof(HumanizeTTLConverter))]
   std::string ttl;
 
   /// <summary>
@@ -34,7 +34,7 @@ struct DeployHeader {
   /// <summary>
   /// Hash of the body part of this Deploy.
   /// </summary>
-  // TODO: [JsonConverter(typeof(CEP57Checksum.HashWithChecksumConverter))]
+  // TODOMS3: [JsonConverter(typeof(CEP57Checksum.HashWithChecksumConverter))]
   std::string body_hash;
 
   /// <summary>

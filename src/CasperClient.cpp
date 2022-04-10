@@ -109,14 +109,14 @@ GetItemResult Client::GetItem(std::string state_root_hash, std::string key,
 }
 
 /// Returns the dictionary item with the given key and state root hash.
-GetDictionaryItemResult Client::GetDictionaryItem(std::string stateRootHash,
-                                                  std::string dictionaryItem) {
+nlohmann::json Client::GetDictionaryItem(std::string stateRootHash,
+                                         std::string dictionaryItem) {
   nlohmann::json dictionaryJSON{{"Dictionary", dictionaryItem}};
 
   nlohmann::json paramsJSON{{"state_root_hash", stateRootHash},
                             {"dictionary_identifier", dictionaryJSON}};
 
-  return mRpcClient.CallMethodNamed<GetDictionaryItemResult>(
+  return mRpcClient.CallMethodNamed<nlohmann::json>(
       1, "state_get_dictionary_item", paramsJSON);
 }
 
@@ -192,7 +192,7 @@ GetAuctionInfoResult Client::GetAuctionInfo(uint64_t block_height) {
       1, "state_get_auction_info", block_identifier);
 }
 
-/// TODO: Not implemented yet.(MS3)
+/// TODOMS3: Not implemented yet.(MS3)
 PutDeployResult Client::PutDeploy(Deploy deploy) {
   nlohmann::json deploy_json;
   to_json(deploy_json, deploy);

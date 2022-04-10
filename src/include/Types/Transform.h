@@ -1,9 +1,8 @@
 #pragma once
 
-#include <optional>
 #include "Base.h"
+#include <optional>
 
-// libs
 #include "nlohmann/json.hpp"
 
 // Types
@@ -17,24 +16,43 @@
 #include "Types/UnbondingPurse.h"
 
 namespace Casper {
+/// The actual transformation performed while executing a deploy.
 struct Transform {
+  /// A transform having no effect.
   std::optional<std::string> Identity = std::nullopt;
+  /// Writes the given CLValue to global state.
   std::optional<CLValue> WriteCLValue = std::nullopt;
+  /// Writes the given Account to global state.
   std::optional<std::string> WriteAccount = std::nullopt;
+  /// Writes a smart contract as Wasm to global state.
   std::optional<std::string> WriteContractWasm = std::nullopt;
+  /// Writes a smart contract to global state.
   std::optional<std::string> WriteContract = std::nullopt;
+  /// Writes a smart contract package to global state.
   std::optional<std::string> WriteContractPackage = std::nullopt;
+  /// Writes the given DeployInfo to global state.
   std::optional<DeployInfo> WriteDeployInfo = std::nullopt;
+  /// Writes the given EraInfo to global state.
   std::optional<EraInfo> WriteEraInfo = std::nullopt;
+  /// Writes the given Transfer to global state.
   std::optional<Transfer> WriteTransfer = std::nullopt;
+  /// Writes the given Bid to global state.
   std::optional<Bid> WriteBid = std::nullopt;
+  /// Writes the given Withdraw to global state.
   std::optional<std::vector<UnbondingPurse>> WriteWithdraw = std::nullopt;
+  /// Adds the given `i32`.
   std::optional<int32_t> AddInt32 = std::nullopt;
+  /// Adds the given `u64`.
   std::optional<uint64_t> AddUInt64 = std::nullopt;
+  /// Adds the given `U128`.
   std::optional<big_int> AddUInt128 = std::nullopt;
+  /// Adds the given `U256`.
   std::optional<big_int> AddUInt256 = std::nullopt;
+  /// Adds the given `U512`.
   std::optional<big_int> AddUInt512 = std::nullopt;
+  /// Adds the given collection of named keys.
   std::optional<std::vector<NamedKey>> AddKeys = std::nullopt;
+  /// A failed transformation, containing an error message.
   std::optional<std::string> Failure = std::nullopt;
 };
 
@@ -179,4 +197,5 @@ inline void from_json(const nlohmann::json& j, Transform& p) {
     p.Failure = j.at("Failure").get<std::string>();
   }
 }
+
 }  // namespace Casper

@@ -6,7 +6,9 @@
 
 namespace Casper {
 
+/// A native transfer which does not contain or reference a WASM code.
 struct TransferDeployItem {
+  /// Runtime arguments.
   std::vector<NamedArg> args;
 
   TransferDeployItem() {}

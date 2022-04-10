@@ -19,13 +19,13 @@ struct DeployInfo {
   /// <summary>
   /// Transfer addresses performed by the Deploy.
   /// </summary>
-  // TODO: make TransferKey instead of std::string
+  // TODOMS3: make TransferKey instead of std::string
   std::vector<std::string> transfers;
 
   /// <summary>
   /// Account identifier of the creator of the Deploy.
   /// </summary>
-  // TODO: make AccountHashKey  instead of std::string
+  // TODOMS3: make AccountHashKey  instead of std::string
   std::string from;
 
   /// <summary>

@@ -27,7 +27,6 @@ GlobalStateKey::GlobalStateKey(std::string key_, std::string key_prefix) {
   if (key_.rfind(key_prefix, 0) != 0)
     throw std::invalid_argument(
         "Key not valid. It should start with '{key_prefix}'.");
-  // TODO: Check this for URef
   CryptoPP::SecByteBlock res =
       CEP57Checksum::Decode(key_.substr(key_.find_last_of('-') + 1));
   key = key_prefix + CEP57Checksum::Encode(res);
@@ -192,7 +191,7 @@ CryptoPP::SecByteBlock EraInfoKey::_GetRawBytesFromKey(std::string key) {
   std::copy(reinterpret_cast<uint8_t*>(&u64),
             reinterpret_cast<uint8_t*>(&u64) + 8, bytes.begin());
 
-  // TODO: Check endianness
+  // TODOMS3: Check endianness
   // if (!BitConverter.IsLittleEndian) Array.Reverse(bytes);
 
   return bytes;

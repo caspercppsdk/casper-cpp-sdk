@@ -8,11 +8,17 @@
 #include "nlohmann/json.hpp"
 
 namespace Casper {
+
+/// A Casper value, i.e. a value which can be stored and manipulated by smart
+/// contracts.
+///
+/// It holds the underlying data as a type-erased, serialized `Vec<u8>` and also
+/// holds the [`CLType`] of the underlying data as a separate member.
 struct CLValue {
   CLType cl_type;
   SecByteBlock bytes;
 
-  // TODO: object parsed;
+  // TODOMS3: implement parsed
 
   CLValue() {}
 };
@@ -28,7 +34,7 @@ inline void to_json(nlohmann::json& j, const CLValue& p) {
     std::cout << "CLValue-to_json-bytes what(): " << e.what() << std::endl;
   }
 
-  // TODO: parsed
+  // TODOMS3: implement parsed
 }
 
 // from json
@@ -41,6 +47,7 @@ inline void from_json(const nlohmann::json& j, CLValue& p) {
     std::cout << "CLValue-from_json-bytes what(): " << e.what() << std::endl;
   }
 
-  // TODO: parsed}
+  // TODOMS3: implement parsed
 }
+
 }  // namespace Casper

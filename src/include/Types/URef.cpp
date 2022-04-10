@@ -1,5 +1,4 @@
 #include "Types/URef.h"
-
 #include <sstream>
 
 #include "Utils/CEP57Checksum.h"
@@ -12,24 +11,16 @@ URef::URef() {}
 
 URef::URef(std::string value) : GlobalStateKey::GlobalStateKey(value) {
   key_identifier = KeyIdentifier::UREF;
-  // std::cout << "\n\n\nUREF(value), value = " << value << "\n\n\n";
   if (!StringUtil::startsWith(value, "uref-")) {
     throw std::runtime_error("Invalid URef format");
   }
 
   auto parts = StringUtil::splitString(value.substr(5), "-");
 
-  /*std::cout << "\nparts  upper\n";
-  for (auto part : parts) {
-    std::cout << part << "\n";
-  }
-  */
-
   if (parts.size() != 2)
     throw std::runtime_error(
         "A URef object must end with an access rights suffix.");
-  if (parts[0].length() !=
-      64)  // TODO: check if this is correct, 32 may be the correct size
+  if (parts[0].length() != 64)
     throw std::runtime_error("A URef object must contain a 32 byte value.");
   if (parts[1].length() != 3)
     throw std::runtime_error(
@@ -39,11 +30,6 @@ URef::URef(std::string value) : GlobalStateKey::GlobalStateKey(value) {
   try {
     raw_bytes = CEP57Checksum::Decode(parts[0]);
   } catch (std::exception& e) {
-    /*
-    std::cout << "\nparts\n";
-    for (auto part : parts) {
-      std::cout << part << "\n";
-    }*/
     throw std::runtime_error("URef Invalid Checksum.");
   }
 
@@ -103,7 +89,6 @@ CryptoPP::SecByteBlock URef::GetBytes() {
 }
 
 std::string URef::ToString() const {
-  // std::cout << "\n\n\n\ntestureftostring:" << key << "\n\n\n\n";
   std::string access_rights_str = std::to_string((uint8_t)access_rights);
   if (access_rights_str.length() == 1)
     access_rights_str = "00" + access_rights_str;
