@@ -1084,8 +1084,22 @@ void cltype_test() {
   std::cout << j.dump(2);
 }
 
+void cltype_json_test() {
+  nlohmann::json j_map;
+
+  j_map["cl_type"] = {{"Map", {{"key", "String"}, {"value", "String"}}}};
+
+  nlohmann::json j_str_list;
+  j_str_list["cl_type"] = {{"List", "String"}};
+
+  std::cout << j_map.dump(2) << std::endl;
+
+  std::cout << j_str_list.dump(2) << std::endl;
+}
+
 TEST_LIST = {
     {"CLType", cltype_test},
+    {"CLType json", cltype_json_test},
     /*
       {"infoGetPeers checks node list size", infoGetPeers_Test},
       {"chainGetStateRootHash using Block height parameter",
