@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Base.h"
-#include "Types/CLType.h"
+#include "Types/CLType2.h"
 #include "cryptopp/secblock.h"
 
 #include "Utils/CEP57Checksum.h"
@@ -15,10 +15,11 @@ namespace Casper {
 /// It holds the underlying data as a type-erased, serialized `Vec<u8>` and also
 /// holds the [`CLType`] of the underlying data as a separate member.
 struct CLValue {
-  CLType cl_type;
+  CLType cl_type;  // CLType2
   SecByteBlock bytes;
 
-  // TODOMS3: implement parsed
+  // CLTypeValue parsed; // will be RVA of int32, int64, string, bytes,
+  // bool,...., map, list,....tuple3
 
   CLValue() {}
 };

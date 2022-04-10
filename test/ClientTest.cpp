@@ -3,6 +3,7 @@
 #include "Types/PublicKey.h"
 #include "Utils/CryptoUtil.h"
 #include <sstream>
+#include "Types/CLType2.h"
 #include "acutest.h"
 
 // Helper function to compare two strings in a case insensitive way
@@ -1042,55 +1043,98 @@ void serializeAnyTest() {
 }
   */
 }
+/*
+WORKING EXAMPLE
+Casper::CLType cl;
+  Casper::CLTypeRVA rva;
+
+  auto en = Casper::CLTypeEnum::I32;
+  auto en2 = Casper::CLTypeEnum::I32;
+  auto mp = std::map<Casper::CLTypeRVA, Casper::CLTypeRVA>();
+  mp[en] = en2;
+  rva = mp;
+
+  cl.type = rva;
+
+  nlohmann::json j;
+  Casper::to_json(j, cl);
+  std::cout << j.dump(2);
+
+*/
+
+void cltype_test() {
+  Casper::CLType cl;
+  Casper::CLTypeRVA rva;
+
+  std::vector<Casper::CLTypeRVA> pks;
+  auto pk = Casper::CLTypeEnum::PublicKey;
+  pks.push_back(pk);
+
+  std::map<Casper::CLTypeRVA, Casper::CLTypeRVA> mp;
+  auto str = Casper::CLTypeEnum::String;
+
+  mp[str] = pks;
+
+  rva = mp;
+
+  cl.type = rva;
+
+  nlohmann::json j;
+  Casper::to_json(j, cl);
+  std::cout << j.dump(2);
+}
 
 TEST_LIST = {
-    {"infoGetPeers checks node list size", infoGetPeers_Test},
-    {"chainGetStateRootHash using Block height parameter",
-     chainGetStateRootHash_with_blockHeightTest},
-    {"chainGetStateRootHash using invalid Block height parameter",
-     chainGetStateRootHash_with_invalidBlockHeightTest},
-    {"chainGetStateRootHash using Block hash parameter",
-     chainGetStateRootHash_with_blockHashTest},
-    {"chainGetStateRootHash using empty Block hash parameter",
-     chainGetStateRootHash_with_emptyParameterTest},
-    {"infoGetDeploy using Deploy hash parameter",
-     infoGetDeploy_with_deployHashTest},
-    {"infoGetDeploy using invalid Deploy hash parameter",
-     infoGetDeploy_with_invalidDeployHashTest},
-    {"infoGetStatus compares with a reference value",
-     infoGetStatus_with_emptyParameterTest},
-    {"chainGetBlockTransfers using Block hash parameter",
-     chainGetBlockTransfers_with_blockHashTest},
-    {"chainGetBlock using Block hash parameter",
-     chainGetBlock_with_blockHashTest},
-    {"chainGetEraInfoBySwitchBlock using Block hash parameter",
-     chainGetEraInfoBySwitchBlock_with_blockHashTest},
-    {"stateGetItem using state root hash and key parameters",
-     stateGetItem_with_keyTest},
-    {"stateGetItem using invalid state root hash and key parameters",
-     stateGetItem_with_invalidKeyTest},
-    {"stateGetDictionaryItem using state root hash and dictionary key "
-     "parameters",
-     stateGetDictionaryItem_with_keyTest},
-    {"stateGetBalance compares with a reference value",
-     stateGetBalance_with_urefTest},
-    {"stateGetBalance using invalid URef and state root hash "
-     "parameters",
-     stateGetBalance_with_invalidUrefTest},
-    {"stateGetAuctionInfo using Block hash parameter (may take a while)",
-     stateGetAuctionInfo_with_blockHashTest},
-    {"toLower checks internal lower case converter", stringUtil_toLowerTest},
-    {"getAccountHash checks internal PublicKey to AccountHash converter",
-     publicKey_getAccountHashTest},
-    {"Serialize - Bool", serializeBoolTest},
-    {"Serialize - I32", serializeI32Test},
-    {"Serialize - I64", serializeI64Test},
-    {"Serialize - String", serializeStringTest},
-    {"Serialize - U8", serializeU8Test},
-    {"Serialize - U32", serializeU32Test},
-    {"Serialize - U64", serializeU64Test},
-    {"Serialize - U128", serializeU128Test},
-    {"Serialize - U256", serializeU256Test},
-    {"Serialize - U512", serializeU512Test},
-    {"Serialize - ByteArray", serializeByteArrayTest},
+    {"CLType", cltype_test},
+    /*
+      {"infoGetPeers checks node list size", infoGetPeers_Test},
+      {"chainGetStateRootHash using Block height parameter",
+       chainGetStateRootHash_with_blockHeightTest},
+      {"chainGetStateRootHash using invalid Block height parameter",
+       chainGetStateRootHash_with_invalidBlockHeightTest},
+      {"chainGetStateRootHash using Block hash parameter",
+       chainGetStateRootHash_with_blockHashTest},
+      {"chainGetStateRootHash using empty Block hash parameter",
+       chainGetStateRootHash_with_emptyParameterTest},
+      {"infoGetDeploy using Deploy hash parameter",
+       infoGetDeploy_with_deployHashTest},
+      {"infoGetDeploy using invalid Deploy hash parameter",
+       infoGetDeploy_with_invalidDeployHashTest},
+      {"infoGetStatus compares with a reference value",
+       infoGetStatus_with_emptyParameterTest},
+      {"chainGetBlockTransfers using Block hash parameter",
+       chainGetBlockTransfers_with_blockHashTest},
+      {"chainGetBlock using Block hash parameter",
+       chainGetBlock_with_blockHashTest},
+      {"chainGetEraInfoBySwitchBlock using Block hash parameter",
+       chainGetEraInfoBySwitchBlock_with_blockHashTest},
+      {"stateGetItem using state root hash and key parameters",
+       stateGetItem_with_keyTest},
+      {"stateGetItem using invalid state root hash and key parameters",
+       stateGetItem_with_invalidKeyTest},
+      {"stateGetDictionaryItem using state root hash and dictionary key "
+       "parameters",
+       stateGetDictionaryItem_with_keyTest},
+      {"stateGetBalance compares with a reference value",
+       stateGetBalance_with_urefTest},
+      {"stateGetBalance using invalid URef and state root hash "
+       "parameters",
+       stateGetBalance_with_invalidUrefTest},
+      {"stateGetAuctionInfo using Block hash parameter (may take a while)",
+       stateGetAuctionInfo_with_blockHashTest},
+      {"toLower checks internal lower case converter", stringUtil_toLowerTest},
+      {"getAccountHash checks internal PublicKey to AccountHash converter",
+       publicKey_getAccountHashTest},
+      {"Serialize - Bool", serializeBoolTest},
+      {"Serialize - I32", serializeI32Test},
+      {"Serialize - I64", serializeI64Test},
+      {"Serialize - String", serializeStringTest},
+      {"Serialize - U8", serializeU8Test},
+      {"Serialize - U32", serializeU32Test},
+      {"Serialize - U64", serializeU64Test},
+      {"Serialize - U128", serializeU128Test},
+      {"Serialize - U256", serializeU256Test},
+      {"Serialize - U512", serializeU512Test},
+      {"Serialize - ByteArray", serializeByteArrayTest},
+      */
     {NULL, NULL}};
