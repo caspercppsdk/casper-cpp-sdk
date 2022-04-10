@@ -176,10 +176,11 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
     }
   } else if (p.index() == 1) {
     auto& p_type = rva::get<std::vector<CLTypeRVA>>(p);
-    j = nlohmann::json{{"List", p_type}};
+    j = {{"List", p_type.front()}};
   } else if (p.index() == 2) {
     auto& p_type = rva::get<std::map<CLTypeRVA, CLTypeRVA>>(p);
-    j = nlohmann::json{{"Map", p_type}};
+    j["Map"] = {{"key", p_type.begin()->first},
+                {"value", p_type.begin()->second}};
   }
   /*
   else if (p.index() == 3) {
