@@ -1081,6 +1081,27 @@ void cltype_test() {
 
   nlohmann::json j;
   Casper::to_json(j, cl);
+
+  std::cout << std::endl;
+  std::cout << j.dump(2);
+}
+
+void cltype_str_list_test() {
+  Casper::CLType cl;
+  Casper::CLTypeRVA rva;
+
+  std::vector<Casper::CLTypeRVA> pks;
+  auto pk = Casper::CLTypeEnum::String;
+  pks.push_back(pk);
+
+  rva = pks;
+
+  cl.type = rva;
+
+  nlohmann::json j;
+  Casper::to_json(j, cl);
+
+  std::cout << std::endl;
   std::cout << j.dump(2);
 }
 
@@ -1092,14 +1113,17 @@ void cltype_json_test() {
   nlohmann::json j_str_list;
   j_str_list["cl_type"] = {{"List", "String"}};
 
+  std::cout << std::endl;
   std::cout << j_map.dump(2) << std::endl;
 
+  std::cout << std::endl;
   std::cout << j_str_list.dump(2) << std::endl;
 }
 
 TEST_LIST = {
     {"CLType", cltype_test},
     {"CLType json", cltype_json_test},
+    {"CLType List<String>", cltype_str_list_test},
     /*
       {"infoGetPeers checks node list size", infoGetPeers_Test},
       {"chainGetStateRootHash using Block height parameter",
