@@ -177,6 +177,7 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
   } else if (p.index() == 1) {
     auto& p_type = rva::get<std::vector<CLTypeRVA>>(p);
     j = {{"List", p_type.front()}};
+
   } else if (p.index() == 2) {
     auto& p_type = rva::get<std::map<CLTypeRVA, CLTypeRVA>>(p);
     j["Map"] = {{"key", p_type.begin()->first},
@@ -197,6 +198,35 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
   */
 }
 
+/*
+
+ else if (j.front().is_string()) {
+    auto p_type = j.front();
+    std::cout << p_type << std::endl;
+    if (p_type == "List") {
+      auto list = std::vector<CLTypeRVA>();
+      CLTypeRVA inner;
+      from_json(j.at("List"), inner);
+      list.push_back(inner);
+      p = list;
+    } else if (p_type == "Map") {
+      auto mp = std::map<CLTypeRVA, CLTypeRVA>();
+
+      CLTypeRVA key;
+      CLTypeRVA value;
+      from_json(j.at("Map").at("key"), key);
+      from_json(j.at("Map").at("value"), value);
+
+      mp.insert({key, value});
+      // mp[key] = value;
+      p = mp;
+    } else {
+      std::cout << "\n\nwrong type\n\n" << std::endl << j.dump(2) << std::endl;
+      throw std::runtime_error("Invalid CLType");
+    }
+  }
+
+*/
 inline void from_json(const nlohmann::json& j, CLTypeRVA& p) {
   if (j.is_string()) {
     auto p_type = j.get<std::string>();
@@ -206,7 +236,36 @@ inline void from_json(const nlohmann::json& j, CLTypeRVA& p) {
     } else {
       throw std::runtime_error("Invalid CLType");
     }
+  } else if (j.is_object()) {
+    if (j.begin().key() == "Map") {
+      auto mp = std::map<CLTypeRVA, CLTypeRVA>();
+
+      CLTypeRVA key;
+      CLTypeRVA value;
+      from_json(j.at("Map").at("key"), key);
+      from_json(j.at("Map").at("value"), value);
+
+      mp.insert({key, value});
+      p = mp;
+    } else if (j.begin().key() == "List") {
+      auto list = std::vector<CLTypeRVA>();
+      CLTypeRVA inner;
+      from_json(j.at("List"), inner);
+      list.push_back(inner);
+      p = list;
+    } else {
+      throw std::runtime_error("Invalid CLType");
+    }
   }
+  /*
+   else if (j.front().is_array()) {
+    auto& p_list = rva::get<std::vector<CLTypeRVA>>(p);
+    p_list.push_back(CLTypeRVA{});
+  } else if (j.front().is_object()) {
+    auto& p_map = rva::get<std::map<CLTypeRVA, CLTypeRVA>>(p);
+    p_map.insert({CLTypeRVA{}, CLTypeRVA{}});
+  }
+  */
 }
 
 struct CLType {

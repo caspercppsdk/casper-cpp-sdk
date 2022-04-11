@@ -1062,6 +1062,7 @@ Casper::CLType cl;
 
 */
 
+/// map<String, List<PublicKey>>
 void cltype_test() {
   Casper::CLType cl;
   Casper::CLTypeRVA rva;
@@ -1082,10 +1083,13 @@ void cltype_test() {
   nlohmann::json j;
   Casper::to_json(j, cl);
 
-  std::cout << std::endl;
-  std::cout << j.dump(2);
+  /*
+    std::cout << std::endl;
+    std::cout << j.dump(2);
+    */
 }
 
+/// List<String>
 void cltype_str_list_test() {
   Casper::CLType cl;
   Casper::CLTypeRVA rva;
@@ -1101,10 +1105,13 @@ void cltype_str_list_test() {
   nlohmann::json j;
   Casper::to_json(j, cl);
 
-  std::cout << std::endl;
-  std::cout << j.dump(2);
+  /*
+    std::cout << std::endl;
+    std::cout << j.dump(2);
+    */
 }
 
+///
 void cltype_json_test() {
   nlohmann::json j_map;
 
@@ -1113,17 +1120,90 @@ void cltype_json_test() {
   nlohmann::json j_str_list;
   j_str_list["cl_type"] = {{"List", "String"}};
 
-  std::cout << std::endl;
-  std::cout << j_map.dump(2) << std::endl;
+  /*
+    std::cout << std::endl;
+    std::cout << j_map.dump(2) << std::endl;
 
-  std::cout << std::endl;
-  std::cout << j_str_list.dump(2) << std::endl;
+    std::cout << std::endl;
+    std::cout << j_str_list.dump(2) << std::endl;
+    */
+}
+
+void clType_threeWayComparison_with_MapTest() {
+  Casper::CLType cl;
+  Casper::CLTypeRVA rva;
+
+  std::vector<Casper::CLTypeRVA> pks;
+  auto pk = Casper::CLTypeEnum::PublicKey;
+  pks.push_back(pk);
+
+  std::map<Casper::CLTypeRVA, Casper::CLTypeRVA> mp;
+  auto str = Casper::CLTypeEnum::String;
+
+  mp[str] = pks;
+
+  rva = mp;
+  cl.type = rva;
+
+  // create a json from the initial CLType object
+  nlohmann::json obj_to_json;
+  Casper::to_json(obj_to_json, cl);
+
+  // create a new CLType object from the generated json
+  Casper::CLType json_to_obj;
+  Casper::from_json(obj_to_json, json_to_obj);
+
+  // create a new json from the generated CLType object
+  nlohmann::json final_json;
+  Casper::to_json(final_json, json_to_obj);
+
+  // compare the final parsed json to the initial json
+  TEST_ASSERT(final_json == obj_to_json);
+}
+
+void clType_threeWayComparison_with_StringListTest() {
+  Casper::CLType cl;
+  Casper::CLTypeRVA rva;
+
+  std::vector<Casper::CLTypeRVA> str_list;
+  str_list.push_back(Casper::CLTypeEnum::String);
+
+  rva = str_list;
+  cl.type = rva;
+
+  // create a json from the initial CLType object
+  nlohmann::json obj_to_json;
+  Casper::to_json(obj_to_json, cl);
+
+  // create a new CLType object from the generated json
+  Casper::CLType json_to_obj;
+  Casper::from_json(obj_to_json, json_to_obj);
+
+  /*
+    Print the value of the generated object
+
+    auto& lst = rva::get<std::vector<Casper::CLTypeRVA>>(json_to_obj.type);
+    std::cout << "lst.size() = " << lst.size() << std::endl;
+    auto& enm = rva::get<Casper::CLTypeEnum>(lst[0]);
+    std::cout << "lst[0] = " << magic_enum::enum_name(enm) << std::endl;
+  */
+
+  // create a new json from the generated CLType object
+  nlohmann::json final_json;
+  Casper::to_json(final_json, json_to_obj);
+
+  // compare the final parsed json to the initial json
+  TEST_ASSERT(final_json == obj_to_json);
 }
 
 TEST_LIST = {
-    {"CLType", cltype_test},
-    {"CLType json", cltype_json_test},
-    {"CLType List<String>", cltype_str_list_test},
+    //{"CLType", cltype_test},
+    //{"CLType json", cltype_json_test},
+    //{"CLType List<String>", cltype_str_list_test},
+    {"CLType JSON - Object conversion using Map<String, List<PublicKey> >",
+     clType_threeWayComparison_with_MapTest},
+    {"CLType JSON - Object conversion using List<String>",
+     clType_threeWayComparison_with_StringListTest},
     /*
       {"infoGetPeers checks node list size", infoGetPeers_Test},
       {"chainGetStateRootHash using Block height parameter",
