@@ -4,6 +4,7 @@
 #include "Utils/CryptoUtil.h"
 #include <sstream>
 #include "Types/CLType2.h"
+#include "Types/CLTypeParsedConverter.h"
 #include "acutest.h"
 
 // Helper function to compare two strings in a case insensitive way
@@ -573,199 +574,113 @@ void publicKey_getAccountHashTest() {
   TEST_ASSERT(lower_case_account_hash == expected_account_hash);
 }
 
-/*
-Numeric values consisting of 64 bits or less serialize in the two's complement
-representation with little-endian byte order, and the appropriate number of
-bytes for the bit-width.
-*/
-
-template <typename T>
-T hexToInteger(const std::string& hex) {
-  CryptoPP::SecByteBlock bytes = Casper::CEP57Checksum::Decode(hex);
-  T val = *(reinterpret_cast<T*>(bytes.data()));
-  return val;
-}
-
-template <typename T>
-std::string integerToHex(T val) {
-  CryptoPP::SecByteBlock bytes(sizeof(T));
-  memcpy(bytes.data(), &val, sizeof(T));
-  return Casper::CEP57Checksum::Encode(bytes);
-}
-
 void serializeBoolTest() {
   std::string bool_bytes1 = "00";
   bool expected_value1 = false;
-  bool actual_value1 = hexToInteger<bool>(bool_bytes1);
+  bool actual_value1 = Casper::boolDecode(bool_bytes1);
   TEST_ASSERT(expected_value1 == actual_value1);
 
-  std::string encoded_value1 = integerToHex<bool>(expected_value1);
+  std::string encoded_value1 = Casper::boolEncode(expected_value1);
   TEST_ASSERT(iequals(bool_bytes1, encoded_value1));
 
   // ---
 
   std::string bool_bytes2 = "01";
   bool expected_value2 = true;
-  bool actual_value2 = hexToInteger<bool>(bool_bytes2);
+  bool actual_value2 = Casper::boolDecode(bool_bytes2);
   TEST_ASSERT(expected_value2 == actual_value2);
 
-  std::string encoded_value2 = integerToHex<bool>(expected_value2);
+  std::string encoded_value2 = Casper::boolEncode(expected_value2);
   TEST_ASSERT(iequals(bool_bytes2, encoded_value2));
 }
 
 void serializeI32Test() {
   std::string i32_bytes1 = "e8030000";
   int32_t expected_value1 = 1000;
-  int32_t actual_value1 = hexToInteger<int32_t>(i32_bytes1);
+  int32_t actual_value1 = Casper::i32Decode(i32_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
 
-  std::string encoded_value1 = integerToHex<int32_t>(expected_value1);
+  std::string encoded_value1 = Casper::i32Encode(expected_value1);
   TEST_ASSERT(iequals(i32_bytes1, encoded_value1));
 
   // ---
 
   std::string i32_bytes2 = "1d290d71";
   int32_t expected_value2 = 1896687901;
-  int32_t actual_value2 = hexToInteger<int32_t>(i32_bytes2);
+  int32_t actual_value2 = Casper::i32Decode(i32_bytes2);
   TEST_ASSERT(actual_value2 == expected_value2);
 
-  std::string encoded_value2 = integerToHex<int32_t>(expected_value2);
+  std::string encoded_value2 = Casper::i32Encode(expected_value2);
   TEST_ASSERT(iequals(i32_bytes2, encoded_value2));
 }
 
 void serializeI64Test() {
   std::string i64_bytes1 = "7f33d9dcf601ab02";
   int64_t expected_value1 = 192249568872182655;
-  int64_t actual_value1 = hexToInteger<int64_t>(i64_bytes1);
+  int64_t actual_value1 = Casper::i64Decode(i64_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
 
-  std::string encoded_value1 = integerToHex<int64_t>(expected_value1);
+  std::string encoded_value1 = Casper::i64Encode(expected_value1);
   TEST_ASSERT(iequals(i64_bytes1, encoded_value1));
 }
 
 void serializeU8Test() {
   std::string u8_bytes1 = "07";
   uint8_t expected_value1 = 7;
-  uint8_t actual_value1 = hexToInteger<uint8_t>(u8_bytes1);
+  uint8_t actual_value1 = Casper::u8Decode(u8_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
 
-  std::string encoded_value1 = integerToHex<uint8_t>(expected_value1);
+  std::string encoded_value1 = Casper::u8Encode(expected_value1);
   TEST_ASSERT(iequals(u8_bytes1, encoded_value1));
 }
 
 void serializeU32Test() {
   std::string u32_bytes1 = "01000000";
   uint32_t expected_value1 = 1;
-  uint32_t actual_value1 = hexToInteger<uint32_t>(u32_bytes1);
+  uint32_t actual_value1 = Casper::u32Decode(u32_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
 
-  std::string encoded_value1 = integerToHex<uint32_t>(expected_value1);
+  std::string encoded_value1 = Casper::u32Encode(expected_value1);
   TEST_ASSERT(iequals(u32_bytes1, encoded_value1));
 
   // ---
 
   std::string u32_bytes2 = "00040000";
   uint32_t expected_value2 = 1024;
-  uint32_t actual_value2 = hexToInteger<uint32_t>(u32_bytes2);
+  uint32_t actual_value2 = Casper::u32Decode(u32_bytes2);
   TEST_ASSERT(actual_value2 == expected_value2);
 
-  std::string encoded_value2 = integerToHex<uint32_t>(expected_value2);
+  std::string encoded_value2 = Casper::u32Encode(expected_value2);
   TEST_ASSERT(iequals(u32_bytes2, encoded_value2));
 }
 
 void serializeU64Test() {
   std::string u64_bytes1 = "39f37bf07f010000";
   uint64_t expected_value1 = 1649007129401;
-  uint64_t actual_value1 = hexToInteger<uint64_t>(u64_bytes1);
+  uint64_t actual_value1 = Casper::u64Decode(u64_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
 
-  std::string encoded_value1 = integerToHex<uint64_t>(expected_value1);
+  std::string encoded_value1 = Casper::u64Encode(expected_value1);
   TEST_ASSERT(iequals(u64_bytes1, encoded_value1));
 
   // ---
 
   std::string u64_bytes2 = "be7ab73d80010000";
   uint64_t expected_value2 = 1650302876350;
-  uint64_t actual_value2 = hexToInteger<uint64_t>(u64_bytes2);
+  uint64_t actual_value2 = Casper::u64Decode(u64_bytes2);
   TEST_ASSERT(actual_value2 == expected_value2);
 
-  std::string encoded_value2 = integerToHex<uint64_t>(expected_value2);
+  std::string encoded_value2 = Casper::u64Encode(expected_value2);
   TEST_ASSERT(iequals(u64_bytes2, encoded_value2));
-}
-
-/*
-Wider numeric values (i.e. U128, U256, U512) serialize as one byte given the
-length of the next number (in bytes), followed by the two's complement
-representation with little-endian byte order. The number of bytes should be
-chosen as small as possible to represent the given number. This is done to
-reduce the serialization size when small numbers are represented within a wide
-data type.
-*/
-
-big_int hexToBigInteger(const std::string& hex) {
-  if (hex.length() == 0 ||
-      std::count(hex.begin(), hex.end(), '0') == hex.length()) {
-    return big_int(0);
-  }
-
-  uint8_t bytes_length = 2 * hexToInteger<uint8_t>(hex.substr(0, 2));
-  std::string bytes_str = hex.substr(hex.length() - bytes_length);
-  std::reverse(bytes_str.begin(), bytes_str.end());
-  big_int ret = 0;
-
-  for (int i = 0; i < bytes_length / 2; i++) {
-    std::string byte_str = bytes_str.substr(i * 2, 2);
-    std::reverse(byte_str.begin(), byte_str.end());
-    uint8_t byte_val = hexToInteger<uint8_t>(byte_str);
-    ret *= 256;
-    ret += byte_val;
-  }
-
-  return ret;
-}
-
-std::uint8_t extract_one_byte(big_int& extract) {
-  // Will always return a value on the range [0, 255]
-  auto intermediate = (extract % 256).toInt();
-
-  std::uint8_t the_byte = static_cast<std::uint8_t>(intermediate);
-  extract /= 256;
-  return the_byte;
-}
-
-std::vector<std::uint8_t> to_bytes(const big_int& source) {
-  std::vector<std::uint8_t> ret;
-  // ret.reserve(#); //pick a decent amount to reserve.
-  big_int curr = source;
-  do {
-    ret.push_back(extract_one_byte(curr));
-  } while (curr != 0);
-
-  return ret;
-}
-
-std::string bigIntegerToHex(const big_int& val) {
-  if (val == 0) {
-    return "00";
-  }
-
-  std::vector<std::uint8_t> bytes = to_bytes(val);
-
-  CryptoPP::SecByteBlock byte_block(bytes.data(), bytes.size());
-  std::string bytes_str = Casper::CEP57Checksum::Encode(byte_block);
-
-  uint8_t bytes_length = bytes_str.size() / 2;
-  std::string bytes_length_str = integerToHex<uint8_t>(bytes_length);
-  return bytes_length_str + bytes_str;
 }
 
 void serializeU128Test() {
   std::string u128_bytes1 = "060000C0D0E0F0";
   big_int expected_value1{"264848365584384"};
-  big_int actual_value1 = hexToBigInteger(u128_bytes1);
+  big_int actual_value1 = Casper::u128Decode(u128_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
 
-  std::string encoded_value1 = bigIntegerToHex(expected_value1);
+  std::string encoded_value1 = Casper::u128Encode(expected_value1);
   TEST_ASSERT(iequals(u128_bytes1, encoded_value1));
 }
 
@@ -775,50 +690,50 @@ void serializeU256Test() {
   big_int expected_value1{
       "115792089237316195423570985008687907853269984665640564039457584007913129"
       "639935"};
-  big_int actual_value1 = hexToBigInteger(u256_bytes1);
+  big_int actual_value1 = Casper::u256Decode(u256_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
 
-  std::string encoded_value1 = bigIntegerToHex(expected_value1);
+  std::string encoded_value1 = Casper::u256Encode(expected_value1);
   TEST_ASSERT(iequals(u256_bytes1, encoded_value1));
 
   // ---
 
   std::string u256_bytes2 = "020e08";
   big_int expected_value2{"2062"};
-  big_int actual_value2 = hexToBigInteger(u256_bytes2);
+  big_int actual_value2 = Casper::u256Decode(u256_bytes2);
   TEST_ASSERT(actual_value2 == expected_value2);
 
-  std::string encoded_value2 = bigIntegerToHex(expected_value2);
+  std::string encoded_value2 = Casper::u256Encode(expected_value2);
   TEST_ASSERT(iequals(u256_bytes2, encoded_value2));
 }
 
 void serializeU512Test() {
   std::string u512_bytes1 = "050e2389f603";
   big_int expected_value1{"17021084430"};
-  big_int actual_value1 = hexToBigInteger(u512_bytes1);
+  big_int actual_value1 = Casper::u512Decode(u512_bytes1);
   TEST_ASSERT(actual_value1 == expected_value1);
 
-  std::string encoded_value1 = bigIntegerToHex(expected_value1);
+  std::string encoded_value1 = Casper::u512Encode(expected_value1);
   TEST_ASSERT(iequals(u512_bytes1, encoded_value1));
 
   // ---
 
   std::string u512_bytes2 = "00";
   big_int expected_value2{"0"};
-  big_int actual_value2 = hexToBigInteger(u512_bytes2);
+  big_int actual_value2 = Casper::u512Decode(u512_bytes2);
   TEST_ASSERT(actual_value2 == expected_value2);
 
-  std::string encoded_value2 = bigIntegerToHex(expected_value2);
+  std::string encoded_value2 = Casper::u512Encode(expected_value2);
   TEST_ASSERT(iequals(u512_bytes2, encoded_value2));
 
   // ---
 
   std::string u512_bytes3 = "050e6b1623e8";
   big_int expected_value3{"997021084430"};
-  big_int actual_value3 = hexToBigInteger(u512_bytes3);
+  big_int actual_value3 = Casper::u512Decode(u512_bytes3);
   TEST_ASSERT(actual_value3 == expected_value3);
 
-  std::string encoded_value3 = bigIntegerToHex(expected_value3);
+  std::string encoded_value3 = Casper::u512Encode(expected_value3);
   TEST_ASSERT(iequals(u512_bytes3, encoded_value3));
 }
 
@@ -895,7 +810,7 @@ std::vector<uint8_t> hexToByteArray(const std::string& bytes_str) {
 
   for (int i = 0; i < bytes_str.length() / 2; i++) {
     std::string byte_str = bytes_str.substr(i * 2, 2);
-    uint8_t byte = hexToInteger<uint8_t>(byte_str);
+    uint8_t byte = Casper::u8Decode(byte_str);
     ret.push_back(byte);
   }
   return ret;
@@ -904,7 +819,7 @@ std::vector<uint8_t> hexToByteArray(const std::string& bytes_str) {
 std::string byteArrayToHex(const std::vector<uint8_t>& bytes) {
   std::string ret;
   for (uint8_t byte : bytes) {
-    std::string byte_str = integerToHex<uint8_t>(byte);
+    std::string byte_str = Casper::u8Encode(byte);
     ret += byte_str;
   }
   return ret;
@@ -1196,63 +1111,232 @@ void clType_threeWayComparison_with_StringListTest() {
   TEST_ASSERT(final_json == obj_to_json);
 }
 
+void clType_option_test() {
+  Casper::CLType cl;
+  Casper::CLTypeRVA rva;
+
+  auto elem1 = Casper::CLTypeEnum::Bool;
+
+  std::map<std::string, Casper::CLTypeRVA> map1;
+
+  map1["Option"] = elem1;
+
+  rva = map1;
+  cl.type = rva;
+
+  nlohmann::json j;
+  Casper::to_json(j, cl);
+
+  std::cout << std::endl << j.dump(2) << std::endl;
+}
+
+void clType_option_recursiveTest() {
+  Casper::CLType cl;
+  Casper::CLTypeRVA rva;
+
+  std::vector<Casper::CLTypeRVA> str_list;
+  str_list.push_back(Casper::CLTypeEnum::String);
+
+  std::map<std::string, Casper::CLTypeRVA> map1;
+
+  map1["Option"] = str_list;
+
+  rva = map1;
+  cl.type = rva;
+
+  nlohmann::json j;
+  Casper::to_json(j, cl);
+
+  std::cout << std::endl << j.dump(2) << std::endl;
+}
+
+void clType_tuple1_test() {
+  Casper::CLType cl;
+  Casper::CLTypeRVA rva;
+
+  std::vector<Casper::CLTypeRVA> vec1;
+  auto elem1 = Casper::CLTypeEnum::Bool;
+  vec1.push_back(elem1);
+
+  std::map<std::string, std::vector<Casper::CLTypeRVA>> map1;
+  map1["Tuple1"] = vec1;
+
+  rva = map1;
+  cl.type = rva;
+
+  nlohmann::json j;
+  Casper::to_json(j, cl);
+
+  // std::cout << std::endl << j.dump(2) << std::endl;
+}
+
+void clType_tuple2_test() {
+  Casper::CLType cl;
+  Casper::CLTypeRVA rva;
+
+  std::vector<Casper::CLTypeRVA> vec1;
+  auto elem1 = Casper::CLTypeEnum::Bool;
+  auto elem2 = Casper::CLTypeEnum::I32;
+  vec1.push_back(elem1);
+  vec1.push_back(elem2);
+
+  std::map<std::string, std::vector<Casper::CLTypeRVA>> map1;
+  map1["Tuple2"] = vec1;
+
+  rva = map1;
+  cl.type = rva;
+
+  nlohmann::json j;
+  Casper::to_json(j, cl);
+
+  // std::cout << std::endl << j.dump(2) << std::endl;
+}
+
+void clType_tuple2_recursiveTest() {
+  Casper::CLType cl;
+  Casper::CLTypeRVA rva;
+
+  std::vector<Casper::CLTypeRVA> vec1;
+  auto elem1 = Casper::CLTypeEnum::Bool;
+
+  //
+
+  std::vector<Casper::CLTypeRVA> pks;
+  auto pk = Casper::CLTypeEnum::PublicKey;
+  pks.push_back(pk);
+
+  std::map<Casper::CLTypeRVA, Casper::CLTypeRVA> mp;
+  auto str = Casper::CLTypeEnum::String;
+
+  mp[str] = pks;
+
+  //
+  auto elem2 = mp;
+  vec1.push_back(elem1);
+  vec1.push_back(elem2);
+
+  std::map<std::string, std::vector<Casper::CLTypeRVA>> map1;
+  map1["Tuple2"] = vec1;
+
+  rva = map1;
+  cl.type = rva;
+
+  nlohmann::json j;
+  Casper::to_json(j, cl);
+
+  // std::cout << std::endl << j.dump(2) << std::endl;
+}
+
+void clType_tuple3_test() {
+  Casper::CLType cl;
+  Casper::CLTypeRVA rva;
+
+  std::vector<Casper::CLTypeRVA> vec1;
+  auto elem1 = Casper::CLTypeEnum::I32;
+  auto elem2 = Casper::CLTypeEnum::String;
+  auto elem3 = Casper::CLTypeEnum::String;
+  vec1.push_back(elem1);
+  vec1.push_back(elem2);
+  vec1.push_back(elem3);
+
+  std::map<std::string, std::vector<Casper::CLTypeRVA>> map1;
+  map1["Tuple3"] = vec1;
+
+  rva = map1;
+  cl.type = rva;
+
+  nlohmann::json j;
+  Casper::to_json(j, cl);
+
+  std::cout << std::endl << j.dump(2) << std::endl;
+}
+
+void clTypeParsed_test() {
+  std::string json_str = R"(
+  {
+    "bytes": "06da6662305f01",
+    "parsed": "1508345276122",
+    "cl_type": "U512"
+  }
+  )";
+
+  nlohmann::json j = nlohmann::json::parse(json_str);
+
+  Casper::CLValue cl;
+  Casper::from_json(j, cl);
+
+  nlohmann::json j2;
+  Casper::to_json(j2, cl);
+
+  std::cout << std::endl << j2.dump(2) << std::endl;
+}
 TEST_LIST = {
     //{"CLType", cltype_test},
     //{"CLType json", cltype_json_test},
     //{"CLType List<String>", cltype_str_list_test},
-    {"CLType JSON - Object conversion using Map<String, List<PublicKey> >",
-     clType_threeWayComparison_with_MapTest},
-    {"CLType JSON - Object conversion using List<String>",
-     clType_threeWayComparison_with_StringListTest},
+    {"CLValue parsed", clTypeParsed_test},
+
     /*
-      {"infoGetPeers checks node list size", infoGetPeers_Test},
-      {"chainGetStateRootHash using Block height parameter",
-       chainGetStateRootHash_with_blockHeightTest},
-      {"chainGetStateRootHash using invalid Block height parameter",
-       chainGetStateRootHash_with_invalidBlockHeightTest},
-      {"chainGetStateRootHash using Block hash parameter",
-       chainGetStateRootHash_with_blockHashTest},
-      {"chainGetStateRootHash using empty Block hash parameter",
-       chainGetStateRootHash_with_emptyParameterTest},
-      {"infoGetDeploy using Deploy hash parameter",
-       infoGetDeploy_with_deployHashTest},
-      {"infoGetDeploy using invalid Deploy hash parameter",
-       infoGetDeploy_with_invalidDeployHashTest},
-      {"infoGetStatus compares with a reference value",
-       infoGetStatus_with_emptyParameterTest},
-      {"chainGetBlockTransfers using Block hash parameter",
-       chainGetBlockTransfers_with_blockHashTest},
-      {"chainGetBlock using Block hash parameter",
-       chainGetBlock_with_blockHashTest},
-      {"chainGetEraInfoBySwitchBlock using Block hash parameter",
-       chainGetEraInfoBySwitchBlock_with_blockHashTest},
-      {"stateGetItem using state root hash and key parameters",
-       stateGetItem_with_keyTest},
-      {"stateGetItem using invalid state root hash and key parameters",
-       stateGetItem_with_invalidKeyTest},
-      {"stateGetDictionaryItem using state root hash and dictionary key "
-       "parameters",
-       stateGetDictionaryItem_with_keyTest},
-      {"stateGetBalance compares with a reference value",
-       stateGetBalance_with_urefTest},
-      {"stateGetBalance using invalid URef and state root hash "
-       "parameters",
-       stateGetBalance_with_invalidUrefTest},
-      {"stateGetAuctionInfo using Block hash parameter (may take a while)",
-       stateGetAuctionInfo_with_blockHashTest},
-      {"toLower checks internal lower case converter", stringUtil_toLowerTest},
-      {"getAccountHash checks internal PublicKey to AccountHash converter",
-       publicKey_getAccountHashTest},
-      {"Serialize - Bool", serializeBoolTest},
-      {"Serialize - I32", serializeI32Test},
-      {"Serialize - I64", serializeI64Test},
-      {"Serialize - String", serializeStringTest},
-      {"Serialize - U8", serializeU8Test},
-      {"Serialize - U32", serializeU32Test},
-      {"Serialize - U64", serializeU64Test},
-      {"Serialize - U128", serializeU128Test},
-      {"Serialize - U256", serializeU256Test},
-      {"Serialize - U512", serializeU512Test},
-      {"Serialize - ByteArray", serializeByteArrayTest},
-      */
+        {"CLType JSON - Object conversion using Map<String, List<PublicKey> >",
+         clType_threeWayComparison_with_MapTest},
+        {"CLType JSON - Object conversion using List<String>",
+         clType_threeWayComparison_with_StringListTest},
+        {"CLType Tuple1", clType_tuple1_test},
+        {"CLType Tuple2", clType_tuple2_test},
+        {"CLType Tuple2 recursive", clType_tuple2_recursiveTest},
+        {"CLType Tuple3", clType_tuple3_test},
+        {"CLType Option", clType_option_test},
+        {"CLType Option recursive", clType_option_recursiveTest},
+
+          {"infoGetPeers checks node list size", infoGetPeers_Test},
+          {"chainGetStateRootHash using Block height parameter",
+           chainGetStateRootHash_with_blockHeightTest},
+          {"chainGetStateRootHash using invalid Block height parameter",
+           chainGetStateRootHash_with_invalidBlockHeightTest},
+          {"chainGetStateRootHash using Block hash parameter",
+           chainGetStateRootHash_with_blockHashTest},
+          {"chainGetStateRootHash using empty Block hash parameter",
+           chainGetStateRootHash_with_emptyParameterTest},
+          {"infoGetDeploy using Deploy hash parameter",
+           infoGetDeploy_with_deployHashTest},
+          {"infoGetDeploy using invalid Deploy hash parameter",
+           infoGetDeploy_with_invalidDeployHashTest},
+          {"infoGetStatus compares with a reference value",
+           infoGetStatus_with_emptyParameterTest},
+          {"chainGetBlockTransfers using Block hash parameter",
+           chainGetBlockTransfers_with_blockHashTest},
+          {"chainGetBlock using Block hash parameter",
+           chainGetBlock_with_blockHashTest},
+          {"chainGetEraInfoBySwitchBlock using Block hash parameter",
+           chainGetEraInfoBySwitchBlock_with_blockHashTest},
+          {"stateGetItem using state root hash and key parameters",
+           stateGetItem_with_keyTest},
+          {"stateGetItem using invalid state root hash and key parameters",
+           stateGetItem_with_invalidKeyTest},
+          {"stateGetDictionaryItem using state root hash and dictionary key "
+           "parameters",
+           stateGetDictionaryItem_with_keyTest},
+          {"stateGetBalance compares with a reference value",
+           stateGetBalance_with_urefTest},
+          {"stateGetBalance using invalid URef and state root hash "
+           "parameters",
+           stateGetBalance_with_invalidUrefTest},
+          {"stateGetAuctionInfo using Block hash parameter (may take a while)",
+           stateGetAuctionInfo_with_blockHashTest},
+          {"toLower checks internal lower case converter",
+       stringUtil_toLowerTest},
+          {"getAccountHash checks internal PublicKey to AccountHash converter",
+           publicKey_getAccountHashTest},
+          {"Serialize - Bool", serializeBoolTest},
+          {"Serialize - I32", serializeI32Test},
+          {"Serialize - I64", serializeI64Test},
+          {"Serialize - String", serializeStringTest},
+          {"Serialize - U8", serializeU8Test},
+          {"Serialize - U32", serializeU32Test},
+          {"Serialize - U64", serializeU64Test},
+          {"Serialize - U128", serializeU128Test},
+          {"Serialize - U256", serializeU256Test},
+          {"Serialize - U512", serializeU512Test},
+          {"Serialize - ByteArray", serializeByteArrayTest},
+          */
     {NULL, NULL}};
