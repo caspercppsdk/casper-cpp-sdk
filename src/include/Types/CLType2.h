@@ -156,12 +156,18 @@ inline void from_json(const nlohmann::json& j, CLMap<S, T>& type) {
 }
 // end of CLMap.h
 
-using CLTypeRVA = rva::variant<CLTypeEnum, std::vector<rva::self_t>,
-                               std::map<rva::self_t, rva::self_t>,
-                               std::map<std::string, rva::self_t>,
-                               std::map<std::string, std::vector<rva::self_t>>>;
+using CLTypeRVA = rva::variant<
+    CLTypeEnum,                                       //
+    std::vector<rva::self_t>,                         //
+    std::map<rva::self_t, rva::self_t>,               // map
+    std::map<std::string, rva::self_t>,               // opt, list,
+    std::map<std::string, std::vector<rva::self_t>>,  // tuple1,t2,t3
+    std::map<std::string, int32_t>                    // byte array
+    >;
 
 inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
+  /// bool, i32, i64, u8, u32, u64, u128, u256, u512, unit, string, key, uref,
+  /// any, public key
   if (p.index() == 0) {
     auto& p_type = rva::get<CLTypeEnum>(p);
 
@@ -176,41 +182,60 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
         p_type == CLTypeEnum::PublicKey) {
       j = magic_enum::enum_name(p_type);
     }
-  } else if (p.index() == 1) {
+  }
+  /// inner type - maybe delete
+  else if (p.index() == 1) {
     auto& p_type = rva::get<std::vector<CLTypeRVA>>(p);
-    if (p_type.size() == 1) {
-      j = {{"List", p_type[0]}};
-    } else if (p_type.size() == 2) {
-      j = {{"Tuple2", {p_type[0], p_type[1]}}};
-    } else if (p_type.size() == 3) {
-      j = {{"Tuple3", {p_type[0], p_type[1], p_type[2]}}};
-    }
-    /* else {
-      j = {{"List", p_type}};
-    } */
+    // TODO: should not be called, be careful check this.
+    std::cout << "\n\nrva::get<std::vector<CLTypeRVA>>(p)\n\n" << std::endl;
+    j = p_type;
 
-  } else if (p.index() == 2) {
+  }
+  /// map
+  else if (p.index() == 2) {
     auto& p_type = rva::get<std::map<CLTypeRVA, CLTypeRVA>>(p);
     j["Map"] = {{"key", p_type.begin()->first},
                 {"value", p_type.begin()->second}};
-  } else if (p.index() == 3) {
+  }
+  /// option, list, result
+  else if (p.index() == 3) {
     auto& p_type = rva::get<std::map<std::string, CLTypeRVA>>(p);
-    if (p_type.begin()->first == "Option") {
+    std::string key_type = p_type.begin()->first;
+
+    if (key_type == "Option") {
       j = {{"Option", p_type.begin()->second}};
+    } else if (key_type == "List") {
+      j = {{"List", p_type.begin()->second}};
+    } else if (key_type == "Result") {
+      auto inner_map = std::get<3>(p_type.begin()->second);
+      nlohmann::json inner_val = {{"Ok", inner_map["Ok"]},
+                                  {"Err", inner_map["Err"]}};
+      j = {"Result", inner_val};
     }
-  } else if (p.index() == 4) {
+  }
+  /// tuple1, tuple2, tuple3
+  else if (p.index() == 4) {
     auto& p_type = rva::get<std::map<std::string, std::vector<CLTypeRVA>>>(p);
+    std::string key_type = p_type.begin()->first;
     /*
       "cl_type":{"Tuple1":["Bool"]}
       "cl_type":{"Tuple2":["Bool","I32"]}
       "cl_type":{"Tuple3":[{"ByteArray":3},{"ByteArray":34},"String"]}
       */
-    if (p_type.begin()->first == "Tuple1") {
-      j = {{"Tuple1", p_type.begin()->second}};
-    } else if (p_type.begin()->first == "Tuple2") {
-      j = {{"Tuple2", p_type.begin()->second}};
-    } else if (p_type.begin()->first == "Tuple3") {
-      j = {{"Tuple3", p_type.begin()->second}};
+    if (iequals(key_type, "Tuple1") || iequals(key_type, "Tuple2") ||
+        iequals(key_type, "Tuple3")) {
+      std::vector<CLTypeRVA> inner_types;
+      for (auto& inner_type : p_type.begin()->second) {
+        inner_types.push_back(inner_type);
+      }
+      j = {{key_type, inner_types}};
+    }
+
+  } else if (p.index() == 5) {
+    auto& p_type = rva::get<std::map<std::string, int32_t>>(p);
+    std::string key_type = p_type.begin()->first;
+    if (iequals(key_type, "ByteArray")) {
+      j["ByteArray"] = p_type.begin()->second;
     }
   }
 }
@@ -225,7 +250,72 @@ inline void from_json(const nlohmann::json& j, CLTypeRVA& p) {
       throw std::runtime_error("Invalid CLType");
     }
   } else if (j.is_object()) {
-    if (j.begin().key() == "Map") {
+    std::string key_str = j.begin().key();
+    if (key_str == "Option") {
+      auto option = std::map<std::string, CLTypeRVA>();
+      CLTypeRVA inner;
+      from_json(j.at("Option"), inner);
+      option.insert({"Option", inner});
+      p = option;
+    } else if (key_str == "List") {
+      auto list = std::map<std::string, CLTypeRVA>();
+      CLTypeRVA inner;
+      from_json(j.at("List"), inner);
+      list.insert({"List", inner});
+      p = list;
+    } else if (key_str == "ByteArray") {
+      auto byte_array = std::map<std::string, int32_t>();
+      int32_t inner;
+      j.at("ByteArray").get_to(inner);
+      byte_array.insert({"ByteArray", inner});
+      p = byte_array;
+    } else if (key_str == "Result") {
+      auto result = std::map<std::string, CLTypeRVA>();
+      CLTypeRVA innerOk;
+      CLTypeRVA innerErr;
+      from_json(j.at("Result").at("Ok"), innerOk);
+      from_json(j.at("Result").at("Err"), innerErr);
+      auto ok = std::map<std::string, CLTypeRVA>();
+      ok.insert({"Ok", innerOk});
+      auto err = std::map<std::string, CLTypeRVA>();
+      err.insert({"Err", innerErr});
+      result.insert({"Ok", ok});
+      result.insert({"Err", err});
+      p = result;
+    } else if (key_str == "Tuple1") {
+      auto tuple1 = std::map<std::string, std::vector<CLTypeRVA>>();
+      auto inner_vec = std::vector<CLTypeRVA>();
+      CLTypeRVA inner;
+      from_json(j.at("Tuple1"), inner);
+      inner_vec.push_back(inner);
+      tuple1.insert({"Tuple1", inner_vec});
+      p = tuple1;
+    } else if (key_str == "Tuple2") {
+      auto tuple2 = std::map<std::string, std::vector<CLTypeRVA>>();
+      auto inner_vec = std::vector<CLTypeRVA>();
+      CLTypeRVA inner1;
+      CLTypeRVA inner2;
+      from_json(j.at("Tuple2").at(0), inner1);
+      from_json(j.at("Tuple2").at(1), inner2);
+      inner_vec.push_back(inner1);
+      inner_vec.push_back(inner2);
+      tuple2.insert({"Tuple2", inner_vec});
+      p = tuple2;
+    } else if (key_str == "Tuple3") {
+      auto tuple3 = std::map<std::string, std::vector<CLTypeRVA>>();
+      auto inner_vec = std::vector<CLTypeRVA>();
+      CLTypeRVA inner1;
+      CLTypeRVA inner2;
+      CLTypeRVA inner3;
+      from_json(j.at("Tuple3").at(0), inner1);
+      from_json(j.at("Tuple3").at(1), inner2);
+      from_json(j.at("Tuple3").at(2), inner3);
+      inner_vec.push_back(inner1);
+      inner_vec.push_back(inner2);
+      inner_vec.push_back(inner3);
+      tuple3.insert({"Tuple3", inner_vec});
+      p = tuple3;
+    } else if (key_str == "Map") {
       auto mp = std::map<CLTypeRVA, CLTypeRVA>();
 
       CLTypeRVA key;
@@ -235,25 +325,10 @@ inline void from_json(const nlohmann::json& j, CLTypeRVA& p) {
 
       mp.insert({key, value});
       p = mp;
-    } else if (j.begin().key() == "List") {
-      auto list = std::vector<CLTypeRVA>();
-      CLTypeRVA inner;
-      from_json(j.at("List"), inner);
-      list.push_back(inner);
-      p = list;
     } else {
       throw std::runtime_error("Invalid CLType");
     }
   }
-  /*
-   else if (j.front().is_array()) {
-    auto& p_list = rva::get<std::vector<CLTypeRVA>>(p);
-    p_list.push_back(CLTypeRVA{});
-  } else if (j.front().is_object()) {
-    auto& p_map = rva::get<std::map<CLTypeRVA, CLTypeRVA>>(p);
-    p_map.insert({CLTypeRVA{}, CLTypeRVA{}});
-  }
-  */
 }
 
 struct CLType {
