@@ -88,17 +88,17 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
   } else if (p.index() == 6) {
     auto& p_type = rva::get<big_int>(p);
     j = p_type.toString();
+  } else if (p.index() == 7) {
+    auto& p_type = rva::get<std::string>(p);
+    j = p_type;
   }
   // TODO:
 }
 
 inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p) {
   if (j.at("cl_type").is_string()) {
-    std::cout << "CLTypeParsedRVA::from_json is string" << std::endl;
     std::string cl_type = j.at("cl_type").get<std::string>();
     std::string bytes_str = j.at("bytes").get<std::string>();
-
-    std::cout << "bytes: " << bytes_str << std::endl;
 
     if (iequals(cl_type, "Bool")) {
       p = boolDecode(bytes_str);
@@ -118,9 +118,11 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p) {
       p = u256Decode(bytes_str);
     } else if (iequals(cl_type, "U512")) {
       p = u512Decode(bytes_str);
+    } else if (iequals(cl_type, "String")) {
+      p = stringDecode(bytes_str);
     }
   } else {
-    std::cout << "CLTypeParsedRVA::from_json is not string" << std::endl;
+    // TODO: not string
   }
 }
 

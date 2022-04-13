@@ -16,6 +16,8 @@ struct StringUtil {
   static std::string hexToUTF8(const std::string& str);
 
   static std::string hexToString(const std::string& bytes_str);
+
+  static std::string stringToHex(const std::string& str);
 };
 
 }  // namespace Casper

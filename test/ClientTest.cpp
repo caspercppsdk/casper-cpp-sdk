@@ -759,10 +759,19 @@ void serializeStringTest() {
   std::string actual_deposit = Casper::StringUtil::hexToString(deposit_bytes);
   TEST_ASSERT(expected_deposit == actual_deposit);
 
+  std::string encoded_deposit = Casper::StringUtil::stringToHex(actual_deposit);
+  std::cout << "encoded_deposit: " << encoded_deposit << std::endl;
+  TEST_ASSERT(iequals(deposit_bytes, encoded_deposit));
+
   std::string expected_hello_world = "Hello, World!";
   std::string actual_hello_world =
       Casper::StringUtil::hexToString(hello_world_bytes);
   TEST_ASSERT(expected_hello_world == actual_hello_world);
+
+  std::string encoded_hello_world =
+      Casper::StringUtil::stringToHex(actual_hello_world);
+  std::cout << "encoded_hello_world: " << encoded_hello_world << std::endl;
+  TEST_ASSERT(iequals(hello_world_bytes, encoded_hello_world));
 }
 
 void serializeOptionTest() {
@@ -1330,13 +1339,15 @@ TEST_LIST = {
           {"Serialize - Bool", serializeBoolTest},
           {"Serialize - I32", serializeI32Test},
           {"Serialize - I64", serializeI64Test},
-          {"Serialize - String", serializeStringTest},
-          {"Serialize - U8", serializeU8Test},
-          {"Serialize - U32", serializeU32Test},
-          {"Serialize - U64", serializeU64Test},
-          {"Serialize - U128", serializeU128Test},
-          {"Serialize - U256", serializeU256Test},
-          {"Serialize - U512", serializeU512Test},
-          {"Serialize - ByteArray", serializeByteArrayTest},
           */
+    {"Serialize - String", serializeStringTest},
+    /*
+    {"Serialize - U8", serializeU8Test},
+    {"Serialize - U32", serializeU32Test},
+    {"Serialize - U64", serializeU64Test},
+    {"Serialize - U128", serializeU128Test},
+    {"Serialize - U256", serializeU256Test},
+    {"Serialize - U512", serializeU512Test},
+    {"Serialize - ByteArray", serializeByteArrayTest},
+    */
     {NULL, NULL}};

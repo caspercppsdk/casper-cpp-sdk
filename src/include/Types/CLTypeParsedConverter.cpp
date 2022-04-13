@@ -155,8 +155,12 @@ std::string u512Encode(big_int val) {
 
 // unit encode
 
-// std::string stringDecode(const std::string& byte_str)
+std::string stringDecode(const std::string& byte_str) {
+  return Casper::StringUtil::hexToString(byte_str);
+}
 
-// std::string stringEncode(const std::string& val)
+std::string stringEncode(const std::string& val) {
+  return Casper::StringUtil::stringToHex(val);
+}
 
 }  // namespace Casper
