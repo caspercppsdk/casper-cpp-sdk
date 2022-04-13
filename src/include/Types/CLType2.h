@@ -222,8 +222,7 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
       "cl_type":{"Tuple2":["Bool","I32"]}
       "cl_type":{"Tuple3":[{"ByteArray":3},{"ByteArray":34},"String"]}
       */
-    if (iequals(key_type, "Tuple1") || iequals(key_type, "Tuple2") ||
-        iequals(key_type, "Tuple3")) {
+    if (key_type == "Tuple1" || key_type == "Tuple2" || key_type == "Tuple3") {
       std::vector<CLTypeRVA> inner_types;
       for (auto& inner_type : p_type.begin()->second) {
         inner_types.push_back(inner_type);
@@ -234,7 +233,7 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
   } else if (p.index() == 5) {
     auto& p_type = rva::get<std::map<std::string, int32_t>>(p);
     std::string key_type = p_type.begin()->first;
-    if (iequals(key_type, "ByteArray")) {
+    if (key_type == "ByteArray") {
       j["ByteArray"] = p_type.begin()->second;
     }
   }
