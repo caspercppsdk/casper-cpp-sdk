@@ -46,8 +46,13 @@ std::string URef::byteToStringWithAccessRights(CryptoPP::SecByteBlock bytes) {
   StringSource ss(bytes.data(), bytes.size() - 1, true,
                   new HexEncoder(new StringSink(encoded))  // HexEncoder
   );                                                       // StringSource
-
+  StringUtil::toLower(encoded);
   std::string access_rights_str = std::to_string((uint8_t)bytes[32]);
+  if (access_rights_str.length() == 1) {
+    access_rights_str = "00" + access_rights_str;
+  } else if (access_rights_str.length() == 2) {
+    access_rights_str = "0" + access_rights_str;
+  }
   return prefix + encoded + "-" + access_rights_str;
 }
 

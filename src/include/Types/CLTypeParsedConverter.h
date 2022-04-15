@@ -92,12 +92,10 @@ big_int u512Decode(const std::string& byte_str);
 
 std::string u512Encode(big_int val);
 
-// unit decode
-
-// unit encode
-
 std::string stringDecode(const std::string& byte_str);
 
 std::string stringEncode(const std::string& val);
+
+GlobalStateKey urefDecode(const std::string& byte_str);
 
 }  // namespace Casper

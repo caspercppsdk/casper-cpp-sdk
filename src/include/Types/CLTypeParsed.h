@@ -91,8 +91,29 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
   } else if (p.index() == 7) {
     auto& p_type = rva::get<std::string>(p);
     j = p_type;
+  } else if (p.index() == 8) {
+    auto& p_type = rva::get<URef>(p);
+    std::cout << "\nURef to_json\n" << std::endl;
+    j = p_type.ToString();
+  } else if (p.index() == 9) {
+    auto p_type = rva::get<GlobalStateKey>(p);
+    j = p_type.ToString();
+  } else if (p.index() == 10) {
+    auto p_type = rva::get<PublicKey>(p);
+    j = p_type.ToString();
+  } else if (p.index() == 11) {
+    auto p_type = rva::get<std::vector<CLTypeParsedRVA>>(p);
+    j = p_type;
+  } else if (p.index() == 12) {
+    auto& p_type = rva::get<std::map<std::string, CLTypeParsedRVA>>(p);
+    j = p_type;
+  } else if (p.index() == 13) {
+    auto& p_type = rva::get<std::map<CLTypeParsedRVA, CLTypeParsedRVA>>(p);
+    j = p_type;
+  } else if (p.index() == 14) {
+    auto& p_type = rva::get<std::nullptr_t>(p);
+    j = p_type;
   }
-  // TODO:
 }
 
 inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p) {
@@ -121,8 +142,42 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p) {
       p = u512Decode(bytes_str);
     } else if (iequals(cl_type, "String")) {
       p = stringDecode(bytes_str);
+    } else if (iequals(cl_type, "URef")) {
+      p = urefDecode(bytes_str);
+    } else if (iequals(cl_type, "Key")) {
+      CryptoPP::SecByteBlock bytes = CEP57Checksum::Decode(bytes_str);
+      p = GlobalStateKey::FromBytes(bytes);
+    } else if (iequals(cl_type, "PublicKey")) {
+      CryptoPP::SecByteBlock bytes = CEP57Checksum::Decode(bytes_str);
+
+      p = PublicKey::FromBytes(bytes);
     }
   } else if (j.at("cl_type").is_object()) {
+    /*
+    else if (iequals(cl_type, "List")) {
+      p = listDecode(bytes_str);
+    } else if (iequals(cl_type, "Tuple1")) {
+      p = tuple1Decode(bytes_str);
+    } else if (iequals(cl_type, "Tuple2")) {
+      p = tuple2Decode(bytes_str);
+    } else if (iequals(cl_type, "Tuple3")) {
+      p = tuple3Decode(bytes_str);
+    } else if (iequals(cl_type, "Map")) {
+      p = mapDecode(bytes_str);
+    } else if (iequals(cl_type, "Option")) {
+      p = optionDecode(bytes_str);
+    } else if (iequals(cl_type, "ByteArray")) {
+      p = byteArrayDecode(bytes_str);
+    } else if (iequals(cl_type, "Result")) {
+      p = resultDecode(bytes_str);
+    } else if (iequals(cl_type, "ResultOk")) {
+      p = resultOkDecode(bytes_str);
+    } else if (iequals(cl_type, "ResultErr")) {
+      p = resultErrDecode(bytes_str);
+    } else if (iequals(cl_type, "Any")) {
+      p = anyDecode(bytes_str);
+    }
+    */
   } else {
     // TODO: check all
   }

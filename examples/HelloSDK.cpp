@@ -54,10 +54,10 @@ void infoGetDeploy() {
   std::cout << "-----------------------------------------------";
   std::cout << "\ninfo_get_deploy\n";
 
-  nlohmann::json deploy_result = casper_client.GetDeployInfo(
+  Casper::GetDeployInfoResult deploy_result = casper_client.GetDeployInfo(
       "8e535d2baed76141ab47fd93b04dd61f65a07893b7c950022978a2b29628edd7");
 
-  std::cout << deploy_result.dump(2) << std::endl;
+  printResult(deploy_result, "info_get_deploy");
 }
 
 /// "info_get_status" RPC function call example

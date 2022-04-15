@@ -42,8 +42,9 @@ inline void to_json(nlohmann::json& j, const CLValue& p) {
 
 // from json
 inline void from_json(const nlohmann::json& j, CLValue& p) {
+  std::cout << "CLValue-from_json" << std::endl;
   from_json(j.at("cl_type"), p.cl_type);
-
+  std::cout << "CLValue-from_json-clafter" << std::endl;
   try {
     std::string hex_bytes_str = j.at("bytes").get<std::string>();
     StringUtil::toLower(hex_bytes_str);
@@ -51,8 +52,12 @@ inline void from_json(const nlohmann::json& j, CLValue& p) {
   } catch (const std::exception& e) {
     std::cout << "CLValue-from_json-bytes what(): " << e.what() << std::endl;
   }
-
+  std::cout << "CLValue-from_json-parsed" << std::endl;
   from_json(j, p.parsed);
+
+  nlohmann::json jj;
+  to_json(jj, p.parsed.parsed);
+  std::cout << "CLValue-from_json-parsed-after" << jj.dump(2) << std::endl;
 }
 
 }  // namespace Casper

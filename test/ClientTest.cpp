@@ -774,6 +774,48 @@ void serializeStringTest() {
   TEST_ASSERT(iequals(hello_world_bytes, encoded_hello_world));
 }
 
+void serializeURefTest() {
+  //
+}
+
+void serializeKeyTest() {
+  /*
+{
+  "bytes":
+"0123cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6",
+  "parsed": {
+    "Hash":
+"hash-23cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6"
+  },
+  "cl_type": "Key"
+}
+  */
+
+  nlohmann::json key_json =
+      R"({"bytes":"0123cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6","parsed":{"Hash":"hash-23cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6"},"cl_type":"Key"})";
+
+  std::string key_bytes_str =
+      "0123cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6";
+  std::string key_str =
+      "hash-23cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6";
+
+  CryptoPP::SecByteBlock key_bytes =
+      Casper::CEP57Checksum::Decode(key_bytes_str);
+
+  nlohmann::json parsed_key;
+  Casper::to_json(parsed_key, Casper::GlobalStateKey::FromBytes(key_bytes));
+  std::cout << "parsed_key: " << parsed_key.dump(4) << std::endl;
+  TEST_ASSERT(key_str == parsed_key);
+
+  std::string actual_bytes_str = Casper::CEP57Checksum::Encode(key_bytes);
+
+  TEST_ASSERT(iequals(key_bytes_str, actual_bytes_str));
+}
+
+void serializePublicKeyTest() {
+  //
+}
+
 void serializeOptionTest() {
   /*
   Optional values serialize with a single byte tag, followed by the
@@ -940,20 +982,6 @@ void serializeMapTest() {
      }
    }
  }
-  */
-}
-
-void serializeKeyTest() {
-  /*
-{
-  "bytes":
-"0123cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6",
-  "parsed": {
-    "Hash":
-"hash-23cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6"
-  },
-  "cl_type": "Key"
-}
   */
 }
 
@@ -1177,8 +1205,8 @@ void clTypeParsed_test() {
 }
 
 #define RPC_TEST 0
-#define SER_DE_TEST 0
-#define CL_TYPE_TEST 1
+#define SER_DE_TEST 1
+#define CL_TYPE_TEST 0
 
 TEST_LIST = {
 
@@ -1234,9 +1262,11 @@ TEST_LIST = {
     {"Serialize - U256", serializeU256Test},
     {"Serialize - U512", serializeU512Test},
     {"Serialize - ByteArray", serializeByteArrayTest},
+    {"Serialize - Key", serializeKeyTest},
 #endif
 
 #if CL_TYPE_TEST == 1
+
     {"CLType", cltype_test},
     {"CLType json", cltype_json_test},
     {"CLType List<String>", cltype_str_list_test},

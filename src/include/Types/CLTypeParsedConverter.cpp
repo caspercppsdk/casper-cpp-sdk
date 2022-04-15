@@ -151,16 +151,26 @@ std::string u512Encode(big_int val) {
   return bigIntegerToHex(val);
 }
 
-// unit decode
-
-// unit encode
-
 std::string stringDecode(const std::string& byte_str) {
   return Casper::StringUtil::hexToString(byte_str);
 }
 
 std::string stringEncode(const std::string& val) {
   return Casper::StringUtil::stringToHex(val);
+}
+
+GlobalStateKey urefDecode(const std::string& byte_str) {
+  CryptoPP::SecByteBlock uref_bytes;
+  uref_bytes = CEP57Checksum::Decode(byte_str);
+
+  return URef::FromString(URef::byteToStringWithAccessRights(uref_bytes));
+}
+
+PublicKey publicKeyDecode(const std::string& byte_str) {
+  CryptoPP::SecByteBlock public_key_bytes;
+  public_key_bytes = CEP57Checksum::Decode(byte_str);
+
+  return PublicKey::FromBytes(public_key_bytes);
 }
 
 }  // namespace Casper

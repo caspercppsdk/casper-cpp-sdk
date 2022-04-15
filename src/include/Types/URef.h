@@ -25,7 +25,7 @@ struct URef : public GlobalStateKey {
 
   URef(std::string value);
 
-  std::string byteToStringWithAccessRights(SecByteBlock bytes);
+  static std::string byteToStringWithAccessRights(SecByteBlock bytes);
 
   std::string byteToString(SecByteBlock bytes, AccessRights rights);
 

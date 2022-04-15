@@ -40,8 +40,7 @@ std::string GlobalStateKey::ToHexString() {
 GlobalStateKey GlobalStateKey::FromString(std::string value) {
   if (StringUtil::startsWith(value, "account-hash-"))
     return AccountHashKey(value);
-  if (StringUtil::startsWith(value, "hash-"))
-    return HashKey(value);
+  if (StringUtil::startsWith(value, "hash-")) return HashKey(value);
 
   if (StringUtil::startsWith(value, "contract-package-wasm")) {
     std::string new_value = value;
@@ -65,22 +64,14 @@ GlobalStateKey GlobalStateKey::FromString(std::string value) {
     return HashKey(new_value);
   }
 
-  if (StringUtil::startsWith(value, "uref-"))
-    return URef(value);
-  if (StringUtil::startsWith(value, "transfer-"))
-    return TransferKey(value);
-  if (StringUtil::startsWith(value, "deploy-"))
-    return DeployInfoKey(value);
-  if (StringUtil::startsWith(value, "era-"))
-    return EraInfoKey(value);
-  if (StringUtil::startsWith(value, "balance-"))
-    return BalanceKey(value);
-  if (StringUtil::startsWith(value, "bid"))
-    return BidKey(value);
-  if (StringUtil::startsWith(value, "withdraw"))
-    return WithdrawKey(value);
-  if (StringUtil::startsWith(value, "dictionary"))
-    return DictionaryKey(value);
+  if (StringUtil::startsWith(value, "uref-")) return URef(value);
+  if (StringUtil::startsWith(value, "transfer-")) return TransferKey(value);
+  if (StringUtil::startsWith(value, "deploy-")) return DeployInfoKey(value);
+  if (StringUtil::startsWith(value, "era-")) return EraInfoKey(value);
+  if (StringUtil::startsWith(value, "balance-")) return BalanceKey(value);
+  if (StringUtil::startsWith(value, "bid")) return BidKey(value);
+  if (StringUtil::startsWith(value, "withdraw")) return WithdrawKey(value);
+  if (StringUtil::startsWith(value, "dictionary")) return DictionaryKey(value);
 
   throw std::invalid_argument("Key not valid. Unknown key prefix.");
 }
@@ -123,9 +114,7 @@ CryptoPP::SecByteBlock GlobalStateKey::GetBytes() {
   return ms;
 }
 
-std::string GlobalStateKey::ToString() {
-  return this->key;
-}
+std::string GlobalStateKey::ToString() { return this->key; }
 // GlobalStateKey
 
 AccountHashKey::AccountHashKey(std::string key)
