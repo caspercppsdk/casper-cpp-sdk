@@ -211,6 +211,20 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
       nlohmann::json inner_val = {{"Ok", inner_map["Ok"]},
                                   {"Err", inner_map["Err"]}};
       j = {"Result", inner_val};
+    } else if (key_type == "Tuple1") {
+      auto inner_vec = std::get<1>(p_type.begin()->second);
+      nlohmann::json inner_val = nlohmann::json::array({inner_vec[0]});
+      j = {{"Tuple1", inner_val}};
+    } else if (key_type == "Tuple2") {
+      auto inner_vec = std::get<1>(p_type.begin()->second);
+      nlohmann::json inner_val =
+          nlohmann::json::array({inner_vec[0], inner_vec[1]});
+      j = {{"Tuple2", inner_val}};
+    } else if (key_type == "Tuple3") {
+      auto inner_vec = std::get<1>(p_type.begin()->second);
+      nlohmann::json inner_val =
+          nlohmann::json::array({inner_vec[0], inner_vec[1], inner_vec[2]});
+      j = {{"Tuple3", inner_val}};
     }
   }
   /// tuple1, tuple2, tuple3
@@ -285,7 +299,7 @@ inline void from_json(const nlohmann::json& j, CLTypeRVA& p) {
       auto tuple1 = std::map<std::string, std::vector<CLTypeRVA>>();
       auto inner_vec = std::vector<CLTypeRVA>();
       CLTypeRVA inner;
-      from_json(j.at("Tuple1"), inner);
+      from_json(j.at("Tuple1").at(0), inner);
       inner_vec.push_back(inner);
       tuple1.insert({"Tuple1", inner_vec});
       p = tuple1;
@@ -327,11 +341,22 @@ inline void from_json(const nlohmann::json& j, CLTypeRVA& p) {
     } else {
       throw std::runtime_error("Invalid CLType");
     }
+  } else if (j.is_array()) {
+    auto inner_vec = std::vector<CLTypeRVA>();
+    for (auto& inner : j) {
+      CLTypeRVA inner_val;
+      from_json(inner, inner_val);
+      inner_vec.push_back(inner_val);
+    }
+    p = inner_vec;
   }
 }
 
 struct CLType {
   CLTypeRVA type;
+
+  CLType() : type(CLTypeEnum::Any) {}
+  CLType(CLTypeRVA type) : type(type) {}
 };
 
 // to_json of CLType

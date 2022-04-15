@@ -967,75 +967,118 @@ void serializeAnyTest() {
 }
   */
 }
-/*
-WORKING EXAMPLE
-Casper::CLType cl;
-  Casper::CLTypeRVA rva;
 
-  auto en = Casper::CLTypeEnum::I32;
-  auto en2 = Casper::CLTypeEnum::I32;
-  auto mp = std::map<Casper::CLTypeRVA, Casper::CLTypeRVA>();
-  mp[en] = en2;
-  rva = mp;
+// to store list inside map map["List"]: list_inner_type
+Casper::CLTypeRVA createContainerMap(std::string key, Casper::CLTypeRVA value) {
+  std::map<std::string, Casper::CLTypeRVA> cl_map_type;
+  cl_map_type[key] = value;
 
-  cl.type = rva;
+  Casper::CLTypeRVA rva = cl_map_type;
+
+  return rva;
+}
+
+Casper::CLTypeRVA createOption(Casper::CLTypeRVA value) {
+  return createContainerMap("Option", value);
+}
+
+Casper::CLTypeRVA createList(Casper::CLTypeRVA value) {
+  return createContainerMap("List", value);
+}
+
+Casper::CLTypeRVA createMap(Casper::CLTypeRVA key, Casper::CLTypeRVA value) {
+  std::map<Casper::CLTypeRVA, Casper::CLTypeRVA> cl_map_type;
+  cl_map_type[key] = value;
+
+  Casper::CLTypeRVA rva = cl_map_type;
+
+  return rva;
+}
+
+Casper::CLTypeRVA createTuple1(Casper::CLTypeRVA value1) {
+  std::vector<Casper::CLTypeRVA> cl_tuple1_type;
+  cl_tuple1_type.push_back(value1);
+
+  Casper::CLTypeRVA rva = cl_tuple1_type;
 
   nlohmann::json j;
-  Casper::to_json(j, cl);
-  std::cout << j.dump(2);
+  Casper::to_json(j, rva);
+  std::cout << j.dump() << std::endl;
 
-*/
+  return createContainerMap("Tuple1", rva);
+}
+
+Casper::CLTypeRVA createTuple2(Casper::CLTypeRVA value1,
+                               Casper::CLTypeRVA value2) {
+  std::vector<Casper::CLTypeRVA> cl_tuple2_type;
+  cl_tuple2_type.push_back(value1);
+  cl_tuple2_type.push_back(value2);
+
+  Casper::CLTypeRVA rva = cl_tuple2_type;
+
+  return createContainerMap("Tuple2", rva);
+}
+
+Casper::CLTypeRVA createTuple3(Casper::CLTypeRVA value1,
+                               Casper::CLTypeRVA value2,
+                               Casper::CLTypeRVA value3) {
+  std::vector<Casper::CLTypeRVA> cl_tuple3_type;
+  cl_tuple3_type.push_back(value1);
+  cl_tuple3_type.push_back(value2);
+  cl_tuple3_type.push_back(value3);
+
+  Casper::CLTypeRVA rva = cl_tuple3_type;
+
+  return createContainerMap("Tuple3", rva);
+}
+
+bool threeWayCompare(Casper::CLTypeRVA rva) {
+  // create a json from the initial type object
+  nlohmann::json obj_to_json;
+  Casper::to_json(obj_to_json, rva);
+
+  std::cout << "json: " << obj_to_json.dump() << std::endl;
+
+  // create a new type object object from the generated json
+  Casper::CLTypeRVA json_to_obj;
+  Casper::from_json(obj_to_json, json_to_obj);
+
+  // create a new json from the generated CLType object
+  nlohmann::json final_json;
+  Casper::to_json(final_json, json_to_obj);
+
+  std::cout << "final json: " << final_json.dump() << std::endl;
+
+  // compare the final parsed json with the initial json
+  bool result = obj_to_json == final_json;
+  return result;
+}
 
 /// map<String, List<PublicKey>>
 void cltype_test() {
-  Casper::CLType cl;
-  Casper::CLTypeRVA rva;
+  // String
+  auto key_type = Casper::CLTypeEnum::String;
 
-  std::vector<Casper::CLTypeRVA> pks;
-  auto pk = Casper::CLTypeEnum::PublicKey;
-  pks.push_back(pk);
+  // List<PublicKey>
+  auto value_type = createList(Casper::CLTypeEnum::PublicKey);
 
-  std::map<Casper::CLTypeRVA, Casper::CLTypeRVA> mp;
-  auto str = Casper::CLTypeEnum::String;
+  // map<String, List<PublicKey>>
+  auto map_type = createMap(key_type, value_type);
 
-  mp[str] = pks;
-
-  rva = mp;
-
-  cl.type = rva;
-
-  nlohmann::json j;
-  Casper::to_json(j, cl);
-
-  /*
-    std::cout << std::endl;
-    std::cout << j.dump(2);
-    */
+  // assert that the serialization-deserialization is correct
+  TEST_ASSERT(threeWayCompare(map_type));
 }
 
 /// List<String>
 void cltype_str_list_test() {
-  Casper::CLType cl;
-  Casper::CLTypeRVA rva;
+  // List<String>
+  Casper::CLTypeRVA list_type = createList(Casper::CLTypeEnum::String);
 
-  std::vector<Casper::CLTypeRVA> pks;
-  auto pk = Casper::CLTypeEnum::String;
-  pks.push_back(pk);
-
-  rva = pks;
-
-  cl.type = rva;
-
-  nlohmann::json j;
-  Casper::to_json(j, cl);
-
-  /*
-    std::cout << std::endl;
-    std::cout << j.dump(2);
-    */
+  // assert that the serialization-deserialization is correct
+  TEST_ASSERT(threeWayCompare(list_type));
 }
 
-///
+// TODO:
 void cltype_json_test() {
   nlohmann::json j_map;
 
@@ -1053,211 +1096,60 @@ void cltype_json_test() {
     */
 }
 
-void clType_threeWayComparison_with_MapTest() {
-  Casper::CLType cl;
-  Casper::CLTypeRVA rva;
-
-  std::vector<Casper::CLTypeRVA> pks;
-  auto pk = Casper::CLTypeEnum::PublicKey;
-  pks.push_back(pk);
-
-  std::map<Casper::CLTypeRVA, Casper::CLTypeRVA> mp;
-  auto str = Casper::CLTypeEnum::String;
-
-  mp[str] = pks;
-
-  rva = mp;
-  cl.type = rva;
-
-  // create a json from the initial CLType object
-  nlohmann::json obj_to_json;
-  Casper::to_json(obj_to_json, cl);
-
-  // create a new CLType object from the generated json
-  Casper::CLType json_to_obj;
-  Casper::from_json(obj_to_json, json_to_obj);
-
-  // create a new json from the generated CLType object
-  nlohmann::json final_json;
-  Casper::to_json(final_json, json_to_obj);
-
-  // compare the final parsed json to the initial json
-  TEST_ASSERT(final_json == obj_to_json);
-}
-
-void clType_threeWayComparison_with_StringListTest() {
-  Casper::CLType cl;
-  Casper::CLTypeRVA rva;
-
-  std::vector<Casper::CLTypeRVA> str_list;
-  str_list.push_back(Casper::CLTypeEnum::String);
-
-  rva = str_list;
-  cl.type = rva;
-
-  // create a json from the initial CLType object
-  nlohmann::json obj_to_json;
-  Casper::to_json(obj_to_json, cl);
-
-  // create a new CLType object from the generated json
-  Casper::CLType json_to_obj;
-  Casper::from_json(obj_to_json, json_to_obj);
-
-  /*
-    Print the value of the generated object
-
-    auto& lst = rva::get<std::vector<Casper::CLTypeRVA>>(json_to_obj.type);
-    std::cout << "lst.size() = " << lst.size() << std::endl;
-    auto& enm = rva::get<Casper::CLTypeEnum>(lst[0]);
-    std::cout << "lst[0] = " << magic_enum::enum_name(enm) << std::endl;
-  */
-
-  // create a new json from the generated CLType object
-  nlohmann::json final_json;
-  Casper::to_json(final_json, json_to_obj);
-
-  // compare the final parsed json to the initial json
-  TEST_ASSERT(final_json == obj_to_json);
-}
-
+/// Option<Bool>
 void clType_option_test() {
-  Casper::CLType cl;
-  Casper::CLTypeRVA rva;
+  // Option<Bool>
+  Casper::CLTypeRVA opt_type = createOption(Casper::CLTypeEnum::Bool);
 
-  auto elem1 = Casper::CLTypeEnum::Bool;
-
-  std::map<std::string, Casper::CLTypeRVA> map1;
-
-  map1["Option"] = elem1;
-
-  rva = map1;
-  cl.type = rva;
-
-  nlohmann::json j;
-  Casper::to_json(j, cl);
-
-  std::cout << std::endl << j.dump(2) << std::endl;
+  // assert that the serialization-deserialization is correct
+  TEST_ASSERT(threeWayCompare(opt_type));
 }
 
+/// Option<List<Map<U64, U8>>>
 void clType_option_recursiveTest() {
-  Casper::CLType cl;
-  Casper::CLTypeRVA rva;
+  // Option<List<Map<U64, U8>>>
+  Casper::CLTypeRVA opt_type = createOption(
+      createList(createMap(Casper::CLTypeEnum::U64, Casper::CLTypeEnum::U8)));
 
-  std::vector<Casper::CLTypeRVA> str_list;
-  str_list.push_back(Casper::CLTypeEnum::String);
-
-  std::map<std::string, Casper::CLTypeRVA> map1;
-
-  map1["Option"] = str_list;
-
-  rva = map1;
-  cl.type = rva;
-
-  nlohmann::json j;
-  Casper::to_json(j, cl);
-
-  std::cout << std::endl << j.dump(2) << std::endl;
+  // assert that the serialization-deserialization is correct
+  TEST_ASSERT(threeWayCompare(opt_type));
 }
 
+/// Tuple1<Bool>
 void clType_tuple1_test() {
-  Casper::CLType cl;
-  Casper::CLTypeRVA rva;
+  Casper::CLTypeRVA tuple1_type = createTuple1(Casper::CLTypeEnum::Unit);
 
-  std::vector<Casper::CLTypeRVA> vec1;
-  auto elem1 = Casper::CLTypeEnum::Bool;
-  vec1.push_back(elem1);
-
-  std::map<std::string, std::vector<Casper::CLTypeRVA>> map1;
-  map1["Tuple1"] = vec1;
-
-  rva = map1;
-  cl.type = rva;
-
-  nlohmann::json j;
-  Casper::to_json(j, cl);
-
-  // std::cout << std::endl << j.dump(2) << std::endl;
+  TEST_ASSERT(threeWayCompare(tuple1_type));
 }
 
+/// Tuple2<Bool, I32>
 void clType_tuple2_test() {
-  Casper::CLType cl;
-  Casper::CLTypeRVA rva;
-
-  std::vector<Casper::CLTypeRVA> vec1;
   auto elem1 = Casper::CLTypeEnum::Bool;
   auto elem2 = Casper::CLTypeEnum::I32;
-  vec1.push_back(elem1);
-  vec1.push_back(elem2);
 
-  std::map<std::string, std::vector<Casper::CLTypeRVA>> map1;
-  map1["Tuple2"] = vec1;
+  auto tuple2_type = createTuple2(elem1, elem2);
 
-  rva = map1;
-  cl.type = rva;
-
-  nlohmann::json j;
-  Casper::to_json(j, cl);
-
-  // std::cout << std::endl << j.dump(2) << std::endl;
+  TEST_ASSERT(threeWayCompare(tuple2_type));
 }
 
+/// Tuple2<U256, List<Any>>
 void clType_tuple2_recursiveTest() {
-  Casper::CLType cl;
-  Casper::CLTypeRVA rva;
+  auto elem1 = Casper::CLTypeEnum::U256;
+  auto elem2 = createList(Casper::CLTypeEnum::Any);
 
-  std::vector<Casper::CLTypeRVA> vec1;
-  auto elem1 = Casper::CLTypeEnum::Bool;
+  auto tuple2_type = createTuple2(elem1, elem2);
 
-  //
-
-  std::vector<Casper::CLTypeRVA> pks;
-  auto pk = Casper::CLTypeEnum::PublicKey;
-  pks.push_back(pk);
-
-  std::map<Casper::CLTypeRVA, Casper::CLTypeRVA> mp;
-  auto str = Casper::CLTypeEnum::String;
-
-  mp[str] = pks;
-
-  //
-  auto elem2 = mp;
-  vec1.push_back(elem1);
-  vec1.push_back(elem2);
-
-  std::map<std::string, std::vector<Casper::CLTypeRVA>> map1;
-  map1["Tuple2"] = vec1;
-
-  rva = map1;
-  cl.type = rva;
-
-  nlohmann::json j;
-  Casper::to_json(j, cl);
-
-  // std::cout << std::endl << j.dump(2) << std::endl;
+  TEST_ASSERT(threeWayCompare(tuple2_type));
 }
 
 void clType_tuple3_test() {
-  Casper::CLType cl;
-  Casper::CLTypeRVA rva;
-
-  std::vector<Casper::CLTypeRVA> vec1;
   auto elem1 = Casper::CLTypeEnum::I32;
   auto elem2 = Casper::CLTypeEnum::String;
-  auto elem3 = Casper::CLTypeEnum::String;
-  vec1.push_back(elem1);
-  vec1.push_back(elem2);
-  vec1.push_back(elem3);
+  auto elem3 = createOption(Casper::CLTypeEnum::U512);
 
-  std::map<std::string, std::vector<Casper::CLTypeRVA>> map1;
-  map1["Tuple3"] = vec1;
+  auto tuple3_type = createTuple3(elem1, elem2, elem3);
 
-  rva = map1;
-  cl.type = rva;
-
-  nlohmann::json j;
-  Casper::to_json(j, cl);
-
-  std::cout << std::endl << j.dump(2) << std::endl;
+  TEST_ASSERT(threeWayCompare(tuple3_type));
 }
 
 void clTypeParsed_test() {
@@ -1270,78 +1162,71 @@ void clTypeParsed_test() {
   )";
 
   nlohmann::json j = nlohmann::json::parse(json_str);
-
+  std::cout << std::endl << j.dump(2) << std::endl;
   Casper::CLValue cl;
   Casper::from_json(j, cl);
 
+  TEST_ASSERT(rva::get<Casper::CLTypeEnum>(cl.cl_type.type) ==
+              Casper::CLTypeEnum::U512);
+
   nlohmann::json j2;
   Casper::to_json(j2, cl);
-
   std::cout << std::endl << j2.dump(2) << std::endl;
+
+  TEST_ASSERT(j2.dump() == j.dump());
 }
+
+#define RPC_TEST 0
+#define SER_DE_TEST 0
+#define CL_TYPE_TEST 1
+
 TEST_LIST = {
-    //{"CLType", cltype_test},
-    //{"CLType json", cltype_json_test},
-    //{"CLType List<String>", cltype_str_list_test},
-    {"CLValue parsed", clTypeParsed_test},
 
-    /*
-        {"CLType JSON - Object conversion using Map<String, List<PublicKey> >",
-         clType_threeWayComparison_with_MapTest},
-        {"CLType JSON - Object conversion using List<String>",
-         clType_threeWayComparison_with_StringListTest},
-        {"CLType Tuple1", clType_tuple1_test},
-        {"CLType Tuple2", clType_tuple2_test},
-        {"CLType Tuple2 recursive", clType_tuple2_recursiveTest},
-        {"CLType Tuple3", clType_tuple3_test},
-        {"CLType Option", clType_option_test},
-        {"CLType Option recursive", clType_option_recursiveTest},
+#if RPC_TEST == 1
+    {"infoGetPeers checks node list size", infoGetPeers_Test},
+    {"chainGetStateRootHash using Block height parameter",
+     chainGetStateRootHash_with_blockHeightTest},
+    {"chainGetStateRootHash using invalid Block height parameter",
+     chainGetStateRootHash_with_invalidBlockHeightTest},
+    {"chainGetStateRootHash using Block hash parameter",
+     chainGetStateRootHash_with_blockHashTest},
+    {"chainGetStateRootHash using empty Block hash parameter ",
+     chainGetStateRootHash_with_emptyParameterTest},
+    {"infoGetDeploy using Deploy hash parameter",
+     infoGetDeploy_with_deployHashTest},
+    {"infoGetDeploy using invalid Deploy hash parameter",
+     infoGetDeploy_with_invalidDeployHashTest},
+    {"infoGetStatus compares with a reference value",
+     infoGetStatus_with_emptyParameterTest},
+    {"chainGetBlockTransfers using Block hash parameter",
+     chainGetBlockTransfers_with_blockHashTest},
+    {"chainGetBlock using Block hash parameter",
+     chainGetBlock_with_blockHashTest},
+    {"chainGetEraInfoBySwitchBlock using Block hash parameter ",
+     chainGetEraInfoBySwitchBlock_with_blockHashTest},
+    {"stateGetItem using state root hash and key parameters ",
+     stateGetItem_with_keyTest},
+    {"stateGetItem using invalid state root hash and key parameters ",
+     stateGetItem_with_invalidKeyTest},
+    {"stateGetDictionaryItem using state root hash and dictionary key "
+     " parameters ",
+     stateGetDictionaryItem_with_keyTest},
+    {"stateGetBalance compares with a reference value",
+     stateGetBalance_with_urefTest},
+    {"stateGetBalance using invalid URef and state root hash parameters ",
+     stateGetBalance_with_invalidUrefTest},
+    {"stateGetAuctionInfo using Block hash parameter (may take a while)",
+     stateGetAuctionInfo_with_blockHashTest},
+    {"toLower checks internal lower case converter", stringUtil_toLowerTest},
+    {"getAccountHash checks internal PublicKey to AccountHash converter",
+     publicKey_getAccountHashTest},
+#endif
 
-          {"infoGetPeers checks node list size", infoGetPeers_Test},
-          {"chainGetStateRootHash using Block height parameter",
-           chainGetStateRootHash_with_blockHeightTest},
-          {"chainGetStateRootHash using invalid Block height parameter",
-           chainGetStateRootHash_with_invalidBlockHeightTest},
-          {"chainGetStateRootHash using Block hash parameter",
-           chainGetStateRootHash_with_blockHashTest},
-          {"chainGetStateRootHash using empty Block hash parameter",
-           chainGetStateRootHash_with_emptyParameterTest},
-          {"infoGetDeploy using Deploy hash parameter",
-           infoGetDeploy_with_deployHashTest},
-          {"infoGetDeploy using invalid Deploy hash parameter",
-           infoGetDeploy_with_invalidDeployHashTest},
-          {"infoGetStatus compares with a reference value",
-           infoGetStatus_with_emptyParameterTest},
-          {"chainGetBlockTransfers using Block hash parameter",
-           chainGetBlockTransfers_with_blockHashTest},
-          {"chainGetBlock using Block hash parameter",
-           chainGetBlock_with_blockHashTest},
-          {"chainGetEraInfoBySwitchBlock using Block hash parameter",
-           chainGetEraInfoBySwitchBlock_with_blockHashTest},
-          {"stateGetItem using state root hash and key parameters",
-           stateGetItem_with_keyTest},
-          {"stateGetItem using invalid state root hash and key parameters",
-           stateGetItem_with_invalidKeyTest},
-          {"stateGetDictionaryItem using state root hash and dictionary key "
-           "parameters",
-           stateGetDictionaryItem_with_keyTest},
-          {"stateGetBalance compares with a reference value",
-           stateGetBalance_with_urefTest},
-          {"stateGetBalance using invalid URef and state root hash "
-           "parameters",
-           stateGetBalance_with_invalidUrefTest},
-          {"stateGetAuctionInfo using Block hash parameter (may take a while)",
-           stateGetAuctionInfo_with_blockHashTest},
-          {"toLower checks internal lower case converter",
-       stringUtil_toLowerTest},
-          {"getAccountHash checks internal PublicKey to AccountHash converter",
-           publicKey_getAccountHashTest},
-          {"Serialize - Bool", serializeBoolTest},
-          {"Serialize - I32", serializeI32Test},
-          {"Serialize - I64", serializeI64Test},
-          */
+#if SER_DE_TEST == 1
+    {"Serialize - Bool", serializeBoolTest},
+    {"Serialize - I32", serializeI32Test},
+    {"Serialize - I64", serializeI64Test},
     {"Serialize - String", serializeStringTest},
-    /*
     {"Serialize - U8", serializeU8Test},
     {"Serialize - U32", serializeU32Test},
     {"Serialize - U64", serializeU64Test},
@@ -1349,5 +1234,19 @@ TEST_LIST = {
     {"Serialize - U256", serializeU256Test},
     {"Serialize - U512", serializeU512Test},
     {"Serialize - ByteArray", serializeByteArrayTest},
-    */
+#endif
+
+#if CL_TYPE_TEST == 1
+    {"CLType", cltype_test},
+    {"CLType json", cltype_json_test},
+    {"CLType List<String>", cltype_str_list_test},
+    {"CLValue parsed", clTypeParsed_test},
+
+    {"CLType Tuple1", clType_tuple1_test},
+    {"CLType Tuple2", clType_tuple2_test},
+    {"CLType Tuple2 recursive", clType_tuple2_recursiveTest},
+    {"CLType Tuple3", clType_tuple3_test},
+    {"CLType Option", clType_option_test},
+    {"CLType Option recursive", clType_option_recursiveTest},
+#endif
     {NULL, NULL}};

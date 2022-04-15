@@ -96,9 +96,10 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
 }
 
 inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p) {
+  std::string bytes_str = j.at("bytes").get<std::string>();
+
   if (j.at("cl_type").is_string()) {
     std::string cl_type = j.at("cl_type").get<std::string>();
-    std::string bytes_str = j.at("bytes").get<std::string>();
 
     if (iequals(cl_type, "Bool")) {
       p = boolDecode(bytes_str);
@@ -121,9 +122,43 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p) {
     } else if (iequals(cl_type, "String")) {
       p = stringDecode(bytes_str);
     }
+  } else if (j.at("cl_type").is_object()) {
   } else {
-    // TODO: not string
+    // TODO: check all
   }
+
+  ////////////////////////////
+  /*
+    CLTypeRVA cl_type;
+    // from_json(j.at("cl_type"), cl_type);
+
+    /// Primitives
+    if (cl_type.index() == 0) {
+      CLTypeEnum cl_type_enum = std::get<0>(cl_type);
+
+      if (cl_type_enum == CLTypeEnum::Bool) {
+        p = boolDecode(bytes_str);
+      } else if (cl_type_enum == CLTypeEnum::I32) {
+        p = i32Decode(bytes_str);
+      } else if (cl_type_enum == CLTypeEnum::I64) {
+        p = i64Decode(bytes_str);
+      } else if (cl_type_enum == CLTypeEnum::U8) {
+        p = u8Decode(bytes_str);
+      } else if (cl_type_enum == CLTypeEnum::U32) {
+        p = u32Decode(bytes_str);
+      } else if (cl_type_enum == CLTypeEnum::U64) {
+        p = u64Decode(bytes_str);
+      } else if (cl_type_enum == CLTypeEnum::U128) {
+        p = u128Decode(bytes_str);
+      } else if (cl_type_enum == CLTypeEnum::U256) {
+        p = u256Decode(bytes_str);
+      } else if (cl_type_enum == CLTypeEnum::U512) {
+        p = u512Decode(bytes_str);
+      } else if (cl_type_enum == CLTypeEnum::String) {
+        p = stringDecode(bytes_str);
+      }
+    }
+    */
 }
 
 struct CLTypeParsed {

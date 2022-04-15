@@ -30,7 +30,9 @@ inline void to_json(nlohmann::json& j, const CLValue& p) {
   to_json(j["cl_type"], p.cl_type);
 
   try {
-    j["bytes"] = CEP57Checksum::Encode(p.bytes);
+    std::string tmp_bytes = CEP57Checksum::Encode(p.bytes);
+    StringUtil::toLower(tmp_bytes);
+    j["bytes"] = tmp_bytes;
   } catch (const std::exception& e) {
     std::cout << "CLValue-to_json-bytes what(): " << e.what() << std::endl;
   }
@@ -44,6 +46,7 @@ inline void from_json(const nlohmann::json& j, CLValue& p) {
 
   try {
     std::string hex_bytes_str = j.at("bytes").get<std::string>();
+    StringUtil::toLower(hex_bytes_str);
     p.bytes = CEP57Checksum::Decode(hex_bytes_str);
   } catch (const std::exception& e) {
     std::cout << "CLValue-from_json-bytes what(): " << e.what() << std::endl;
