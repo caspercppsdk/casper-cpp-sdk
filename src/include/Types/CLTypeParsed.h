@@ -116,7 +116,60 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
   }
 }
 
-inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p) {
+int32_t getParsedLength(CLTypeRVA type, std::string bytes = "") {
+  if (type.index() == 0) {
+    CLTypeEnum enum_type = rva::get<CLTypeEnum>(type);
+    switch (enum_type) {
+      case CLTypeEnum::Bool:
+        return 1;
+      case CLTypeEnum::I32:
+        return 4;
+      case CLTypeEnum::I64:
+        return 8;
+      case CLTypeEnum::U8:
+        return 1;
+      case CLTypeEnum::U32:
+        return 4;
+      case CLTypeEnum::U64:
+        return 8;
+      case CLTypeEnum::U128:
+        return 16;
+      case CLTypeEnum::String:
+        if (bytes.empty()) {
+          return 0;
+        } else {
+          return u32Decode(bytes.substr(0, 8));
+        }
+      case CLTypeEnum::URef:
+        return 66;
+      case CLTypeEnum::Key:
+        return 66;
+      case CLTypeEnum::PublicKey:
+        return 66;
+        /*
+      case CLTypeEnum::List:
+        return 0;
+      case CLTypeEnum::Map:
+        return 0;
+      case CLTypeEnum::Option:
+        return 0;
+      case CLTypeEnum::ByteArray:
+        return 0;
+      case CLTypeEnum::Result:
+        return 0;
+      case CLTypeEnum::Unit:
+        return 0;
+      case CLTypeEnum::Any:
+        return 0;
+        */
+      default:
+        throw std::runtime_error("Unknown CLTypeEnum");
+    }
+  }
+}
+
+inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
+                      int ser_idx = 0) {
   std::string bytes_str = j.at("bytes").get<std::string>();
 
   if (j.at("cl_type").is_string()) {
@@ -151,8 +204,70 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p) {
       CryptoPP::SecByteBlock bytes = CEP57Checksum::Decode(bytes_str);
 
       p = PublicKey::FromBytes(bytes);
+    } else if (iequals(cl_type, "Any") || iequals(cl_type, "Unit")) {
+      p = std::nullptr_t();
     }
   } else if (j.at("cl_type").is_object()) {
+    std::string cl_type = j.at("cl_type").begin().key();
+
+    // bytes_str
+
+    if (iequals(cl_type, "Map")) {
+      std::map<CLTypeParsedRVA, CLTypeParsedRVA> map;
+      uint32_t map_size =
+          u32Decode(j.at("bytes").get<std::string>().substr(0, 8));
+      std::cout << "map size: " << map_size << std::endl;
+      CLTypeRVA key_type = j.at("cl_type").at("Map").at("key").get<CLTypeRVA>();
+      CLTypeRVA value_type =
+          j.at("cl_type").at("Map").at("value").get<CLTypeRVA>();
+
+      nlohmann::json key_out;
+      to_json(key_out, key_type);
+
+      nlohmann::json value_out;
+      to_json(value_out, value_type);
+
+      std::cout << "key_out: " << key_out.dump(2) << std::endl;
+      std::cout << "value_out: " << value_out.dump(2) << std::endl;
+      int32_t key_len = getParsedLength(key_type);
+      int32_t value_len = getParsedLength(value_type);
+      /*
+      if (ser_idx == 0) {
+        for (int i = 0; i < map_size; i++) {
+          std::string key_bytes =
+              bytes_str.substr(8 + i * (key_len + value_len), key_len);
+          std::string value_bytes = bytes_str.substr(
+              8 + i * (key_len + value_len) + key_len, value_len);
+
+
+          CLTypeParsedRVA key_parsed;
+          from_json(key_out, key_parsed, 1);
+
+          CLTypeParsedRVA value_parsed;
+          from_json(value_out, value_parsed, 1);
+
+          map[key_parsed] = value_parsed;
+        }
+      } else {
+        for (int i = 0; i < map_size; i++) {
+          std::string key_bytes =
+              bytes_str.substr(8 + i * (key_len + value_len), key_len);
+          std::string value_bytes = bytes_str.substr(
+              8 + i * (key_len + value_len) + key_len, value_len);
+
+          CLTypeParsedRVA key_parsed;
+          from_json(key_out, key_parsed, 1);
+
+          CLTypeParsedRVA value_parsed;
+          from_json(value_out, value_parsed, 1);
+
+          map[key_parsed] = value_parsed;
+        }
+
+        p = map;
+      }
+      */
+    }
     /*
     else if (iequals(cl_type, "List")) {
       p = listDecode(bytes_str);

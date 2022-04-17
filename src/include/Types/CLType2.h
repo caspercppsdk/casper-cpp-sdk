@@ -115,7 +115,7 @@ enum class CLTypeEnum : uint8_t {
   /// </summary>
   PublicKey = 22
 };
-
+/*
 // ------------------------CLOption.h---------------------- //
 template <typename S>
 struct CLOption {
@@ -155,7 +155,7 @@ inline void from_json(const nlohmann::json& j, CLMap<S, T>& type) {
   j.at("value").get_to(type.value);
 }
 // end of CLMap.h
-
+*/
 using CLTypeRVA = rva::variant<
     CLTypeEnum,                                       //
     std::vector<rva::self_t>,                         //

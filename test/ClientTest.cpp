@@ -571,7 +571,7 @@ void publicKey_getAccountHashTest() {
       "account-hash-"
       "998c5fd4e7b568bedd78e05555c83c61893dc5d8546ce0bec8b30e1c570f21aa";
 
-  TEST_ASSERT(lower_case_account_hash == expected_account_hash);
+  TEST_ASSERT(iequals(lower_case_account_hash, expected_account_hash));
 }
 
 void serializeBoolTest() {
@@ -805,7 +805,7 @@ void serializeKeyTest() {
   nlohmann::json parsed_key;
   Casper::to_json(parsed_key, Casper::GlobalStateKey::FromBytes(key_bytes));
   std::cout << "parsed_key: " << parsed_key.dump(4) << std::endl;
-  TEST_ASSERT(key_str == parsed_key);
+  TEST_ASSERT(iequals(key_str, parsed_key));
 
   std::string actual_bytes_str = Casper::CEP57Checksum::Encode(key_bytes);
 
@@ -813,7 +813,39 @@ void serializeKeyTest() {
 }
 
 void serializePublicKeyTest() {
-  //
+  /*
+{
+  "bytes": "01b92e36567350dd7b339d709bfe341df6fda853e85315418f1bb3ddd414d9f5be",
+  "parsed":
+"01b92e36567350dd7b339d709bfe341df6fda853e85315418f1bb3ddd414d9f5be", "cl_type":
+"PublicKey"
+}
+
+  */
+  nlohmann::json public_key_json =
+      R"({"bytes":"01b92e36567350dd7b339d709bfe341df6fda853e85315418f1bb3ddd414d9f5be","parsed":"01b92e36567350dd7b339d709bfe341df6fda853e85315418f1bb3ddd414d9f5be","cl_type":"PublicKey"})";
+
+  std::string public_key_bytes_str =
+      "01b92e36567350dd7b339d709bfe341df6fda853e85315418f1bb3ddd414d9f5be";
+
+  CryptoPP::SecByteBlock public_key_bytes =
+      Casper::CEP57Checksum::Decode(public_key_bytes_str);
+
+  nlohmann::json parsed_public_key;
+  Casper::to_json(parsed_public_key,
+                  Casper::PublicKey::FromBytes(public_key_bytes));
+
+  std::cout << "parsed_public_key: " << parsed_public_key.dump(4) << std::endl;
+
+  std::string actual_bytes_str =
+      Casper::CEP57Checksum::Encode(public_key_bytes);
+
+  TEST_ASSERT(iequals(public_key_bytes_str, actual_bytes_str));
+
+  std::string expected_public_key_str =
+      "01b92e36567350dd7b339d709bfe341df6fda853e85315418f1bb3ddd414d9f5be";
+
+  TEST_ASSERT(iequals(expected_public_key_str, parsed_public_key));
 }
 
 void serializeOptionTest() {
@@ -1263,6 +1295,7 @@ TEST_LIST = {
     {"Serialize - U512", serializeU512Test},
     {"Serialize - ByteArray", serializeByteArrayTest},
     {"Serialize - Key", serializeKeyTest},
+    {"Serialize - PublicKey", serializePublicKeyTest},
 #endif
 
 #if CL_TYPE_TEST == 1
