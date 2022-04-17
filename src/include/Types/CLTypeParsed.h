@@ -175,7 +175,7 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
         break;
 
       case CLTypeEnum::Key:
-        p = GlobalStateKey::FromString(j.get<std::string>());
+        p = GlobalStateKey::FromString(j.begin().value().get<std::string>());
         break;
 
       case CLTypeEnum::PublicKey:
