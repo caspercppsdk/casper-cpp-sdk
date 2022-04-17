@@ -115,47 +115,7 @@ enum class CLTypeEnum : uint8_t {
   /// </summary>
   PublicKey = 22
 };
-/*
-// ------------------------CLOption.h---------------------- //
-template <typename S>
-struct CLOption {
-  S value;
-};
 
-// to_json of CLOption
-template <typename T>
-inline void to_json(nlohmann::json& j, const CLOption<T>& type) {
-  j = nlohmann::json{{"Option", type.value}};
-}
-
-// from_json of CLOption
-template <typename T>
-inline void from_json(const nlohmann::json& j, CLOption<T>& type) {
-  j.at("Option").get_to(type.value);
-}
-// end of CLOption.h
-
-// ------------------------CLMap.h---------------------- //
-template <typename S, typename T>
-struct CLMap {
-  S key;
-  T value;
-};
-
-// to_json of CLMap
-template <typename S, typename T>
-inline void to_json(nlohmann::json& j, const CLMap<S, T>& type) {
-  j = nlohmann::json{{"key", type.key}, {"value", type.value}};
-}
-
-// from_json of CLMap
-template <typename S, typename T>
-inline void from_json(const nlohmann::json& j, CLMap<S, T>& type) {
-  j.at("key").get_to(type.key);
-  j.at("value").get_to(type.value);
-}
-// end of CLMap.h
-*/
 using CLTypeRVA = rva::variant<
     CLTypeEnum,                                       //
     std::vector<rva::self_t>,                         //
@@ -185,9 +145,10 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
   }
   /// inner type - maybe delete
   else if (p.index() == 1) {
+    std::cout << "\n\nrva::get<std::vector<CLTypeRVA>>(p)\n\n" << std::endl;
+
     auto& p_type = rva::get<std::vector<CLTypeRVA>>(p);
     // TODO: should not be called, be careful check this.
-    std::cout << "\n\nrva::get<std::vector<CLTypeRVA>>(p)\n\n" << std::endl;
     j = p_type;
 
   }
@@ -342,6 +303,7 @@ inline void from_json(const nlohmann::json& j, CLTypeRVA& p) {
       throw std::runtime_error("Invalid CLType");
     }
   } else if (j.is_array()) {
+    std::cout << "arraycltype" << std::endl;
     auto inner_vec = std::vector<CLTypeRVA>();
     for (auto& inner : j) {
       CLTypeRVA inner_val;

@@ -1236,9 +1236,9 @@ void clTypeParsed_test() {
   TEST_ASSERT(j2.dump() == j.dump());
 }
 
-#define RPC_TEST 0
+#define RPC_TEST 1
 #define SER_DE_TEST 1
-#define CL_TYPE_TEST 0
+#define CL_TYPE_TEST 1
 
 TEST_LIST = {
 

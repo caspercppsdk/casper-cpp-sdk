@@ -282,6 +282,16 @@ struct PublicKey {
     os << ToAccountHex();
     return os;
   }
+
+  bool operator<(const PublicKey& other) const {
+    return ToAccountHex() < other.ToAccountHex();
+  }
+
+  bool operator==(const PublicKey& other) const {
+    return ToAccountHex() == other.ToAccountHex();
+  }
+
+  bool operator!=(const PublicKey& other) const { return !(*this == other); }
 };
 
 // to_json of PublicKey

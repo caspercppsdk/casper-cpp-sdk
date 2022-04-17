@@ -109,6 +109,12 @@ struct GlobalStateKey {
   /// </summary>
 
   std::string ToString();
+
+  bool operator<(const GlobalStateKey& other) const;
+
+  bool operator==(const GlobalStateKey& other) const;
+
+  bool operator!=(const GlobalStateKey& other) const;
 };
 
 /// <summary>

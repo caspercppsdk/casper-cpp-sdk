@@ -117,6 +117,18 @@ CryptoPP::SecByteBlock GlobalStateKey::GetBytes() {
 std::string GlobalStateKey::ToString() { return this->key; }
 // GlobalStateKey
 
+bool GlobalStateKey::operator<(const GlobalStateKey& other) const {
+  return this->key < other.key;
+}
+
+bool GlobalStateKey::operator==(const GlobalStateKey& other) const {
+  return this->key == other.key;
+}
+
+bool GlobalStateKey::operator!=(const GlobalStateKey& other) const {
+  return this->key != other.key;
+}
+
 AccountHashKey::AccountHashKey(std::string key)
     : GlobalStateKey::GlobalStateKey(key, "account-hash-") {
   key_identifier = KeyIdentifier::ACCOUNT;

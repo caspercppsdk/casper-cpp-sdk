@@ -109,4 +109,16 @@ CryptoPP::SecByteBlock URef::_GetRawBytesFromKey(std::string key) const {
   return CryptoUtil::hexDecode(new_key.substr(new_key.find_last_of('-') + 1));
 }
 
+bool URef::operator<(const URef& other) const {
+  return ToString() < other.ToString();
+}
+
+bool URef::operator==(const URef& other) const {
+  return ToString() == other.ToString();
+}
+
+bool URef::operator!=(const URef& other) const {
+  return ToString() != other.ToString();
+}
+
 }  // namespace Casper

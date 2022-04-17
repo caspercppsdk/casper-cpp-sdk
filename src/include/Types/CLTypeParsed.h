@@ -117,124 +117,150 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
 }
 
 inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
-                      int ser_idx = 0) {
-  std::string bytes_str = j.at("bytes").get<std::string>();
+                      CLType& cl_type_) {
+  bool is_primitive = false;
+  if (cl_type_.type.index() == 0) {
+    is_primitive = true;
+  }
+  std::cout << "\nstart from_json\n" << std::endl;
+  if (is_primitive) {
+    std::cout << "\nprimitive from_json\n" << std::endl;
+    switch (rva::get<CLTypeEnum>(cl_type_.type)) {
+      case CLTypeEnum::Bool:
+        p = j.get<bool>();
+        break;
 
-  if (j.at("cl_type").is_string()) {
-    std::string cl_type = j.at("cl_type").get<std::string>();
+      case CLTypeEnum::I32:
+        p = j.get<int32_t>();
+        break;
 
-    if (iequals(cl_type, "Bool")) {
-      p = boolDecode(bytes_str);
-    } else if (iequals(cl_type, "I32")) {
-      p = i32Decode(bytes_str);
-    } else if (iequals(cl_type, "I64")) {
-      p = i64Decode(bytes_str);
-    } else if (iequals(cl_type, "U8")) {
-      p = u8Decode(bytes_str);
-    } else if (iequals(cl_type, "U32")) {
-      p = u32Decode(bytes_str);
-    } else if (iequals(cl_type, "U64")) {
-      p = u64Decode(bytes_str);
-    } else if (iequals(cl_type, "U128")) {
-      p = u512Decode(bytes_str);
-    } else if (iequals(cl_type, "U256")) {
-      p = u256Decode(bytes_str);
-    } else if (iequals(cl_type, "U512")) {
-      p = u512Decode(bytes_str);
-    } else if (iequals(cl_type, "String")) {
-      p = stringDecode(bytes_str);
-    } else if (iequals(cl_type, "URef")) {
-      p = urefDecode(bytes_str);
-    } else if (iequals(cl_type, "Key")) {
-      CryptoPP::SecByteBlock bytes = CEP57Checksum::Decode(bytes_str);
-      p = GlobalStateKey::FromBytes(bytes);
-    } else if (iequals(cl_type, "PublicKey")) {
-      CryptoPP::SecByteBlock bytes = CEP57Checksum::Decode(bytes_str);
+      case CLTypeEnum::I64:
+        p = j.get<int64_t>();
+        break;
 
-      p = PublicKey::FromBytes(bytes);
-    } else if (iequals(cl_type, "Any") || iequals(cl_type, "Unit")) {
-      p = std::nullptr_t();
+      case CLTypeEnum::U8:
+        p = j.get<uint8_t>();
+        break;
+
+      case CLTypeEnum::U32:
+        p = j.get<uint32_t>();
+        break;
+
+      case CLTypeEnum::U64:
+        p = j.get<uint64_t>();
+        break;
+
+      case CLTypeEnum::U128:
+      case CLTypeEnum::U256:
+      case CLTypeEnum::U512:
+        p = big_int(j.get<std::string>());
+        break;
+
+      case CLTypeEnum::Unit:
+        p = std::nullptr_t();
+        break;
+
+      case CLTypeEnum::String:
+        p = j.get<std::string>();
+        break;
+
+      case CLTypeEnum::URef:
+        p = URef::FromString(j.get<std::string>());
+        break;
+
+      case CLTypeEnum::Key:
+        p = GlobalStateKey::FromString(j.get<std::string>());
+        break;
+
+      case CLTypeEnum::PublicKey:
+        p = PublicKey::FromHexString(j.get<std::string>());
+        break;
     }
-  } else if (j.at("cl_type").is_object()) {
-    std::string cl_type = j.at("cl_type").begin().key();
+  } else if (cl_type_.type.index() == 1) {
+    // vector<CLTypeRVA>
+    std::cout << "\nvector<CLTypeRVA> from_json\n" << std::endl;
+  } else if (cl_type_.type.index() == 2) {
+    std::cout << "\nstd::map<CLTypeRVA, CLTypeRVA> from_json\n" << std::endl;
 
-    // bytes_str
+    auto parsed_map = std::map<CLTypeParsedRVA, CLTypeParsedRVA>();
 
-    if (iequals(cl_type, "Map")) {
-      std::map<CLTypeParsedRVA, CLTypeParsedRVA> map;
-      uint32_t map_size =
-          u32Decode(j.at("bytes").get<std::string>().substr(0, 8));
-      CLTypeRVA key_type = j.at("cl_type").at("Map").at("key").get<CLTypeRVA>();
-      CLTypeRVA value_type =
-          j.at("cl_type").at("Map").at("value").get<CLTypeRVA>();
+    if (j.is_array()) {
+      for (auto& item : j) {
+        CLType key_type;
+        key_type.type = std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
+                            .begin()
+                            ->first;
 
-      nlohmann::json key_out;
-      to_json(key_out, key_type);
+        CLType value_type;
+        value_type.type =
+            std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
+                .begin()
+                ->second;
 
-      nlohmann::json value_out;
-      to_json(value_out, value_type);
+        CLTypeParsedRVA key_parsed;
+        CLTypeParsedRVA value_parsed;
+
+        key_parsed = item.at("key").get<CLTypeParsedRVA>();
+        value_parsed = item.at("value").get<CLTypeParsedRVA>();
+
+        parsed_map[key_parsed] = value_parsed;
+      }
+
+      p = parsed_map;
+    } else {
+      // TODO: CHECK COPILOT
+      // auto& p_type = rva::get<std::map<CLTypeParsedRVA, CLTypeParsedRVA>>(p);
+      // j.get_to(p_type);
     }
+
     /*
-    else if (iequals(cl_type, "List")) {
-      p = listDecode(bytes_str);
-    } else if (iequals(cl_type, "Tuple1")) {
-      p = tuple1Decode(bytes_str);
-    } else if (iequals(cl_type, "Tuple2")) {
-      p = tuple2Decode(bytes_str);
-    } else if (iequals(cl_type, "Tuple3")) {
-      p = tuple3Decode(bytes_str);
-    } else if (iequals(cl_type, "Map")) {
-      p = mapDecode(bytes_str);
-    } else if (iequals(cl_type, "Option")) {
-      p = optionDecode(bytes_str);
-    } else if (iequals(cl_type, "ByteArray")) {
-      p = byteArrayDecode(bytes_str);
-    } else if (iequals(cl_type, "Result")) {
-      p = resultDecode(bytes_str);
-    } else if (iequals(cl_type, "ResultOk")) {
-      p = resultOkDecode(bytes_str);
-    } else if (iequals(cl_type, "ResultErr")) {
-      p = resultErrDecode(bytes_str);
-    } else if (iequals(cl_type, "Any")) {
-      p = anyDecode(bytes_str);
-    }
-    */
+        if (iequals(cl_type, "Map")) {
+          std::map<CLTypeParsedRVA, CLTypeParsedRVA> map;
+          uint32_t map_size =
+              u32Decode(j.at("bytes").get<std::string>().substr(0, 8));
+          CLTypeRVA key_type =
+       j.at("cl_type").at("Map").at("key").get<CLTypeRVA>(); CLTypeRVA
+       value_type = j.at("cl_type").at("Map").at("value").get<CLTypeRVA>();
+
+          nlohmann::json key_out;
+          to_json(key_out, key_type);
+
+          nlohmann::json value_out;
+          to_json(value_out, value_type);
+        }
+
+
+        else if (iequals(cl_type, "List")) {
+          p = listDecode(bytes_str);
+        } else if (iequals(cl_type, "Tuple1")) {
+          p = tuple1Decode(bytes_str);
+        } else if (iequals(cl_type, "Tuple2")) {
+          p = tuple2Decode(bytes_str);
+        } else if (iequals(cl_type, "Tuple3")) {
+          p = tuple3Decode(bytes_str);
+        } else if (iequals(cl_type, "Map")) {
+          p = mapDecode(bytes_str);
+        } else if (iequals(cl_type, "Option")) {
+          p = optionDecode(bytes_str);
+        } else if (iequals(cl_type, "ByteArray")) {
+          p = byteArrayDecode(bytes_str);
+        } else if (iequals(cl_type, "Result")) {
+          p = resultDecode(bytes_str);
+        } else if (iequals(cl_type, "ResultOk")) {
+          p = resultOkDecode(bytes_str);
+        } else if (iequals(cl_type, "ResultErr")) {
+          p = resultErrDecode(bytes_str);
+        } else if (iequals(cl_type, "Any")) {
+          p = anyDecode(bytes_str);
+        }
+        */
   } else {
+    std::cout << "\nCLTypeRVA from_json\n" << std::endl;
     // TODO: check all
   }
 
+  std::cout << "\nend from_json\n" << std::endl;
   ////////////////////////////
-  /*
-    CLTypeRVA cl_type;
-    // from_json(j.at("cl_type"), cl_type);
-
-    /// Primitives
-    if (cl_type.index() == 0) {
-      CLTypeEnum cl_type_enum = std::get<0>(cl_type);
-
-      if (cl_type_enum == CLTypeEnum::Bool) {
-        p = boolDecode(bytes_str);
-      } else if (cl_type_enum == CLTypeEnum::I32) {
-        p = i32Decode(bytes_str);
-      } else if (cl_type_enum == CLTypeEnum::I64) {
-        p = i64Decode(bytes_str);
-      } else if (cl_type_enum == CLTypeEnum::U8) {
-        p = u8Decode(bytes_str);
-      } else if (cl_type_enum == CLTypeEnum::U32) {
-        p = u32Decode(bytes_str);
-      } else if (cl_type_enum == CLTypeEnum::U64) {
-        p = u64Decode(bytes_str);
-      } else if (cl_type_enum == CLTypeEnum::U128) {
-        p = u128Decode(bytes_str);
-      } else if (cl_type_enum == CLTypeEnum::U256) {
-        p = u256Decode(bytes_str);
-      } else if (cl_type_enum == CLTypeEnum::U512) {
-        p = u512Decode(bytes_str);
-      } else if (cl_type_enum == CLTypeEnum::String) {
-        p = stringDecode(bytes_str);
-      }
-    }
-    */
 }
 
 struct CLTypeParsed {
@@ -248,9 +274,9 @@ inline void to_json(nlohmann::json& j, const CLTypeParsed& p) {
 }
 
 // from_json of CLTypeParsed
-inline void from_json(const nlohmann::json& j, CLTypeParsed& p) {
-  //
-  j.get_to(p.parsed);
+inline void from_json(const nlohmann::json& j, CLTypeParsed& p,
+                      CLType& cl_type) {
+  from_json(j, p.parsed, cl_type);
 }
 
 }  // namespace Casper

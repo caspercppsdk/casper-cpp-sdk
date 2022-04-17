@@ -37,6 +37,12 @@ struct URef : public GlobalStateKey {
 
   std::string ToString() const;
 
+  bool operator<(const URef& other) const;
+
+  bool operator==(const URef& other) const;
+
+  bool operator!=(const URef& other) const;
+
  protected:
   SecByteBlock _GetRawBytesFromKey(std::string key) const;
 };

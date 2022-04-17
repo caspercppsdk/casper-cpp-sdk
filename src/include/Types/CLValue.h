@@ -17,12 +17,14 @@ namespace Casper {
 /// holds the [`CLType`] of the underlying data as a separate member.
 struct CLValue {
   CLType cl_type;
+
   SecByteBlock bytes;
 
   CLTypeParsed parsed;
 
   CLValue() {}
 };
+
 // to json
 inline void to_json(nlohmann::json& j, const CLValue& p) {
   j = nlohmann::json{};
@@ -42,9 +44,7 @@ inline void to_json(nlohmann::json& j, const CLValue& p) {
 
 // from json
 inline void from_json(const nlohmann::json& j, CLValue& p) {
-  std::cout << "CLValue-from_json" << std::endl;
   from_json(j.at("cl_type"), p.cl_type);
-  std::cout << "CLValue-from_json-clafter" << std::endl;
   try {
     std::string hex_bytes_str = j.at("bytes").get<std::string>();
     StringUtil::toLower(hex_bytes_str);
@@ -52,12 +52,51 @@ inline void from_json(const nlohmann::json& j, CLValue& p) {
   } catch (const std::exception& e) {
     std::cout << "CLValue-from_json-bytes what(): " << e.what() << std::endl;
   }
-  std::cout << "CLValue-from_json-parsed" << std::endl;
-  from_json(j, p.parsed);
 
-  nlohmann::json jj;
-  to_json(jj, p.parsed.parsed);
-  std::cout << "CLValue-from_json-parsed-after" << jj.dump(2) << std::endl;
+  // std::cout << j.at("parsed").dump(2) << std::endl;
+
+  from_json(j.at("parsed"), p.parsed, p.cl_type);
 }
 
 }  // namespace Casper
+
+namespace nlohmann {
+template <typename T>
+struct adl_serializer<std::map<rva::variant<T>, rva::variant<T>>> {
+  static void to_json(json& j, const rva::variant<T>& var) {
+    j = to_json(std::get<var.index()>(var));
+  }
+
+  static void from_json(const json& j, rva::variant<T>& var) {
+    from_json(j, std::get<var.index()>(var));
+  }
+};
+}  // namespace nlohmann
+
+/*
+
+namespace nlohmann {
+template <typename T>
+adl_serializer<std::map<Casper::CLTypeParsedRVA, T>> {
+  // define to_json/from_json here
+  void to_json(json & j, std::unordered_map<EC, T> const& map) {
+
+  }
+  // likewise for from_json?
+}
+
+}  // namespace nlohmann
+
+template<typename ValueType>
+struct adl_serializer {
+    template<typename BasicJsonType>
+    static void to_json(BasicJsonType& j, const T& value) {
+        // calls the "to_json" method in T's namespace
+    }
+
+    template<typename BasicJsonType>
+    static void from_json(const BasicJsonType& j, T& value) {
+        // same thing, but with the "from_json" method
+    }
+};
+*/
