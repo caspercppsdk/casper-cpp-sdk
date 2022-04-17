@@ -156,6 +156,21 @@ void stateGetAuctionInfo() {
   printResult(auction_result, "state_get_auction_info");
 }
 
+/// "account_put_deploy" RPC function call example
+void accountPutDeploy() {
+  std::ifstream ifs(
+      "/home/yusuf/casper-cpp-sdk/examples/example_put_deploy1.json");
+  nlohmann::json deploy_params_json = nlohmann::json::parse(ifs);
+
+  std::cout << deploy_params_json.dump(2) << std::endl;
+
+  Casper::Deploy deploy_params;
+  Casper::from_json(deploy_params_json, deploy_params);
+  Casper::PutDeployResult put_deploy_result =
+      casper_client.PutDeploy(deploy_params);
+  printResult(put_deploy_result, "account_put_deploy");
+}
+
 int main() {
   // Milestone 1
   // infoGetPeers();
@@ -164,7 +179,7 @@ int main() {
   // ---------------------------------------------------------------------------
 
   // Milestone 2
-  infoGetDeploy();
+  // infoGetDeploy();
 
   // infoGetStatus();
 
@@ -183,5 +198,6 @@ int main() {
   // stateGetAuctionInfo();
 
   // Milestone 3
-  // PutDeploy(); TODO: implement
+
+  accountPutDeploy();
 }

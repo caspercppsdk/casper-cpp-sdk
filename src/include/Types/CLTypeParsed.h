@@ -128,9 +128,9 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
   if (cl_type_.type.index() == 0) {
     is_primitive = true;
   }
-  std::cout << "\nstart from_json\n" << std::endl;
+  // std::cout << "\nstart from_json\n" << std::endl;
   if (is_primitive) {
-    std::cout << "\nprimitive from_json\n" << std::endl;
+    // std::cout << "\nprimitive from_json\n" << std::endl;
     switch (rva::get<CLTypeEnum>(cl_type_.type)) {
       case CLTypeEnum::Bool:
         p = j.get<bool>();
@@ -184,9 +184,9 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
     }
   } else if (cl_type_.type.index() == 1) {
     // vector<CLTypeRVA>
-    std::cout << "\nvector<CLTypeRVA> from_json\n" << std::endl;
+    // std::cout << "\nvector<CLTypeRVA> from_json\n" << std::endl;
   } else if (cl_type_.type.index() == 2) {
-    std::cout << "\nstd::map<CLTypeRVA, CLTypeRVA> from_json\n" << std::endl;
+    // std::cout << "\nstd::map<CLTypeRVA, CLTypeRVA> from_json\n" << std::endl;
 
     auto parsed_map = std::map<CLTypeParsedRVA, CLTypeParsedRVA>();
 
@@ -214,7 +214,7 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
 
       p = parsed_map;
     } else {
-      // TODO: CHECK COPILOT
+      // TODO: Check this case
       // auto& p_type = rva::get<std::map<CLTypeParsedRVA, CLTypeParsedRVA>>(p);
       // j.get_to(p_type);
     }
@@ -261,11 +261,9 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
         }
         */
   } else {
-    std::cout << "\nCLTypeRVA from_json\n" << std::endl;
-    // TODO: check all
+    // TODO: check this case
   }
 
-  std::cout << "\nend from_json\n" << std::endl;
   ////////////////////////////
 }
 

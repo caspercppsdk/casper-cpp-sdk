@@ -192,12 +192,11 @@ GetAuctionInfoResult Client::GetAuctionInfo(uint64_t block_height) {
       1, "state_get_auction_info", block_identifier);
 }
 
-/// TODOMS3: Not implemented yet.(MS3)
+/// Returns the deploy hash of the given deploy.
 PutDeployResult Client::PutDeploy(Deploy deploy) {
   nlohmann::json deploy_json;
   to_json(deploy_json, deploy);
-  nlohmann::json paramsJSON{"deploy", deploy_json};
-
+  nlohmann::json paramsJSON{{"deploy", deploy_json}};
   return mRpcClient.CallMethodNamed<PutDeployResult>(1, "account_put_deploy",
                                                      paramsJSON);
 }

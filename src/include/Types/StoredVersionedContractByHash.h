@@ -53,7 +53,7 @@ inline void to_json(nlohmann::json& j, const StoredVersionedContractByHash& p) {
 inline void from_json(const nlohmann::json& j,
                       StoredVersionedContractByHash& p) {
   j.at("hash").get_to(p.hash);
-  j.at("entry_point").get_to(p.entry_point);
+  p.entry_point = j.at("entry_point").get<std::string>();
   j.at("args").get_to(p.args);
 
   if (j.find("version") != j.end()) {
