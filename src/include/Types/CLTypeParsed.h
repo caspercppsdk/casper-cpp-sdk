@@ -109,7 +109,13 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
     j = p_type;
   } else if (p.index() == 13) {
     auto& p_type = rva::get<std::map<CLTypeParsedRVA, CLTypeParsedRVA>>(p);
-    j = p_type;
+
+    int i = 0;
+    for (auto& [key, value] : p_type) {
+      j[i++] = {{"key", key}, {"value", value}};
+    }
+
+    // j = p_type;
   } else if (p.index() == 14) {
     auto& p_type = rva::get<std::nullptr_t>(p);
     j = p_type;

@@ -174,9 +174,9 @@ int main() {
 
   // chainGetEraInfoBySwitchBlock();
 
-  stateGetItem();
+  // stateGetItem();
 
-  stateGetDictionaryItem();
+  // stateGetDictionaryItem();
 
   // stateGetBalance();
 
