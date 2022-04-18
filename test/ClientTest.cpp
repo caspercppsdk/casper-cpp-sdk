@@ -1284,7 +1284,11 @@ void clValue_with_U128Test() { clValue_with_jsonFile("U128.json"); }
 
 void clValue_with_U256Test() { clValue_with_jsonFile("U256.json"); }
 
+void clValue_with_U256_2Test() { clValue_with_jsonFile("U256-2.json"); }
+
 void clValue_with_U512Test() { clValue_with_jsonFile("U512.json"); }
+
+void clValue_with_U512_0Test() { clValue_with_jsonFile("U512-0.json"); }
 
 void clValue_with_UnitTest() { clValue_with_jsonFile("Unit.json"); }
 
@@ -1298,7 +1302,29 @@ void clValue_with_PublicKeyTest() { clValue_with_jsonFile("PublicKey.json"); }
 
 void clValue_with_OptionTest() { clValue_with_jsonFile("Option.json"); }
 
+void clValue_with_OptionListKeyNULLTest() {
+  clValue_with_jsonFile("OptionListKey-NULL.json");
+}
+
+void clValue_with_OptionU64NULLTest() {
+  clValue_with_jsonFile("OptionU64-NULL.json");
+}
+
+void clValue_with_OptionU64Test() { clValue_with_jsonFile("OptionU64.json"); }
+
 void clValue_with_ListTest() { clValue_with_jsonFile("List.json"); }
+
+void clValue_with_ListByteArray32Test() {
+  clValue_with_jsonFile("ListByteArray32.json");
+}
+
+void clValue_with_ListOptionStringTest() {
+  clValue_with_jsonFile("ListOptionString.json");
+}
+
+void clValue_with_ListU8Test() { clValue_with_jsonFile("ListU8.json"); }
+
+void clValue_with_ListU256Test() { clValue_with_jsonFile("ListU256.json"); }
 
 void clValue_with_ByteArrayTest() { clValue_with_jsonFile("ByteArray.json"); }
 
@@ -1406,14 +1432,26 @@ TEST_LIST = {
     {"CLValue using U64", clValue_with_U64Test},
     {"CLValue using U128", clValue_with_U128Test},
     {"CLValue using U256", clValue_with_U256Test},
+    {"CLValue using U256-2", clValue_with_U256_2Test},
     {"CLValue using U512", clValue_with_U512Test},
+    {"CLValue using U512-0", clValue_with_U512_0Test},
     {"CLValue using Unit", clValue_with_UnitTest},
     {"CLValue using String", clValue_with_StringTest},
     {"CLValue using URef", clValue_with_URefTest},
     // {"CLValue using Key", clValue_with_KeyTest},
+    // {"CLValue using Account Key", clValue_with_accountKeyTest},
+    // {"CLValue using Hash Key", clValue_with_hashKeyTest},
     {"CLValue using PublicKey", clValue_with_PublicKeyTest},
     {"CLValue using Option", clValue_with_OptionTest},
+    {"CLValue using Option<List<Key>> = NULL",
+     clValue_with_OptionListKeyNULLTest},
+    {"CLValue using Option<U64> = NULL", clValue_with_OptionU64NULLTest},
+    {"CLValue using Option<U64>", clValue_with_OptionU64Test},
     {"CLValue using List", clValue_with_ListTest},
+    {"CLValue using List<ByteArray:32>", clValue_with_ListByteArray32Test},
+    {"CLValue using List<Option<String>>", clValue_with_ListOptionStringTest},
+    {"CLValue using List<U8>", clValue_with_ListU8Test},
+    {"CLValue using List<U256>", clValue_with_ListU256Test},
     {"CLValue using ByteArray", clValue_with_ByteArrayTest},
     // {"CLValue using ResultOk", clValue_with_ResultOkTest},
     // {"CLValue using ResultErr", clValue_with_ResultErrTest},

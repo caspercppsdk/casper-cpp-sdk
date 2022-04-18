@@ -248,7 +248,11 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
     // Option parsing
     if (type_name == "Option") {
       // parse with inner type
-      from_json(j, parsed_obj, inner_type);
+      if (j.is_null()) {
+        parsed_obj = std::nullptr_t();
+      } else {
+        from_json(j, parsed_obj, inner_type);
+      }
 
       // assign parsed value to option
       p = parsed_obj;
