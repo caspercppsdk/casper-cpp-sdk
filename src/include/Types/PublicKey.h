@@ -204,13 +204,16 @@ struct PublicKey {
   /// the first position.
   /// </summary>
   std::string ToAccountHex() const {
+    std::string pk_hex = "";
     if (key_algorithm == KeyAlgo::ED25519) {
-      return "01" + CEP57Checksum::Encode(raw_bytes);
+      pk_hex = "01" + CEP57Checksum::Encode(raw_bytes);
     } else if (key_algorithm == KeyAlgo::SECP256K1) {
-      return "02" + CEP57Checksum::Encode(raw_bytes);
+      pk_hex = "02" + CEP57Checksum::Encode(raw_bytes);
     } else {
       throw std::runtime_error("Unsupported key type.");
     }
+    StringUtil::toLower(pk_hex);
+    return pk_hex;
   }
 
   /// <summary>

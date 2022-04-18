@@ -1236,22 +1236,88 @@ void clTypeParsed_test() {
   TEST_ASSERT(j2.dump() == j.dump());
 }
 
-void clvalue_tuple1_test() {
-  std::ifstream ifs(
-      "/home/yusuf/casper-cpp-sdk/examples/clvalue-examples/tuple1.json");
-  nlohmann::json deploy_params_json = nlohmann::json::parse(ifs);
+/// test the serialization of a CLValue using a json file as input
+void clValue_with_jsonFile(std::string file_name) {
+  // read the json file
+  nlohmann::json input_json;
+  try {
+    std::string file_path = __FILE__;
+    std::string dir_path = file_path.substr(0, file_path.rfind("/"));
+    std::cout << dir_path << std::endl;
+    std::string file_path_name = dir_path + "/data/CLValue/" + file_name;
+    std::ifstream ifs(file_path_name);
+    input_json = nlohmann::json::parse(ifs);
+  } catch (std::exception& e) {
+    std::cout << "clValue_with_jsonFile: " << e.what() << std::endl;
+  }
 
-  std::cout << std::endl << deploy_params_json.dump(2) << std::endl;
+  std::cout << std::endl << input_json.dump(2) << std::endl;
 
-  Casper::CLValue cl;
-  Casper::from_json(deploy_params_json, cl);
+  // create a CLValue from the json
+  Casper::CLValue generated_obj;
+  Casper::from_json(input_json, generated_obj);
 
-  nlohmann::json j2;
-  Casper::to_json(j2, cl);
-  std::cout << std::endl << j2.dump(2) << std::endl;
+  // create a new json from the generated CLValue
+  nlohmann::json generated_json;
+  Casper::to_json(generated_json, generated_obj);
 
-  TEST_ASSERT(j2.dump() == deploy_params_json.dump());
+  std::cout << std::endl << generated_json.dump(2) << std::endl;
+
+  // compare the final parsed json with the initial json
+  TEST_ASSERT(generated_json.dump() == input_json.dump());
 }
+void clValue_with_boolTrueTest() { clValue_with_jsonFile("Bool-True.json"); }
+
+void clValue_with_boolFalseTest() { clValue_with_jsonFile("Bool-False.json"); }
+
+void clValue_with_I32Test() { clValue_with_jsonFile("I32.json"); }
+
+void clValue_with_I64Test() { clValue_with_jsonFile("I64.json"); }
+
+void clValue_with_U8Test() { clValue_with_jsonFile("U8.json"); }
+
+void clValue_with_U32Test() { clValue_with_jsonFile("U32.json"); }
+
+void clValue_with_U64Test() { clValue_with_jsonFile("U64.json"); }
+
+void clValue_with_U128Test() { clValue_with_jsonFile("U128.json"); }
+
+void clValue_with_U256Test() { clValue_with_jsonFile("U256.json"); }
+
+void clValue_with_U512Test() { clValue_with_jsonFile("U512.json"); }
+
+void clValue_with_UnitTest() { clValue_with_jsonFile("Unit.json"); }
+
+void clValue_with_StringTest() { clValue_with_jsonFile("String.json"); }
+
+void clValue_with_URefTest() { clValue_with_jsonFile("URef.json"); }
+
+// void clValue_with_KeyTest() { clValue_with_jsonFile("Key.json"); }
+
+void clValue_with_PublicKeyTest() { clValue_with_jsonFile("PublicKey.json"); }
+
+void clValue_with_OptionTest() { clValue_with_jsonFile("Option.json"); }
+
+void clValue_with_ListTest() { clValue_with_jsonFile("List.json"); }
+
+// void clValue_with_ByteArrayTest() {
+// clValue_with_jsonFile("ByteArray.json"); }
+
+// void clValue_with_ResultOkTest() { clValue_with_jsonFile("ResultOk.json");
+// }
+
+// void clValue_with_ResultErrTest() {
+// clValue_with_jsonFile("ResultErr.json");
+
+void clValue_with_MapTest() { clValue_with_jsonFile("Map.json"); }
+
+void clValue_with_Tuple1Test() { clValue_with_jsonFile("Tuple1.json"); }
+
+void clValue_with_Tuple2Test() { clValue_with_jsonFile("Tuple2.json"); }
+
+void clValue_with_Tuple3Test() { clValue_with_jsonFile("Tuple3.json"); }
+
+void clValue_with_AnyTest() { clValue_with_jsonFile("Any.json"); }
 
 #define RPC_TEST 0
 #define SER_DE_TEST 0
@@ -1332,7 +1398,31 @@ TEST_LIST = {
 #endif
 
 #if CL_VALUE_TEST == 1
-    {"CLValue tuple1 from json", clvalue_tuple1_test},
+    {"CLValue using Bool expected false", clValue_with_boolFalseTest},
+    {"CLValue using Bool expected true", clValue_with_boolTrueTest},
+    {"CLValue using I32", clValue_with_I32Test},
+    {"CLValue using I64", clValue_with_I64Test},
+    {"CLValue using U8", clValue_with_U8Test},
+    {"CLValue using U32", clValue_with_U32Test},
+    {"CLValue using U64", clValue_with_U64Test},
+    {"CLValue using U128", clValue_with_U128Test},
+    {"CLValue using U256", clValue_with_U256Test},
+    {"CLValue using U512", clValue_with_U512Test},
+    {"CLValue using Unit", clValue_with_UnitTest},
+    {"CLValue using String", clValue_with_StringTest},
+    {"CLValue using URef", clValue_with_URefTest},
+    // {"CLValue using Key", clValue_with_KeyTest},
+    {"CLValue using PublicKey", clValue_with_PublicKeyTest},
+    {"CLValue using Option", clValue_with_OptionTest},
+    {"CLValue using List", clValue_with_ListTest},
+    // {"CLValue using ByteArray", clValue_with_ByteArrayTest},
+    // {"CLValue using ResultOk", clValue_with_ResultOkTest},
+    // {"CLValue using ResultErr", clValue_with_ResultErrTest},
+    {"CLValue using Map", clValue_with_MapTest},
+    {"CLValue using Tuple1", clValue_with_Tuple1Test},
+    {"CLValue using Tuple2", clValue_with_Tuple2Test},
+    {"CLValue using Tuple3", clValue_with_Tuple3Test},
+    {"CLValue using Any", clValue_with_AnyTest},
 
 #endif
 

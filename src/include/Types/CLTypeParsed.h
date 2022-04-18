@@ -274,9 +274,32 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
     else if (type_name == "Result") {
       // TODO: implement result parsing
 
+    } else {
+      std::cout << "Unknown type\n" << std::endl;
+      // TODO: Check this case, maybe error
     }
-    // Tuple1 parsing
-    else if (type_name == "Tuple1") {
+  } else if (cl_type_.type.index() == 4) {
+    std::vector<CLTypeParsedRVA> parsed_list;
+
+    auto inner_types =
+        std::get<std::map<std::string, std::vector<CLTypeRVA>>>(cl_type_.type)
+            .begin()
+            ->second;
+
+    CLType inner_type;
+
+    uint8_t tuple_idx = 0;
+    for (auto& item : j) {
+      CLTypeParsedRVA parsed_item;
+      inner_type.type = inner_types[tuple_idx++];
+      from_json(item, parsed_item, inner_type);
+      parsed_list.push_back(parsed_item);
+    }
+
+    p = parsed_list;
+
+    /*
+    if (type_name == "Tuple1") {
       std::vector<CLTypeParsedRVA> parsed_list;
       CLTypeParsedRVA parsed_item;
 
@@ -324,11 +347,8 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
 
       // assign parsed value to list
       p = parsed_list;
-
-    } else {
-      std::cout << "Unknown type\n" << std::endl;
-      // TODO: Check this case, maybe error
     }
+    */
   } else {
     std::cout << "\nCLTypeRVA from_json 4\n" << std::endl;
   }

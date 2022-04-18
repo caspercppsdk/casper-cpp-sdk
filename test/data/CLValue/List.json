@@ -1,0 +1,7 @@
+{
+  "cl_type" : {
+    "List" : "String"
+  },
+  "bytes" : "030000000300000061626304000000646566670a00000068696a6b6c6d6e6f7071",
+  "parsed" : ["abc","defg","hijklmnopq"]
+}
