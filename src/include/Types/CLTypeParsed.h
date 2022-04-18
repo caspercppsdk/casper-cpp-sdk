@@ -278,7 +278,9 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
       std::cout << "Unknown type\n" << std::endl;
       // TODO: Check this case, maybe error
     }
-  } else if (cl_type_.type.index() == 4) {
+  }
+  // Tuple1, Tuple2, and Tuple3
+  else if (cl_type_.type.index() == 4) {
     std::vector<CLTypeParsedRVA> parsed_list;
 
     auto inner_types =
@@ -298,58 +300,13 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
 
     p = parsed_list;
 
-    /*
-    if (type_name == "Tuple1") {
-      std::vector<CLTypeParsedRVA> parsed_list;
-      CLTypeParsedRVA parsed_item;
+  }
+  // ByteArray
+  else if (cl_type_.type.index() == 5) {
+    p = j.get<std::string>();
+  }
 
-      inner_type.type = std::get<std::vector<CLTypeRVA>>(inner_type.type)[0];
-      from_json(j.at(0), parsed_item, inner_type);
-      parsed_list.push_back(parsed_item);
-
-      // assign parsed value to list
-      p = parsed_list;
-
-    }
-    // Tuple2 parsing
-    else if (type_name == "Tuple2") {
-      std::vector<CLTypeParsedRVA> parsed_list;
-      CLTypeParsedRVA parsed_item;
-
-      inner_type.type = std::get<std::vector<CLTypeRVA>>(inner_type.type)[0];
-      from_json(j.at(0), parsed_item, inner_type);
-      parsed_list.push_back(parsed_item);
-
-      inner_type.type = std::get<std::vector<CLTypeRVA>>(inner_type.type)[1];
-      from_json(j.at(1), parsed_item, inner_type);
-      parsed_list.push_back(parsed_item);
-
-      // assign parsed value to list
-      p = parsed_list;
-
-    }
-    // Tuple3 parsing
-    else if (type_name == "Tuple3") {
-      std::vector<CLTypeParsedRVA> parsed_list;
-      CLTypeParsedRVA parsed_item;
-
-      inner_type.type = std::get<std::vector<CLTypeRVA>>(inner_type.type)[0];
-      from_json(j.at(0), parsed_item, inner_type);
-      parsed_list.push_back(parsed_item);
-
-      inner_type.type = std::get<std::vector<CLTypeRVA>>(inner_type.type)[1];
-      from_json(j.at(1), parsed_item, inner_type);
-      parsed_list.push_back(parsed_item);
-
-      inner_type.type = std::get<std::vector<CLTypeRVA>>(inner_type.type)[2];
-      from_json(j.at(2), parsed_item, inner_type);
-      parsed_list.push_back(parsed_item);
-
-      // assign parsed value to list
-      p = parsed_list;
-    }
-    */
-  } else {
+  else {
     std::cout << "\nCLTypeRVA from_json 4\n" << std::endl;
   }
 

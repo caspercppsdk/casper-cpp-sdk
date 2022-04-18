@@ -1300,8 +1300,7 @@ void clValue_with_OptionTest() { clValue_with_jsonFile("Option.json"); }
 
 void clValue_with_ListTest() { clValue_with_jsonFile("List.json"); }
 
-// void clValue_with_ByteArrayTest() {
-// clValue_with_jsonFile("ByteArray.json"); }
+void clValue_with_ByteArrayTest() { clValue_with_jsonFile("ByteArray.json"); }
 
 // void clValue_with_ResultOkTest() { clValue_with_jsonFile("ResultOk.json");
 // }
@@ -1319,9 +1318,9 @@ void clValue_with_Tuple3Test() { clValue_with_jsonFile("Tuple3.json"); }
 
 void clValue_with_AnyTest() { clValue_with_jsonFile("Any.json"); }
 
-#define RPC_TEST 0
-#define SER_DE_TEST 0
-#define CL_TYPE_TEST 0
+#define RPC_TEST 1
+#define SER_DE_TEST 1
+#define CL_TYPE_TEST 1
 #define CL_VALUE_TEST 1
 
 TEST_LIST = {
@@ -1415,7 +1414,7 @@ TEST_LIST = {
     {"CLValue using PublicKey", clValue_with_PublicKeyTest},
     {"CLValue using Option", clValue_with_OptionTest},
     {"CLValue using List", clValue_with_ListTest},
-    // {"CLValue using ByteArray", clValue_with_ByteArrayTest},
+    {"CLValue using ByteArray", clValue_with_ByteArrayTest},
     // {"CLValue using ResultOk", clValue_with_ResultOkTest},
     // {"CLValue using ResultErr", clValue_with_ResultErrTest},
     {"CLValue using Map", clValue_with_MapTest},
