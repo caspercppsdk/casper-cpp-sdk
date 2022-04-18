@@ -54,6 +54,11 @@ void infoGetDeploy() {
   std::cout << "-----------------------------------------------";
   std::cout << "\ninfo_get_deploy\n";
 
+  // Option<u64> Testnet Deploy Hash
+  // 07d881163cd3cc19b619e461b64d1f674ef74719a18dd5dd41ddb39da1fb1c88
+
+  // List<String> Testnet Deploy Hash
+  // da5ddafc219ebe05b087faaee5db6390ce560bda7ab4b6f3cbe9c8d0100bcdd2
   Casper::GetDeployInfoResult deploy_result = casper_client.GetDeployInfo(
       "8e535d2baed76141ab47fd93b04dd61f65a07893b7c950022978a2b29628edd7");
 
@@ -179,7 +184,7 @@ int main() {
   // ---------------------------------------------------------------------------
 
   // Milestone 2
-  // infoGetDeploy();
+  infoGetDeploy();
 
   // infoGetStatus();
 
@@ -199,5 +204,5 @@ int main() {
 
   // Milestone 3
 
-  accountPutDeploy();
+  // accountPutDeploy();
 }

@@ -117,8 +117,8 @@ enum class CLTypeEnum : uint8_t {
 };
 
 using CLTypeRVA = rva::variant<
-    CLTypeEnum,                                       //
-    std::vector<rva::self_t>,                         //
+    CLTypeEnum,                                       // primitives
+    std::vector<rva::self_t>,                         // check this
     std::map<rva::self_t, rva::self_t>,               // map
     std::map<std::string, rva::self_t>,               // opt, list,
     std::map<std::string, std::vector<rva::self_t>>,  // tuple1,t2,t3

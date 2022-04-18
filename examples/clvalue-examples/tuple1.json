@@ -1,0 +1,9 @@
+{
+  "cl_type" : {
+    "Tuple1" : [
+      "String"
+    ]
+  },
+  "bytes" : "050000006162636566",
+  "parsed" : ["abcef"]
+}

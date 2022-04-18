@@ -1236,9 +1236,27 @@ void clTypeParsed_test() {
   TEST_ASSERT(j2.dump() == j.dump());
 }
 
-#define RPC_TEST 1
-#define SER_DE_TEST 1
-#define CL_TYPE_TEST 1
+void clvalue_tuple1_test() {
+  std::ifstream ifs(
+      "/home/yusuf/casper-cpp-sdk/examples/clvalue-examples/tuple1.json");
+  nlohmann::json deploy_params_json = nlohmann::json::parse(ifs);
+
+  std::cout << std::endl << deploy_params_json.dump(2) << std::endl;
+
+  Casper::CLValue cl;
+  Casper::from_json(deploy_params_json, cl);
+
+  nlohmann::json j2;
+  Casper::to_json(j2, cl);
+  std::cout << std::endl << j2.dump(2) << std::endl;
+
+  TEST_ASSERT(j2.dump() == deploy_params_json.dump());
+}
+
+#define RPC_TEST 0
+#define SER_DE_TEST 0
+#define CL_TYPE_TEST 0
+#define CL_VALUE_TEST 1
 
 TEST_LIST = {
 
@@ -1312,4 +1330,10 @@ TEST_LIST = {
     {"CLType Option", clType_option_test},
     {"CLType Option recursive", clType_option_recursiveTest},
 #endif
+
+#if CL_VALUE_TEST == 1
+    {"CLValue tuple1 from json", clvalue_tuple1_test},
+
+#endif
+
     {NULL, NULL}};

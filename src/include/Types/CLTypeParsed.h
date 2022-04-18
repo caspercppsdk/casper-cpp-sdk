@@ -69,22 +69,22 @@ using CLTypeParsedRVA = rva::variant<
 inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
   if (p.index() == 0) {
     auto& p_type = rva::get<bool>(p);
-    j = boolEncode(p_type);
+    j = p_type;
   } else if (p.index() == 1) {
     auto& p_type = rva::get<int32_t>(p);
-    j = i32Encode(p_type);
+    j = p_type;
   } else if (p.index() == 2) {
     auto& p_type = rva::get<int64_t>(p);
-    j = i64Encode(p_type);
+    j = p_type;
   } else if (p.index() == 3) {
     auto& p_type = rva::get<uint8_t>(p);
-    j = u8Encode(p_type);
+    j = p_type;
   } else if (p.index() == 4) {
     auto& p_type = rva::get<uint32_t>(p);
-    j = u32Encode(p_type);
+    j = p_type;
   } else if (p.index() == 5) {
     auto& p_type = rva::get<uint64_t>(p);
-    j = u64Encode(p_type);
+    j = p_type;
   } else if (p.index() == 6) {
     auto& p_type = rva::get<big_int>(p);
     j = p_type.toString();
@@ -124,30 +124,29 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
 
 inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
                       CLType& cl_type_) {
+  std::cout << "from_json, idx: " << p.index() << std::endl;
   bool is_primitive = false;
   if (cl_type_.type.index() == 0) {
     is_primitive = true;
   }
-  // std::cout << "\nstart from_json\n" << std::endl;
+
   if (is_primitive) {
-    // std::cout << "\nprimitive from_json\n" << std::endl;
+    std::cout << "enum: "
+              << magic_enum::enum_name(rva::get<CLTypeEnum>(cl_type_.type))
+              << std::endl;
     switch (rva::get<CLTypeEnum>(cl_type_.type)) {
       case CLTypeEnum::Bool:
         p = j.get<bool>();
         break;
-
       case CLTypeEnum::I32:
         p = j.get<int32_t>();
         break;
-
       case CLTypeEnum::I64:
         p = j.get<int64_t>();
         break;
-
       case CLTypeEnum::U8:
         p = j.get<uint8_t>();
         break;
-
       case CLTypeEnum::U32:
         p = j.get<uint32_t>();
         break;
@@ -155,29 +154,24 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
       case CLTypeEnum::U64:
         p = j.get<uint64_t>();
         break;
-
       case CLTypeEnum::U128:
       case CLTypeEnum::U256:
       case CLTypeEnum::U512:
-        p = big_int(j.get<std::string>());
+        p = j.get<big_int>();
         break;
-
       case CLTypeEnum::Unit:
+      case CLTypeEnum::Any:
         p = std::nullptr_t();
         break;
-
       case CLTypeEnum::String:
         p = j.get<std::string>();
         break;
-
-      case CLTypeEnum::URef:
+      case CLTypeEnum::URef:  // compare with a CLTypeEnum::URef examle
         p = URef::FromString(j.get<std::string>());
         break;
-
       case CLTypeEnum::Key:
         p = GlobalStateKey::FromString(j.begin().value().get<std::string>());
         break;
-
       case CLTypeEnum::PublicKey:
         p = PublicKey::FromHexString(j.get<std::string>());
         break;
@@ -186,11 +180,11 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
     // vector<CLTypeRVA>
     // std::cout << "\nvector<CLTypeRVA> from_json\n" << std::endl;
   } else if (cl_type_.type.index() == 2) {
-    // std::cout << "\nstd::map<CLTypeRVA, CLTypeRVA> from_json\n" << std::endl;
-
+    // Map(CLType, CLType)
     auto parsed_map = std::map<CLTypeParsedRVA, CLTypeParsedRVA>();
 
     if (j.is_array()) {
+      // Multiple key-value pairs
       for (auto& item : j) {
         CLType key_type;
         key_type.type = std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
@@ -214,54 +208,129 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
 
       p = parsed_map;
     } else {
-      // TODO: Check this case
-      // auto& p_type = rva::get<std::map<CLTypeParsedRVA, CLTypeParsedRVA>>(p);
-      // j.get_to(p_type);
+      // Single key-value pair
+      CLType key_type;
+      key_type.type = std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
+                          .begin()
+                          ->first;
+
+      CLType value_type;
+      value_type.type = std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
+                            .begin()
+                            ->second;
+
+      CLTypeParsedRVA key_parsed;
+      CLTypeParsedRVA value_parsed;
+
+      key_parsed = j.at("key").get<CLTypeParsedRVA>();
+      value_parsed = j.at("value").get<CLTypeParsedRVA>();
+
+      parsed_map[key_parsed] = value_parsed;
+      p = parsed_map;
     }
 
-    /*
-        if (iequals(cl_type, "Map")) {
-          std::map<CLTypeParsedRVA, CLTypeParsedRVA> map;
-          uint32_t map_size =
-              u32Decode(j.at("bytes").get<std::string>().substr(0, 8));
-          CLTypeRVA key_type =
-       j.at("cl_type").at("Map").at("key").get<CLTypeRVA>(); CLTypeRVA
-       value_type = j.at("cl_type").at("Map").at("value").get<CLTypeRVA>();
+  } else if (cl_type_.type.index() == 3) {
+    std::cout << "\nCLTypeRVA from_json 3\n" << std::endl;
+    /// option, list, result
 
-          nlohmann::json key_out;
-          to_json(key_out, key_type);
+    auto obj = std::get<std::map<std::string, CLTypeRVA>>(cl_type_.type);
 
-          nlohmann::json value_out;
-          to_json(value_out, value_type);
-        }
+    // Type of the current object
+    std::string type_name = obj.begin()->first;
 
+    // Type of the object's value to be parsed inside the from_json below
+    CLType inner_type;
+    inner_type.type = obj.begin()->second;
 
-        else if (iequals(cl_type, "List")) {
-          p = listDecode(bytes_str);
-        } else if (iequals(cl_type, "Tuple1")) {
-          p = tuple1Decode(bytes_str);
-        } else if (iequals(cl_type, "Tuple2")) {
-          p = tuple2Decode(bytes_str);
-        } else if (iequals(cl_type, "Tuple3")) {
-          p = tuple3Decode(bytes_str);
-        } else if (iequals(cl_type, "Map")) {
-          p = mapDecode(bytes_str);
-        } else if (iequals(cl_type, "Option")) {
-          p = optionDecode(bytes_str);
-        } else if (iequals(cl_type, "ByteArray")) {
-          p = byteArrayDecode(bytes_str);
-        } else if (iequals(cl_type, "Result")) {
-          p = resultDecode(bytes_str);
-        } else if (iequals(cl_type, "ResultOk")) {
-          p = resultOkDecode(bytes_str);
-        } else if (iequals(cl_type, "ResultErr")) {
-          p = resultErrDecode(bytes_str);
-        } else if (iequals(cl_type, "Any")) {
-          p = anyDecode(bytes_str);
-        }
-        */
+    // object to be parsed below
+    CLTypeParsedRVA parsed_obj;
+
+    // Option parsing
+    if (type_name == "Option") {
+      // parse with inner type
+      from_json(j, parsed_obj, inner_type);
+
+      // assign parsed value to option
+      p = parsed_obj;
+
+    }
+    // List parsing
+    else if (type_name == "List") {
+      std::vector<CLTypeParsedRVA> parsed_list;
+
+      // parse with inner type
+      for (auto& item : j) {
+        CLTypeParsedRVA parsed_item;
+        from_json(item, parsed_item, inner_type);
+        parsed_list.push_back(parsed_item);
+      }
+
+      // assign parsed value to list
+      p = parsed_list;
+
+    }
+    // Result Parsing
+    // Result is a map with two keys: Ok and Err
+    else if (type_name == "Result") {
+      // TODO: implement result parsing
+
+    }
+    // Tuple1 parsing
+    else if (type_name == "Tuple1") {
+      std::vector<CLTypeParsedRVA> parsed_list;
+      CLTypeParsedRVA parsed_item;
+
+      inner_type.type = std::get<std::vector<CLTypeRVA>>(inner_type.type)[0];
+      from_json(j.at(0), parsed_item, inner_type);
+      parsed_list.push_back(parsed_item);
+
+      // assign parsed value to list
+      p = parsed_list;
+
+    }
+    // Tuple2 parsing
+    else if (type_name == "Tuple2") {
+      std::vector<CLTypeParsedRVA> parsed_list;
+      CLTypeParsedRVA parsed_item;
+
+      inner_type.type = std::get<std::vector<CLTypeRVA>>(inner_type.type)[0];
+      from_json(j.at(0), parsed_item, inner_type);
+      parsed_list.push_back(parsed_item);
+
+      inner_type.type = std::get<std::vector<CLTypeRVA>>(inner_type.type)[1];
+      from_json(j.at(1), parsed_item, inner_type);
+      parsed_list.push_back(parsed_item);
+
+      // assign parsed value to list
+      p = parsed_list;
+
+    }
+    // Tuple3 parsing
+    else if (type_name == "Tuple3") {
+      std::vector<CLTypeParsedRVA> parsed_list;
+      CLTypeParsedRVA parsed_item;
+
+      inner_type.type = std::get<std::vector<CLTypeRVA>>(inner_type.type)[0];
+      from_json(j.at(0), parsed_item, inner_type);
+      parsed_list.push_back(parsed_item);
+
+      inner_type.type = std::get<std::vector<CLTypeRVA>>(inner_type.type)[1];
+      from_json(j.at(1), parsed_item, inner_type);
+      parsed_list.push_back(parsed_item);
+
+      inner_type.type = std::get<std::vector<CLTypeRVA>>(inner_type.type)[2];
+      from_json(j.at(2), parsed_item, inner_type);
+      parsed_list.push_back(parsed_item);
+
+      // assign parsed value to list
+      p = parsed_list;
+
+    } else {
+      std::cout << "Unknown type\n" << std::endl;
+      // TODO: Check this case, maybe error
+    }
   } else {
-    // TODO: check this case
+    std::cout << "\nCLTypeRVA from_json 4\n" << std::endl;
   }
 
   ////////////////////////////
