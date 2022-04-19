@@ -3,7 +3,7 @@
 #include "Types/PublicKey.h"
 #include "Utils/CryptoUtil.h"
 #include <sstream>
-#include "Types/CLType2.h"
+#include "Types/CLType.h"
 #include "Types/CLTypeParsedConverter.h"
 #include "acutest.h"
 

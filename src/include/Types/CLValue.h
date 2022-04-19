@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Base.h"
-#include "Types/CLType2.h"
+#include "Types/CLType.h"
 #include "Types/CLTypeParsed.h"
 #include "cryptopp/secblock.h"
 
