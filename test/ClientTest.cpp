@@ -7,12 +7,6 @@
 #include "Types/CLTypeParsedConverter.h"
 #include "acutest.h"
 
-// Helper function to compare two strings in a case insensitive way
-bool iequals(const std::string& a, const std::string& b) {
-  return std::equal(a.begin(), a.end(), b.begin(), b.end(),
-                    [](char a, char b) { return tolower(a) == tolower(b); });
-}
-
 /// Helper function to print a result object
 template <typename T>
 void printResult(const T& result, const std::string& rpc_call_name,

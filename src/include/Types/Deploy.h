@@ -5,6 +5,7 @@
 #include "Types/DeployHeader.h"
 #include "Types/ExecutableDeployItem.h"
 #include "Types/PublicKey.h"
+#include "Types/KeyPair.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
@@ -39,6 +40,46 @@ struct Deploy {
   std::vector<DeployApproval> approvals;
 
   Deploy() {}
+
+  Deploy(const std::string& hash_, const DeployHeader& header_,
+         const ExecutableDeployItem& payment_,
+         const ExecutableDeployItem& session_,
+         const std::vector<DeployApproval>& approvals_)
+      : hash(hash_),
+        header(header_),
+        payment(payment_),
+        session(session_),
+        approvals(approvals_) {}
+
+  Deploy(const DeployHeader& header, const ExecutableDeployItem& payment,
+         const ExecutableDeployItem& session);
+
+  static Deploy loadFromJson(const nlohmann::json& input_json);
+
+  static Deploy loadFromFile(const std::string& filePath);
+
+  void save(const std::string& filePath, uint8_t indent = 2) const;
+
+  void Sign(KeyPair keyPair);
+
+  void AddApproval(DeployApproval approval);
+
+  bool ValidateHashes(std::string& message);
+
+  bool VerifySignatures(std::string& message);
+
+  int GetDeploySizeInBytes() const;
+
+  CryptoPP::SecByteBlock ComputeBodyHash(ExecutableDeployItem payment,
+                                         ExecutableDeployItem session);
+
+  CryptoPP::SecByteBlock ComputeHeaderHash(DeployHeader header);
+
+  nlohmann::json toJson() const;
+
+  std::string toString(uint8_t indent = 2) const;
+
+  // bool operator==(const Deploy& other) const;
 };
 
 /**

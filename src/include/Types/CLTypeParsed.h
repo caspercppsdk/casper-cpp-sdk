@@ -18,12 +18,6 @@
 
 namespace Casper {
 
-// Helper function to compare two strings in a case insensitive way
-bool iequals(const std::string& a, const std::string& b) {
-  return std::equal(a.begin(), a.end(), b.begin(), b.end(),
-                    [](char a, char b) { return tolower(a) == tolower(b); });
-}
-
 using CLTypeParsedRVA = rva::variant<
     bool,      // Bool, // boolean primitive
     int32_t,   // I32, // signed 32-bit integer primitive
