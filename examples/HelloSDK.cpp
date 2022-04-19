@@ -178,29 +178,29 @@ void accountPutDeploy() {
 
 int main() {
   // Milestone 1
-  // infoGetPeers();
+  infoGetPeers();
 
-  // chainGetStateRootHash();
+  chainGetStateRootHash();
   // ---------------------------------------------------------------------------
 
   // Milestone 2
   infoGetDeploy();
 
-  // infoGetStatus();
+  infoGetStatus();
 
-  // chainGetBlockTransfers();
+  chainGetBlockTransfers();
 
-  // chainGetBlock();
+  chainGetBlock();
 
-  // chainGetEraInfoBySwitchBlock();
+  chainGetEraInfoBySwitchBlock();
 
-  // stateGetItem();
+  stateGetItem();
 
-  // stateGetDictionaryItem();
+  stateGetDictionaryItem();
 
-  // stateGetBalance();
+  stateGetBalance();
 
-  // stateGetAuctionInfo();
+  stateGetAuctionInfo();
 
   // Milestone 3
 
