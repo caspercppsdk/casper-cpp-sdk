@@ -15,4 +15,4 @@ add_library(${LIB_NAME} SHARED CasperClient.cpp include/Types/GlobalStateKey.cpp
 
 find_package(rva REQUIRED)
 
-target_link_libraries(${LIB_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../lib/cryptopp/libcryptopp.a rva::rva)
+target_link_libraries(${LIB_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../lib/cryptopp/libcryptopp.a)

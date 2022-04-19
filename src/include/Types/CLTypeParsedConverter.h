@@ -8,7 +8,7 @@
 #include "Types/PublicKey.h"
 #include "Types/URef.h"
 
-#include <rva/variant.hpp>
+#include "rva/variant.hpp"
 #include <tuple>
 
 #include <unordered_map>
