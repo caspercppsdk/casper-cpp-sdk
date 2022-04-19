@@ -6,7 +6,7 @@ enable_testing()
 message("CasperSDK Version: ${CMAKE_PROJECT_VERSION}")
 
 # Set C++20 as the default C++ standard
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 # Set the include paths.
 include_directories(
