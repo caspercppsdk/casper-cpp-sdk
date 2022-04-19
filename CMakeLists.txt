@@ -5,7 +5,7 @@ enable_testing()
 
 message("CasperSDK Version: ${CMAKE_PROJECT_VERSION}")
 
-# Set C++20 as the default C++ standard
+# Set C++17 as the default C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
 # Set the include paths.
@@ -15,11 +15,6 @@ include_directories(
     test/TestLibrary
     lib/cryptopp
 )
-
-# Set the CMake lists for the SDK and the SDK's dependencies
-add_subdirectory(src)
-add_subdirectory(test)
-add_subdirectory(examples)
 
 find_program(
 MAKE_EXECUTABLE
@@ -38,6 +33,11 @@ ExternalProject_Add(
     INSTALL_COMMAND ""
     CMAKE_ARGS ""
 )
+
+# Set the CMake lists for the SDK and the SDK's dependencies
+add_subdirectory(src)
+add_subdirectory(test)
+add_subdirectory(examples)
 
 install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/lib/CasperSDK)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/include DESTINATION /usr/lib/CasperSDK)
