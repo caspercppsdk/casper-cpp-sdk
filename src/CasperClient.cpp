@@ -32,11 +32,11 @@ GetStateRootHashResult Client::GetStateRootHash(uint64_t block_height) {
 }
 
 /// Returns the deploy info.
-nlohmann::json Client::GetDeployInfo(std::string deploy_hash) {
+GetDeployInfoResult Client::GetDeployInfo(std::string deploy_hash) {
   nlohmann::json hashJSON{{"deploy_hash", deploy_hash}};
 
-  return mRpcClient.CallMethodNamed<nlohmann::json>(1, "info_get_deploy",
-                                                    hashJSON);
+  return mRpcClient.CallMethodNamed<GetDeployInfoResult>(1, "info_get_deploy",
+                                                         hashJSON);
 }
 
 /// Returns the status info.
@@ -192,12 +192,11 @@ GetAuctionInfoResult Client::GetAuctionInfo(uint64_t block_height) {
       1, "state_get_auction_info", block_identifier);
 }
 
-/// TODOMS3: Not implemented yet.(MS3)
+/// Returns the deploy hash of the given deploy.
 PutDeployResult Client::PutDeploy(Deploy deploy) {
   nlohmann::json deploy_json;
   to_json(deploy_json, deploy);
-  nlohmann::json paramsJSON{"deploy", deploy_json};
-
+  nlohmann::json paramsJSON{{"deploy", deploy_json}};
   return mRpcClient.CallMethodNamed<PutDeployResult>(1, "account_put_deploy",
                                                      paramsJSON);
 }

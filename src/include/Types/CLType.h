@@ -1,99 +1,333 @@
 #pragma once
 
 #include "Base.h"
-#include "Types/CLTypeInfo.h"
 #include "nlohmann/json.hpp"
+#include "Types/Definitions.h"
+#include "Types/GlobalStateKey.h"
+#include "Types/PublicKey.h"
+#include "Types/URef.h"
+
+#include "rva/variant.hpp"
+#include <tuple>
+
+#include <unordered_map>
+#include <optional>
+#include "magic_enum/magic_enum.hpp"
 
 namespace Casper {
-/// <summary>
-/// Casper types, i.e. types which can be stored and manipulated by smart
-/// contracts. Provides a description of the underlying data type of a
-/// `CLValue`.
-/// </summary>
-struct CLType {
-  std::optional<CLTypeInfo> type_info = std::nullopt;
-  std::optional<CLMapTypeInfo> map_type_info = std::nullopt;
-  std::optional<CLOptionTypeInfo> option_type_info = std::nullopt;
-  std::optional<CLListTypeInfo> list_type_info = std::nullopt;
-  std::optional<CLByteArrayTypeInfo> byte_array_type_info = std::nullopt;
-  std::optional<CLResultTypeInfo> result_type_info = std::nullopt;
-  std::optional<CLTuple1TypeInfo> tuple1_type_info = std::nullopt;
-  std::optional<CLTuple2TypeInfo> tuple2_type_info = std::nullopt;
-  std::optional<CLTuple3TypeInfo> tuple3_type_info = std::nullopt;
+enum class CLTypeEnum : uint8_t {
+  /// <summary>
+  /// Boolean primitive.
+  /// </summary>
+  Bool = 0,
+  /// <summary>
+  /// Signed 32-bit integer primitive.
+  /// </summary>
+  I32 = 1,
+  /// <summary>
+  /// Signed 64-bit integer primitive.
+  /// </summary>
+  I64 = 2,
+  /// <summary>
+  /// Unsigned 8-bit integer primitive.
+  /// </summary>
+  U8 = 3,
+  /// <summary>
+  /// Unsigned 32-bit integer primitive.
+  /// </summary>
+  U32 = 4,
+  /// <summary>
+  /// Unsigned 64-bit integer primitive.
+  /// </summary>
+  U64 = 5,
+  /// <summary>
+  /// Unsigned 128-bit integer primitive.
+  /// </summary>
+  U128 = 6,
+  /// <summary>
+  /// Unsigned 256-bit integer primitive.
+  /// </summary>
+  U256 = 7,
+  /// <summary>
+  /// Unsigned 512-bit integer primitive.
+  /// </summary>
+  U512 = 8,
+  /// <summary>
+  /// Singleton value without additional semantics.
+  /// </summary>
+  Unit = 9,
+  /// <summary>
+  /// A string. e.g. "Hello, World!".
+  /// </summary>
+  String = 10,
+  /// <summary>
+  /// Global state key.
+  /// </summary>
+  Key = 11,
+  /// <summary>
+  /// Unforgeable reference.
+  /// </summary>
+  URef = 12,
+  /// <summary>
+  /// Optional value of the given type Option(CLType).
+  /// </summary>
+  Option = 13,
+  /// <summary>
+  /// Variable-length list of values of a single `CLType` List(CLType).
+  /// </summary>
+  List = 14,
+  /// <summary>
+  /// Fixed-length list of a single `CLType` (normally a Byte).
+  /// </summary>
+  ByteArray = 15,
+  /// <summary>
+  /// Co-product of the the given types; one variant meaning success, the other
+  /// failure.
+  /// </summary>
+  Result = 16,
+  /// <summary>
+  /// Key-value association where keys and values have the given types
+  /// Map(CLType, CLType).
+  /// </summary>
+  Map = 17,
+  /// <summary>
+  /// Single value of the given type Tuple1(CLType).
+  /// </summary>
+  Tuple1 = 18,
+  /// <summary>
+  /// Pair consisting of elements of the given types Tuple2(CLType, CLType).
+  /// </summary>
+  Tuple2 = 19,
+  /// <summary>
+  /// Triple consisting of elements of the given types Tuple3(CLType, CLType,
+  /// CLType).
+  /// </summary>
+  Tuple3 = 20,
+  /// <summary>
+  /// Indicates the type is not known.
+  /// </summary>
+  Any = 21,
+  /// <summary>
+  /// A Public key.
+  /// </summary>
+  PublicKey = 22
+};
 
-  operator CLTypeEnum() const {
-    if (type_info.has_value()) {
-      return type_info.value().type;
-    } else if (map_type_info.has_value()) {
-      return CLTypeEnum::Map;
-    } else if (option_type_info.has_value()) {
-      return CLTypeEnum::Option;
-    } else if (list_type_info.has_value()) {
-      return CLTypeEnum::List;
-    } else if (byte_array_type_info.has_value()) {
-      return CLTypeEnum::ByteArray;
-    } else if (result_type_info.has_value()) {
-      return CLTypeEnum::Result;
-    } else if (tuple1_type_info.has_value()) {
-      return CLTypeEnum::Tuple1;
-    } else if (tuple2_type_info.has_value()) {
-      return CLTypeEnum::Tuple2;
-    } else if (tuple3_type_info.has_value()) {
-      return CLTypeEnum::Tuple3;
-    } else {
-      return CLTypeEnum::Any;
+using CLTypeRVA = rva::variant<
+    CLTypeEnum,                                       // primitives
+    std::vector<rva::self_t>,                         // check this
+    std::map<rva::self_t, rva::self_t>,               // map
+    std::map<std::string, rva::self_t>,               // opt, list,
+    std::map<std::string, std::vector<rva::self_t>>,  // tuple1,t2,t3
+    std::map<std::string, int32_t>                    // byte array
+    >;
+
+inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
+  /// bool, i32, i64, u8, u32, u64, u128, u256, u512, unit, string, key, uref,
+  /// any, public key
+  if (p.index() == 0) {
+    auto& p_type = rva::get<CLTypeEnum>(p);
+
+    // check if the enum is primitive
+    if (p_type == CLTypeEnum::Bool || p_type == CLTypeEnum::I32 ||
+        p_type == CLTypeEnum::I64 || p_type == CLTypeEnum::U8 ||
+        p_type == CLTypeEnum::U32 || p_type == CLTypeEnum::U64 ||
+        p_type == CLTypeEnum::U128 || p_type == CLTypeEnum::U256 ||
+        p_type == CLTypeEnum::U512 || p_type == CLTypeEnum::Unit ||
+        p_type == CLTypeEnum::String || p_type == CLTypeEnum::Key ||
+        p_type == CLTypeEnum::URef || p_type == CLTypeEnum::Any ||
+        p_type == CLTypeEnum::PublicKey) {
+      j = magic_enum::enum_name(p_type);
     }
   }
+  /// inner type - maybe delete
+  else if (p.index() == 1) {
+    std::cout << "\n\nrva::get<std::vector<CLTypeRVA>>(p)\n\n" << std::endl;
 
-  CLType() {}
+    auto& p_type = rva::get<std::vector<CLTypeRVA>>(p);
+    // TODO: should not be called, be careful check this.
+    j = p_type;
+
+  }
+  /// map
+  else if (p.index() == 2) {
+    auto& p_type = rva::get<std::map<CLTypeRVA, CLTypeRVA>>(p);
+    j["Map"] = {{"key", p_type.begin()->first},
+                {"value", p_type.begin()->second}};
+  }
+  /// option, list, result
+  else if (p.index() == 3) {
+    auto& p_type = rva::get<std::map<std::string, CLTypeRVA>>(p);
+    std::string key_type = p_type.begin()->first;
+
+    if (key_type == "Option") {
+      j = {{"Option", p_type.begin()->second}};
+    } else if (key_type == "List") {
+      j = {{"List", p_type.begin()->second}};
+    } else if (key_type == "Result") {
+      auto inner_map = std::get<3>(p_type.begin()->second);
+      nlohmann::json inner_val = {{"Ok", inner_map["Ok"]},
+                                  {"Err", inner_map["Err"]}};
+      j = {"Result", inner_val};
+    } else if (key_type == "Tuple1") {
+      auto inner_vec = std::get<1>(p_type.begin()->second);
+      nlohmann::json inner_val = nlohmann::json::array({inner_vec[0]});
+      j = {{"Tuple1", inner_val}};
+    } else if (key_type == "Tuple2") {
+      auto inner_vec = std::get<1>(p_type.begin()->second);
+      nlohmann::json inner_val =
+          nlohmann::json::array({inner_vec[0], inner_vec[1]});
+      j = {{"Tuple2", inner_val}};
+    } else if (key_type == "Tuple3") {
+      auto inner_vec = std::get<1>(p_type.begin()->second);
+      nlohmann::json inner_val =
+          nlohmann::json::array({inner_vec[0], inner_vec[1], inner_vec[2]});
+      j = {{"Tuple3", inner_val}};
+    }
+  }
+  /// tuple1, tuple2, tuple3
+  else if (p.index() == 4) {
+    auto& p_type = rva::get<std::map<std::string, std::vector<CLTypeRVA>>>(p);
+    std::string key_type = p_type.begin()->first;
+    /*
+      "cl_type":{"Tuple1":["Bool"]}
+      "cl_type":{"Tuple2":["Bool","I32"]}
+      "cl_type":{"Tuple3":[{"ByteArray":3},{"ByteArray":34},"String"]}
+      */
+    if (key_type == "Tuple1" || key_type == "Tuple2" || key_type == "Tuple3") {
+      std::vector<CLTypeRVA> inner_types;
+      for (auto& inner_type : p_type.begin()->second) {
+        inner_types.push_back(inner_type);
+      }
+      j = {{key_type, inner_types}};
+    }
+
+  } else if (p.index() == 5) {
+    auto& p_type = rva::get<std::map<std::string, int32_t>>(p);
+    std::string key_type = p_type.begin()->first;
+    if (key_type == "ByteArray") {
+      j["ByteArray"] = p_type.begin()->second;
+    }
+  }
+}
+
+inline void from_json(const nlohmann::json& j, CLTypeRVA& p) {
+  if (j.is_string()) {
+    auto p_type = j.get<std::string>();
+    auto enum_opt = magic_enum::enum_cast<CLTypeEnum>(p_type);
+    if (enum_opt.has_value()) {
+      p = enum_opt.value();
+    } else {
+      throw std::runtime_error("Invalid CLType");
+    }
+  } else if (j.is_object()) {
+    std::string key_str = j.begin().key();
+    if (key_str == "Option") {
+      auto option = std::map<std::string, CLTypeRVA>();
+      CLTypeRVA inner;
+      from_json(j.at("Option"), inner);
+      option.insert({"Option", inner});
+      p = option;
+    } else if (key_str == "List") {
+      auto list = std::map<std::string, CLTypeRVA>();
+      CLTypeRVA inner;
+      from_json(j.at("List"), inner);
+      list.insert({"List", inner});
+      p = list;
+    } else if (key_str == "ByteArray") {
+      auto byte_array = std::map<std::string, int32_t>();
+      int32_t inner;
+      j.at("ByteArray").get_to(inner);
+      byte_array.insert({"ByteArray", inner});
+      p = byte_array;
+    } else if (key_str == "Result") {
+      auto result = std::map<std::string, CLTypeRVA>();
+      CLTypeRVA innerOk;
+      CLTypeRVA innerErr;
+      from_json(j.at("Result").at("Ok"), innerOk);
+      from_json(j.at("Result").at("Err"), innerErr);
+      auto ok = std::map<std::string, CLTypeRVA>();
+      ok.insert({"Ok", innerOk});
+      auto err = std::map<std::string, CLTypeRVA>();
+      err.insert({"Err", innerErr});
+      result.insert({"Ok", ok});
+      result.insert({"Err", err});
+      p = result;
+    } else if (key_str == "Tuple1") {
+      auto tuple1 = std::map<std::string, std::vector<CLTypeRVA>>();
+      auto inner_vec = std::vector<CLTypeRVA>();
+      CLTypeRVA inner;
+      from_json(j.at("Tuple1").at(0), inner);
+      inner_vec.push_back(inner);
+      tuple1.insert({"Tuple1", inner_vec});
+      p = tuple1;
+    } else if (key_str == "Tuple2") {
+      auto tuple2 = std::map<std::string, std::vector<CLTypeRVA>>();
+      auto inner_vec = std::vector<CLTypeRVA>();
+      CLTypeRVA inner1;
+      CLTypeRVA inner2;
+      from_json(j.at("Tuple2").at(0), inner1);
+      from_json(j.at("Tuple2").at(1), inner2);
+      inner_vec.push_back(inner1);
+      inner_vec.push_back(inner2);
+      tuple2.insert({"Tuple2", inner_vec});
+      p = tuple2;
+    } else if (key_str == "Tuple3") {
+      auto tuple3 = std::map<std::string, std::vector<CLTypeRVA>>();
+      auto inner_vec = std::vector<CLTypeRVA>();
+      CLTypeRVA inner1;
+      CLTypeRVA inner2;
+      CLTypeRVA inner3;
+      from_json(j.at("Tuple3").at(0), inner1);
+      from_json(j.at("Tuple3").at(1), inner2);
+      from_json(j.at("Tuple3").at(2), inner3);
+      inner_vec.push_back(inner1);
+      inner_vec.push_back(inner2);
+      inner_vec.push_back(inner3);
+      tuple3.insert({"Tuple3", inner_vec});
+      p = tuple3;
+    } else if (key_str == "Map") {
+      auto mp = std::map<CLTypeRVA, CLTypeRVA>();
+
+      CLTypeRVA key;
+      CLTypeRVA value;
+      from_json(j.at("Map").at("key"), key);
+      from_json(j.at("Map").at("value"), value);
+
+      mp.insert({key, value});
+      p = mp;
+    } else {
+      throw std::runtime_error("Invalid CLType");
+    }
+  } else if (j.is_array()) {
+    std::cout << "arraycltype" << std::endl;
+    auto inner_vec = std::vector<CLTypeRVA>();
+    for (auto& inner : j) {
+      CLTypeRVA inner_val;
+      from_json(inner, inner_val);
+      inner_vec.push_back(inner_val);
+    }
+    p = inner_vec;
+  }
+}
+
+struct CLType {
+  CLTypeRVA type;
+
+  CLType() : type(CLTypeEnum::Any) {}
+  CLType(CLTypeRVA type) : type(type) {}
 };
 
 // to_json of CLType
 inline void to_json(nlohmann::json& j, const CLType& p) {
-  j = nlohmann::json{};
-
-  if (p.type_info.has_value()) {
-    j = p.type_info.value();
-  } else if (p.map_type_info.has_value()) {
-    j["Map"] = p.map_type_info.value();
-  } else if (p.option_type_info.has_value()) {
-    j["Option"] = p.option_type_info.value();
-  } else if (p.list_type_info.has_value()) {
-    j["List"] = p.list_type_info.value();
-  } else if (p.byte_array_type_info.has_value()) {
-    j["ByteArray"] = p.byte_array_type_info.value();
-  } else if (p.result_type_info.has_value()) {
-    j["Result"] = p.result_type_info.value();
-  } else if (p.tuple1_type_info.has_value()) {
-    j["Tuple1"] = p.tuple1_type_info.value();
-  } else if (p.tuple2_type_info.has_value()) {
-    j["Tuple2"] = p.tuple2_type_info.value();
-  } else if (p.tuple3_type_info.has_value()) {
-    j["Tuple3"] = p.tuple3_type_info.value();
-  }
+  //
+  to_json(j, p.type);
 }
 
 // from_json of CLType
 inline void from_json(const nlohmann::json& j, CLType& p) {
-  if (j.find("Map") != j.end()) {
-    p.map_type_info = j.at("Map").get<CLMapTypeInfo>();
-  } else if (j.find("Option") != j.end()) {
-    p.option_type_info = j.at("Option").get<CLOptionTypeInfo>();
-  } else if (j.find("List") != j.end()) {
-    p.list_type_info = j.at("List").get<CLListTypeInfo>();
-  } else if (j.find("ByteArray") != j.end()) {
-    p.byte_array_type_info = j.at("ByteArray").get<CLByteArrayTypeInfo>();
-  } else if (j.find("Result") != j.end()) {
-    p.result_type_info = j.at("Result").get<CLResultTypeInfo>();
-  } else if (j.find("Tuple1") != j.end()) {
-    p.tuple1_type_info = j.at("Tuple1").get<CLTuple1TypeInfo>();
-  } else if (j.find("Tuple2") != j.end()) {
-    p.tuple2_type_info = j.at("Tuple2").get<CLTuple2TypeInfo>();
-  } else if (j.find("Tuple3") != j.end()) {
-    p.tuple3_type_info = j.at("Tuple3").get<CLTuple3TypeInfo>();
-  } else if (j.is_string()) {
-    j.get_to(p.type_info);
-  }
+  //
+  j.get_to(p.type);
 }
 
 }  // namespace Casper

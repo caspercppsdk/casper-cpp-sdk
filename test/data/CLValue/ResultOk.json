@@ -1,0 +1,10 @@
+{
+  "cl_type" : {
+    "Result" : {
+      "ok" : "String",
+      "err" : "String"
+    }
+  },
+  "bytes" : "010a000000676f6f64726573756c74",
+  "parsed" : "goodresult"
+}

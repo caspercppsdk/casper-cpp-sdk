@@ -40,7 +40,7 @@ inline void to_json(nlohmann::json& j, const StoredContractByName& p) {
 
 inline void from_json(const nlohmann::json& j, StoredContractByName& p) {
   j.at("name").get_to(p.name);
-  j.at("entry_point").get_to(p.entry_point);
+  p.entry_point = j.at("entry_point").get<std::string>();
   j.at("args").get_to(p.args);
 }
 

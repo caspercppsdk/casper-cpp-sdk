@@ -1,0 +1,13 @@
+{
+  "cl_type" : {
+    "Tuple3" : [
+      "PublicKey",
+      {
+        "Option" : "String"
+      },
+      "U512"
+    ]
+  },
+  "bytes" : "01a018bf278f32fdb7b06226071ce399713ace78a28d43a346055060a660ba7aa901030000006162630102",
+  "parsed" : ["01a018bf278f32fdb7b06226071ce399713ace78a28d43a346055060a660ba7aa9","abc","2"]
+}

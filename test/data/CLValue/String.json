@@ -1,0 +1,5 @@
+{
+  "cl_type" : "String",
+  "bytes" : "0d00000048656c6c6f2c20776f726c6421",
+  "parsed" : "Hello, world!"
+}

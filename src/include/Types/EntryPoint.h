@@ -111,7 +111,10 @@ struct Parameter {
  * @param p Parameter object to construct from.
  */
 inline void to_json(nlohmann::json& j, const Parameter& p) {
-  j = {{"name", p.name}, {"cl_type", p.cl_type}};
+  j = {{"name", p.name}};
+  std::cout << "parameter to_json" << std::endl;
+  to_json(j["cl_type"], p.cl_type);
+  std::cout << "parameter to_json end" << std::endl;
 }
 
 /**
@@ -122,7 +125,10 @@ inline void to_json(nlohmann::json& j, const Parameter& p) {
  */
 inline void from_json(const nlohmann::json& j, Parameter& p) {
   j.at("name").get_to(p.name);
-  j.at("cl_type").get_to(p.cl_type);
+  std::cout << "parameter from_json" << std::endl;
+  from_json(j.at("cl_type"), p.cl_type);
+
+  std::cout << "parameter from_json end" << std::endl;
 }
 
 /// <summary>
@@ -169,8 +175,8 @@ inline void to_json(nlohmann::json& j, const EntryPoint& p) {
   j = {{"access", p.access},
        {"args", p.args},
        {"entry_point_type", p.entry_point_type},
-       {"name", p.name},
-       {"ret", p.ret}};
+       {"name", p.name}};
+  to_json(j["ret"], p.ret);
 }
 
 /**
@@ -184,6 +190,6 @@ inline void from_json(const nlohmann::json& j, EntryPoint& p) {
   j.at("args").get_to(p.args);
   j.at("entry_point_type").get_to(p.entry_point_type);
   j.at("name").get_to(p.name);
-  j.at("ret").get_to(p.ret);
+  from_json(j.at("ret"), p.ret);
 }
 }  // namespace Casper

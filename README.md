@@ -32,7 +32,7 @@ On CentOS and Rocky Linux:
 ## Test
     cmake -DCMAKE_BUILD_TYPE=Debug .
     make all
-    ./test/CasperSDK_test
+    ./test/CasperSDK_test -v
 
 ## Run Examples
     cmake -DCMAKE_BUILD_TYPE=Debug .

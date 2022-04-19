@@ -54,10 +54,15 @@ void infoGetDeploy() {
   std::cout << "-----------------------------------------------";
   std::cout << "\ninfo_get_deploy\n";
 
-  nlohmann::json deploy_result = casper_client.GetDeployInfo(
+  // Option<u64> Testnet Deploy Hash
+  // 07d881163cd3cc19b619e461b64d1f674ef74719a18dd5dd41ddb39da1fb1c88
+
+  // List<String> Testnet Deploy Hash
+  // da5ddafc219ebe05b087faaee5db6390ce560bda7ab4b6f3cbe9c8d0100bcdd2
+  Casper::GetDeployInfoResult deploy_result = casper_client.GetDeployInfo(
       "8e535d2baed76141ab47fd93b04dd61f65a07893b7c950022978a2b29628edd7");
 
-  std::cout << deploy_result.dump(2) << std::endl;
+  printResult(deploy_result, "info_get_deploy");
 }
 
 /// "info_get_status" RPC function call example
@@ -156,11 +161,26 @@ void stateGetAuctionInfo() {
   printResult(auction_result, "state_get_auction_info");
 }
 
+/// "account_put_deploy" RPC function call example
+void accountPutDeploy() {
+  std::ifstream ifs(
+      "/home/yusuf/casper-cpp-sdk/examples/example_put_deploy1.json");
+  nlohmann::json deploy_params_json = nlohmann::json::parse(ifs);
+
+  std::cout << deploy_params_json.dump(2) << std::endl;
+
+  Casper::Deploy deploy_params;
+  Casper::from_json(deploy_params_json, deploy_params);
+  Casper::PutDeployResult put_deploy_result =
+      casper_client.PutDeploy(deploy_params);
+  printResult(put_deploy_result, "account_put_deploy");
+}
+
 int main() {
   // Milestone 1
-  // infoGetPeers();
+  infoGetPeers();
 
-  // chainGetStateRootHash();
+  chainGetStateRootHash();
   // ---------------------------------------------------------------------------
 
   // Milestone 2
@@ -183,5 +203,6 @@ int main() {
   stateGetAuctionInfo();
 
   // Milestone 3
-  // PutDeploy(); TODO: implement
+
+  // accountPutDeploy();
 }

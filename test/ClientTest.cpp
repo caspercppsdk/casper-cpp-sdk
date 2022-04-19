@@ -2,6 +2,9 @@
 #include "Types/GlobalStateKey.cpp"
 #include "Types/PublicKey.h"
 #include "Utils/CryptoUtil.h"
+#include <sstream>
+#include "Types/CLType.h"
+#include "Types/CLTypeParsedConverter.h"
 #include "acutest.h"
 
 // Helper function to compare two strings in a case insensitive way
@@ -568,10 +571,787 @@ void publicKey_getAccountHashTest() {
       "account-hash-"
       "998c5fd4e7b568bedd78e05555c83c61893dc5d8546ce0bec8b30e1c570f21aa";
 
-  TEST_ASSERT(lower_case_account_hash == expected_account_hash);
+  TEST_ASSERT(iequals(lower_case_account_hash, expected_account_hash));
 }
 
+void serializeBoolTest() {
+  std::string bool_bytes1 = "00";
+  bool expected_value1 = false;
+  bool actual_value1 = Casper::boolDecode(bool_bytes1);
+  TEST_ASSERT(expected_value1 == actual_value1);
+
+  std::string encoded_value1 = Casper::boolEncode(expected_value1);
+  TEST_ASSERT(iequals(bool_bytes1, encoded_value1));
+
+  // ---
+
+  std::string bool_bytes2 = "01";
+  bool expected_value2 = true;
+  bool actual_value2 = Casper::boolDecode(bool_bytes2);
+  TEST_ASSERT(expected_value2 == actual_value2);
+
+  std::string encoded_value2 = Casper::boolEncode(expected_value2);
+  TEST_ASSERT(iequals(bool_bytes2, encoded_value2));
+}
+
+void serializeI32Test() {
+  std::string i32_bytes1 = "e8030000";
+  int32_t expected_value1 = 1000;
+  int32_t actual_value1 = Casper::i32Decode(i32_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string encoded_value1 = Casper::i32Encode(expected_value1);
+  TEST_ASSERT(iequals(i32_bytes1, encoded_value1));
+
+  // ---
+
+  std::string i32_bytes2 = "1d290d71";
+  int32_t expected_value2 = 1896687901;
+  int32_t actual_value2 = Casper::i32Decode(i32_bytes2);
+  TEST_ASSERT(actual_value2 == expected_value2);
+
+  std::string encoded_value2 = Casper::i32Encode(expected_value2);
+  TEST_ASSERT(iequals(i32_bytes2, encoded_value2));
+}
+
+void serializeI64Test() {
+  std::string i64_bytes1 = "7f33d9dcf601ab02";
+  int64_t expected_value1 = 192249568872182655;
+  int64_t actual_value1 = Casper::i64Decode(i64_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string encoded_value1 = Casper::i64Encode(expected_value1);
+  TEST_ASSERT(iequals(i64_bytes1, encoded_value1));
+}
+
+void serializeU8Test() {
+  std::string u8_bytes1 = "07";
+  uint8_t expected_value1 = 7;
+  uint8_t actual_value1 = Casper::u8Decode(u8_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string encoded_value1 = Casper::u8Encode(expected_value1);
+  TEST_ASSERT(iequals(u8_bytes1, encoded_value1));
+}
+
+void serializeU32Test() {
+  std::string u32_bytes1 = "01000000";
+  uint32_t expected_value1 = 1;
+  uint32_t actual_value1 = Casper::u32Decode(u32_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string encoded_value1 = Casper::u32Encode(expected_value1);
+  TEST_ASSERT(iequals(u32_bytes1, encoded_value1));
+
+  // ---
+
+  std::string u32_bytes2 = "00040000";
+  uint32_t expected_value2 = 1024;
+  uint32_t actual_value2 = Casper::u32Decode(u32_bytes2);
+  TEST_ASSERT(actual_value2 == expected_value2);
+
+  std::string encoded_value2 = Casper::u32Encode(expected_value2);
+  TEST_ASSERT(iequals(u32_bytes2, encoded_value2));
+}
+
+void serializeU64Test() {
+  std::string u64_bytes1 = "39f37bf07f010000";
+  uint64_t expected_value1 = 1649007129401;
+  uint64_t actual_value1 = Casper::u64Decode(u64_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string encoded_value1 = Casper::u64Encode(expected_value1);
+  TEST_ASSERT(iequals(u64_bytes1, encoded_value1));
+
+  // ---
+
+  std::string u64_bytes2 = "be7ab73d80010000";
+  uint64_t expected_value2 = 1650302876350;
+  uint64_t actual_value2 = Casper::u64Decode(u64_bytes2);
+  TEST_ASSERT(actual_value2 == expected_value2);
+
+  std::string encoded_value2 = Casper::u64Encode(expected_value2);
+  TEST_ASSERT(iequals(u64_bytes2, encoded_value2));
+}
+
+void serializeU128Test() {
+  std::string u128_bytes1 = "060000C0D0E0F0";
+  big_int expected_value1{"264848365584384"};
+  big_int actual_value1 = Casper::u128Decode(u128_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string encoded_value1 = Casper::u128Encode(expected_value1);
+  TEST_ASSERT(iequals(u128_bytes1, encoded_value1));
+}
+
+void serializeU256Test() {
+  std::string u256_bytes1 =
+      "20ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+  big_int expected_value1{
+      "115792089237316195423570985008687907853269984665640564039457584007913129"
+      "639935"};
+  big_int actual_value1 = Casper::u256Decode(u256_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string encoded_value1 = Casper::u256Encode(expected_value1);
+  TEST_ASSERT(iequals(u256_bytes1, encoded_value1));
+
+  // ---
+
+  std::string u256_bytes2 = "020e08";
+  big_int expected_value2{"2062"};
+  big_int actual_value2 = Casper::u256Decode(u256_bytes2);
+  TEST_ASSERT(actual_value2 == expected_value2);
+
+  std::string encoded_value2 = Casper::u256Encode(expected_value2);
+  TEST_ASSERT(iequals(u256_bytes2, encoded_value2));
+}
+
+void serializeU512Test() {
+  std::string u512_bytes1 = "050e2389f603";
+  big_int expected_value1{"17021084430"};
+  big_int actual_value1 = Casper::u512Decode(u512_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string encoded_value1 = Casper::u512Encode(expected_value1);
+  TEST_ASSERT(iequals(u512_bytes1, encoded_value1));
+
+  // ---
+
+  std::string u512_bytes2 = "00";
+  big_int expected_value2{"0"};
+  big_int actual_value2 = Casper::u512Decode(u512_bytes2);
+  TEST_ASSERT(actual_value2 == expected_value2);
+
+  std::string encoded_value2 = Casper::u512Encode(expected_value2);
+  TEST_ASSERT(iequals(u512_bytes2, encoded_value2));
+
+  // ---
+
+  std::string u512_bytes3 = "050e6b1623e8";
+  big_int expected_value3{"997021084430"};
+  big_int actual_value3 = Casper::u512Decode(u512_bytes3);
+  TEST_ASSERT(actual_value3 == expected_value3);
+
+  std::string encoded_value3 = Casper::u512Encode(expected_value3);
+  TEST_ASSERT(iequals(u512_bytes3, encoded_value3));
+}
+
+void serializeUnitTest() {
+  /*
+  {
+  "bytes": "",
+  "parsed": null,
+  "cl_type": "Unit"
+}
+  */
+
+  /*
+ Unit serializes to an empty byte array.
+  */
+}
+
+void serializeStringTest() {
+  std::string deposit_bytes = "070000006465706f736974";
+  std::string hello_world_bytes = "0d00000048656c6c6f2c20576f726c6421";
+
+  std::string expected_deposit = "deposit";
+  std::string actual_deposit = Casper::StringUtil::hexToString(deposit_bytes);
+  TEST_ASSERT(expected_deposit == actual_deposit);
+
+  std::string encoded_deposit = Casper::StringUtil::stringToHex(actual_deposit);
+  std::cout << "encoded_deposit: " << encoded_deposit << std::endl;
+  TEST_ASSERT(iequals(deposit_bytes, encoded_deposit));
+
+  std::string expected_hello_world = "Hello, World!";
+  std::string actual_hello_world =
+      Casper::StringUtil::hexToString(hello_world_bytes);
+  TEST_ASSERT(expected_hello_world == actual_hello_world);
+
+  std::string encoded_hello_world =
+      Casper::StringUtil::stringToHex(actual_hello_world);
+  std::cout << "encoded_hello_world: " << encoded_hello_world << std::endl;
+  TEST_ASSERT(iequals(hello_world_bytes, encoded_hello_world));
+}
+
+void serializeURefTest() {
+  //
+}
+
+void serializeKeyTest() {
+  /*
+{
+  "bytes":
+"0123cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6",
+  "parsed": {
+    "Hash":
+"hash-23cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6"
+  },
+  "cl_type": "Key"
+}
+  */
+
+  nlohmann::json key_json =
+      R"({"bytes":"0123cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6","parsed":{"Hash":"hash-23cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6"},"cl_type":"Key"})";
+
+  std::string key_bytes_str =
+      "0123cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6";
+  std::string key_str =
+      "hash-23cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6";
+
+  CryptoPP::SecByteBlock key_bytes =
+      Casper::CEP57Checksum::Decode(key_bytes_str);
+
+  nlohmann::json parsed_key;
+  Casper::to_json(parsed_key, Casper::GlobalStateKey::FromBytes(key_bytes));
+  std::cout << "parsed_key: " << parsed_key.dump(4) << std::endl;
+  TEST_ASSERT(iequals(key_str, parsed_key));
+
+  std::string actual_bytes_str = Casper::CEP57Checksum::Encode(key_bytes);
+
+  TEST_ASSERT(iequals(key_bytes_str, actual_bytes_str));
+}
+
+void serializePublicKeyTest() {
+  /*
+{
+  "bytes": "01b92e36567350dd7b339d709bfe341df6fda853e85315418f1bb3ddd414d9f5be",
+  "parsed":
+"01b92e36567350dd7b339d709bfe341df6fda853e85315418f1bb3ddd414d9f5be", "cl_type":
+"PublicKey"
+}
+
+  */
+  nlohmann::json public_key_json =
+      R"({"bytes":"01b92e36567350dd7b339d709bfe341df6fda853e85315418f1bb3ddd414d9f5be","parsed":"01b92e36567350dd7b339d709bfe341df6fda853e85315418f1bb3ddd414d9f5be","cl_type":"PublicKey"})";
+
+  std::string public_key_bytes_str =
+      "01b92e36567350dd7b339d709bfe341df6fda853e85315418f1bb3ddd414d9f5be";
+
+  CryptoPP::SecByteBlock public_key_bytes =
+      Casper::CEP57Checksum::Decode(public_key_bytes_str);
+
+  nlohmann::json parsed_public_key;
+  Casper::to_json(parsed_public_key,
+                  Casper::PublicKey::FromBytes(public_key_bytes));
+
+  std::cout << "parsed_public_key: " << parsed_public_key.dump(4) << std::endl;
+
+  std::string actual_bytes_str =
+      Casper::CEP57Checksum::Encode(public_key_bytes);
+
+  TEST_ASSERT(iequals(public_key_bytes_str, actual_bytes_str));
+
+  std::string expected_public_key_str =
+      "01b92e36567350dd7b339d709bfe341df6fda853e85315418f1bb3ddd414d9f5be";
+
+  TEST_ASSERT(iequals(expected_public_key_str, parsed_public_key));
+}
+
+void serializeOptionTest() {
+  /*
+  Optional values serialize with a single byte tag, followed by the
+  serialization of the value itself. The tag is equal to 0 if the value is
+  missing, and 1 if it is present.
+    E.g. None serializes as 0x00
+    E.g. Some(10u32) serializes as 0x010a000000
+*/
+
+  /*
+{
+  "bytes": "0101000000140000007a627974652d32352d536f74686562795f312d32",
+  "parsed": [
+    "zbyte-25-Sotheby_1-2"
+  ],
+  "cl_type": {
+    "Option": {
+      "List": "String"
+    }
+  }
+}
+  */
+
+  /*
+ {
+   "bytes": "017ce8020000000000",
+   "parsed": 190588,
+   "cl_type": {
+     "Option": "U64"
+   }
+ }
+  */
+}
+
+std::vector<uint8_t> hexToByteArray(const std::string& bytes_str) {
+  /*
+  "cl_type":{
+    "ByteArray":32
+  }
+  */
+
+  std::vector<uint8_t> ret;
+
+  for (int i = 0; i < bytes_str.length() / 2; i++) {
+    std::string byte_str = bytes_str.substr(i * 2, 2);
+    uint8_t byte = Casper::u8Decode(byte_str);
+    ret.push_back(byte);
+  }
+  return ret;
+}
+
+std::string byteArrayToHex(const std::vector<uint8_t>& bytes) {
+  std::string ret;
+  for (uint8_t byte : bytes) {
+    std::string byte_str = Casper::u8Encode(byte);
+    ret += byte_str;
+  }
+  return ret;
+}
+
+// 32 bytes fixed length - 64 hex characters
+void serializeByteArrayTest() {
+  std::string byte_array_bytes1 =
+      "8541116c667bb15b43464a70fa681f8a50dcdf876f43a86b074de9597ca010e1";
+  std::vector<uint8_t> expected_value1{
+      0x85, 0x41, 0x11, 0x6c, 0x66, 0x7b, 0xb1, 0x5b, 0x43, 0x46, 0x4a,
+      0x70, 0xfa, 0x68, 0x1f, 0x8a, 0x50, 0xdc, 0xdf, 0x87, 0x6f, 0x43,
+      0xa8, 0x6b, 0x07, 0x4d, 0xe9, 0x59, 0x7c, 0xa0, 0x10, 0xe1};
+
+  std::vector<uint8_t> actual_value1 = hexToByteArray(byte_array_bytes1);
+  TEST_ASSERT(actual_value1 == expected_value1);
+
+  std::string encoded_value1 = byteArrayToHex(expected_value1);
+  TEST_ASSERT(iequals(byte_array_bytes1, encoded_value1));
+
+  /*
+  // TODO:
+  {
+  "bytes": "c2ca7eee6617ac22ddee0c2104477f359186517ba9a246cca445e4654e5562f5",
+  "parsed": "c2ca7eee6617ac22ddee0c2104477f359186517ba9a246cca445e4654e5562f5",
+  "cl_type": {
+    "ByteArray": 32
+  }
+}
+  */
+}
+
+void serializeMapTest() {
+  /*
+  {
+  "bytes":
+"0500000015000000636f6e74726163745f7061636b6167655f6861736840000000633236373761303834363632336362393235633563433241393265463539373544466436636338326439463831433864433034414445393835313733353546440a0000006576656e745f7479706507000000617070726f7665050000006f776e65724e0000004b65793a3a4163636f756e74283335623636353632646139393637336237303331376433344633354234456536364639353734304333653231313666346563316138373232353532463434643829070000007370656e6465724b0000004b65793a3a486173682832334344343335343330344634654231644436373339434241363664343135373939333665324345433135353330393644393761413465464236423636316536290500000076616c75654e000000313135373932303839323337333136313935343233353730393835303038363837393037383533323639393834363635363430353634303339343537353834303037393133313239363339393335",
+  "parsed": [
+    {
+      "key": "contract_package_hash",
+      "value":
+"c2677a0846623cb925c5cC2A92eF5975DFd6cc82d9F81C8dC04ADE98517355FD"
+    },
+    {
+      "key": "event_type",
+      "value": "approve"
+    },
+    {
+      "key": "owner",
+      "value":
+"Key::Account(35b66562da99673b70317d34F35B4Ee66F95740C3e2116f4ec1a8722552F44d8)"
+    },
+    {
+      "key": "spender",
+      "value":
+"Key::Hash(23CD4354304F4eB1dD6739CBA66d41579936e2CEC1553096D97aA4eFB6B661e6)"
+    },
+    {
+      "key": "value",
+      "value":
+"115792089237316195423570985008687907853269984665640564039457584007913129639935"
+    }
+  ],
+  "cl_type": {
+    "Map": {
+      "key": "String",
+      "value": "String"
+    }
+  }
+}
+  */
+
+  // example2
+
+  /*
+ {
+   "bytes":
+ "0500000015000000636f6e74726163745f7061636b6167655f6861736840000000633236373761303834363632336362393235633563433241393265463539373544466436636338326439463831433864433034414445393835313733353546440a0000006576656e745f74797065070000006465706f736974090000007372635f7075727365560000005552656628454232383666333938396531416242353132626361436432623164374343644261396165303333633362343966453543393036363343423731623063443664382c20524541445f4144445f57524954452902000000746f4e0000004b65793a3a4163636f756e742865313964423836364431433437383945303735613066363634664337334234343031373066643534334164373844453535376534463233394434363836324544290500000076616c75650c000000393539303231303834343330",
+   "parsed": [
+     {
+       "key": "contract_package_hash",
+       "value":
+ "c2677a0846623cb925c5cC2A92eF5975DFd6cc82d9F81C8dC04ADE98517355FD"
+     },
+     {
+       "key": "event_type",
+       "value": "deposit"
+     },
+     {
+       "key": "src_purse",
+       "value":
+ "URef(EB286f3989e1AbB512bcaCd2b1d7CCdBa9ae033c3b49fE5C90663CB71b0cD6d8,
+ READ_ADD_WRITE)"
+     },
+     {
+       "key": "to",
+       "value":
+ "Key::Account(e19dB866D1C4789E075a0f664fC73B440170fd543Ad78DE557e4F239D46862ED)"
+     },
+     {
+       "key": "value",
+       "value": "959021084430"
+     }
+   ],
+   "cl_type": {
+     "Map": {
+       "key": "String",
+       "value": "String"
+     }
+   }
+ }
+  */
+}
+
+void serializeAnyTest() {
+  /*
+{
+  "bytes":
+"06000000050e6f1c4adf07200000008bf67d697b785deb0a6569c7210c80f90b0388a592a83cd66287e1dcb5a3905d2c000000414f4764754762527848696542316f505a6b2f484f305142635031554f74654e3556666b386a6e5561474c74",
+  "parsed": null,
+  "cl_type": "Any"
+}
+  */
+}
+
+// to store list inside map map["List"]: list_inner_type
+Casper::CLTypeRVA createContainerMap(std::string key, Casper::CLTypeRVA value) {
+  std::map<std::string, Casper::CLTypeRVA> cl_map_type;
+  cl_map_type[key] = value;
+
+  Casper::CLTypeRVA rva = cl_map_type;
+
+  return rva;
+}
+
+Casper::CLTypeRVA createOption(Casper::CLTypeRVA value) {
+  return createContainerMap("Option", value);
+}
+
+Casper::CLTypeRVA createList(Casper::CLTypeRVA value) {
+  return createContainerMap("List", value);
+}
+
+Casper::CLTypeRVA createMap(Casper::CLTypeRVA key, Casper::CLTypeRVA value) {
+  std::map<Casper::CLTypeRVA, Casper::CLTypeRVA> cl_map_type;
+  cl_map_type[key] = value;
+
+  Casper::CLTypeRVA rva = cl_map_type;
+
+  return rva;
+}
+
+Casper::CLTypeRVA createTuple1(Casper::CLTypeRVA value1) {
+  std::vector<Casper::CLTypeRVA> cl_tuple1_type;
+  cl_tuple1_type.push_back(value1);
+
+  Casper::CLTypeRVA rva = cl_tuple1_type;
+
+  nlohmann::json j;
+  Casper::to_json(j, rva);
+  std::cout << j.dump() << std::endl;
+
+  return createContainerMap("Tuple1", rva);
+}
+
+Casper::CLTypeRVA createTuple2(Casper::CLTypeRVA value1,
+                               Casper::CLTypeRVA value2) {
+  std::vector<Casper::CLTypeRVA> cl_tuple2_type;
+  cl_tuple2_type.push_back(value1);
+  cl_tuple2_type.push_back(value2);
+
+  Casper::CLTypeRVA rva = cl_tuple2_type;
+
+  return createContainerMap("Tuple2", rva);
+}
+
+Casper::CLTypeRVA createTuple3(Casper::CLTypeRVA value1,
+                               Casper::CLTypeRVA value2,
+                               Casper::CLTypeRVA value3) {
+  std::vector<Casper::CLTypeRVA> cl_tuple3_type;
+  cl_tuple3_type.push_back(value1);
+  cl_tuple3_type.push_back(value2);
+  cl_tuple3_type.push_back(value3);
+
+  Casper::CLTypeRVA rva = cl_tuple3_type;
+
+  return createContainerMap("Tuple3", rva);
+}
+
+bool threeWayCompare(Casper::CLTypeRVA rva) {
+  // create a json from the initial type object
+  nlohmann::json obj_to_json;
+  Casper::to_json(obj_to_json, rva);
+
+  std::cout << "json: " << obj_to_json.dump() << std::endl;
+
+  // create a new type object object from the generated json
+  Casper::CLTypeRVA json_to_obj;
+  Casper::from_json(obj_to_json, json_to_obj);
+
+  // create a new json from the generated CLType object
+  nlohmann::json final_json;
+  Casper::to_json(final_json, json_to_obj);
+
+  std::cout << "final json: " << final_json.dump() << std::endl;
+
+  // compare the final parsed json with the initial json
+  bool result = obj_to_json == final_json;
+  return result;
+}
+
+/// map<String, List<PublicKey>>
+void cltype_test() {
+  // String
+  auto key_type = Casper::CLTypeEnum::String;
+
+  // List<PublicKey>
+  auto value_type = createList(Casper::CLTypeEnum::PublicKey);
+
+  // map<String, List<PublicKey>>
+  auto map_type = createMap(key_type, value_type);
+
+  // assert that the serialization-deserialization is correct
+  TEST_ASSERT(threeWayCompare(map_type));
+}
+
+/// List<String>
+void cltype_str_list_test() {
+  // List<String>
+  Casper::CLTypeRVA list_type = createList(Casper::CLTypeEnum::String);
+
+  // assert that the serialization-deserialization is correct
+  TEST_ASSERT(threeWayCompare(list_type));
+}
+
+// TODO:
+void cltype_json_test() {
+  nlohmann::json j_map;
+
+  j_map["cl_type"] = {{"Map", {{"key", "String"}, {"value", "String"}}}};
+
+  nlohmann::json j_str_list;
+  j_str_list["cl_type"] = {{"List", "String"}};
+
+  /*
+    std::cout << std::endl;
+    std::cout << j_map.dump(2) << std::endl;
+
+    std::cout << std::endl;
+    std::cout << j_str_list.dump(2) << std::endl;
+    */
+}
+
+/// Option<Bool>
+void clType_option_test() {
+  // Option<Bool>
+  Casper::CLTypeRVA opt_type = createOption(Casper::CLTypeEnum::Bool);
+
+  // assert that the serialization-deserialization is correct
+  TEST_ASSERT(threeWayCompare(opt_type));
+}
+
+/// Option<List<Map<U64, U8>>>
+void clType_option_recursiveTest() {
+  // Option<List<Map<U64, U8>>>
+  Casper::CLTypeRVA opt_type = createOption(
+      createList(createMap(Casper::CLTypeEnum::U64, Casper::CLTypeEnum::U8)));
+
+  // assert that the serialization-deserialization is correct
+  TEST_ASSERT(threeWayCompare(opt_type));
+}
+
+/// Tuple1<Bool>
+void clType_tuple1_test() {
+  Casper::CLTypeRVA tuple1_type = createTuple1(Casper::CLTypeEnum::Unit);
+
+  TEST_ASSERT(threeWayCompare(tuple1_type));
+}
+
+/// Tuple2<Bool, I32>
+void clType_tuple2_test() {
+  auto elem1 = Casper::CLTypeEnum::Bool;
+  auto elem2 = Casper::CLTypeEnum::I32;
+
+  auto tuple2_type = createTuple2(elem1, elem2);
+
+  TEST_ASSERT(threeWayCompare(tuple2_type));
+}
+
+/// Tuple2<U256, List<Any>>
+void clType_tuple2_recursiveTest() {
+  auto elem1 = Casper::CLTypeEnum::U256;
+  auto elem2 = createList(Casper::CLTypeEnum::Any);
+
+  auto tuple2_type = createTuple2(elem1, elem2);
+
+  TEST_ASSERT(threeWayCompare(tuple2_type));
+}
+
+void clType_tuple3_test() {
+  auto elem1 = Casper::CLTypeEnum::I32;
+  auto elem2 = Casper::CLTypeEnum::String;
+  auto elem3 = createOption(Casper::CLTypeEnum::U512);
+
+  auto tuple3_type = createTuple3(elem1, elem2, elem3);
+
+  TEST_ASSERT(threeWayCompare(tuple3_type));
+}
+
+void clTypeParsed_test() {
+  std::string json_str = R"(
+  {
+    "bytes": "06da6662305f01",
+    "parsed": "1508345276122",
+    "cl_type": "U512"
+  }
+  )";
+
+  nlohmann::json j = nlohmann::json::parse(json_str);
+  std::cout << std::endl << j.dump(2) << std::endl;
+  Casper::CLValue cl;
+  Casper::from_json(j, cl);
+
+  TEST_ASSERT(rva::get<Casper::CLTypeEnum>(cl.cl_type.type) ==
+              Casper::CLTypeEnum::U512);
+
+  nlohmann::json j2;
+  Casper::to_json(j2, cl);
+  std::cout << std::endl << j2.dump(2) << std::endl;
+
+  TEST_ASSERT(j2.dump() == j.dump());
+}
+
+/// test the serialization of a CLValue using a json file as input
+void clValue_with_jsonFile(std::string file_name) {
+  // read the json file
+  nlohmann::json input_json;
+  try {
+    std::string file_path = __FILE__;
+    std::string dir_path = file_path.substr(0, file_path.rfind("/"));
+    std::cout << dir_path << std::endl;
+    std::string file_path_name = dir_path + "/data/CLValue/" + file_name;
+    std::ifstream ifs(file_path_name);
+    input_json = nlohmann::json::parse(ifs);
+  } catch (std::exception& e) {
+    std::cout << "clValue_with_jsonFile: " << e.what() << std::endl;
+  }
+
+  std::cout << std::endl << input_json.dump(2) << std::endl;
+
+  // create a CLValue from the json
+  Casper::CLValue generated_obj;
+  Casper::from_json(input_json, generated_obj);
+
+  // create a new json from the generated CLValue
+  nlohmann::json generated_json;
+  Casper::to_json(generated_json, generated_obj);
+
+  std::cout << std::endl << generated_json.dump(2) << std::endl;
+
+  // compare the final parsed json with the initial json
+  TEST_ASSERT(generated_json.dump() == input_json.dump());
+}
+void clValue_with_boolTrueTest() { clValue_with_jsonFile("Bool-True.json"); }
+
+void clValue_with_boolFalseTest() { clValue_with_jsonFile("Bool-False.json"); }
+
+void clValue_with_I32Test() { clValue_with_jsonFile("I32.json"); }
+
+void clValue_with_I64Test() { clValue_with_jsonFile("I64.json"); }
+
+void clValue_with_U8Test() { clValue_with_jsonFile("U8.json"); }
+
+void clValue_with_U32Test() { clValue_with_jsonFile("U32.json"); }
+
+void clValue_with_U64Test() { clValue_with_jsonFile("U64.json"); }
+
+void clValue_with_U128Test() { clValue_with_jsonFile("U128.json"); }
+
+void clValue_with_U256Test() { clValue_with_jsonFile("U256.json"); }
+
+void clValue_with_U256_2Test() { clValue_with_jsonFile("U256-2.json"); }
+
+void clValue_with_U512Test() { clValue_with_jsonFile("U512.json"); }
+
+void clValue_with_U512_0Test() { clValue_with_jsonFile("U512-0.json"); }
+
+void clValue_with_UnitTest() { clValue_with_jsonFile("Unit.json"); }
+
+void clValue_with_StringTest() { clValue_with_jsonFile("String.json"); }
+
+void clValue_with_URefTest() { clValue_with_jsonFile("URef.json"); }
+
+// void clValue_with_KeyTest() { clValue_with_jsonFile("Key.json"); }
+
+void clValue_with_PublicKeyTest() { clValue_with_jsonFile("PublicKey.json"); }
+
+void clValue_with_OptionTest() { clValue_with_jsonFile("Option.json"); }
+
+void clValue_with_OptionListKeyNULLTest() {
+  clValue_with_jsonFile("OptionListKey-NULL.json");
+}
+
+void clValue_with_OptionU64NULLTest() {
+  clValue_with_jsonFile("OptionU64-NULL.json");
+}
+
+void clValue_with_OptionU64Test() { clValue_with_jsonFile("OptionU64.json"); }
+
+void clValue_with_ListTest() { clValue_with_jsonFile("List.json"); }
+
+void clValue_with_ListByteArray32Test() {
+  clValue_with_jsonFile("ListByteArray32.json");
+}
+
+void clValue_with_ListOptionStringTest() {
+  clValue_with_jsonFile("ListOptionString.json");
+}
+
+void clValue_with_ListU8Test() { clValue_with_jsonFile("ListU8.json"); }
+
+void clValue_with_ListU256Test() { clValue_with_jsonFile("ListU256.json"); }
+
+void clValue_with_ByteArrayTest() { clValue_with_jsonFile("ByteArray.json"); }
+
+// void clValue_with_ResultOkTest() { clValue_with_jsonFile("ResultOk.json");
+// }
+
+// void clValue_with_ResultErrTest() {
+// clValue_with_jsonFile("ResultErr.json");
+
+void clValue_with_MapTest() { clValue_with_jsonFile("Map.json"); }
+
+void clValue_with_Tuple1Test() { clValue_with_jsonFile("Tuple1.json"); }
+
+void clValue_with_Tuple2Test() { clValue_with_jsonFile("Tuple2.json"); }
+
+void clValue_with_Tuple3Test() { clValue_with_jsonFile("Tuple3.json"); }
+
+void clValue_with_AnyTest() { clValue_with_jsonFile("Any.json"); }
+
+#define RPC_TEST 1
+#define SER_DE_TEST 1
+#define CL_TYPE_TEST 1
+#define CL_VALUE_TEST 1
+
 TEST_LIST = {
+
+#if RPC_TEST == 1
     {"infoGetPeers checks node list size", infoGetPeers_Test},
     {"chainGetStateRootHash using Block height parameter",
      chainGetStateRootHash_with_blockHeightTest},
@@ -579,7 +1359,7 @@ TEST_LIST = {
      chainGetStateRootHash_with_invalidBlockHeightTest},
     {"chainGetStateRootHash using Block hash parameter",
      chainGetStateRootHash_with_blockHashTest},
-    {"chainGetStateRootHash using empty Block hash parameter",
+    {"chainGetStateRootHash using empty Block hash parameter ",
      chainGetStateRootHash_with_emptyParameterTest},
     {"infoGetDeploy using Deploy hash parameter",
      infoGetDeploy_with_deployHashTest},
@@ -591,23 +1371,96 @@ TEST_LIST = {
      chainGetBlockTransfers_with_blockHashTest},
     {"chainGetBlock using Block hash parameter",
      chainGetBlock_with_blockHashTest},
-    {"chainGetEraInfoBySwitchBlock using Block hash parameter",
+    {"chainGetEraInfoBySwitchBlock using Block hash parameter ",
      chainGetEraInfoBySwitchBlock_with_blockHashTest},
-    {"stateGetItem using state root hash and key parameters",
+    {"stateGetItem using state root hash and key parameters ",
      stateGetItem_with_keyTest},
-    {"stateGetItem using invalid state root hash and key parameters",
+    {"stateGetItem using invalid state root hash and key parameters ",
      stateGetItem_with_invalidKeyTest},
     {"stateGetDictionaryItem using state root hash and dictionary key "
-     "parameters",
+     " parameters ",
      stateGetDictionaryItem_with_keyTest},
     {"stateGetBalance compares with a reference value",
      stateGetBalance_with_urefTest},
-    {"stateGetBalance using invalid URef and state root hash "
-     "parameters",
+    {"stateGetBalance using invalid URef and state root hash parameters ",
      stateGetBalance_with_invalidUrefTest},
     {"stateGetAuctionInfo using Block hash parameter (may take a while)",
      stateGetAuctionInfo_with_blockHashTest},
     {"toLower checks internal lower case converter", stringUtil_toLowerTest},
     {"getAccountHash checks internal PublicKey to AccountHash converter",
      publicKey_getAccountHashTest},
+#endif
+
+#if SER_DE_TEST == 1
+    {"Serialize - Bool", serializeBoolTest},
+    {"Serialize - I32", serializeI32Test},
+    {"Serialize - I64", serializeI64Test},
+    {"Serialize - String", serializeStringTest},
+    {"Serialize - U8", serializeU8Test},
+    {"Serialize - U32", serializeU32Test},
+    {"Serialize - U64", serializeU64Test},
+    {"Serialize - U128", serializeU128Test},
+    {"Serialize - U256", serializeU256Test},
+    {"Serialize - U512", serializeU512Test},
+    {"Serialize - ByteArray", serializeByteArrayTest},
+    {"Serialize - Key", serializeKeyTest},
+    {"Serialize - PublicKey", serializePublicKeyTest},
+#endif
+
+#if CL_TYPE_TEST == 1
+
+    {"CLType", cltype_test},
+    {"CLType json", cltype_json_test},
+    {"CLType List<String>", cltype_str_list_test},
+    {"CLValue parsed", clTypeParsed_test},
+
+    {"CLType Tuple1", clType_tuple1_test},
+    {"CLType Tuple2", clType_tuple2_test},
+    {"CLType Tuple2 recursive", clType_tuple2_recursiveTest},
+    {"CLType Tuple3", clType_tuple3_test},
+    {"CLType Option", clType_option_test},
+    {"CLType Option recursive", clType_option_recursiveTest},
+#endif
+
+#if CL_VALUE_TEST == 1
+    {"CLValue using Bool expected false", clValue_with_boolFalseTest},
+    {"CLValue using Bool expected true", clValue_with_boolTrueTest},
+    {"CLValue using I32", clValue_with_I32Test},
+    {"CLValue using I64", clValue_with_I64Test},
+    {"CLValue using U8", clValue_with_U8Test},
+    {"CLValue using U32", clValue_with_U32Test},
+    {"CLValue using U64", clValue_with_U64Test},
+    {"CLValue using U128", clValue_with_U128Test},
+    {"CLValue using U256", clValue_with_U256Test},
+    {"CLValue using U256-2", clValue_with_U256_2Test},
+    {"CLValue using U512", clValue_with_U512Test},
+    {"CLValue using U512-0", clValue_with_U512_0Test},
+    {"CLValue using Unit", clValue_with_UnitTest},
+    {"CLValue using String", clValue_with_StringTest},
+    {"CLValue using URef", clValue_with_URefTest},
+    // {"CLValue using Key", clValue_with_KeyTest},
+    // {"CLValue using Account Key", clValue_with_accountKeyTest},
+    // {"CLValue using Hash Key", clValue_with_hashKeyTest},
+    {"CLValue using PublicKey", clValue_with_PublicKeyTest},
+    {"CLValue using Option", clValue_with_OptionTest},
+    {"CLValue using Option<List<Key>> = NULL",
+     clValue_with_OptionListKeyNULLTest},
+    {"CLValue using Option<U64> = NULL", clValue_with_OptionU64NULLTest},
+    {"CLValue using Option<U64>", clValue_with_OptionU64Test},
+    {"CLValue using List", clValue_with_ListTest},
+    {"CLValue using List<ByteArray:32>", clValue_with_ListByteArray32Test},
+    {"CLValue using List<Option<String>>", clValue_with_ListOptionStringTest},
+    {"CLValue using List<U8>", clValue_with_ListU8Test},
+    {"CLValue using List<U256>", clValue_with_ListU256Test},
+    {"CLValue using ByteArray", clValue_with_ByteArrayTest},
+    // {"CLValue using ResultOk", clValue_with_ResultOkTest},
+    // {"CLValue using ResultErr", clValue_with_ResultErrTest},
+    {"CLValue using Map", clValue_with_MapTest},
+    {"CLValue using Tuple1", clValue_with_Tuple1Test},
+    {"CLValue using Tuple2", clValue_with_Tuple2Test},
+    {"CLValue using Tuple3", clValue_with_Tuple3Test},
+    {"CLValue using Any", clValue_with_AnyTest},
+
+#endif
+
     {NULL, NULL}};
