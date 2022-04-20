@@ -95,6 +95,7 @@ struct KeyPair {
         _publicKey = newKey.Public, _privateKey = newKey.Private};
   }
   */
+    return KeyPair();  // TODO: delete after implementation  of above
   }
 
   /// <summary>
@@ -174,6 +175,9 @@ struct KeyPair {
 
       // throw new Exception("Unsupported key type.");
     }
+
+    return CryptoPP::SecByteBlock();  // TODO: delete after implementation  of
+                                      // above
   }
 };
 

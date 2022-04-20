@@ -99,6 +99,8 @@ int Deploy::GetDeploySizeInBytes() const {
 
   // var serializer = new DeployByteSerializer();
   // return serializer.ToBytes(this).Length;
+
+  return 0;
 }
 
 CryptoPP::SecByteBlock Deploy::ComputeBodyHash(ExecutableDeployItem payment,

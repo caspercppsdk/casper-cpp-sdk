@@ -30,6 +30,7 @@ GlobalStateKey::GlobalStateKey(std::string key_, std::string key_prefix) {
   CryptoPP::SecByteBlock res =
       CEP57Checksum::Decode(key_.substr(key_.find_last_of('-') + 1));
   key = key_prefix + CEP57Checksum::Encode(res);
+  raw_bytes = _GetRawBytesFromKey(key);
 }
 
 std::string GlobalStateKey::ToHexString() {

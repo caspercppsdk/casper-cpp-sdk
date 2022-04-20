@@ -123,7 +123,7 @@ struct GlobalStateKey {
 /// </summary>
 struct AccountHashKey : public GlobalStateKey {
   AccountHashKey(std::string key);
-  AccountHashKey(){};
+  AccountHashKey() { key_identifier = KeyIdentifier::ACCOUNT; }
   AccountHashKey(PublicKey publicKey);
 };
 

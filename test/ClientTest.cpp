@@ -1341,16 +1341,58 @@ void clValue_with_Tuple3Test() { clValue_with_jsonFile("Tuple3.json"); }
 
 void clValue_with_AnyTest() { clValue_with_jsonFile("Any.json"); }
 
-void globalStateKey_serializer_test() {
-  Casper::GlobalStateKey acc_key(
-      "account-hash-"
-      "e86137e99b1c3417885e13531e79bb9af790bbf2a4886f639b6245596f9e67c6");
-
+template <typename T>
+void globalStateKey_serialize(T key, std::string& expected_bytes_str) {
   Casper::GlobalStateKeyByteSerializer gsk_serializer;
-  CryptoPP::SecByteBlock gsk_bytes = gsk_serializer.ToBytes(acc_key);
 
-  std::cout << std::endl << "gsk_bytes: " << gsk_bytes.size() << std::endl;
-  std::cout << Casper::CEP57Checksum::Encode(gsk_bytes) << std::endl;
+  CryptoPP::SecByteBlock key_bytes = gsk_serializer.ToBytes(key);
+
+  std::string bytes_str = Casper::CEP57Checksum::Encode(key_bytes);
+
+  std::cout << std::endl << "key_bytes: " << key_bytes.size() << std::endl;
+  std::cout << bytes_str << std::endl;
+
+  TEST_ASSERT(iequals(expected_bytes_str, bytes_str));
+}
+
+void globalStateKey_serializer_test() {
+  /// ACCOUNT HASH TEST
+  Casper::AccountHashKey acc_key(
+      "account-hash-"
+      "1b2d1d9069d21f916ab58be305c816b8f5258177d9cf29eee33728c4e934f094");
+
+  std::string expected_acc_bytes_str =
+      "001b2d1d9069d21f916ab58be305c816b8f5258177d9cf29eee33728c4e934f094";
+
+  globalStateKey_serialize<Casper::AccountHashKey>(acc_key,
+                                                   expected_acc_bytes_str);
+
+  // HASH TEST
+  Casper::HashKey hash_key(
+      "hash-96053169b397360449b4de964200be449594ca93f252153f0a679b804e214a54");
+
+  std::string expected_hash_bytes_str =
+      "0196053169b397360449b4de964200be449594ca93f252153f0a679b804e214a54";
+
+  globalStateKey_serialize<Casper::HashKey>(hash_key, expected_hash_bytes_str);
+
+  /// UREF TEST
+  Casper::URef uref_key(
+      "uref-e48935c79e96c490c01e1e8800de5ec5f4a857a57db0dcffed1e1e2b5d29b5e4-"
+      "007");
+
+  std::string expected_uref_bytes_str =
+      "02e48935c79e96c490c01e1e8800de5ec5f4a857a57db0dcffed1e1e2b5d29b5e407";
+
+  globalStateKey_serialize<Casper::URef>(uref_key, expected_uref_bytes_str);
+
+  // ERA INFO TEST
+  Casper::EraInfoKey era_info_key("era-2685");
+
+  std::string expected_era_bytes_str = "057d0a000000000000";
+  // TODO:
+  // globalStateKey_serialize<Casper::EraInfoKey>(era_info_key,
+  // expected_era_bytes_str);
 }
 
 #define RPC_TEST 0
