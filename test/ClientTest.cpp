@@ -5,6 +5,9 @@
 #include <sstream>
 #include "Types/CLType.h"
 #include "Types/CLTypeParsedConverter.h"
+
+#include "ByteSerializers/GlobalStateKeyByteSerializer.h"
+
 #include "acutest.h"
 
 /// Helper function to print a result object
@@ -1338,13 +1341,26 @@ void clValue_with_Tuple3Test() { clValue_with_jsonFile("Tuple3.json"); }
 
 void clValue_with_AnyTest() { clValue_with_jsonFile("Any.json"); }
 
-#define RPC_TEST 1
-#define SER_DE_TEST 1
-#define CL_TYPE_TEST 1
-#define CL_VALUE_TEST 1
+void globalStateKey_serializer_test() {
+  Casper::GlobalStateKey acc_key(
+      "account-hash-"
+      "e86137e99b1c3417885e13531e79bb9af790bbf2a4886f639b6245596f9e67c6");
+
+  Casper::GlobalStateKeyByteSerializer gsk_serializer;
+  CryptoPP::SecByteBlock gsk_bytes = gsk_serializer.ToBytes(acc_key);
+
+  std::cout << std::endl << "gsk_bytes: " << gsk_bytes.size() << std::endl;
+  std::cout << Casper::CEP57Checksum::Encode(gsk_bytes) << std::endl;
+}
+
+#define RPC_TEST 0
+#define SER_DE_TEST 0
+#define CL_TYPE_TEST 0
+#define CL_VALUE_TEST 0
 
 TEST_LIST = {
 
+    {"gsk test", globalStateKey_serializer_test},
 #if RPC_TEST == 1
     {"infoGetPeers checks node list size", infoGetPeers_Test},
     {"chainGetStateRootHash using Block height parameter",
