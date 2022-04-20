@@ -3,6 +3,7 @@
 #include "Base.h"
 #include "Types/NamedArg.h"
 #include "Utils/CryptoUtil.h"
+#include "Types/CLConverter.h"
 #include "cryptopp/secblock.h"
 #include "nlohmann/json.hpp"
 
@@ -17,6 +18,17 @@ struct ModuleBytes {
   std::vector<NamedArg> args;
 
   ModuleBytes() {}
+
+  ModuleBytes(big_int amount) {
+    todo: use from clvalue class functions
+    CLValue clv;
+    // TODO: Add support for other types
+    clv.cl_type.type = CLTypeEnum::U512;
+    clv.parsed.parsed = amount;
+    clv.bytes = CEP57Checksum::Decode(u512Encode(amount));
+
+    args.push_back(NamedArg("amount", CLValue()));
+  }
 };
 
 /**

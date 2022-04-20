@@ -316,6 +316,14 @@ struct CLType {
   // TODO: ADD TAG
   CLType() : type(CLTypeEnum::Any) {}
   CLType(CLTypeRVA type) : type(type) {}
+
+  // TODO: Make functions like CLValue u512, u256, u128, u64, u32, u16, u8, etc.
+
+  CLType(int32_t byte_array_size) {
+    nlohmann::json j;
+    j["ByteArray"] = byte_array_size;
+    from_json(j, type);
+  }
 };
 
 // to_json of CLType

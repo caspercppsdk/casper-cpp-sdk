@@ -1,7 +1,7 @@
 #pragma once
 #include "Base.h"
 
-#include "Types/CLTypeParsedConverter.h"
+#include "Types/CLConverter.h"
 #include "Utils/CryptoUtil.h"
 #include "Utils/CEP57Checksum.h"
 

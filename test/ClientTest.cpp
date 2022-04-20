@@ -4,9 +4,11 @@
 #include "Utils/CryptoUtil.h"
 #include <sstream>
 #include "Types/CLType.h"
-#include "Types/CLTypeParsedConverter.h"
+#include "Types/CLConverter.h"
 
 #include "ByteSerializers/GlobalStateKeyByteSerializer.h"
+
+#include "Types/CLValue.h"
 
 #include "acutest.h"
 
@@ -1395,6 +1397,35 @@ void globalStateKey_serializer_test() {
   // expected_era_bytes_str);
 }
 
+void transfer_deploy_test() {
+  using namespace Casper;
+
+  std::tm t = {};
+  std::time_t tt;
+  std::istringstream ss("2021-09-25T17:01:24.399Z");
+
+  if (ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S")) {
+    std::put_time(&t, "%c");
+    tt = std::mktime(&t);
+  } else {
+    std::cout << "Parse failed\n";
+  }
+  // std::asctime(std::localtime(&tt)),
+  DeployHeader header(
+      Casper::PublicKey::FromHexString(
+          "01027c04a0210afdf4a83328d57e8c2a12247a86d872fb53367f22a84b1b53d2a9"),
+      std::asctime(&t), "30m", 1, "", {}, "casper-test");
+
+  Casper::PublicKey tgt_key = Casper::PublicKey::FromHexString(
+      "01027c04a0210afdf4a83328d57e8c2a12247a86d872fb53367f22a84b1b53d2a9");
+
+  big_int amount = "1000000000000000000";
+
+  ModuleBytes payment(amount);
+
+  TransferDeployItem session(15000000000, AccountHashKey(tgt_key),
+                             123456789012345);
+}
 #define RPC_TEST 0
 #define SER_DE_TEST 0
 #define CL_TYPE_TEST 0

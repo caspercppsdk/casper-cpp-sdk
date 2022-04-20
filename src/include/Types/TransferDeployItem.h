@@ -12,6 +12,31 @@ struct TransferDeployItem {
   std::vector<NamedArg> args;
 
   TransferDeployItem() {}
+
+  TransferDeployItem(big_int amount, AccountHashKey targetAccountHash,
+                     big_int id = -1) {
+    args.push_back(NamedArg("amount", CLValue::U512(amount)));
+
+    args.push_back(
+        NamedArg("target", CLValue::ByteArray(targetAccountHash.raw_bytes)));
+
+    if (id != -1) {
+      args.push_back(NamedArg("id", CLValue::));
+      /*
+
+
+          args.Add(
+              new NamedArg("target",
+         CLValue.ByteArray(targetAccountHash.RawBytes)));
+
+          var optionValue = id == null
+                                ? CLValue.OptionNone(new CLTypeInfo(CLType.U64))
+                                : CLValue.Option(CLValue.U64((ulong)id));
+          args.Add(new NamedArg("id", optionValue));
+
+          */
+    }
+  }
 };
 
 /**

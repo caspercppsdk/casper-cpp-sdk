@@ -14,7 +14,7 @@
 #include <optional>
 #include "magic_enum/magic_enum.hpp"
 
-#include "Types/CLTypeParsedConverter.h"
+#include "Types/CLConverter.h"
 
 namespace Casper {
 
@@ -310,6 +310,10 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
 
 struct CLTypeParsed {
   CLTypeParsedRVA parsed;
+
+  CLTypeParsed() : parsed(std::nullptr_t()) {}
+
+  CLTypeParsed(CLTypeParsedRVA parsed) : parsed(parsed) {}
 };
 
 // to_json of CLTypeParsed
