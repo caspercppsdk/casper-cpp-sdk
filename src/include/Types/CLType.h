@@ -169,20 +169,6 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
       nlohmann::json inner_val = {{"Ok", inner_map["Ok"]},
                                   {"Err", inner_map["Err"]}};
       j = {"Result", inner_val};
-    } else if (key_type == "Tuple1") {
-      auto inner_vec = std::get<1>(p_type.begin()->second);
-      nlohmann::json inner_val = nlohmann::json::array({inner_vec[0]});
-      j = {{"Tuple1", inner_val}};
-    } else if (key_type == "Tuple2") {
-      auto inner_vec = std::get<1>(p_type.begin()->second);
-      nlohmann::json inner_val =
-          nlohmann::json::array({inner_vec[0], inner_vec[1]});
-      j = {{"Tuple2", inner_val}};
-    } else if (key_type == "Tuple3") {
-      auto inner_vec = std::get<1>(p_type.begin()->second);
-      nlohmann::json inner_val =
-          nlohmann::json::array({inner_vec[0], inner_vec[1], inner_vec[2]});
-      j = {{"Tuple3", inner_val}};
     }
   }
   /// tuple1, tuple2, tuple3

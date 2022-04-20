@@ -80,29 +80,7 @@ struct CLValueByteSerializer : public BaseByteSerializer {
         throw std::runtime_error("Unknown type with idx:5 not bytearray");
       }
     }
-
-    case CLResultTypeInfo result:
-      CLTypeToBytes(ms, result.Ok);
-      CLTypeToBytes(ms, result.Err);
-      break;
-    case CLMapTypeInfo map:
-      CLTypeToBytes(ms, map.KeyType);
-      CLTypeToBytes(ms, map.ValueType);
-      break;
-    case CLTuple1TypeInfo tuple1:
-      CLTypeToBytes(ms, tuple1.Type0);
-      break;
-    case CLTuple2TypeInfo tuple2:
-      CLTypeToBytes(ms, tuple2.Type0);
-      CLTypeToBytes(ms, tuple2.Type1);
-      break;
-    case CLTuple3TypeInfo tuple3:
-      CLTypeToBytes(ms, tuple3.Type0);
-      CLTypeToBytes(ms, tuple3.Type1);
-      CLTypeToBytes(ms, tuple3.Type2);
-      break;
   }
-}
 };
 
 }  // namespace Casper

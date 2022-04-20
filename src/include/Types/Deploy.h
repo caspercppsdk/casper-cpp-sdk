@@ -51,8 +51,8 @@ struct Deploy {
         session(session_),
         approvals(approvals_) {}
 
-  Deploy(const DeployHeader& header, const ExecutableDeployItem& payment,
-         const ExecutableDeployItem& session);
+  Deploy(DeployHeader header, ExecutableDeployItem payment,
+         ExecutableDeployItem session);
 
   static Deploy loadFromJson(const nlohmann::json& input_json);
 

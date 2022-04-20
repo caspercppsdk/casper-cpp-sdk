@@ -20,14 +20,7 @@ struct ModuleBytes {
   ModuleBytes() {}
 
   ModuleBytes(big_int amount) {
-    todo: use from clvalue class functions
-    CLValue clv;
-    // TODO: Add support for other types
-    clv.cl_type.type = CLTypeEnum::U512;
-    clv.parsed.parsed = amount;
-    clv.bytes = CEP57Checksum::Decode(u512Encode(amount));
-
-    args.push_back(NamedArg("amount", CLValue()));
+    args.push_back(NamedArg("amount", CLValue::U512(amount)));
   }
 };
 
@@ -39,7 +32,7 @@ struct ModuleBytes {
  */
 
 inline void to_json(nlohmann::json& j, const ModuleBytes& p) {
-  j["module_bytes"] = CryptoUtil::hexEncode(p.module_bytes);
+  j["module_bytes"] = CEP57Checksum::Encode(p.module_bytes);
   j["args"] = p.args;
 }
 
@@ -52,7 +45,7 @@ inline void to_json(nlohmann::json& j, const ModuleBytes& p) {
 
 inline void from_json(const nlohmann::json& j, ModuleBytes& p) {
   std::string bytesString = j["module_bytes"].get<std::string>();
-  p.module_bytes = CryptoUtil::hexDecode(bytesString);
+  p.module_bytes = CEP57Checksum::Decode(bytesString);
 
   j.at("args").get_to(p.args);
 }

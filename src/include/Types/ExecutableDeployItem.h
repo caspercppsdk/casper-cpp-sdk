@@ -25,6 +25,25 @@ struct ExecutableDeployItem {
   std::optional<TransferDeployItem> transfer = std::nullopt;
 
   ExecutableDeployItem() {}
+
+  ExecutableDeployItem(ModuleBytes& module_bytes)
+      : module_bytes(module_bytes) {}
+
+  ExecutableDeployItem(StoredContractByHash& stored_contract_by_hash)
+      : stored_contract_by_hash(stored_contract_by_hash) {}
+
+  ExecutableDeployItem(StoredContractByName& stored_contract_by_name)
+      : stored_contract_by_name(stored_contract_by_name) {}
+
+  ExecutableDeployItem(
+      StoredVersionedContractByHash& stored_versioned_contract_by_hash)
+      : stored_versioned_contract_by_hash(stored_versioned_contract_by_hash) {}
+
+  ExecutableDeployItem(
+      StoredVersionedContractByName& stored_versioned_contract_by_name)
+      : stored_versioned_contract_by_name(stored_versioned_contract_by_name) {}
+
+  ExecutableDeployItem(TransferDeployItem& transfer) : transfer(transfer) {}
 };
 
 /**

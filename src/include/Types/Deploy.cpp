@@ -2,9 +2,8 @@
 
 namespace Casper {
 
-Deploy::Deploy(const DeployHeader& header_,
-               const ExecutableDeployItem& payment_,
-               const ExecutableDeployItem& session_) {
+Deploy::Deploy(DeployHeader header_, ExecutableDeployItem payment_,
+               ExecutableDeployItem session_) {
   CryptoPP::SecByteBlock body_hash = ComputeBodyHash(payment, session);
 
   this->header =

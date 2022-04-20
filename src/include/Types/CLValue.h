@@ -5,7 +5,7 @@
 #include "Types/CLTypeParsed.h"
 
 #include "cryptopp/secblock.h"
-#include "ByteSerializers/BaseByteSerializer.h"
+#include "ByteSerializers/GlobalStateKeyByteSerializer.h"
 #include "Utils/CEP57Checksum.h"
 #include "nlohmann/json.hpp"
 
@@ -123,7 +123,9 @@ struct CLValue {
   /// Returns a `CLValue` object with an U512 type.
   /// </summary>
   static CLValue U512(big_int value) {
+    std::cout << "u512Encode: " << u512Encode(value) << std::endl;
     SecByteBlock bytes = CEP57Checksum::Decode(u512Encode(value));
+    std::cout << "after bytes" << std::endl;
     return CLValue(bytes, CLTypeEnum::U512, value.toString());
   }
 
@@ -152,7 +154,7 @@ struct CLValue {
   /// </summary>
   static CLValue Unit() {
     // TODO: Check SecByteBlock(), maybe (0), should be empty
-    return CLValue(SecByteBlock(), CLTypeEnum::Unit, std::nullptr_t());
+    return CLValue(SecByteBlock(), CLTypeEnum::Unit, nullptr);
   }
 
   /// <summary>
@@ -193,92 +195,95 @@ struct CLValue {
     std::copy(innerValue.bytes.begin(), innerValue.bytes.end(),
               bytes.begin() + 1);
 
-    return CLValue(bytes, CLOptionTypeInfo(innerValue.cl_type),
-                   innerValue.parsed);
+    return CLValue(bytes, innerValue.cl_type, innerValue.parsed);
   }
 
-  static CLValue Option(int innerValue) {
-    CLValue::Option(CLValue::I32(innerValue));
+  static CLValue Option(int32_t innerValue) {
+    return CLValue::Option(CLValue::I32(innerValue));
   }
 
-  static CLValue Option(long innerValue) {
-    CLValue::Option(CLValue::I64(innerValue));
+  static CLValue Option(int64_t innerValue) {
+    return CLValue::Option(CLValue::I64(innerValue));
   }
 
-  static CLValue Option(byte innerValue) {
-    CLValue::Option(CLValue::U8(innerValue));
+  static CLValue Option(uint8_t innerValue) {
+    return CLValue::Option(CLValue::U8(innerValue));
   }
 
-  static CLValue Option(uint innerValue) {
-    CLValue::Option(CLValue::U32(innerValue));
+  static CLValue Option(uint32_t innerValue) {
+    return CLValue::Option(CLValue::U32(innerValue));
   }
 
-  static CLValue Option(ulong innerValue) {
-    CLValue::Option(CLValue::U64(innerValue));
+  static CLValue Option(uint64_t innerValue) {
+    return CLValue::Option(CLValue::U64(innerValue));
   }
 
   static CLValue Option(std::string innerValue) {
-    CLValue::Option(CLValue::String(innerValue));
+    return CLValue::Option(CLValue::String(innerValue));
   }
 
   static CLValue Option(Casper::URef innerValue) {
-    CLValue::Option(CLValue::URef(innerValue));
+    return CLValue::Option(CLValue::URef(innerValue));
   }
-
-  static CLValue Option(PublicKey innerValue) {
-    CLValue::Option(CLValue::PublicKey(innerValue));
-  }
-
-  static CLValue Option(GlobalStateKey innerValue) {
-    CLValue::Option(CLValue::Key(innerValue));
-  }
-
-  static CLValue Option(SecByteBlock innerValue) {
-    CLValue::Option(CLValue::ByteArray(innerValue));
-  }
-
-  static CLValue Option(std::vector<CLValue> innerValue) {
-    CLValue::Option(CLValue::List(innerValue));
-  }
-
-  static CLValue Option(std::map<CLValue, CLValue> innerValue) {
-    CLValue::Option(CLValue::Map(innerValue));
-  }
-
-  static CLValue OptionNone(CLTypeInfo innerTypeInfo) {
-    SecByteBlock bytes(1);
-    bytes[0] = 0x00;
-
-    return CLValue(bytes, CLOptionTypeInfo(innerTypeInfo), std::nullptr_t());
-  }
-
-  /// <summary>
-  /// Returns a List `CLValue` object.
-  /// </summary>
-
-  static CLValue List(std::vector<CLValue> values) {
-    if (values.size() == 0) throw std::runtime_error("List cannot be empty");
-
-    SecByteBlock sb;
-
-    SecByteBlock bytes = CEP57Checksum::Decode(u32Encode(values.size()));
-
-    sb += bytes;
-
-    auto typeInfo = values[0].cl_type;
-
-    for (auto value : values) {
-      if (value.cl_type != typeInfo) {
-        throw std::runtime_error(
-            "All elements in a list must be of the same type");
+  /*
+      static CLValue Option(PublicKey innerValue) {
+        return CLValue::Option(CLValue::PublicKey(innerValue));
       }
 
-      sb += value.bytes;
+      static CLValue Option(GlobalStateKey innerValue) {
+        return CLValue::Option(CLValue::Key(innerValue));
+      }
+
+      static CLValue Option(SecByteBlock innerValue) {
+        return CLValue::Option(CLValue::ByteArray(innerValue));
+      }
+
+      static CLValue Option(std::vector<CLValue> innerValue) {
+        return CLValue::Option(CLValue::List(innerValue));
+      }
+
+      static CLValue Option(std::map<CLValue, CLValue> innerValue) {
+        return CLValue::Option(CLValue::Map(innerValue));
+      }
+
+      static CLValue OptionNone(CLType innerTypeInfo) {
+        SecByteBlock bytes(1);
+        bytes[0] = 0x00;
+
+        return CLValue(bytes, innerTypeInfo, nullptr);
+      }
+
+    /// <summary>
+    /// Returns a List `CLValue` object.
+    /// </summary>
+
+    static CLValue List(std::vector<CLValue> values) {
+      if (values.size() == 0) throw std::runtime_error("List cannot be empty");
+
+      SecByteBlock sb;
+
+      SecByteBlock bytes = CEP57Checksum::Decode(u32Encode(values.size()));
+
+      sb += bytes;
+
+      auto typeInfo = values[0].cl_type;
+
+      for (auto value : values) {
+        if (value.cl_type.type != typeInfo.type) {
+          throw std::runtime_error(
+              "All elements in a list must be of the same type");
+        }
+
+        sb += value.bytes;
+      }
+
+      std::map<std::string, CLTypeRVA> mp;
+      mp["List"] = typeInfo.type;
+      CLTypeRVA ty(mp);
+      return CLValue(sb, CLType(ty), nullptr);
     }
 
-    return CLValue(sb, CLListTypeInfo(typeInfo), "");
-  }
-
+  */
   /// <summary>
   /// Returns a `CLValue` object with a ByteArray type.
   /// </summary>
@@ -295,49 +300,53 @@ struct CLValue {
     return CLValue(bytes, CLType(bytes.size()), hex_val);
   }
 
-  /// <summary>
-  /// Returns a Result `CLValue` with wrapped OK value inside.
-  /// To be complete, it must be indicated the type for an err value
-  /// </summary>
-  static CLValue Ok(CLValue ok, CLTypeInfo errTypeInfo) {
-    var typeInfo = CLResultTypeInfo(ok.TypeInfo, errTypeInfo);
-    SecByteBlock bytes(1 + ok.bytes.size());
-    bytes[0] = 0x01;
-    std::copy(ok.bytes.begin(), ok.bytes.end(), bytes.begin() + 1);
+  /*
+    /// <summary>
+    /// Returns a Result `CLValue` with wrapped OK value inside.
+    /// To be complete, it must be indicated the type for an err value
+    /// </summary>
+    static CLValue Ok(CLValue ok, CLTypeInfo errTypeInfo) {
+      var typeInfo = CLResultTypeInfo(ok.TypeInfo, errTypeInfo);
+      SecByteBlock bytes(1 + ok.bytes.size());
+      bytes[0] = 0x01;
+      std::copy(ok.bytes.begin(), ok.bytes.end(), bytes.begin() + 1);
 
-    return CLValue(bytes, typeInfo, std::nullptr_t());
-  }
+      return CLValue(bytes, typeInfo, nullptr);
+    }
 
-  /// <summary>
-  /// Returns a Result `CLValue` with wrapped Err value inside.
-  /// To be complete, it must be indicated the type for an ok value
-  /// </summary>
-  static CLValue Err(CLValue err, CLTypeInfo okTypeInfo) {
-    var typeInfo = CLResultTypeInfo(okTypeInfo, err.cl_type);
+    /// <summary>
+    /// Returns a Result `CLValue` with wrapped Err value inside.
+    /// To be complete, it must be indicated the type for an ok value
+    /// </summary>
+    static CLValue Err(CLValue err, CLTypeInfo okTypeInfo) {
+      var typeInfo = CLResultTypeInfo(okTypeInfo, err.cl_type);
 
-    SecByteBlock bytes(1 + err.bytes.size());
-    bytes[0] = 0x00;
-    std::copy(err.bytes.begin(), err.bytes.end(), bytes.begin() + 1);
+      SecByteBlock bytes(1 + err.bytes.size());
+      bytes[0] = 0x00;
+      std::copy(err.bytes.begin(), err.bytes.end(), bytes.begin() + 1);
 
-    return CLValue(bytes, typeInfo, std::nullptr_t());
-  }
+      return CLValue(bytes, typeInfo, nullptr);
+    }
 
   /// <summary>
   /// Returns a Map `CLValue` object.
   /// </summary>
   static CLValue Map(std::map<CLValue, CLValue> dict) {
-    CLMapTypeInfo mapTypeInfo = null;
+    CLTypeRVA keyType;
+    CLTypeRVA valueType;
     SecByteBlock bytes;
 
     SecByteBlock len = CEP57Checksum::Decode(u32Encode(dict.size()));
 
     bytes += len;
+    int i = 0;
 
     for (auto kv : dict) {
-      if (mapTypeInfo == null) {
-        mapTypeInfo = CLMapTypeInfo(kv.first.cl_type, kv.second.cl_type);
-      } else if (mapTypeInfo.KeyType != kv.first.cl_type ||
-                 mapTypeInfo.ValueType != kv.second.cl_type) {
+      if (i == 0) {
+        keyType = kv.first.cl_type.type;
+        valueType = kv.second.cl_type.type;
+      } else if (keyType != kv.first.cl_type.type ||
+                 valueType != kv.second.cl_type.type) {
         throw std::runtime_error(
             "All elements in a map must be of the same "
             "type");
@@ -345,16 +354,23 @@ struct CLValue {
 
       bytes += kv.first.bytes;
       bytes += kv.second.bytes;
+      i++;
     }
+    std::map<CLTypeRVA, CLTypeRVA> mp;
+    mp[keyType] = valueType;
+    CLTypeRVA ty(mp);
 
-    return CLValue(bytes, mapTypeInfo, std::nullptr_t());
+    return CLValue(bytes, CLType(ty), nullptr);
   }
 
   /// <summary>
   /// Returns a Tuple1 `CLValue` object.
   /// </summary>
   static CLValue Tuple1(CLValue t0) {
-    return CLValue(t0.bytes, CLTuple1TypeInfo(t0.cl_type), t0.parsed);
+    std::map<std::string, std::vector<CLTypeRVA>> mp;
+    mp["Tuple1"] = {t0.cl_type.type};
+    CLTypeRVA ty(mp);
+    return CLValue(t0.bytes, CLType(ty), t0.parsed);
   }
 
   /// <summary>
@@ -368,8 +384,11 @@ struct CLValue {
     std::copy(t1.bytes.begin(), t1.bytes.end(),
               bytes.begin() + t0.bytes.size());
 
-    return CLValue(bytes, CLTuple2TypeInfo(t0.cl_type, t1.cl_type),
-                   CryptoUtil::hexEncode(bytes));
+    std::map<std::string, std::vector<CLTypeRVA>> mp;
+    mp["Tuple2"] = {t0.cl_type.type, t1.cl_type.type};
+    CLTypeRVA ty(mp);
+
+    return CLValue(bytes, CLType(ty), CryptoUtil::hexEncode(bytes));
   }
 
   /// <summary>
@@ -386,15 +405,18 @@ struct CLValue {
     std::copy(t2.bytes.begin(), t2.bytes.end(),
               bytes.begin() + t0.bytes.size() + t1.bytes.size());
 
-    return CLValue(bytes, CLTuple3TypeInfo(t0.cl_type, t1.cl_type, t2.cl_type),
-                   CryptoUtil::hexEncode(bytes));
+    std::map<std::string, std::vector<CLTypeRVA>> mp;
+    mp["Tuple3"] = {t0.cl_type.type, t1.cl_type.type, t2.cl_type.type};
+    CLTypeRVA ty(mp);
+
+    return CLValue(bytes, CLType(ty), CryptoUtil::hexEncode(bytes));
   }
 
   /// <summary>
   /// Returns a `CLValue` object with a PublicKey type.
   /// </summary>
   static CLValue PublicKey(Casper::PublicKey publicKey) {
-    return CLValue(publicKey.GetBytes(), CLTypeEnum::PublicKey,
+    return CLValue(publicKey.GetBytes(), CLType(CLTypeEnum::PublicKey),
                    CryptoUtil::hexEncode(publicKey.GetBytes()));
   }
 
@@ -406,7 +428,8 @@ struct CLValue {
     bytes[0] = (byte)keyAlgorithm;
     std::copy(value.begin(), value.end(), bytes.begin() + 1);
 
-    return CLValue(bytes, CLTypeEnum::PublicKey, CryptoUtil::hexEncode(bytes));
+    return CLValue(bytes, CLType(CLTypeEnum::PublicKey),
+                   CryptoUtil::hexEncode(bytes));
   }
 
   /// <summary>
@@ -425,9 +448,10 @@ struct CLValue {
     /*
         return  CLValue(bytes,  CLKeyTypeInfo(KeyIdentifier.Account),
                            Hex.ToHexString(bytes));
-                           */
 
-    return CLValue(bytes, CLTypeEnum::Key, CryptoUtil::hexEncode(bytes));
+
+    return CLValue(bytes, CLType(CLTypeEnum::Key),
+                   CryptoUtil::hexEncode(bytes));
   }
 
   /// <summary>
@@ -439,8 +463,9 @@ struct CLValue {
     // TODO: Check key type info alternative, there is no info in cltype as it
     // is an account key, only it is key
 
-    return CLValue(key_serializer.ToBytes(key), CLTypeEnum::Key, key);
+    return CLValue(key_serializer.ToBytes(key), CLType(CLTypeEnum::Key), key);
   }
+  */
 };
 
 // to json

@@ -1420,11 +1420,32 @@ void transfer_deploy_test() {
       "01027c04a0210afdf4a83328d57e8c2a12247a86d872fb53367f22a84b1b53d2a9");
 
   big_int amount = "1000000000000000000";
-
+  std::cout << "before payment" << std::endl;
   ModuleBytes payment(amount);
-
+  std::cout << "after payment" << std::endl;
   TransferDeployItem session(15000000000, AccountHashKey(tgt_key),
                              123456789012345);
+
+  Deploy deploy(header, payment, session);
+  std::string signer =
+      "01027c04a0210afdf4a83328d57e8c2a12247a86d872fb53367f22a84b1b53d2a9";
+  std::string signature =
+      "012dbf03817a51794a8e19e0724884075e6d1fbec326b766ecfa6658b41f81290da85e23"
+      "b24e88b1c8d9761185c961daee1adab0649912a6477bcd2e69bd91bd08";
+  DeployApproval approval(Casper::PublicKey::FromHexString(signer),
+                          Signature::FromHexString(signature));
+
+  deploy.AddApproval(approval);
+
+  nlohmann::json j;
+  Casper::to_json(j, deploy);
+  std::cout << j.dump(2) << std::endl;
+
+  Casper::Client client(CASPER_TEST_ADDRESS);
+
+  Casper::PutDeployResult res = client.PutDeploy(deploy);
+  std::cout << "deploy id: " << res.deploy_hash << std::endl;
+  
 }
 #define RPC_TEST 0
 #define SER_DE_TEST 0
@@ -1434,6 +1455,7 @@ void transfer_deploy_test() {
 TEST_LIST = {
 
     {"gsk test", globalStateKey_serializer_test},
+    {"transfer_deploy", transfer_deploy_test},
 #if RPC_TEST == 1
     {"infoGetPeers checks node list size", infoGetPeers_Test},
     {"chainGetStateRootHash using Block height parameter",

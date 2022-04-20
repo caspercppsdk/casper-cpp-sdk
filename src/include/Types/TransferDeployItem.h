@@ -19,23 +19,24 @@ struct TransferDeployItem {
 
     args.push_back(
         NamedArg("target", CLValue::ByteArray(targetAccountHash.raw_bytes)));
+    // TODO:
+    /*
+        if (id != -1) {
+          args.push_back(NamedArg("id", CLValue::));
+          /*
 
-    if (id != -1) {
-      args.push_back(NamedArg("id", CLValue::));
-      /*
+
+              args.Add(
+                  new NamedArg("target",
+             CLValue.ByteArray(targetAccountHash.RawBytes)));
+
+              var optionValue = id == null
+                                    ? CLValue.OptionNone(new
+       CLTypeInfo(CLType.U64)) : CLValue.Option(CLValue.U64((ulong)id));
+              args.Add(new NamedArg("id", optionValue));
 
 
-          args.Add(
-              new NamedArg("target",
-         CLValue.ByteArray(targetAccountHash.RawBytes)));
-
-          var optionValue = id == null
-                                ? CLValue.OptionNone(new CLTypeInfo(CLType.U64))
-                                : CLValue.Option(CLValue.U64((ulong)id));
-          args.Add(new NamedArg("id", optionValue));
-
-          */
-    }
+        }*/
   }
 };
 

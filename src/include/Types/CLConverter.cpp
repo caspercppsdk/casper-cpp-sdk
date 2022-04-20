@@ -56,6 +56,8 @@ std::string bigIntegerToHex(const big_int& val) {
 
   uint8_t bytes_length = bytes_str.size() / 2;
   std::string bytes_length_str = integerToHex<uint8_t>(bytes_length);
+  StringUtil::toLower(bytes_length_str);
+  StringUtil::toLower(bytes_str);
   return bytes_length_str + bytes_str;
 }
 
