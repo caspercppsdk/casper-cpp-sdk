@@ -3,7 +3,8 @@
 #include "ByteSerializers/DeployApprovalByteSerializer.h"
 #include "ByteSerializers/ExecutableDeployItemByteSerializer.h"
 #include "Types/Deploy.h"
-
+#include "date/date.h"
+#include <chrono>
 namespace Casper {
 struct DeployByteSerializer : public BaseByteSerializer {
   SecByteBlock ToBytes(DeployHeader source) {
@@ -11,9 +12,31 @@ struct DeployByteSerializer : public BaseByteSerializer {
 
     WriteBytes(bytes, source.account.GetBytes());
 
-    // WriteULong(bytes, source.timestamp);
+    // replace with source.timestamp
+    /*
+    std::chrono::milliseconds timestmp =
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch());
+*/
+    using namespace date;
 
-    // WriteULong(bytes, source.ttl);
+    std::istringstream infile{source.timestamp};
+
+    sys_seconds tp;  // This is a system_clock time_point with seconds precision
+    infile >> parse("%FT%T", tp);
+    std::stringstream ss;
+    ss << tp.time_since_epoch().count();
+    std::string ts_str = ss.str();
+
+    std::istringstream ss2{ts_str};
+    uint64_t timest;
+    ss2 >> timest;
+    timest *= 1000;
+    WriteULong(bytes, timest);
+    std::cout << "Timestamp " << timest << std::endl;
+
+    // TODO: Create date util, use it with source.ttl
+    WriteULong(bytes, 1800000);
 
     WriteULong(bytes, source.gas_price);
 

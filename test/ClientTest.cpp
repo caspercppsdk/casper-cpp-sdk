@@ -9,6 +9,7 @@
 #include "ByteSerializers/GlobalStateKeyByteSerializer.h"
 
 #include "Types/CLValue.h"
+#include "date/date.h"
 #include <chrono>
 #include "acutest.h"
 
@@ -1399,6 +1400,30 @@ void globalStateKey_serializer_test() {
 
 void transfer_deploy_test() {
   using namespace Casper;
+  /*
+    using namespace std::chrono;
+
+    const auto now_ms = time_point_cast<milliseconds>(system_clock::now());
+    const auto now_s = time_point_cast<seconds>(now_ms);
+    const auto millis = now_ms - now_s;
+    const auto c_now = system_clock::to_time_t(now_s);
+
+    std::stringstream ss;
+    ss << std::put_time(gmtime(&c_now), "%FT%T") << '.' << std::setfill('0')
+       << std::setw(3) << millis.count() << 'Z';
+  */
+
+  // std::string timestamp_str = "2021-09-25T17:01:24.399Z";
+  // current date/time based on current system according to RFC3339
+
+  /*std::stringstream ss;
+  auto tp = std::chrono::system_clock::now();
+  auto tt = std::chrono::system_clock::to_time_t(tp);
+  ss << std::put_time(std::gmtime(&tt), "%FT%T") << std::setw(3)
+     << std::millis.count() << 'Z';
+
+*/
+
   using namespace std::chrono;
 
   const auto now_ms = time_point_cast<milliseconds>(system_clock::now());
@@ -1409,12 +1434,12 @@ void transfer_deploy_test() {
   std::stringstream ss;
   ss << std::put_time(gmtime(&c_now), "%FT%T") << '.' << std::setfill('0')
      << std::setw(3) << millis.count() << 'Z';
-
+  std::string timestamp_str = ss.str();
   // std::asctime(std::localtime(&tt)),
   DeployHeader header(
       Casper::PublicKey::FromHexString(
           "01027c04a0210afdf4a83328d57e8c2a12247a86d872fb53367f22a84b1b53d2a9"),
-      ss.str(), "30m", 1, "", {}, "casper-test");
+      timestamp_str, "30m", 1, "", {}, "casper-test");
 
   Casper::PublicKey tgt_key = Casper::PublicKey::FromHexString(
       "01027c04a0210afdf4a83328d57e8c2a12247a86d872fb53367f22a84b1b53d2a9");
