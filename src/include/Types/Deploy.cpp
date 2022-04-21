@@ -1,19 +1,21 @@
 #include "Types/Deploy.h"
+#include "ByteSerializers/ExecutableDeployItemByteSerializer.h"
+#include "ByteSerializers/DeployByteSerializer.h"
 
 namespace Casper {
 
-Deploy::Deploy(DeployHeader header_, ExecutableDeployItem payment_,
-               ExecutableDeployItem session_) {
+Deploy::Deploy(DeployHeader header, ExecutableDeployItem payment,
+               ExecutableDeployItem session) {
   CryptoPP::SecByteBlock body_hash = ComputeBodyHash(payment, session);
 
-  this->header =
-      DeployHeader(header_.account, header_.timestamp, header_.ttl,
-                   header_.gas_price, CEP57Checksum::Encode(body_hash),
-                   header_.dependencies, header_.chain_name);
+  this->header = DeployHeader(
+      header.account, header.timestamp, header.ttl, header.gas_price,
+      CEP57Checksum::Encode(body_hash), header.dependencies, header.chain_name);
 
   this->hash = CEP57Checksum::Encode(ComputeHeaderHash(this->header));
-  this->payment = payment_;
-  this->session = session_;
+
+  this->payment = payment;
+  this->session = session;
 }
 
 /// <summary>
@@ -94,54 +96,48 @@ bool Deploy::VerifySignatures(std::string& message) {
 /// Deploy.
 /// </summary>
 int Deploy::GetDeploySizeInBytes() const {
-  // TODO: Implement this !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-  // var serializer = new DeployByteSerializer();
-  // return serializer.ToBytes(this).Length;
-
-  return 0;
+  DeployByteSerializer serializer;
+  return serializer.ToBytes(*this).size();
 }
 
 CryptoPP::SecByteBlock Deploy::ComputeBodyHash(ExecutableDeployItem payment,
                                                ExecutableDeployItem session) {
-  /*
-  var ms = new MemoryStream();
-  var itemSerializer = new ExecutableDeployItemByteSerializer();
+  SecByteBlock sb;
+  std::cout << "ComputeBodyHash" << std::endl;
+  ExecutableDeployItemByteSerializer itemSerializer;
 
-  ms.Write(itemSerializer.ToBytes(payment));
-  ms.Write(itemSerializer.ToBytes(session));
+  sb += itemSerializer.ToBytes(payment);
+  sb += itemSerializer.ToBytes(session);
+  std::cout << "ComputeBodyHash2" << std::endl;
 
-  var bcBl2bdigest = new Org.BouncyCastle.Crypto.Digests.Blake2bDigest(256);
-  var bBody = ms.ToArray();
+  BLAKE2b bcBl2bdigest(32u);
+  bcBl2bdigest.Update(sb, sb.size());
+  std::cout << "ComputeBodyHash3" << std::endl;
 
-  bcBl2bdigest.BlockUpdate(bBody, 0, bBody.Length);
+  SecByteBlock hash(bcBl2bdigest.DigestSize());
+  bcBl2bdigest.Final(hash);
+  std::cout << "ComputeBodyHash4" << std::endl;
 
-  var hash = new byte[bcBl2bdigest.GetDigestSize()];
-  bcBl2bdigest.DoFinal(hash, 0);
-
-  return hash;
-  */
-
-  SecByteBlock hash;  // TODO : implement this !!!!!!!!!!!!!!!
   return hash;
 }
 
 CryptoPP::SecByteBlock Deploy::ComputeHeaderHash(DeployHeader header) {
-  /*
-var serializer = new DeployByteSerializer();
-var bHeader = serializer.ToBytes(header);
+  DeployByteSerializer serializer;
 
-var bcBl2bdigest = new Org.BouncyCastle.Crypto.Digests.Blake2bDigest(256);
+  nlohmann::json j;
+  to_json(j, header);
+  std::cout << "ComputeHeaderHash header: \n";
+  std::cout << j.dump(2) << std::endl;
 
-bcBl2bdigest.BlockUpdate(bHeader, 0, bHeader.Length);
+  SecByteBlock bHeader = serializer.ToBytes(header);
 
-var hash = new byte[bcBl2bdigest.GetDigestSize()];
-bcBl2bdigest.DoFinal(hash, 0);
+  BLAKE2b bcBl2bdigest(32u);
 
-return hash;
-*/
+  bcBl2bdigest.Update(bHeader, bHeader.size());
 
-  SecByteBlock hash;  // TODO : implement this !!!!!!!!!!!!!!!
+  SecByteBlock hash(bcBl2bdigest.DigestSize());
+  bcBl2bdigest.Final(hash);
+
   return hash;
 }
 

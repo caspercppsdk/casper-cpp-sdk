@@ -221,10 +221,10 @@ inline void from_json(const nlohmann::json& j, CLTypeRVA& p) {
       list.insert({"List", inner});
       p = list;
     } else if (key_str == "ByteArray") {
-      auto byte_array = std::map<std::string, int32_t>();
+      std::map<std::string, int32_t> byte_array;
       int32_t inner;
       j.at("ByteArray").get_to(inner);
-      byte_array.insert({"ByteArray", inner});
+      byte_array["ByteArray"] = inner;
       p = byte_array;
     } else if (key_str == "Result") {
       auto result = std::map<std::string, CLTypeRVA>();
@@ -306,9 +306,15 @@ struct CLType {
   // TODO: Make functions like CLValue u512, u256, u128, u64, u32, u16, u8, etc.
 
   CLType(int32_t byte_array_size) {
-    nlohmann::json j;
-    j["ByteArray"] = byte_array_size;
-    from_json(j, type);
+    std::map<std::string, int32_t> byte_array;
+    byte_array["ByteArray"] = byte_array_size;
+    type = byte_array;
+  }
+
+  CLType(std::optional<CLTypeRVA>& option) {
+    std::map<std::string, CLTypeRVA> option_map;
+    option_map["Option"] = option.value();
+    type = option_map;
   }
 };
 

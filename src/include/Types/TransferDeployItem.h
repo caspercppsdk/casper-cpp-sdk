@@ -15,28 +15,36 @@ struct TransferDeployItem {
 
   TransferDeployItem(big_int amount, AccountHashKey targetAccountHash,
                      big_int id = -1) {
+    std::cout << "TransferDeployItem::TransferDeployItem()" << std::endl;
     args.push_back(NamedArg("amount", CLValue::U512(amount)));
-
+    std::cout << "after amount" << std::endl;
     args.push_back(
         NamedArg("target", CLValue::ByteArray(targetAccountHash.raw_bytes)));
-    // TODO:
-    /*
-        if (id != -1) {
-          args.push_back(NamedArg("id", CLValue::));
-          /*
+    std::cout << "after target" << std::endl;
+    if (id == -1) {
+      std::cout << "id == -1" << std::endl;
+      args.push_back(
+          NamedArg("id", CLValue::OptionNone(CLType(CLTypeEnum::U64))));
 
+    } else {
+      uint64_t u64_id = id.toLongLong();
+      std::cout << "u64_id: " << u64_id << std::endl;
+      CLValue cl64 = CLValue::U64(u64_id);
+      CLValue cl(CLValue::Option(cl64));
 
-              args.Add(
-                  new NamedArg("target",
-             CLValue.ByteArray(targetAccountHash.RawBytes)));
+      // nlohmann::json j;
+      // to_json(j, cl);
+      // std::cout << "cl(u64): " << j.dump(2) << std::endl;
 
-              var optionValue = id == null
-                                    ? CLValue.OptionNone(new
-       CLTypeInfo(CLType.U64)) : CLValue.Option(CLValue.U64((ulong)id));
-              args.Add(new NamedArg("id", optionValue));
+      args.push_back(NamedArg("id", cl));
+    }
 
+    nlohmann::json j;
+    to_json(j, args[2]);
+    std::cout << "args[2]: " << j.dump(2) << std::endl;
 
-        }*/
+    std::cout << "transfer deploy end" << std::endl;
+    //
   }
 };
 

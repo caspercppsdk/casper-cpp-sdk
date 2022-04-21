@@ -21,8 +21,7 @@ struct NamedArg {
 
   NamedArg() {}
 
-  NamedArg(const std::string& name, const CLValue& value)
-      : name(name), value(value) {}
+  NamedArg(std::string name, CLValue value) : name(name), value(value) {}
 };
 
 // to_json of NamedArg

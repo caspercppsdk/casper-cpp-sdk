@@ -29,7 +29,7 @@ void BaseByteSerializer::WriteByte(SecByteBlock& sb, uint8_t value) {
 }
 
 void BaseByteSerializer::WriteBytes(SecByteBlock& sb,
-                                    const std::vector<uint8_t>& value) {
+                                    std::vector<uint8_t> value) {
   // TODO: CHECK BELOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   SecByteBlock bytes(value.size());
   for (size_t i = 0; i < value.size(); i++) {
@@ -38,8 +38,7 @@ void BaseByteSerializer::WriteBytes(SecByteBlock& sb,
   sb += bytes;
 }
 
-void BaseByteSerializer::WriteBytes(SecByteBlock& sb,
-                                    const SecByteBlock& value) {
+void BaseByteSerializer::WriteBytes(SecByteBlock& sb, SecByteBlock value) {
   sb += value;
 }
 

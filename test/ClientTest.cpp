@@ -1421,22 +1421,34 @@ void transfer_deploy_test() {
 
   big_int amount = "1000000000000000000";
   std::cout << "before payment" << std::endl;
+  // create a payment
   ModuleBytes payment(amount);
+
+  // create a payment executable deploy item
+  // ExecutableDeployItem payment(paymentInner);
+
   std::cout << "after payment" << std::endl;
+
+  // create transfer executable deploy item
   TransferDeployItem session(15000000000, AccountHashKey(tgt_key),
                              123456789012345);
+  // ExecutableDeployItem session(sessionInner);
 
+  // Create deploy object
+  std::cout << "before deploy" << std::endl;
   Deploy deploy(header, payment, session);
+  std::cout << "after deploy" << std::endl;
   std::string signer =
       "01027c04a0210afdf4a83328d57e8c2a12247a86d872fb53367f22a84b1b53d2a9";
   std::string signature =
       "012dbf03817a51794a8e19e0724884075e6d1fbec326b766ecfa6658b41f81290da85e23"
       "b24e88b1c8d9761185c961daee1adab0649912a6477bcd2e69bd91bd08";
+  std::cout << "before approval" << std::endl;
   DeployApproval approval(Casper::PublicKey::FromHexString(signer),
                           Signature::FromHexString(signature));
-
+  std::cout << "after approval" << std::endl;
   deploy.AddApproval(approval);
-
+  std::cout << "after add approval" << std::endl;
   nlohmann::json j;
   Casper::to_json(j, deploy);
   std::cout << j.dump(2) << std::endl;
@@ -1445,7 +1457,6 @@ void transfer_deploy_test() {
 
   Casper::PutDeployResult res = client.PutDeploy(deploy);
   std::cout << "deploy id: " << res.deploy_hash << std::endl;
-  
 }
 #define RPC_TEST 0
 #define SER_DE_TEST 0

@@ -97,7 +97,7 @@ struct CLValue {
   /// </summary>
   static CLValue U64(uint64_t value) {
     SecByteBlock bytes = CEP57Checksum::Decode(u64Encode(value));
-
+    std::cout << "U64(" << value << ") = " << std::endl;
     return CLValue(bytes, CLTypeEnum::U64, value);
   }
 
@@ -190,12 +190,20 @@ struct CLValue {
   /// </summary>
 
   static CLValue Option(CLValue innerValue) {
+    std::cout << "Option(CLValue innerValue)" << std::endl;
+    std::cout << "size: " << innerValue.bytes.size() << std::endl;
     SecByteBlock bytes(1 + innerValue.bytes.size());
     bytes[0] = 0x01;
+    std::cout << "before copy" << std::endl;
     std::copy(innerValue.bytes.begin(), innerValue.bytes.end(),
               bytes.begin() + 1);
+    std::cout << "after copy" << std::endl;
 
-    return CLValue(bytes, innerValue.cl_type, innerValue.parsed);
+    nlohmann::json j;
+    to_json(j, innerValue.parsed);
+    std::cout << "innerValue.parsed: " << j.dump() << std::endl;
+    std::optional<CLTypeRVA> opt_with_inner = innerValue.cl_type.type;
+    return CLValue(bytes, CLType(opt_with_inner), innerValue.parsed);
   }
 
   static CLValue Option(int32_t innerValue) {
@@ -245,45 +253,47 @@ struct CLValue {
       static CLValue Option(std::map<CLValue, CLValue> innerValue) {
         return CLValue::Option(CLValue::Map(innerValue));
       }
+ */
+  static CLValue OptionNone(CLType innerTypeInfo) {
+    SecByteBlock bytes(1);
+    bytes[0] = 0x00;
 
-      static CLValue OptionNone(CLType innerTypeInfo) {
-        SecByteBlock bytes(1);
-        bytes[0] = 0x00;
+    return CLValue(bytes, innerTypeInfo, nullptr);
+  }
 
-        return CLValue(bytes, innerTypeInfo, nullptr);
-      }
+  /*
+      /// <summary>
+      /// Returns a List `CLValue` object.
+      /// </summary>
 
-    /// <summary>
-    /// Returns a List `CLValue` object.
-    /// </summary>
+      static CLValue List(std::vector<CLValue> values) {
+        if (values.size() == 0) throw std::runtime_error("List cannot be
+     empty");
 
-    static CLValue List(std::vector<CLValue> values) {
-      if (values.size() == 0) throw std::runtime_error("List cannot be empty");
+        SecByteBlock sb;
 
-      SecByteBlock sb;
+        SecByteBlock bytes = CEP57Checksum::Decode(u32Encode(values.size()));
 
-      SecByteBlock bytes = CEP57Checksum::Decode(u32Encode(values.size()));
+        sb += bytes;
 
-      sb += bytes;
+        auto typeInfo = values[0].cl_type;
 
-      auto typeInfo = values[0].cl_type;
+        for (auto value : values) {
+          if (value.cl_type.type != typeInfo.type) {
+            throw std::runtime_error(
+                "All elements in a list must be of the same type");
+          }
 
-      for (auto value : values) {
-        if (value.cl_type.type != typeInfo.type) {
-          throw std::runtime_error(
-              "All elements in a list must be of the same type");
+          sb += value.bytes;
         }
 
-        sb += value.bytes;
+        std::map<std::string, CLTypeRVA> mp;
+        mp["List"] = typeInfo.type;
+        CLTypeRVA ty(mp);
+        return CLValue(sb, CLType(ty), nullptr);
       }
 
-      std::map<std::string, CLTypeRVA> mp;
-      mp["List"] = typeInfo.type;
-      CLTypeRVA ty(mp);
-      return CLValue(sb, CLType(ty), nullptr);
-    }
-
-  */
+    */
   /// <summary>
   /// Returns a `CLValue` object with a ByteArray type.
   /// </summary>

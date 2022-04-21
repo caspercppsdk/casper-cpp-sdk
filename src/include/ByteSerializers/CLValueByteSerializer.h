@@ -5,7 +5,7 @@
 namespace Casper {
 struct CLValueByteSerializer : public BaseByteSerializer {
   ///
-  SecByteBlock ToBytes(const CLValue& source) {
+  SecByteBlock ToBytes(CLValue source) {
     // ByteQueue byte_queue;
     SecByteBlock bytes;
     // serialize data length (4 bytes)
@@ -21,10 +21,15 @@ struct CLValueByteSerializer : public BaseByteSerializer {
     return bytes;
   }
 
- private:
-  void CLTypeToBytes(SecByteBlock& sb, const CLType& innerType,
-                     const CLTypeParsedRVA& parsed) {
-    auto type_idx = innerType.type.index();
+  void CLTypeToBytes(SecByteBlock& sb, CLType innerType,
+                     CLTypeParsedRVA parsed) {
+    std::cout << "CLTypeToBytes1: " << std::endl;
+    int type_idx = innerType.type.index();
+    std::cout << "CLTypeToBytes idx: " << type_idx << std::endl;
+
+    nlohmann::json j;
+    to_json(j, innerType);
+    std::cout << "CLTypeToBytes json: " << j.dump(2) << std::endl;
 
     if (type_idx == 0) {
       CLTypeEnum type = std::get<CLTypeEnum>(innerType.type);
@@ -33,9 +38,13 @@ struct CLValueByteSerializer : public BaseByteSerializer {
       throw std::runtime_error("CLTypeToBytes: type_idx = 1 not implemented");
     } else if (type_idx == 2) {
       WriteByte(sb, 17);
-      CLTypeToBytes(sb, std::get<CLType>(innerType.type), parsed);
+      std::map<CLTypeRVA, CLTypeRVA> mp =
+          std::get<std::map<CLTypeRVA, CLTypeRVA>>(innerType.type);
 
-    } else if (type_idx = 3) {
+      CLTypeToBytes(sb, mp.begin()->first, parsed);
+      CLTypeToBytes(sb, mp.begin()->second, parsed);
+
+    } else if (type_idx == 3) {
       auto inner_type_rva =
           std::get<std::map<std::string, CLTypeRVA>>(innerType.type);
       std::string inner_type_name = inner_type_rva.begin()->first;
@@ -69,10 +78,12 @@ struct CLValueByteSerializer : public BaseByteSerializer {
         throw std::runtime_error("Unknown inner type with idx:4 not tuple");
       }
     } else if (type_idx == 5) {
+      std::cout << "CLTypeToBytes: type_idx = 5 " << std::endl;
       auto inner_type_rva =
-          std::get<std::map<std::string, int32_t>>(innerType.type);
+          rva::get<std::map<std::string, int32_t>>(innerType.type);
+      std::cout << "after get inner_type_rva" << std::endl;
       std::string inner_type_name = inner_type_rva.begin()->first;
-
+      std::cout << "after get inner_type_name" << std::endl;
       if (inner_type_name == "ByteArray") {
         WriteByte(sb, 15);
         WriteInteger(sb, inner_type_rva.begin()->second);

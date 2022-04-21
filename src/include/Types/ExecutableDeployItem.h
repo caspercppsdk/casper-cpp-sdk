@@ -26,24 +26,23 @@ struct ExecutableDeployItem {
 
   ExecutableDeployItem() {}
 
-  ExecutableDeployItem(ModuleBytes& module_bytes)
-      : module_bytes(module_bytes) {}
+  ExecutableDeployItem(ModuleBytes module_bytes) : module_bytes(module_bytes) {}
 
-  ExecutableDeployItem(StoredContractByHash& stored_contract_by_hash)
+  ExecutableDeployItem(StoredContractByHash stored_contract_by_hash)
       : stored_contract_by_hash(stored_contract_by_hash) {}
 
-  ExecutableDeployItem(StoredContractByName& stored_contract_by_name)
+  ExecutableDeployItem(StoredContractByName stored_contract_by_name)
       : stored_contract_by_name(stored_contract_by_name) {}
 
   ExecutableDeployItem(
-      StoredVersionedContractByHash& stored_versioned_contract_by_hash)
+      StoredVersionedContractByHash stored_versioned_contract_by_hash)
       : stored_versioned_contract_by_hash(stored_versioned_contract_by_hash) {}
 
   ExecutableDeployItem(
-      StoredVersionedContractByName& stored_versioned_contract_by_name)
+      StoredVersionedContractByName stored_versioned_contract_by_name)
       : stored_versioned_contract_by_name(stored_versioned_contract_by_name) {}
 
-  ExecutableDeployItem(TransferDeployItem& transfer) : transfer(transfer) {}
+  ExecutableDeployItem(TransferDeployItem transfer) : transfer(transfer) {}
 };
 
 /**

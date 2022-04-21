@@ -17,9 +17,9 @@ class BaseByteSerializer {
 
   static void WriteByte(SecByteBlock& sb, uint8_t value);
 
-  static void WriteBytes(SecByteBlock& sb, const std::vector<uint8_t>& value);
+  static void WriteBytes(SecByteBlock& sb,  std::vector<uint8_t> value);
 
-  static void WriteBytes(SecByteBlock& sb, const SecByteBlock& value);
+  static void WriteBytes(SecByteBlock& sb,  SecByteBlock value);
 
   static void WriteString(SecByteBlock& sb, std::string value);
 };
