@@ -9,7 +9,7 @@
 #include "ByteSerializers/GlobalStateKeyByteSerializer.h"
 
 #include "Types/CLValue.h"
-
+#include <chrono>
 #include "acutest.h"
 
 /// Helper function to print a result object
@@ -1399,22 +1399,22 @@ void globalStateKey_serializer_test() {
 
 void transfer_deploy_test() {
   using namespace Casper;
+  using namespace std::chrono;
 
-  std::tm t = {};
-  std::time_t tt;
-  std::istringstream ss("2021-09-25T17:01:24.399Z");
+  const auto now_ms = time_point_cast<milliseconds>(system_clock::now());
+  const auto now_s = time_point_cast<seconds>(now_ms);
+  const auto millis = now_ms - now_s;
+  const auto c_now = system_clock::to_time_t(now_s);
 
-  if (ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S")) {
-    std::put_time(&t, "%c");
-    tt = std::mktime(&t);
-  } else {
-    std::cout << "Parse failed\n";
-  }
+  std::stringstream ss;
+  ss << std::put_time(gmtime(&c_now), "%FT%T") << '.' << std::setfill('0')
+     << std::setw(3) << millis.count() << 'Z';
+
   // std::asctime(std::localtime(&tt)),
   DeployHeader header(
       Casper::PublicKey::FromHexString(
           "01027c04a0210afdf4a83328d57e8c2a12247a86d872fb53367f22a84b1b53d2a9"),
-      std::asctime(&t), "30m", 1, "", {}, "casper-test");
+      ss.str(), "30m", 1, "", {}, "casper-test");
 
   Casper::PublicKey tgt_key = Casper::PublicKey::FromHexString(
       "01027c04a0210afdf4a83328d57e8c2a12247a86d872fb53367f22a84b1b53d2a9");
