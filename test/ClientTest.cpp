@@ -1731,6 +1731,37 @@ void CLValueByteSerializerTest() {
   std::cout << "optional none public key: " << actual_opt_none_pk_str
             << std::endl;
   TEST_ASSERT(expected_opt_none_pk_str == actual_opt_none_pk_str);
+
+  ///
+  // ByteArray Byte Serialization
+  // ByteArray
+  SecByteBlock byte_array_bytes = hexDecode("0102030405060708");
+  CLValue clv_byte_array = CLValue::ByteArray(byte_array_bytes);
+  std::string expected_byte_array_str = "0800000001020304050607080f08000000";
+  std::string actual_byte_array_str = hexEncode(ser.ToBytes(clv_byte_array));
+  std::cout << "byte array: " << actual_byte_array_str << std::endl;
+  TEST_ASSERT(expected_byte_array_str == actual_byte_array_str);
+
+  // Optional ByteArray
+  CLValue clv_opt_byte_array =
+      CLValue::Option(CLValue::ByteArray(byte_array_bytes));
+  std::string expected_opt_byte_array_str =
+      "090000000101020304050607080d0f08000000";
+  std::string actual_opt_byte_array_str =
+      hexEncode(ser.ToBytes(clv_opt_byte_array));
+  std::cout << "optional byte array: " << actual_opt_byte_array_str
+            << std::endl;
+  TEST_ASSERT(expected_opt_byte_array_str == actual_opt_byte_array_str);
+
+  // Optional None ByteArray
+  CLValue clv_opt_none_byte_array = CLValue::OptionNone(CLType(32));
+  std::string expected_opt_none_byte_array_str = "01000000000d0f20000000";
+  std::string actual_opt_none_byte_array_str =
+      hexEncode(ser.ToBytes(clv_opt_none_byte_array));
+  std::cout << "optional none byte array: " << actual_opt_none_byte_array_str
+            << std::endl;
+  TEST_ASSERT(expected_opt_none_byte_array_str ==
+              actual_opt_none_byte_array_str);
 }
 
 #define RPC_TEST 0
