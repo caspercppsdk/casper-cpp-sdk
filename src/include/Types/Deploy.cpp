@@ -6,13 +6,13 @@ namespace Casper {
 
 Deploy::Deploy(DeployHeader header, ExecutableDeployItem payment,
                ExecutableDeployItem session) {
-  CryptoPP::SecByteBlock body_hash = ComputeBodyHash(payment, session);
+    CryptoPP::SecByteBlock body_hash = ComputeBodyHash(payment, session);
 
-  this->header = DeployHeader(
-      header.account, header.timestamp, header.ttl, header.gas_price,
-      CEP57Checksum::Encode(body_hash), header.dependencies, header.chain_name);
+  this->header = DeployHeader(header.account, header.timestamp, header.ttl,
+                              header.gas_price, hexEncode(body_hash),
+                              header.dependencies, header.chain_name);
 
-  this->hash = CEP57Checksum::Encode(ComputeHeaderHash(this->header));
+  this->hash = hexEncode(ComputeHeaderHash(this->header));
 
   this->payment = payment;
   this->session = session;
@@ -58,7 +58,7 @@ bool Deploy::ValidateHashes(std::string& message) {
 
   computed_hash = ComputeHeaderHash(this->header);
 
-  if (CryptoUtil::hexDecode(this->hash) != computed_hash) {
+  if (hexDecode(this->hash) != computed_hash) {
     message =
         "Computed Hash does not match value in deploy object. "
         "Expected: " +
@@ -103,20 +103,20 @@ int Deploy::GetDeploySizeInBytes() const {
 CryptoPP::SecByteBlock Deploy::ComputeBodyHash(ExecutableDeployItem payment,
                                                ExecutableDeployItem session) {
   SecByteBlock sb;
-  std::cout << "ComputeBodyHash" << std::endl;
+  // std::cout << "ComputeBodyHash" << std::endl;
   ExecutableDeployItemByteSerializer itemSerializer;
 
   sb += itemSerializer.ToBytes(payment);
   sb += itemSerializer.ToBytes(session);
-  std::cout << "ComputeBodyHash2" << std::endl;
+  // std::cout << "ComputeBodyHash2" << std::endl;
 
   BLAKE2b bcBl2bdigest(32u);
   bcBl2bdigest.Update(sb, sb.size());
-  std::cout << "ComputeBodyHash3" << std::endl;
+  // std::cout << "ComputeBodyHash3" << std::endl;
 
   SecByteBlock hash(bcBl2bdigest.DigestSize());
   bcBl2bdigest.Final(hash);
-  std::cout << "ComputeBodyHash4" << std::endl;
+  // std::cout << "ComputeBodyHash4" << std::endl;
 
   return hash;
 }

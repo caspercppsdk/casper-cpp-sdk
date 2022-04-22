@@ -26,7 +26,7 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
         WriteBytes(bytes, item.module_bytes);
       }
 
-      bytes += CEP57Checksum::Decode(u32Encode(item.args.size()));
+      bytes += hexDecode(u32Encode(item.args.size()));
       for (auto arg : item.args) {
         WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
       }
@@ -37,10 +37,10 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
       WriteByte(bytes, source_tag);
 
       auto item = source.stored_contract_by_hash.value();
-      WriteBytes(bytes, CryptoUtil::hexDecode(item.hash));
+      WriteBytes(bytes, hexDecode(item.hash));
       WriteString(bytes, item.entry_point);
 
-      bytes += CEP57Checksum::Decode(u32Encode(item.args.size()));
+      bytes += hexDecode(u32Encode(item.args.size()));
       for (auto arg : item.args) {
         WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
       }
@@ -54,7 +54,7 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
       WriteString(bytes, item.name);
       WriteString(bytes, item.entry_point);
 
-      bytes += CEP57Checksum::Decode(u32Encode(item.args.size()));
+      bytes += hexDecode(u32Encode(item.args.size()));
       for (auto arg : item.args) {
         WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
       }
@@ -76,7 +76,7 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
 
       WriteString(bytes, item.entry_point);
 
-      bytes += CEP57Checksum::Decode(u32Encode(item.args.size()));
+      bytes += hexDecode(u32Encode(item.args.size()));
       for (auto arg : item.args) {
         WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
       }
@@ -97,39 +97,39 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
 
       WriteString(bytes, item.entry_point);
 
-      bytes += CEP57Checksum::Decode(u32Encode(item.args.size()));
+      bytes += hexDecode(u32Encode(item.args.size()));
       for (auto arg : item.args) {
         WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
       }
     } else if (source.transfer.has_value()) {
-      std::cout << "has transfer" << std::endl;
+      // std::cout << "has transfer" << std::endl;
       source_tag = 5;
       WriteByte(bytes, source_tag);
 
-      std::cout << "after tag" << std::endl;
+      // std::cout << "after tag" << std::endl;
       TransferDeployItem item = source.transfer.value();
 
-      bytes += CEP57Checksum::Decode(u32Encode(item.args.size()));
+      bytes += hexDecode(u32Encode(item.args.size()));
 
-      std::cout << "after bytes write" << std::endl;
-      std::cout << "args size: " << item.args.size() << std::endl;
+      // std::cout << "after bytes write" << std::endl;
+      // std::cout << "args size: " << item.args.size() << std::endl;
 
       for (NamedArg arg : item.args) {
-        std::cout << "arg loop in transfer" << std::endl;
-        nlohmann::json j;
-        to_json(j, arg);
-        std::cout << j.dump(2) << std::endl;
+        // std::cout << "arg loop in transfer" << std::endl;
+        // nlohmann::json j;
+        // to_json(j, arg);
+        // std::cout << j.dump(2) << std::endl;
         WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
-        std::cout << "after bytes write" << std::endl;
+        // std::cout << "after bytes write" << std::endl;
       }
     } else {
       nlohmann::json j;
-      std::cout << "before source\n";
+      // std::cout << "before source\n";
       to_json(j, source);
       throw std::runtime_error("Unsupported ExecutableDeployItem type: " +
                                j.dump(2));
     }
-    std::cout << "before executableserializer return" << std::endl;
+    // std::cout << "before executableserializer return" << std::endl;
     return bytes;
   }
 };

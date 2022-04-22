@@ -16,6 +16,11 @@
 #include "magic_enum/magic_enum.hpp"
 
 namespace Casper {
+uint64_t strToTimestamp(std::string str);
+
+CryptoPP::SecByteBlock hexDecode(std::string hex);
+
+std::string hexEncode(CryptoPP::SecByteBlock decoded);
 
 // int-* types
 /*
@@ -25,7 +30,7 @@ bytes for the bit-width.
 */
 template <typename T>
 T hexToInteger(const std::string& hex) {
-  CryptoPP::SecByteBlock bytes = Casper::CEP57Checksum::Decode(hex);
+  CryptoPP::SecByteBlock bytes = hexDecode(hex);
   T val = *(reinterpret_cast<T*>(bytes.data()));
   return val;
 }
@@ -34,7 +39,7 @@ template <typename T>
 std::string integerToHex(T val) {
   CryptoPP::SecByteBlock bytes(sizeof(T));
   memcpy(bytes.data(), &val, sizeof(T));
-  return Casper::CEP57Checksum::Encode(bytes);
+  return hexEncode(bytes);
 }
 
 // Big Integers

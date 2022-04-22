@@ -7,7 +7,7 @@
 #include "Types/CLConverter.h"
 
 #include "ByteSerializers/GlobalStateKeyByteSerializer.h"
-
+#include "ByteSerializers/DeployByteSerializer.h"
 #include "Types/CLValue.h"
 #include "date/date.h"
 #include <chrono>
@@ -1413,9 +1413,9 @@ void transfer_deploy_test() {
        << std::setw(3) << millis.count() << 'Z';
   */
 
-  // std::string timestamp_str = "2021-09-25T17:01:24.399Z";
+  std::string timestamp_str2 = "2021-09-25T17:01:24.399Z";
   // current date/time based on current system according to RFC3339
-
+  // std::cout << "timestamp: " << Casper::strToTimestamp(timestamp_str2);
   /*std::stringstream ss;
   auto tp = std::chrono::system_clock::now();
   auto tt = std::chrono::system_clock::to_time_t(tp);
@@ -1434,15 +1434,16 @@ void transfer_deploy_test() {
   std::stringstream ss;
   ss << std::put_time(gmtime(&c_now), "%FT%T") << '.' << std::setfill('0')
      << std::setw(3) << millis.count() << 'Z';
+
   std::string timestamp_str = ss.str();
   // std::asctime(std::localtime(&tt)),
   DeployHeader header(
-      Casper::PublicKey::FromHexString(
-          "01027c04a0210afdf4a83328d57e8c2a12247a86d872fb53367f22a84b1b53d2a9"),
+      Casper::PublicKey::FromHexString("02033d06a3e1f9b96cf353f4086620b6e052903"
+                                       "5eb1f02805cb67e8831c372488d4f"),
       timestamp_str, "30m", 1, "", {}, "casper-test");
 
   Casper::PublicKey tgt_key = Casper::PublicKey::FromHexString(
-      "01027c04a0210afdf4a83328d57e8c2a12247a86d872fb53367f22a84b1b53d2a9");
+      "0202a6e2d25621758e2c92900f842ff367bbb5e4b6a849cacb43c3eaebf371b24b85");
 
   big_int amount = "1000000000000000000";
   std::cout << "before payment" << std::endl;
@@ -1464,10 +1465,10 @@ void transfer_deploy_test() {
   Deploy deploy(header, payment, session);
   std::cout << "after deploy" << std::endl;
   std::string signer =
-      "01027c04a0210afdf4a83328d57e8c2a12247a86d872fb53367f22a84b1b53d2a9";
+      "02033d06a3e1f9b96cf353f4086620b6e0529035eb1f02805cb67e8831c372488d4f";
   std::string signature =
-      "012dbf03817a51794a8e19e0724884075e6d1fbec326b766ecfa6658b41f81290da85e23"
-      "b24e88b1c8d9761185c961daee1adab0649912a6477bcd2e69bd91bd08";
+      "02231163918d65537fc4d03153600f6cf429763039e18bc9c96889025c33ad05557a26fa"
+      "61ec75454007f145c499f3b72ad9f7f0aad48906dc493c211c5e8b4307";
   std::cout << "before approval" << std::endl;
   DeployApproval approval(Casper::PublicKey::FromHexString(signer),
                           Signature::FromHexString(signature));
@@ -1479,8 +1480,16 @@ void transfer_deploy_test() {
   std::cout << j.dump(2) << std::endl;
 
   Casper::Client client(CASPER_TEST_ADDRESS);
+  Casper::Deploy dp(deploy.header, deploy.payment, deploy.session);
+  dp.AddApproval(approval);
+  Casper::DeployByteSerializer sery;
+  std::cout << "\n\n\ntest\n\n\n";
+  std::cout << "testttt:" << Casper::hexEncode(sery.ToBytes(dp)) << std::endl
+            << std::endl
+            << std::endl
+            << std::endl;
 
-  Casper::PutDeployResult res = client.PutDeploy(deploy);
+  Casper::PutDeployResult res = client.PutDeploy(dp);
   std::cout << "deploy id: " << res.deploy_hash << std::endl;
 }
 #define RPC_TEST 0

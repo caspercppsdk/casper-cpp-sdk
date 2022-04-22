@@ -1,6 +1,38 @@
 #include "Types/CLConverter.h"
-
+#include "date/date.h"
+#include <chrono>
 namespace Casper {
+
+uint64_t strToTimestamp(std::string str_date) {
+  using namespace date;
+  using namespace std;
+  using namespace std::chrono;
+
+  istringstream in{str_date};
+  in.exceptions(ios::failbit);
+  sys_time<milliseconds> tp;
+  in >> parse("%FT%TZ", tp);
+  cout << tp << " = " << tp.time_since_epoch() << '\n';
+  return duration_cast<milliseconds>(tp.time_since_epoch()).count();
+}
+
+CryptoPP::SecByteBlock hexDecode(std::string hex) {
+  CryptoPP::StringSource ss(hex, true, new CryptoPP::HexDecoder);
+  CryptoPP::SecByteBlock decoded((size_t)ss.MaxRetrievable());
+  ss.Get(decoded, decoded.size());
+  return decoded;
+}
+
+std::string hexEncode(CryptoPP::SecByteBlock decoded) {
+  std::string encoded;
+
+  CryptoPP::StringSource ss(
+      decoded, decoded.size(), true,
+      new CryptoPP::HexEncoder(new CryptoPP::StringSink(encoded),
+                               false)  // HexEncoder
+  );
+  return encoded;
+}
 
 big_int hexToBigInteger(const std::string& hex) {
   if (hex.length() == 0 ||
@@ -52,7 +84,7 @@ std::string bigIntegerToHex(const big_int& val) {
   std::vector<std::uint8_t> bytes = to_bytes(val);
 
   CryptoPP::SecByteBlock byte_block(bytes.data(), bytes.size());
-  std::string bytes_str = Casper::CEP57Checksum::Encode(byte_block);
+  std::string bytes_str = hexEncode(byte_block);
 
   uint8_t bytes_length = bytes_str.size() / 2;
   std::string bytes_length_str = integerToHex<uint8_t>(bytes_length);
@@ -161,16 +193,17 @@ std::string stringEncode(const std::string& val) {
   return Casper::StringUtil::stringToHex(val);
 }
 
+// Check this and pkdecode, maybe checksum convert
 GlobalStateKey urefDecode(const std::string& byte_str) {
   CryptoPP::SecByteBlock uref_bytes;
-  uref_bytes = CEP57Checksum::Decode(byte_str);
+  uref_bytes = hexDecode(byte_str);
 
   return URef::FromString(URef::byteToStringWithAccessRights(uref_bytes));
 }
 
 PublicKey publicKeyDecode(const std::string& byte_str) {
   CryptoPP::SecByteBlock public_key_bytes;
-  public_key_bytes = CEP57Checksum::Decode(byte_str);
+  public_key_bytes = hexDecode(byte_str);
 
   return PublicKey::FromBytes(public_key_bytes);
 }

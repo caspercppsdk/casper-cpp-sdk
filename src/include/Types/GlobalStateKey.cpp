@@ -84,9 +84,9 @@ GlobalStateKey GlobalStateKey::FromBytes(const CryptoPP::SecByteBlock& bytes) {
 
   switch (bytes[0]) {
     case 0x00:
-      return AccountHashKey("account-hash-" + CEP57Checksum::Encode(new_bytes));
+      return AccountHashKey("account-hash-" + CryptoUtil::hexEncode(new_bytes));
     case 0x01:
-      return HashKey("hash-" + CEP57Checksum::Encode(new_bytes));
+      return HashKey("hash-" + CryptoUtil::hexEncode(new_bytes));
     case 0x02:
       return URef("uref-" + CEP57Checksum::Encode(new_bytes));
     case 0x03:

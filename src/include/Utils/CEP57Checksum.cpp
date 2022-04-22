@@ -45,7 +45,6 @@ std::string CEP57Checksum::Encode(SecByteBlock decoded) {
     StringSource ss(decoded, decoded.size(), true,
                     new HexEncoder(new StringSink(encoded))  // HexEncoder
     );                                                       // StringSource
-    // Casper::StringUtil::toLower(encoded);
     return encoded;
   }
 
@@ -70,7 +69,6 @@ std::string CEP57Checksum::Encode(SecByteBlock decoded) {
     else
       encoded_bytes[i++] = c;
   }
-  // Casper::StringUtil::toLower(encoded_bytes);
 
   return encoded_bytes;
 }

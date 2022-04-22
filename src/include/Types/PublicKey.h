@@ -33,9 +33,9 @@ struct PublicKey {
   /// Creates a PublicKey object from an hexadecimal string (containing the
   /// Key algorithm identifier).
   /// </summary>
-  static PublicKey FromHexString(const std::string& hexKey) {
+  static Casper::PublicKey FromHexString(const std::string& hexKey) {
     try {
-      SecByteBlock rawBytes = CEP57Checksum::Decode(hexKey.substr(2));
+      SecByteBlock rawBytes = CryptoUtil::hexDecode(hexKey.substr(2));
       if (hexKey.substr(0, 2) == "01") {
         return FromRawBytes(rawBytes, KeyAlgo::ED25519);
       } else if (hexKey.substr(0, 2) == "02") {
@@ -46,13 +46,13 @@ struct PublicKey {
     } catch (std::exception& e) {
       std::cerr << e.what() << std::endl;
     }
-    return PublicKey();
+    return Casper::PublicKey();
   }
 
   /// <summary>
   /// Loads a PublicKey from a PEM file
   /// </summary>
-  static PublicKey FromPemFile(const std::string& pemFilePath) {
+  static Casper::PublicKey FromPemFile(const std::string& pemFilePath) {
     try {
       CryptoPP::FileSource fs1("rsa-pub.pem", true);
       if (CryptoPP::PEM_GetType(fs1) == CryptoPP::PEM_EC_PUBLIC_KEY) {
@@ -87,7 +87,7 @@ struct PublicKey {
   /// Creates a PublicKey object from a byte array. First byte in the array
   /// must contain the key algorithm identifier.
   /// </summary>
-  static PublicKey FromBytes(const SecByteBlock& bytes) {
+  static Casper::PublicKey FromBytes(const SecByteBlock& bytes) {
     if (bytes.empty())
       throw std::invalid_argument("Public key bytes cannot be empty.");
 
@@ -115,15 +115,16 @@ struct PublicKey {
     std::copy(bytes.begin() + 1, bytes.begin() + expectedPublicKeySize,
               rawBytes.begin());
 
-    return PublicKey(rawBytes,
-                     algoIdent == 0x01 ? KeyAlgo::ED25519 : KeyAlgo::SECP256K1);
+    return Casper::PublicKey(
+        rawBytes, algoIdent == 0x01 ? KeyAlgo::ED25519 : KeyAlgo::SECP256K1);
   }
 
   /// <summary>
   /// Creates a PublicKey object from a byte array and the key algorithm
   /// identifier.
   /// </summary>
-  static PublicKey FromRawBytes(const SecByteBlock& rawBytes, KeyAlgo keyAlgo) {
+  static Casper::PublicKey FromRawBytes(const SecByteBlock& rawBytes,
+                                        KeyAlgo keyAlgo) {
     try {
       int expectedPublicKeySize = KeyAlgo::GetKeySizeInBytes(keyAlgo) - 1;
       if (rawBytes.size() != expectedPublicKeySize) {
@@ -134,7 +135,7 @@ struct PublicKey {
     } catch (std::exception& e) {
       std::cout << e.what() << std::endl;
     }
-    return PublicKey(rawBytes, keyAlgo);
+    return Casper::PublicKey(rawBytes, keyAlgo);
   }
 
   /// <summary>
@@ -196,7 +197,7 @@ struct PublicKey {
     SecByteBlock digest_bytes(hash.DigestSize());
     hash.Final(digest_bytes.data());
 
-    return "account-hash-" + CEP57Checksum::Encode(digest_bytes);
+    return "account-hash-" + CryptoUtil::hexEncode(digest_bytes);
   }
 
   /// <summary>
@@ -206,9 +207,9 @@ struct PublicKey {
   std::string ToAccountHex() const {
     std::string pk_hex = "";
     if (key_algorithm == KeyAlgo::ED25519) {
-      pk_hex = "01" + CEP57Checksum::Encode(raw_bytes);
+      pk_hex = "01" + CryptoUtil::hexEncode(raw_bytes);
     } else if (key_algorithm == KeyAlgo::SECP256K1) {
-      pk_hex = "02" + CEP57Checksum::Encode(raw_bytes);
+      pk_hex = "02" + CryptoUtil::hexEncode(raw_bytes);
     } else {
       throw std::runtime_error("Unsupported key type.");
     }
@@ -286,26 +287,28 @@ struct PublicKey {
     return os;
   }
 
-  bool operator<(const PublicKey& other) const {
+  bool operator<(const Casper::PublicKey& other) const {
     return ToAccountHex() < other.ToAccountHex();
   }
 
-  bool operator==(const PublicKey& other) const {
+  bool operator==(const Casper::PublicKey& other) const {
     return ToAccountHex() == other.ToAccountHex();
   }
 
-  bool operator!=(const PublicKey& other) const { return !(*this == other); }
+  bool operator!=(const Casper::PublicKey& other) const {
+    return !(*this == other);
+  }
 };
 
 // to_json of PublicKey
-inline void to_json(nlohmann::json& j, const PublicKey& p) {
+inline void to_json(nlohmann::json& j, const Casper::PublicKey& p) {
   j = p.ToAccountHex();
 }
 
 // from_json of PublicKey
-inline void from_json(const nlohmann::json& j, PublicKey& p) {
+inline void from_json(const nlohmann::json& j, Casper::PublicKey& p) {
   std::string pk_str = j.get<std::string>();
-  p = PublicKey::FromHexString(pk_str);
+  p = Casper::PublicKey::FromHexString(pk_str);
 }
 
 }  // namespace Casper

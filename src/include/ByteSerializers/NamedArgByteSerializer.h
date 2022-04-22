@@ -9,7 +9,7 @@ struct NamedArgByteSerializer : public BaseByteSerializer {
   SecByteBlock ToBytes(NamedArg source) {
     SecByteBlock bytes;
     std::cout << "NamedArgByteSerializer: " << std::endl;
-    SecByteBlock bName = CEP57Checksum::Decode(stringEncode(source.name));
+    SecByteBlock bName = hexDecode(stringEncode(source.name));
     std::cout << "before write integer" << std::endl;
     WriteInteger(bytes, bName.size());
     WriteBytes(bytes, bName);

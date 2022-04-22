@@ -3,6 +3,7 @@
 #include "Base.h"
 #include "Types/KeyAlgo.h"
 #include "Utils/CEP57Checksum.h"
+#include "Utils/CryptoUtil.h"
 #include "cryptopp/hex.h"
 #include "cryptopp/secblock.h"
 
@@ -36,7 +37,7 @@ struct Signature {
   /// </summary>
   static Signature FromHexString(std::string signature) {
     try {
-      SecByteBlock rawBytes = CEP57Checksum::Decode(signature.substr(2));
+      SecByteBlock rawBytes = CryptoUtil::hexDecode(signature.substr(2));
       if (signature.substr(0, 2) == "01") {
         return FromRawBytes(rawBytes, KeyAlgo::ED25519);
       } else if (signature.substr(0, 2) == "02") {
@@ -103,9 +104,9 @@ struct Signature {
   /// </summary>
   std::string ToHexString() const {
     if (key_algorithm == KeyAlgo::ED25519)
-      return "01" + CEP57Checksum::Encode(raw_bytes);
+      return "01" + CryptoUtil::hexEncode(raw_bytes);
     else
-      return "02" + CEP57Checksum::Encode(raw_bytes);
+      return "02" + CryptoUtil::hexEncode(raw_bytes);
   }
 
   std::string ToString() const { return ToHexString(); }

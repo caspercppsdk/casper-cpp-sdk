@@ -6,6 +6,8 @@
 #include "cryptopp/filters.h"
 #include "cryptopp/hex.h"
 
+#include "Utils/StringUtil.h"
+
 namespace Casper {
 CryptoPP::SecByteBlock CryptoUtil::hexDecode(std::string encoded) {
   CryptoPP::StringSource ss(encoded, true, new CryptoPP::HexDecoder);
@@ -21,7 +23,6 @@ std::string CryptoUtil::hexEncode(CryptoPP::SecByteBlock decoded) {
       decoded, decoded.size(), true,
       new CryptoPP::HexEncoder(new CryptoPP::StringSink(encoded))  // HexEncoder
   );
-
   return encoded;
 }
 }  // namespace Casper

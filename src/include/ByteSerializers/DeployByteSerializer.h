@@ -11,44 +11,33 @@ struct DeployByteSerializer : public BaseByteSerializer {
     SecByteBlock bytes;
 
     WriteBytes(bytes, source.account.GetBytes());
-
+    std::cout << "acc:" << hexEncode(source.account.GetBytes()) << std::endl;
     // replace with source.timestamp
     /*
     std::chrono::milliseconds timestmp =
         std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now().time_since_epoch());
 */
-    using namespace date;
-
-    std::istringstream infile{source.timestamp};
-
-    sys_seconds tp;  // This is a system_clock time_point with seconds precision
-    infile >> parse("%FT%T", tp);
-    std::stringstream ss;
-    ss << tp.time_since_epoch().count();
-    std::string ts_str = ss.str();
-
-    std::istringstream ss2{ts_str};
-    uint64_t timest;
-    ss2 >> timest;
-    timest *= 1000;
-    WriteULong(bytes, timest);
-    std::cout << "Timestamp " << timest << std::endl;
-
+    uint64_t ttp = strToTimestamp(source.timestamp);
+    WriteULong(bytes, ttp);
+    std::cout << "Timestamp " << ttp << std::endl;
+    std::cout << "after Timestamp:" << hexEncode(bytes) << std::endl;
     // TODO: Create date util, use it with source.ttl
     WriteULong(bytes, 1800000);
-
+    std::cout << "after ttl:" << hexEncode(bytes) << std::endl;
     WriteULong(bytes, source.gas_price);
-
-    WriteBytes(bytes, CEP57Checksum::Decode(source.body_hash));
-
+    std::cout << "after gas price:" << hexEncode(bytes) << std::endl;
+    std::cout << "body hash " << source.body_hash << std::endl;
+    WriteBytes(bytes, hexDecode(source.body_hash));
+    std::cout << "after body hash:" << hexEncode(bytes) << std::endl;
     WriteInteger(bytes, source.dependencies.size());
     for (auto& dependency : source.dependencies) {
-      WriteBytes(bytes, CEP57Checksum::Decode(dependency));
+      WriteBytes(bytes, hexDecode(dependency));
     }
+    std::cout << "after dependencies:" << hexEncode(bytes) << std::endl;
 
     WriteString(bytes, source.chain_name);
-
+    std::cout << "after chain name:" << hexEncode(bytes) << std::endl;
     return bytes;
   }
 
@@ -60,7 +49,7 @@ struct DeployByteSerializer : public BaseByteSerializer {
 
     WriteBytes(bytes, ToBytes(source.header));
 
-    WriteBytes(bytes, CEP57Checksum::Decode(source.hash));
+    WriteBytes(bytes, hexDecode(source.hash));
 
     WriteBytes(bytes, itemSerializer.ToBytes(source.payment));
 

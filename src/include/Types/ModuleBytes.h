@@ -11,7 +11,6 @@ namespace Casper {
 /// Executable specified as raw bytes that represent WASM code and an instance
 /// of [`RuntimeArgs`].
 struct ModuleBytes {
-  // TODOMS3: [JsonConverter(typeof(HexBytesConverter))]
   /// Raw WASM module bytes with assumed "call" export as an entrypoint.
   CryptoPP::SecByteBlock module_bytes;
   /// Runtime arguments.
@@ -32,7 +31,7 @@ struct ModuleBytes {
  */
 
 inline void to_json(nlohmann::json& j, const ModuleBytes& p) {
-  j["module_bytes"] = CEP57Checksum::Encode(p.module_bytes);
+  j["module_bytes"] = hexEncode(p.module_bytes);
   j["args"] = p.args;
 }
 
@@ -45,7 +44,7 @@ inline void to_json(nlohmann::json& j, const ModuleBytes& p) {
 
 inline void from_json(const nlohmann::json& j, ModuleBytes& p) {
   std::string bytesString = j["module_bytes"].get<std::string>();
-  p.module_bytes = CEP57Checksum::Decode(bytesString);
+  p.module_bytes = hexDecode(bytesString);
 
   j.at("args").get_to(p.args);
 }

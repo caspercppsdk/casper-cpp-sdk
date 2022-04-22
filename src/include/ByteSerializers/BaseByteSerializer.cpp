@@ -3,28 +3,29 @@
 namespace Casper {
 
 void BaseByteSerializer::WriteInteger(SecByteBlock& sb, int value) {
-  SecByteBlock bytes = CEP57Checksum::Decode(i32Encode(value));
+  SecByteBlock bytes = hexDecode(i32Encode(value));
   //    if (!BitConverter.IsLittleEndian) Array.Reverse(bytes);
 
   sb += bytes;
 }
 
 void BaseByteSerializer::WriteUInteger(SecByteBlock& sb, uint32_t value) {
-  SecByteBlock bytes = CEP57Checksum::Decode(u32Encode(value));
+  SecByteBlock bytes = hexDecode(u32Encode(value));
   //    if (!BitConverter.IsLittleEndian) Array.Reverse(bytes);
 
   sb += bytes;
 }
 
 void BaseByteSerializer::WriteULong(SecByteBlock& sb, uint64_t value) {
-  SecByteBlock bytes = CEP57Checksum::Decode(u64Encode(value));
+  SecByteBlock bytes = hexDecode(u64Encode(value));
   //    if (!BitConverter.IsLittleEndian) Array.Reverse(bytes);
 
   sb += bytes;
 }
 
 void BaseByteSerializer::WriteByte(SecByteBlock& sb, uint8_t value) {
-  SecByteBlock bytes = CEP57Checksum::Decode(u8Encode(value));
+  std::cout << "byte write u8: " << u8Encode(value) << std::endl;
+  SecByteBlock bytes = hexDecode(u8Encode(value));
   sb += bytes;
 }
 
@@ -43,7 +44,7 @@ void BaseByteSerializer::WriteBytes(SecByteBlock& sb, SecByteBlock value) {
 }
 
 void BaseByteSerializer::WriteString(SecByteBlock& sb, std::string value) {
-  SecByteBlock bytes = CEP57Checksum::Decode(stringEncode(value));
+  SecByteBlock bytes = hexDecode(stringEncode(value));
   //    if (!BitConverter.IsLittleEndian) Array.Reverse(bytes);
 
   sb += bytes;

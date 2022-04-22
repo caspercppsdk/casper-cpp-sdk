@@ -41,7 +41,7 @@ struct CLValue {
       : cl_type(cl_type), bytes(bytes) {}
 
   CLValue(std::string hex_bytes, CLTypeRVA cl_type, CLTypeParsedRVA parsed) {
-    bytes = CEP57Checksum::Decode(hex_bytes);
+    bytes = hexDecode(hex_bytes);
     cl_type = cl_type;
     parsed = parsed;
   }
@@ -58,7 +58,7 @@ struct CLValue {
   /// Returns a `CLValue` object with an Int32 type.
   /// </summary>
   static CLValue I32(int32_t value) {
-    SecByteBlock bytes = CEP57Checksum::Decode(i32Encode(value));
+    SecByteBlock bytes = hexDecode(i32Encode(value));
 
     return CLValue(bytes, CLTypeEnum::I32, value);
   }
@@ -67,7 +67,7 @@ struct CLValue {
   /// Returns a `CLValue` object with an Int64 type.
   /// </summary>
   static CLValue I64(int64_t value) {
-    SecByteBlock bytes = CEP57Checksum::Decode(i64Encode(value));
+    SecByteBlock bytes = hexDecode(i64Encode(value));
 
     return CLValue(bytes, CLTypeEnum::I64, value);
   }
@@ -76,7 +76,7 @@ struct CLValue {
   /// Returns a `CLValue` object with an U8/byte type.
   /// </summary>
   static CLValue U8(uint8_t value) {
-    SecByteBlock bytes = CEP57Checksum::Decode(u8Encode(value));
+    SecByteBlock bytes = hexDecode(u8Encode(value));
     return CLValue(bytes, CLTypeEnum::U8, value);
   }
 
@@ -84,7 +84,7 @@ struct CLValue {
   /// Returns a `CLValue` object with an UInt32 type.
   /// </summary>
   static CLValue U32(uint32_t value) {
-    SecByteBlock bytes = CEP57Checksum::Decode(u32Encode(value));
+    SecByteBlock bytes = hexDecode(u32Encode(value));
 
     // TODO: check below for all the other functions
     // if (!BitConverter.IsLittleEndian) Array.Reverse(bytes);
@@ -96,7 +96,7 @@ struct CLValue {
   /// Returns a `CLValue` object with an UInt64 type.
   /// </summary>
   static CLValue U64(uint64_t value) {
-    SecByteBlock bytes = CEP57Checksum::Decode(u64Encode(value));
+    SecByteBlock bytes = hexDecode(u64Encode(value));
     std::cout << "U64(" << value << ") = " << std::endl;
     return CLValue(bytes, CLTypeEnum::U64, value);
   }
@@ -105,7 +105,7 @@ struct CLValue {
   /// Returns a `CLValue` object with an U128 type.
   /// </summary>
   static CLValue U128(big_int value) {
-    SecByteBlock bytes = CEP57Checksum::Decode(u128Encode(value));
+    SecByteBlock bytes = hexDecode(u128Encode(value));
 
     return CLValue(bytes, CLTypeEnum::U128, value.toString());
   }
@@ -114,7 +114,7 @@ struct CLValue {
   /// Returns a `CLValue` object with an U256 type.
   /// </summary>
   static CLValue U256(big_int value) {
-    SecByteBlock bytes = CEP57Checksum::Decode(u256Encode(value));
+    SecByteBlock bytes = hexDecode(u256Encode(value));
 
     return CLValue(bytes, CLTypeEnum::U256, value.toString());
   }
@@ -124,7 +124,7 @@ struct CLValue {
   /// </summary>
   static CLValue U512(big_int value) {
     std::cout << "u512Encode: " << u512Encode(value) << std::endl;
-    SecByteBlock bytes = CEP57Checksum::Decode(u512Encode(value));
+    SecByteBlock bytes = hexDecode(u512Encode(value));
     std::cout << "after bytes" << std::endl;
     return CLValue(bytes, CLTypeEnum::U512, value.toString());
   }
@@ -134,7 +134,7 @@ struct CLValue {
   /// </summary>
   // TODO: Check this func for correctness, compare with net-sdk
   static CLValue U512(uint64_t value) {
-    SecByteBlock bytes = CEP57Checksum::Decode(u64Encode(value));
+    SecByteBlock bytes = hexDecode(u64Encode(value));
 
     int nonZeros;
     for (nonZeros = bytes.size(); nonZeros > 0; nonZeros--) {
@@ -161,7 +161,7 @@ struct CLValue {
   /// Returns a `CLValue` object with a String type.
   /// </summary>
   static CLValue String(std::string value) {
-    SecByteBlock bytes = CEP57Checksum::Decode(stringEncode(value));
+    SecByteBlock bytes = hexDecode(stringEncode(value));
 
     return CLValue(bytes, CLTypeEnum::String, value);
   }
@@ -272,7 +272,7 @@ struct CLValue {
 
         SecByteBlock sb;
 
-        SecByteBlock bytes = CEP57Checksum::Decode(u32Encode(values.size()));
+        SecByteBlock bytes = hexDecode(u32Encode(values.size()));
 
         sb += bytes;
 
@@ -298,7 +298,7 @@ struct CLValue {
   /// Returns a `CLValue` object with a ByteArray type.
   /// </summary>
   static CLValue ByteArray(SecByteBlock bytes) {
-    return CLValue(bytes, CLType(bytes.size()), CryptoUtil::hexEncode(bytes));
+    return CLValue(bytes, CLType(bytes.size()), hexEncode(bytes));
   }
 
   /// <summary>
@@ -346,7 +346,7 @@ struct CLValue {
     CLTypeRVA valueType;
     SecByteBlock bytes;
 
-    SecByteBlock len = CEP57Checksum::Decode(u32Encode(dict.size()));
+    SecByteBlock len = hexDecode(u32Encode(dict.size()));
 
     bytes += len;
     int i = 0;
@@ -398,7 +398,7 @@ struct CLValue {
     mp["Tuple2"] = {t0.cl_type.type, t1.cl_type.type};
     CLTypeRVA ty(mp);
 
-    return CLValue(bytes, CLType(ty), CryptoUtil::hexEncode(bytes));
+    return CLValue(bytes, CLType(ty), hexEncode(bytes));
   }
 
   /// <summary>
@@ -419,7 +419,7 @@ struct CLValue {
     mp["Tuple3"] = {t0.cl_type.type, t1.cl_type.type, t2.cl_type.type};
     CLTypeRVA ty(mp);
 
-    return CLValue(bytes, CLType(ty), CryptoUtil::hexEncode(bytes));
+    return CLValue(bytes, CLType(ty), hexEncode(bytes));
   }
 
   /// <summary>
@@ -427,7 +427,7 @@ struct CLValue {
   /// </summary>
   static CLValue PublicKey(Casper::PublicKey publicKey) {
     return CLValue(publicKey.GetBytes(), CLType(CLTypeEnum::PublicKey),
-                   CryptoUtil::hexEncode(publicKey.GetBytes()));
+                   checksum maybe? hexEncode(publicKey.GetBytes()));
   }
 
   /// <summary>
@@ -439,7 +439,7 @@ struct CLValue {
     std::copy(value.begin(), value.end(), bytes.begin() + 1);
 
     return CLValue(bytes, CLType(CLTypeEnum::PublicKey),
-                   CryptoUtil::hexEncode(bytes));
+                   checksum maybe? hexEncode(bytes));
   }
 
   /// <summary>
@@ -461,7 +461,7 @@ struct CLValue {
 
 
     return CLValue(bytes, CLType(CLTypeEnum::Key),
-                   CryptoUtil::hexEncode(bytes));
+                   hexEncode(bytes));
   }
 
   /// <summary>
@@ -486,7 +486,6 @@ inline void to_json(nlohmann::json& j, const CLValue& p) {
 
   try {
     std::string tmp_bytes = CEP57Checksum::Encode(p.bytes);
-    StringUtil::toLower(tmp_bytes);
     j["bytes"] = tmp_bytes;
   } catch (const std::exception& e) {
     std::cout << "CLValue-to_json-bytes what(): " << e.what() << std::endl;
@@ -500,7 +499,6 @@ inline void from_json(const nlohmann::json& j, CLValue& p) {
   from_json(j.at("cl_type"), p.cl_type);
   try {
     std::string hex_bytes_str = j.at("bytes").get<std::string>();
-    StringUtil::toLower(hex_bytes_str);
     p.bytes = CEP57Checksum::Decode(hex_bytes_str);
   } catch (const std::exception& e) {
     std::cout << "CLValue-from_json-bytes what(): " << e.what() << std::endl;

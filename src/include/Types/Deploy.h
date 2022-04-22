@@ -41,10 +41,8 @@ struct Deploy {
 
   Deploy() {}
 
-  Deploy(const std::string& hash_, const DeployHeader& header_,
-         const ExecutableDeployItem& payment_,
-         const ExecutableDeployItem& session_,
-         const std::vector<DeployApproval>& approvals_)
+  Deploy(std::string hash_, DeployHeader header_, ExecutableDeployItem payment_,
+         ExecutableDeployItem session_, std::vector<DeployApproval> approvals_)
       : hash(hash_),
         header(header_),
         payment(payment_),
@@ -103,6 +101,12 @@ inline void to_json(nlohmann::json& j, const Deploy& p) {
  * @param p Deploy object to construct.
  */
 inline void from_json(const nlohmann::json& j, Deploy& p) {
+  try {
+    CEP57Checksum::Decode(j.at("hash").get<std::string>());
+  } catch (const std::exception& e) {
+    throw std::invalid_argument("Deploy: hash is not a valid checksum");
+  }
+
   j.at("hash").get_to(p.hash);
   j.at("header").get_to(p.header);
   j.at("payment").get_to(p.payment);
