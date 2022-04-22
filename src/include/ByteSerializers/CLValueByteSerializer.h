@@ -11,9 +11,13 @@ struct CLValueByteSerializer : public BaseByteSerializer {
     // serialize data length (4 bytes)
     //
     WriteInteger(bytes, source.bytes.size());
+    std::cout << "CLValueByteSerializer::ToBytes: source.bytes.size() = "
+              << source.bytes.size() << std::endl;
     // serialize data
     //
     WriteBytes(bytes, source.bytes);
+    std::cout << "CLValueByteSerializer::ToBytes: source.bytes.size() = "
+              << source.bytes.size() << std::endl;
     // serialize type and inner types (if any) recursively
     //
     CLTypeToBytes(bytes, source.cl_type, source.parsed.parsed);
@@ -51,9 +55,9 @@ struct CLValueByteSerializer : public BaseByteSerializer {
       CLTypeRVA inner_type_rva_value = inner_type_rva.begin()->second;
       if (inner_type_name == "Option") {
         WriteByte(sb, 13);
-        if (parsed.index() != 14) {
-          CLTypeToBytes(sb, inner_type_rva_value, parsed);
-        }
+        // if (parsed.index() != 14) {
+        CLTypeToBytes(sb, inner_type_rva_value, parsed);
+        // }
       } else if (inner_type_name == "List") {
         WriteByte(sb, 14);
         std::vector<CLTypeParsedRVA> parsed_list =

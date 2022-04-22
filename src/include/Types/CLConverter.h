@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <optional>
 #include "magic_enum/magic_enum.hpp"
+#include "wide-integer/uintwide_t.h"
 
 namespace Casper {
 uint64_t strToTimestamp(std::string str);
@@ -51,13 +52,13 @@ chosen as small as possible to represent the given number. This is done to
 reduce the serialization size when small numbers are represented within a wide
 data type.
 */
-big_int hexToBigInteger(const std::string& hex);
+big_int hexToBigInteger(std::string hex_input, int len);
 
 std::uint8_t extract_one_byte(big_int& extract);
 
 std::vector<std::uint8_t> to_bytes(const big_int& source);
 
-std::string bigIntegerToHex(const big_int& val);
+std::string bigIntegerToHex(big_int val, int len);
 
 // Encoding && Decoding
 

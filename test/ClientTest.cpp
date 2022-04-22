@@ -1492,15 +1492,256 @@ void transfer_deploy_test() {
   Casper::PutDeployResult res = client.PutDeploy(dp);
   std::cout << "deploy id: " << res.deploy_hash << std::endl;
 }
+
+void CLValueByteSerializerTest() {
+  using namespace Casper;
+  using ByteArr = CryptoPP::SecByteBlock;
+  CLValueByteSerializer ser;
+
+  // Bool Byte Serialization
+  CLValue clv_bool_false = CLValue::Bool(false);
+  std::string expected_bool_false = "010000000000";
+  std::string actual_bool_false = hexEncode(ser.ToBytes(clv_bool_false));
+  std::cout << "bool false: " << actual_bool_false << std::endl;
+  TEST_ASSERT(expected_bool_false == actual_bool_false);
+
+  CLValue clv_bool_true = CLValue::Bool(true);
+  std::string expected_bool_true = "010000000100";
+  std::string actual_bool_true = hexEncode(ser.ToBytes(clv_bool_true));
+  std::cout << "bool true: " << actual_bool_true << std::endl;
+  TEST_ASSERT(expected_bool_true == actual_bool_true);
+
+  // Optional Byte Serialization
+  // False
+  CLValue clv_opt_false = CLValue::Option(CLValue::Bool(false));
+  std::string expected_opt_false = "0200000001000d00";
+  std::string actual_opt_false = hexEncode(ser.ToBytes(clv_opt_false));
+  std::cout << "optional false: " << actual_opt_false << std::endl;
+  TEST_ASSERT(expected_opt_false == actual_opt_false);
+
+  // True
+  CLValue clv_opt_true = CLValue::Option(CLValue::Bool(true));
+  std::string expected_opt_true = "0200000001010d00";
+  std::string actual_opt_true = hexEncode(ser.ToBytes(clv_opt_true));
+  std::cout << "optional true: " << actual_opt_true << std::endl;
+  TEST_ASSERT(expected_opt_true == actual_opt_true);
+
+  // None
+  CLValue clv_opt_none = CLValue::OptionNone(CLTypeEnum::Bool);
+  std::string expected_opt_none = "01000000000d00";
+  std::string actual_opt_none = hexEncode(ser.ToBytes(clv_opt_none));
+  std::cout << "optional none: " << actual_opt_none << std::endl;
+  TEST_ASSERT(expected_opt_none == actual_opt_none);
+
+  ////
+
+  // U64 Byte Serialization
+  // U64
+  uint64_t u64_val = UINT64_MAX;
+  CLValue clv_u64 = CLValue::U64(u64_val);
+  std::string expected_u64 = "08000000ffffffffffffffff05";
+  std::string actual_u64 = hexEncode(ser.ToBytes(clv_u64));
+  std::cout << "u64: " << actual_u64 << std::endl;
+  TEST_ASSERT(expected_u64 == actual_u64);
+
+  // Optional U64
+  CLValue clv_opt_u64 = CLValue::Option(CLValue::U64(1));
+  std::string expected_opt_u64 = "090000000101000000000000000d05";
+  std::string actual_opt_u64 = hexEncode(ser.ToBytes(clv_opt_u64));
+  std::cout << "optional u64: " << actual_opt_u64 << std::endl;
+  TEST_ASSERT(expected_opt_u64 == actual_opt_u64);
+
+  // Optional None U64
+  CLValue clv_opt_none_u64 = CLValue::OptionNone(CLTypeEnum::U64);
+  std::string expected_opt_none_u64 = "01000000000d05";
+  std::string actual_opt_none_u64 = hexEncode(ser.ToBytes(clv_opt_none_u64));
+  std::cout << "optional none u64: " << actual_opt_none_u64 << std::endl;
+  TEST_ASSERT(expected_opt_none_u64 == actual_opt_none_u64);
+
+  ///
+
+  // U512 Byte Serialization
+  // U512 to bytes
+  big_int ulong1 = ULONG_MAX;
+  CLValue clv_u512 = CLValue::U512(ulong1);
+  // std::cout << "ULong Max:" << big_int(ULONG_MAX).toString() << std::endl;
+  std::string expected_u512 = "0900000008ffffffffffffffff08";
+  std::string actual_u512 = hexEncode(ser.ToBytes(clv_u512));
+  std::cout << "u512: " << actual_u512 << std::endl;
+  std::cout << "u512 expected: " << expected_u512 << std::endl;
+
+  TEST_ASSERT(expected_u512 == actual_u512);
+
+  //   // Optional U512
+  big_int u512_val = u512Decode(
+      "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+      "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+  big_int subtract_from_u512 = u512Decode("80");  // 0x80
+  u512_val -= subtract_from_u512;
+  std::string u512_val_bytes_str = u512Encode(u512_val);
+  std::string u512_val_str_expected =
+      "134078079299425970995740249982058461274793658205923933777235614437217640"
+      "300735469768018742981669034276900318581864860508537538828119465699464336"
+      "49006083967";
+  //  std::cout << "u512 size: " << u512Decode(u512_val_str).size() <<
+  //  std::endl;
+
+  TEST_ASSERT(u512_val_str_expected == u512_val.toString());
+
+  CLValue clv_opt_u512 = CLValue::Option(CLValue::U512(u512_val));
+  std::string expected_opt_u512 =
+      "4200000001407fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0d0"
+      "8";
+  std::string actual_opt_u512 = hexEncode(ser.ToBytes(clv_opt_u512));
+  std::cout << "optional u512: " << actual_opt_u512 << std::endl;
+  TEST_ASSERT(expected_opt_u512 == actual_opt_u512);
+
+  // Optional U512 None
+  CLValue clv_opt_u512_none = CLValue::OptionNone(CLTypeEnum::U512);
+  std::string expected_opt_u512_none = "01000000000d08";
+  std::string actual_opt_u512_none = hexEncode(ser.ToBytes(clv_opt_u512_none));
+  std::cout << "optional u512 none: " << actual_opt_u512_none << std::endl;
+  TEST_ASSERT(expected_opt_u512_none == actual_opt_u512_none);
+
+  ///
+
+  // Unit Byte Serialization
+  // Unit
+  CLValue clv_unit = CLValue::Unit();
+  std::string expected_unit = "0000000009";
+  std::string actual_unit = hexEncode(ser.ToBytes(clv_unit));
+  std::cout << "unit: " << actual_unit << std::endl;
+  TEST_ASSERT(expected_unit == actual_unit);
+
+  // Optional Unit
+  CLValue clv_opt_unit = CLValue::Option(CLValue::Unit());
+  std::string expected_opt_unit = "01000000010d09";
+  std::string actual_opt_unit = hexEncode(ser.ToBytes(clv_opt_unit));
+  std::cout << "optional unit: " << actual_opt_unit << std::endl;
+  TEST_ASSERT(expected_opt_unit == actual_opt_unit);
+
+  // Optional None Unit
+  CLValue clv_opt_none_unit = CLValue::OptionNone(CLTypeEnum::Unit);
+  std::string expected_opt_none_unit = "01000000000d09";
+  std::string actual_opt_none_unit = hexEncode(ser.ToBytes(clv_opt_none_unit));
+  std::cout << "optional none unit: " << actual_opt_none_unit << std::endl;
+  TEST_ASSERT(expected_opt_none_unit == actual_opt_none_unit);
+
+  ///
+
+  // String Byte Serialization
+  // String
+  CLValue clv_str = CLValue::String("Hello, Casper!");
+  std::string expected_str = "120000000e00000048656c6c6f2c20436173706572210a";
+  std::string actual_str = hexEncode(ser.ToBytes(clv_str));
+  std::cout << "string: " << actual_str << std::endl;
+  TEST_ASSERT(expected_str == actual_str);
+
+  // Optional String
+  CLValue clv_opt_str = CLValue::Option(CLValue::String("Hello, Casper!"));
+  std::string expected_opt_str =
+      "13000000010e00000048656c6c6f2c20436173706572210d0a";
+  std::string actual_opt_str = hexEncode(ser.ToBytes(clv_opt_str));
+  std::cout << "optional string: " << actual_opt_str << std::endl;
+  TEST_ASSERT(expected_opt_str == actual_opt_str);
+
+  // Optional Empty String
+  CLValue clv_opt_empty_str = CLValue::Option(CLValue::String(""));
+  std::string expected_opt_empty_str = "0500000001000000000d0a";
+  std::string actual_opt_empty_str = hexEncode(ser.ToBytes(clv_opt_empty_str));
+  std::cout << "optional empty string: " << actual_opt_empty_str << std::endl;
+  TEST_ASSERT(expected_opt_empty_str == actual_opt_empty_str);
+
+  // Optional None String
+  CLValue clv_opt_none_str = CLValue::OptionNone(CLTypeEnum::String);
+  std::string expected_opt_none_str = "01000000000d0a";
+  std::string actual_opt_none_str = hexEncode(ser.ToBytes(clv_opt_none_str));
+  std::cout << "optional none string: " << actual_opt_none_str << std::endl;
+  TEST_ASSERT(expected_opt_none_str == actual_opt_none_str);
+
+  ///
+
+  // Key Byte Serialization
+  /*
+  // Account Hash
+  AccountHashKey acc_key = GlobalStateKey::FromString(
+      "account-hash-"
+      "989ca079a5e446071866331468ab949483162588d57ec13ba6bb051f1e15f8b7");
+  CLValue clv_account_hash_key = CLValue::Key(acc_key);
+  std::string expected_acc_key_str =
+      "2100000000989ca079a5e446071866331468ab949483162588d57ec13ba6bb051f1e15f8"
+      "b70b";
+  std::string actual_acc_key_str = hexEncode(ser.ToBytes(clv_account_hash_key));
+  std::cout << "account hash key: " << actual_acc_key_str << std::endl;
+  TEST_ASSERT(expected_acc_key_str == actual_acc_key_str);
+
+  // Optional Account Hash
+  CLValue clv_opt_acc_hash_key = CLValue::Option(CLValue::Key(acc_key));
+  std::string expected_opt_acc_hash_key_str =
+      "220000000100989ca079a5e446071866331468ab949483162588d57ec13ba6bb051f1e15"
+      "f8b70d0b";
+  std::string actual_opt_acc_hash_key_str =
+      hexEncode(ser.ToBytes(clv_opt_acc_hash_key));
+  std::cout << "optional account hash key: " << actual_opt_acc_hash_key_str
+            << std::endl;
+  TEST_ASSERT(expected_opt_acc_hash_key_str == actual_opt_acc_hash_key_str);
+
+  // Optional None Account Hash
+  // TODO:
+  CLValue clv_opt_none_acc_hash_key =
+      CLValue::OptionNone(CLTypeEnum::Key(acc_key));
+    /* bytes = serializer.ToBytes(CLValue.OptionNone(new
+     CLKeyTypeInfo(KeyIdentifier.Account))); Assert.AreEqual("01000000000d0b",
+     Hex.ToHexString(bytes));
+  */
+
+  ///
+
+  // URef Byte Serialization
+  // TODO:
+
+  ///
+
+  // Public Key Byte Serialization
+  // Public Key
+  Casper::PublicKey pk = Casper::PublicKey::FromHexString(
+      "01381b36cd07Ad85348607ffE0fA3A2d033eA941D14763358eBEacE9C8aD3cB771");
+  CLValue clv_pk = CLValue::PublicKey(pk);
+  std::string expected_pk_str =
+      "2100000001381b36cd07ad85348607ffe0fa3a2d033ea941d14763358ebeace9c8ad3cb7"
+      "7116";
+  std::string actual_pk_str = hexEncode(ser.ToBytes(clv_pk));
+  std::cout << "public key: " << actual_pk_str << std::endl;
+  TEST_ASSERT(expected_pk_str == actual_pk_str);
+
+  // Optional Public Key
+  CLValue clv_opt_pk = CLValue::Option(CLValue::PublicKey(pk));
+  std::string expected_opt_pk_str =
+      "220000000101381b36cd07ad85348607ffe0fa3a2d033ea941d14763358ebeace9c8ad3c"
+      "b7710d16";
+  std::string actual_opt_pk_str = hexEncode(ser.ToBytes(clv_opt_pk));
+  std::cout << "optional public key: " << actual_opt_pk_str << std::endl;
+  TEST_ASSERT(expected_opt_pk_str == actual_opt_pk_str);
+
+  // Optional None Public Key
+  CLValue clv_opt_none_pk = CLValue::OptionNone(CLTypeEnum::PublicKey);
+  std::string expected_opt_none_pk_str = "01000000000d16";
+  std::string actual_opt_none_pk_str = hexEncode(ser.ToBytes(clv_opt_none_pk));
+  std::cout << "optional none public key: " << actual_opt_none_pk_str
+            << std::endl;
+  TEST_ASSERT(expected_opt_none_pk_str == actual_opt_none_pk_str);
+}
+
 #define RPC_TEST 0
 #define SER_DE_TEST 0
 #define CL_TYPE_TEST 0
 #define CL_VALUE_TEST 0
 
 TEST_LIST = {
-
-    {"gsk test", globalStateKey_serializer_test},
-    {"transfer_deploy", transfer_deploy_test},
+    {"CLValue Byte Serializer", CLValueByteSerializerTest},
+//{"gsk test", globalStateKey_serializer_test},
+//{"transfer_deploy", transfer_deploy_test},
 #if RPC_TEST == 1
     {"infoGetPeers checks node list size", infoGetPeers_Test},
     {"chainGetStateRootHash using Block height parameter",

@@ -50,7 +50,8 @@ struct CLValue {
   /// Returns a `CLValue` object with a boolean type.
   /// </summary>
   static CLValue Bool(bool value) {
-    SecByteBlock bytes = SecByteBlock{value ? (byte)0x01 : (byte)0x00};
+    SecByteBlock bytes(1);
+    bytes[0] = value ? (byte)0x01 : (byte)0x00;
     return CLValue(bytes, CLTypeEnum::Bool, value);
   }
 
@@ -191,17 +192,17 @@ struct CLValue {
 
   static CLValue Option(CLValue innerValue) {
     std::cout << "Option(CLValue innerValue)" << std::endl;
-    std::cout << "size: " << innerValue.bytes.size() << std::endl;
+    // std::cout << "size: " << innerValue.bytes.size() << std::endl;
     SecByteBlock bytes(1 + innerValue.bytes.size());
     bytes[0] = 0x01;
-    std::cout << "before copy" << std::endl;
+    // std::cout << "before copy" << std::endl;
     std::copy(innerValue.bytes.begin(), innerValue.bytes.end(),
               bytes.begin() + 1);
     std::cout << "after copy" << std::endl;
 
     nlohmann::json j;
     to_json(j, innerValue.parsed);
-    std::cout << "innerValue.parsed: " << j.dump() << std::endl;
+    // std::cout << "innerValue.parsed: " << j.dump() << std::endl;
     std::optional<CLTypeRVA> opt_with_inner = innerValue.cl_type.type;
     return CLValue(bytes, CLType(opt_with_inner), innerValue.parsed);
   }
@@ -234,6 +235,12 @@ struct CLValue {
     return CLValue::Option(CLValue::URef(innerValue));
   }
   /*
+  02000000 01 00 0d00 opt bool false
+  02000000 01 01 0d00 opt bool true
+  01000000 00 0d 00   opt bool none
+  01000000 00 0d
+  */
+  /*
       static CLValue Option(PublicKey innerValue) {
         return CLValue::Option(CLValue::PublicKey(innerValue));
       }
@@ -256,9 +263,14 @@ struct CLValue {
  */
   static CLValue OptionNone(CLType innerTypeInfo) {
     SecByteBlock bytes(1);
-    bytes[0] = 0x00;
 
-    return CLValue(bytes, innerTypeInfo, nullptr);
+    bytes[0] = (byte)0x00;
+    std::optional<CLTypeRVA> opt_with_inner = innerTypeInfo.type;
+    return CLValue(bytes, CLType(opt_with_inner), nullptr);
+  }
+
+  static CLValue OptionNone(CLTypeEnum innerType) {
+    return CLValue::OptionNone(CLType(innerType));
   }
 
   /*
@@ -421,13 +433,13 @@ struct CLValue {
 
     return CLValue(bytes, CLType(ty), hexEncode(bytes));
   }
-
+*/
   /// <summary>
   /// Returns a `CLValue` object with a PublicKey type.
   /// </summary>
   static CLValue PublicKey(Casper::PublicKey publicKey) {
     return CLValue(publicKey.GetBytes(), CLType(CLTypeEnum::PublicKey),
-                   checksum maybe? hexEncode(publicKey.GetBytes()));
+                   hexEncode(publicKey.GetBytes()));
   }
 
   /// <summary>
@@ -438,8 +450,7 @@ struct CLValue {
     bytes[0] = (byte)keyAlgorithm;
     std::copy(value.begin(), value.end(), bytes.begin() + 1);
 
-    return CLValue(bytes, CLType(CLTypeEnum::PublicKey),
-                   checksum maybe? hexEncode(bytes));
+    return CLValue(bytes, CLType(CLTypeEnum::PublicKey), hexEncode(bytes));
   }
 
   /// <summary>
@@ -449,33 +460,40 @@ struct CLValue {
   static CLValue KeyFromPublicKey(Casper::PublicKey publicKey) {
     SecByteBlock accountHash =
         AccountHashKey(publicKey.GetAccountHash()).raw_bytes;
+
+    std::cout << "\n\n\n\n\nAccountHashKey size: " << accountHash.size()
+              << std::endl
+              << std::endl
+              << std::endl
+              << std::endl;
+
+
     SecByteBlock bytes(1 + accountHash.size());
+
     bytes[0] = (byte)KeyIdentifier::ACCOUNT;
+
     std::copy(accountHash.begin(), accountHash.end(), bytes.begin() + 1);
 
-    // TODO: Check key type info alternative, there is no info in cltype as it
-    // is an account key, only it is key
-    /*
-        return  CLValue(bytes,  CLKeyTypeInfo(KeyIdentifier.Account),
-                           Hex.ToHexString(bytes));
 
 
-    return CLValue(bytes, CLType(CLTypeEnum::Key),
+    return CLValue(bytes, CLKeyTypeInfo(KeyIdentifier.Account),
                    hexEncode(bytes));
+
+    return CLValue(bytes, CLType(CLTypeEnum::Key), hexEncode(bytes));
   }
+  /*
+    /// <summary>
+    /// Returns a `CLValue` object with a GlobalStateKey in it
+    /// </summary>
+    static CLValue Key(GlobalStateKey key) {
+      auto key_serializer = GlobalStateKeyByteSerializer();
 
-  /// <summary>
-  /// Returns a `CLValue` object with a GlobalStateKey in it
-  /// </summary>
-  static CLValue Key(GlobalStateKey key) {
-    auto key_serializer = GlobalStateKeyByteSerializer();
+      // TODO: Check key type info alternative, there is no info in cltype as it
+      // is an account key, only it is key
 
-    // TODO: Check key type info alternative, there is no info in cltype as it
-    // is an account key, only it is key
-
-    return CLValue(key_serializer.ToBytes(key), CLType(CLTypeEnum::Key), key);
-  }
-  */
+      return CLValue(key_serializer.ToBytes(key), CLType(CLTypeEnum::Key), key);
+    }
+    */
 };
 
 // to json

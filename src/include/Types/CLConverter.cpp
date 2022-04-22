@@ -34,26 +34,57 @@ std::string hexEncode(CryptoPP::SecByteBlock decoded) {
   return encoded;
 }
 
-big_int hexToBigInteger(const std::string& hex) {
-  if (hex.length() == 0 ||
-      std::count(hex.begin(), hex.end(), '0') == hex.length()) {
-    return big_int(0);
+big_int hexToBigInteger(std::string hex_input, int len) {
+  std::stringstream ss;
+
+  if (len == 512) {
+    std::string hex_str = "0x" + hex_input;
+    using uint512_t = math::wide_integer::uint512_t;
+    const uint512_t a(hex_str.c_str());
+    ss << a;
+  } else if (len == 256) {
+    std::string hex_str = "0x" + hex_input;
+    using uint256_t = math::wide_integer::uint256_t;
+    const uint256_t a(hex_str.c_str());
+    ss << a;
+  } else if (len == 128) {
+    std::string hex_str = "0x" + hex_input;
+    using uint128_t = math::wide_integer::uint128_t;
+    const uint128_t a(hex_str.c_str());
+    ss << a;
+  } else {
+    throw std::runtime_error("Invalid length in hexToBigInteger");
   }
 
-  uint8_t bytes_length = 2 * hexToInteger<uint8_t>(hex.substr(0, 2));
-  std::string bytes_str = hex.substr(hex.length() - bytes_length);
-  std::reverse(bytes_str.begin(), bytes_str.end());
-  big_int ret = 0;
+  return big_int(ss.str());
+  // TODO: Check if hex is 0 and activate below
+  /*
+    if (hex_input.length() == 0 ||
+        std::count(hex_input.begin(), hex_input.end(), '0') ==
+    hex_input.length()) { return big_int(0);
+    }
+  */
 
-  for (int i = 0; i < bytes_length / 2; i++) {
-    std::string byte_str = bytes_str.substr(i * 2, 2);
-    std::reverse(byte_str.begin(), byte_str.end());
-    uint8_t byte_val = hexToInteger<uint8_t>(byte_str);
-    ret *= 256;
-    ret += byte_val;
-  }
+  /*
+    std::cout << "hexToBigInteger: " << hex << std::endl;
+    uint32_t bytes_length = 2 * hexToInteger<uint8_t>(hex.substr(0, 2));
+    std::cout << "1: " << bytes_length << std::endl;
+    std::string bytes_str = hex.substr(hex.length() - bytes_length);
+    std::cout << "2: " << bytes_str << std::endl;
+    std::reverse(bytes_str.begin(), bytes_str.end());
+    std::cout << "3: " << bytes_str << std::endl;
+    big_int ret = 0;
+    std::cout << "middle of the hexToBigInteger: " << hex << std::endl;
 
-  return ret;
+    for (uint32_t i = 0; i < bytes_length / 2; i++) {
+      std::string byte_str = bytes_str.substr(i * 2, 2);
+      std::reverse(byte_str.begin(), byte_str.end());
+      uint8_t byte_val = hexToInteger<uint8_t>(byte_str);
+      ret *= 256;
+      ret += byte_val;
+    }
+    std::cout << "end of the hexToBigInteger: " << hex << std::endl;
+  */
 }
 
 std::uint8_t extract_one_byte(big_int& extract) {
@@ -76,18 +107,23 @@ std::vector<std::uint8_t> to_bytes(const big_int& source) {
   return ret;
 }
 
-std::string bigIntegerToHex(const big_int& val) {
+std::string bigIntegerToHex(big_int val, int len) {
   if (val == 0) {
     return "00";
   }
-
+  std::cout << "bigIntegerToHex: " << val << std::endl;
   std::vector<std::uint8_t> bytes = to_bytes(val);
 
-  CryptoPP::SecByteBlock byte_block(bytes.data(), bytes.size());
+  CryptoPP::SecByteBlock byte_block(bytes.size());
+  std::copy(bytes.begin(), bytes.end(), byte_block.begin());
+  std::cout << bytes.size() << std::endl;
   std::string bytes_str = hexEncode(byte_block);
+  std::cout << "bytes str: " << bytes_str << std::endl;
 
   uint8_t bytes_length = bytes_str.size() / 2;
   std::string bytes_length_str = integerToHex<uint8_t>(bytes_length);
+  std::cout << "bytes_length_str: " << bytes_length_str << std::endl;
+
   StringUtil::toLower(bytes_length_str);
   StringUtil::toLower(bytes_str);
   return bytes_length_str + bytes_str;
@@ -157,32 +193,32 @@ std::string u64Encode(uint64_t val) {
 
 big_int u128Decode(const std::string& byte_str) {
   //
-  return hexToBigInteger(byte_str);
+  return hexToBigInteger(byte_str, 128);
 }
 
 std::string u128Encode(big_int val) {
   //
-  return bigIntegerToHex(val);
+  return bigIntegerToHex(val, 128);
 }
 
 big_int u256Decode(const std::string& byte_str) {
   //
-  return hexToBigInteger(byte_str);
+  return hexToBigInteger(byte_str, 128);
 }
 
 std::string u256Encode(big_int val) {
   //
-  return bigIntegerToHex(val);
+  return bigIntegerToHex(val, 256);
 }
 
 big_int u512Decode(const std::string& byte_str) {
   //
-  return hexToBigInteger(byte_str);
+  return hexToBigInteger(byte_str, 512);
 }
 
 std::string u512Encode(big_int val) {
   //
-  return bigIntegerToHex(val);
+  return bigIntegerToHex(val, 512);
 }
 
 std::string stringDecode(const std::string& byte_str) {
