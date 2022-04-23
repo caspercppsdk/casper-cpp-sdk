@@ -11,7 +11,7 @@ struct NamedArgByteSerializer : public BaseByteSerializer {
     std::cout << "NamedArgByteSerializer: " << std::endl;
     SecByteBlock bName =
         hexDecode(StringUtil::getStringBytesWithoutLength(source.name));
-    std::cout << "before write integer" << std::endl;
+    std::cout << "before write integer len:" << bName.size() << std::endl;
     WriteInteger(bytes, bName.size());
     WriteBytes(bytes, bName);
 
@@ -24,5 +24,6 @@ struct NamedArgByteSerializer : public BaseByteSerializer {
     return bytes;
   }
 };
+
 
 }  // namespace Casper

@@ -15,18 +15,22 @@ struct CLValueByteSerializer : public BaseByteSerializer {
     //          << source.bytes.size() << std::endl;
     // serialize data
     //
+
+    std::cout << "CLValueByteSerializer::ToBytes: source.bytes = "
+              << hexEncode(source.bytes) << std::endl;
     WriteBytes(bytes, source.bytes);
     // std::cout << "CLValueByteSerializer::ToBytes: source.bytes.size() = "
     //          << source.bytes.size() << std::endl;
     // serialize type and inner types (if any) recursively
     //
-
+    std::cout << "hexencode to bytes:" << hexEncode(bytes) << std::endl;
     nlohmann::json jjj;
     to_json(jjj, source.parsed);
     // std::cout << "CLValueByteSerializer::ToBytes: source.parsed = "
     //  << jjj.dump(2) << std::endl;
     CLTypeToBytes(bytes, source.cl_type, source.parsed.parsed);
-
+    std::cout << "CLValueByteSerializer::ToBytes: after CLTypeToBytes"
+              << hexEncode(bytes) << std::endl;
     return bytes;
   }
 

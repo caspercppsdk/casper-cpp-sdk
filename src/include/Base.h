@@ -171,6 +171,10 @@ inline std::string u512ToHex(uint512_t value) {
   std::string u512_str;
   u512_str = ss.str();
 
+  if (u512_str.length() % 2 != 0) {
+    u512_str = "0" + u512_str;
+  }
+
   //
   uint8_t bytes_length = u512_str.length() / 2;
   std::string bytes_length_str = integerToHex<uint8_t>(bytes_length);

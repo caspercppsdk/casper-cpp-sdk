@@ -1973,6 +1973,20 @@ void DeployItemByteSerializerTest() {
       "06000000746172676574200000007cfcb2fbdd0e747cabd0f8fe4d743179a764a8d7174e"
       "a6f0dfdb0c41fe1348b40f20000000"
       "020000006964090000000139300000000000000d05";
+
+  /*
+    "05
+    03000000
+
+    06000000
+    616d6f756e74
+
+    05000000
+    040601de13
+    0806000000746172676574200000"
+    "007cfcb2fbdd0e747cabd0f8fe4d743179a764a8d7174ea6f0dfdb0c41fe1348b40f20000000"
+    "020000006964090000000139300000000000000d05"
+  */
   std::string actual_transfer_bytes = hexEncode(ser.ToBytes(transfer_item));
   std::cout << "transfer item: " << actual_transfer_bytes << std::endl;
   TEST_ASSERT(expected_transfer_item_str == actual_transfer_bytes);
@@ -1997,10 +2011,11 @@ void DeployItemByteSerializerTest() {
 #define CL_VALUE_TEST 0
 
 TEST_LIST = {
+
+    {"CLValue Byte Serializer", CLValueByteSerializerTest},
     {"DeployItemByteSer", DeployItemByteSerializerTest},
-//{"CLValue Byte Serializer", CLValueByteSerializerTest},
-//{"gsk test", globalStateKey_serializer_test},
-//{"transfer_deploy", transfer_deploy_test},
+    //{"gsk test", globalStateKey_serializer_test},
+    {"transfer_deploy", transfer_deploy_test},
 #if RPC_TEST == 1
     {"infoGetPeers checks node list size", infoGetPeers_Test},
     {"chainGetStateRootHash using Block height parameter",
