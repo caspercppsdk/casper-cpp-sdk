@@ -25,7 +25,7 @@ struct ExecutionResultFailure {
   /// <summary>
   /// The cost of executing the deploy.
   /// </summary>
-  big_int cost;
+  uint512_t cost;
 
   /// <summary>
   /// The error message associated with executing the deploy.
@@ -39,7 +39,7 @@ struct ExecutionResultFailure {
 inline void to_json(nlohmann::json& j, const ExecutionResultFailure& p) {
   j = nlohmann::json{{"effect", p.effect},
                      {"transfers", p.transfers},
-                     {"cost", p.cost.toString()},
+                     {"cost", p.cost},
                      {"error_message", p.error_message}};
 }
 
@@ -69,16 +69,15 @@ struct ExecutionResultSuccess {
   /// <summary>
   /// The cost of executing the deploy.
   /// </summary>
-  big_int cost;
+  uint512_t cost;
 
   ExecutionResultSuccess() {}
 };
 
 // to_json of ExecutionResultSuccess
 inline void to_json(nlohmann::json& j, const ExecutionResultSuccess& p) {
-  j = nlohmann::json{{"effect", p.effect},
-                     {"transfers", p.transfers},
-                     {"cost", p.cost.toString()}};
+  j = nlohmann::json{
+      {"effect", p.effect}, {"transfers", p.transfers}, {"cost", p.cost}};
 }
 
 // from_json of ExecutionResultSuccess

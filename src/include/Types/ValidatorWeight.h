@@ -17,7 +17,7 @@ struct ValidatorWeight {
   /// <summary>
   /// Validator's weight.
   /// </summary>
-  big_int weight;
+  uint512_t weight;
 
   ValidatorWeight() {}
 };
@@ -29,8 +29,7 @@ struct ValidatorWeight {
  * @param p ValidatorWeight object to construct from.
  */
 inline void to_json(nlohmann::json& j, const ValidatorWeight& p) {
-  j = nlohmann::json{{"public_key", p.public_key},
-                     {"weight", p.weight.toString()}};
+  j = nlohmann::json{{"public_key", p.public_key}, {"weight", p.weight}};
 }
 
 /**
@@ -40,9 +39,10 @@ inline void to_json(nlohmann::json& j, const ValidatorWeight& p) {
  * @param p ValidatorWeight object to construct.
  */
 inline void from_json(const nlohmann::json& j, ValidatorWeight& p) {
+  // TODO: Check with j.find("weight") != j.end()
   std::string weightString = j.at("weight").get<std::string>();
   if (weightString.size() > 0) {
-    p.weight = weightString;
+    p.weight = u512FromDec(weightString);
   } else {
     p.weight = 0;
   }

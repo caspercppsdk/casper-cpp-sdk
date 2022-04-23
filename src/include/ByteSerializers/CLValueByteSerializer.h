@@ -11,15 +11,20 @@ struct CLValueByteSerializer : public BaseByteSerializer {
     // serialize data length (4 bytes)
     //
     WriteInteger(bytes, source.bytes.size());
-    std::cout << "CLValueByteSerializer::ToBytes: source.bytes.size() = "
-              << source.bytes.size() << std::endl;
+    // std::cout << "CLValueByteSerializer::ToBytes: source.bytes.size() = "
+    //          << source.bytes.size() << std::endl;
     // serialize data
     //
     WriteBytes(bytes, source.bytes);
-    std::cout << "CLValueByteSerializer::ToBytes: source.bytes.size() = "
-              << source.bytes.size() << std::endl;
+    // std::cout << "CLValueByteSerializer::ToBytes: source.bytes.size() = "
+    //          << source.bytes.size() << std::endl;
     // serialize type and inner types (if any) recursively
     //
+
+    nlohmann::json jjj;
+    to_json(jjj, source.parsed);
+    // std::cout << "CLValueByteSerializer::ToBytes: source.parsed = "
+    //  << jjj.dump(2) << std::endl;
     CLTypeToBytes(bytes, source.cl_type, source.parsed.parsed);
 
     return bytes;
@@ -27,9 +32,9 @@ struct CLValueByteSerializer : public BaseByteSerializer {
 
   void CLTypeToBytes(SecByteBlock& sb, CLType innerType,
                      CLTypeParsedRVA parsed) {
-    std::cout << "CLTypeToBytes1: " << std::endl;
+    // std::cout << "CLTypeToBytes1: " << std::endl;
     int type_idx = innerType.type.index();
-    std::cout << "CLTypeToBytes idx: " << type_idx << std::endl;
+    // std::cout << "CLTypeToBytes idx: " << type_idx << std::endl;
 
     nlohmann::json j;
     to_json(j, innerType);
@@ -85,9 +90,9 @@ struct CLValueByteSerializer : public BaseByteSerializer {
       std::cout << "CLTypeToBytes: type_idx = 5 " << std::endl;
       auto inner_type_rva =
           rva::get<std::map<std::string, int32_t>>(innerType.type);
-      std::cout << "after get inner_type_rva" << std::endl;
+      // std::cout << "after get inner_type_rva" << std::endl;
       std::string inner_type_name = inner_type_rva.begin()->first;
-      std::cout << "after get inner_type_name" << std::endl;
+      // std::cout << "after get inner_type_name" << std::endl;
       if (inner_type_name == "ByteArray") {
         WriteByte(sb, 15);
         WriteInteger(sb, inner_type_rva.begin()->second);

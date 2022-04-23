@@ -17,48 +17,12 @@
 #include "wide-integer/uintwide_t.h"
 
 namespace Casper {
+
 uint64_t strToTimestamp(std::string str);
 
 CryptoPP::SecByteBlock hexDecode(std::string hex);
 
 std::string hexEncode(CryptoPP::SecByteBlock decoded);
-
-// int-* types
-/*
-Numeric values consisting of 64 bits or less serialize in the two's complement
-representation with little-endian byte order, and the appropriate number of
-bytes for the bit-width.
-*/
-template <typename T>
-T hexToInteger(const std::string& hex) {
-  CryptoPP::SecByteBlock bytes = hexDecode(hex);
-  T val = *(reinterpret_cast<T*>(bytes.data()));
-  return val;
-}
-
-template <typename T>
-std::string integerToHex(T val) {
-  CryptoPP::SecByteBlock bytes(sizeof(T));
-  memcpy(bytes.data(), &val, sizeof(T));
-  return hexEncode(bytes);
-}
-
-// Big Integers
-/*
-Wider numeric values (i.e. U128, U256, U512) serialize as one byte given the
-length of the next number (in bytes), followed by the two's complement
-representation with little-endian byte order. The number of bytes should be
-chosen as small as possible to represent the given number. This is done to
-reduce the serialization size when small numbers are represented within a wide
-data type.
-*/
-big_int hexToBigInteger(std::string hex_input, int len);
-
-std::uint8_t extract_one_byte(big_int& extract);
-
-std::vector<std::uint8_t> to_bytes(const big_int& source);
-
-std::string bigIntegerToHex(big_int val, int len);
 
 // Encoding && Decoding
 
@@ -85,18 +49,6 @@ std::string u32Encode(uint32_t val);
 uint64_t u64Decode(const std::string& byte_str);
 
 std::string u64Encode(uint64_t val);
-
-big_int u128Decode(const std::string& byte_str);
-
-std::string u128Encode(big_int val);
-
-big_int u256Decode(const std::string& byte_str);
-
-std::string u256Encode(big_int val);
-
-big_int u512Decode(const std::string& byte_str);
-
-std::string u512Encode(big_int val);
 
 std::string stringDecode(const std::string& byte_str);
 

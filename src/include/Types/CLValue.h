@@ -105,49 +105,29 @@ struct CLValue {
   /// <summary>
   /// Returns a `CLValue` object with an U128 type.
   /// </summary>
-  static CLValue U128(big_int value) {
-    SecByteBlock bytes = hexDecode(u128Encode(value));
+  static CLValue U128(uint128_t value) {
+    SecByteBlock bytes = hexDecode(u128ToHex(value));
 
-    return CLValue(bytes, CLTypeEnum::U128, value.toString());
+    return CLValue(bytes, CLTypeEnum::U128, u128ToDec(value));
   }
 
   /// <summary>
   /// Returns a `CLValue` object with an U256 type.
   /// </summary>
-  static CLValue U256(big_int value) {
-    SecByteBlock bytes = hexDecode(u256Encode(value));
+  static CLValue U256(uint256_t value) {
+    SecByteBlock bytes = hexDecode(u256ToHex(value));
 
-    return CLValue(bytes, CLTypeEnum::U256, value.toString());
+    return CLValue(bytes, CLTypeEnum::U256, u256ToDec(value));
   }
 
   /// <summary>
   /// Returns a `CLValue` object with an U512 type.
   /// </summary>
-  static CLValue U512(big_int value) {
-    std::cout << "u512Encode: " << u512Encode(value) << std::endl;
-    SecByteBlock bytes = hexDecode(u512Encode(value));
+  static CLValue U512(uint512_t value) {
+    std::cout << "u512ToHex: " << u512ToHex(value) << std::endl;
+    SecByteBlock bytes = hexDecode(u512ToHex(value));
     std::cout << "after bytes" << std::endl;
-    return CLValue(bytes, CLTypeEnum::U512, value.toString());
-  }
-
-  /// <summary>
-  /// Returns a `CLValue` object with an U512 type.
-  /// </summary>
-  // TODO: Check this func for correctness, compare with net-sdk
-  static CLValue U512(uint64_t value) {
-    SecByteBlock bytes = hexDecode(u64Encode(value));
-
-    int nonZeros;
-    for (nonZeros = bytes.size(); nonZeros > 0; nonZeros--) {
-      if (bytes[nonZeros - 1] != 0x00) {
-        break;
-      }
-    }
-
-    SecByteBlock b(1 + nonZeros);
-    b[0] = (byte)nonZeros;
-    std::copy(bytes.begin(), bytes.begin() + nonZeros, b.begin() + 1);
-    return CLValue(b, CLTypeEnum::U512, std::to_string(value));
+    return CLValue(bytes, CLTypeEnum::U512, u512ToDec(value));
   }
 
   /// <summary>
@@ -457,6 +437,7 @@ struct CLValue {
   /// Converts a public key into an account hash an returns it wrapped into a
   /// Key `CLValue`
   /// </summary>
+  /*
   static CLValue KeyFromPublicKey(Casper::PublicKey publicKey) {
     SecByteBlock accountHash =
         AccountHashKey(publicKey.GetAccountHash()).raw_bytes;
@@ -540,6 +521,7 @@ struct adl_serializer<std::map<rva::variant<T>, rva::variant<T>>> {
     from_json(j, std::get<var.index()>(var));
   }
 };
+
 }  // namespace nlohmann
 
 /*

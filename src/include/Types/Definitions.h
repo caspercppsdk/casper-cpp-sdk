@@ -12,7 +12,6 @@
 #pragma once
 
 #include "infint/infint.h"
-
 typedef InfInt big_int;
 /*
 typedef unsigned long long TimeDiff;
@@ -24,3 +23,6 @@ TimeDiff string_to_timediff (const std::string &str) {
     return result;
 }
 */
+
+
+

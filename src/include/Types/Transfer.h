@@ -41,12 +41,12 @@ struct Transfer {
   /// <summary>
   /// Transfer amount
   /// </summary>
-  big_int amount;
+  uint512_t amount;
 
   /// <summary>
   /// Gas
   /// </summary>
-  big_int gas;
+  uint512_t gas;
 
   /// <summary>
   /// User-defined id
@@ -64,12 +64,9 @@ struct Transfer {
  */
 
 inline void to_json(nlohmann::json& j, const Transfer& p) {
-  j = nlohmann::json{{"deploy_hash", p.deploy_hash},
-                     {"from", p.from},
-                     {"source", p.source},
-                     {"target", p.target},
-                     {"amount", p.amount.toString()},
-                     {"gas", p.gas.toString()}};
+  j = nlohmann::json{{"deploy_hash", p.deploy_hash}, {"from", p.from},
+                     {"source", p.source},           {"target", p.target},
+                     {"amount", p.amount},           {"gas", p.gas}};
 
   if (p.id.has_value()) {
     j["id"] = p.id.value();
