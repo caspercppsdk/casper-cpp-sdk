@@ -194,7 +194,7 @@ void accountPutDeploy() {
        << std::setw(3) << millis.count() << 'Z';
 
   */
-  dp.header.timestamp = "2022-04-21T21:53:44.321Z";
+  dp.header.timestamp = "2022-04-23T09:38:21.700Z";
   Casper::Deploy t2(dp.header, dp.payment, dp.session);
   t2.AddApproval(approval);
 
@@ -215,7 +215,8 @@ void accountPutDeploy() {
             << std::endl
             << std::endl;
   Casper::PutDeployResult put_deploy_result = casper_client.PutDeploy(t2);
-  // printResult(put_deploy_result, "account_put_deploy");
+
+  printResult(put_deploy_result, "account_put_deploy");
 }
 
 int main() {
