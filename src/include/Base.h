@@ -82,10 +82,15 @@ inline std::string u128ToHex(uint128_t value) {
   std::string u128_str;
   u128_str = ss.str();
 
+  if (u128_str.length() % 2 != 0) {
+    u128_str = "0" + u128_str;
+  }
+
   //
   uint8_t bytes_length = u128_str.length() / 2;
   std::string bytes_length_str = integerToHex<uint8_t>(bytes_length);
 
+  std::cout << "u128_str: " << u128_str << std::endl;
   reverseHex(u128_str);
 
   // this string includes the length of the string and its hex representation
@@ -127,10 +132,15 @@ inline std::string u256ToHex(uint256_t value) {
   std::string u256_str;
   u256_str = ss.str();
 
+  if (u256_str.length() % 2 != 0) {
+    u256_str = "0" + u256_str;
+  }
+
   //
   uint8_t bytes_length = u256_str.length() / 2;
   std::string bytes_length_str = integerToHex<uint8_t>(bytes_length);
 
+  std::cout << "u256_str: " << u256_str << std::endl;
   reverseHex(u256_str);
 
   // this string includes the length of the string and its hex representation

@@ -1,9 +1,9 @@
 {
-  "hash": "",
+  "hash": "bba5fb89a48f71e6d00077a56854df3bbafb7ad4c1332f3956f1c2f2f97257fe",
   "header": {
     "ttl": "30m",
     "account": "02033d06a3e1f9b96cf353f4086620b6e0529035eb1f02805cb67e8831c372488d4f",
-    "body_hash": "",
+    "body_hash": "a3f5147282396f8c0bdb7984c62374d9899b6c6cc953a3909c6c1fa1232cd93c",
     "gas_price": 1,
     "timestamp": "2022-04-23T09:38:21.700Z",
     "chain_name": "casper-test",
