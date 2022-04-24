@@ -146,9 +146,9 @@ struct KeyPair {
   /// <summary>
   /// Signs a message and returns the signature.
   /// </summary>
-  CryptoPP::SecByteBlock Sign(CryptoPP::SecByteBlock message) {
+  CBytes Sign(CBytes message) {
     if (public_key.key_algorithm == KeyAlgo::ED25519) {
-      CryptoPP::SecByteBlock signature;  // = new byte[Ed25519.SignatureSize];
+      CBytes signature;  // = new byte[Ed25519.SignatureSize];
       // var sk = (Ed25519PrivateKeyParameters)_privateKey;
       // Ed25519.Sign(sk.GetEncoded(), 0, message, 0, message.Length, signature,
       // 0);
@@ -162,7 +162,7 @@ struct KeyPair {
       //   k);
 
       //   var signer = SignerUtilities.GetSigner("SHA-256withPLAIN-ECDSA");
-      CryptoPP::SecByteBlock rs;
+      CBytes rs;
       //   do {
       //     signer.Init(forSigning : true, param);
       //     signer.BlockUpdate(message, 0, message.Length);
@@ -176,8 +176,8 @@ struct KeyPair {
       // throw new Exception("Unsupported key type.");
     }
 
-    return CryptoPP::SecByteBlock();  // TODO: delete after implementation  of
-                                      // above
+    return CBytes();  // TODO: delete after implementation  of
+                      // above
   }
 };
 

@@ -6,10 +6,10 @@
 #include "Utils/StringUtil.h"
 namespace Casper {
 struct NamedArgByteSerializer : public BaseByteSerializer {
-  SecByteBlock ToBytes(NamedArg source) {
-    SecByteBlock bytes;
+  CBytes ToBytes(NamedArg source) {
+    CBytes bytes;
     // std::cout << "NamedArgByteSerializer: " << std::endl;
-    SecByteBlock bName =
+    CBytes bName =
         hexDecode(StringUtil::getStringBytesWithoutLength(source.name));
     // std::cout << "before write integer len:" << bName.size() << std::endl;
     WriteInteger(bytes, bName.size());

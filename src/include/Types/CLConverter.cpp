@@ -91,14 +91,14 @@ std::string stringEncode(const std::string& val) {
 
 // Check this and pkdecode, maybe checksum convert
 GlobalStateKey urefDecode(const std::string& byte_str) {
-  CryptoPP::SecByteBlock uref_bytes;
+  CBytes uref_bytes;
   uref_bytes = hexDecode(byte_str);
 
   return URef::FromString(URef::byteToStringWithAccessRights(uref_bytes));
 }
 
 PublicKey publicKeyDecode(const std::string& byte_str) {
-  CryptoPP::SecByteBlock public_key_bytes;
+  CBytes public_key_bytes;
   public_key_bytes = hexDecode(byte_str);
 
   return PublicKey::FromBytes(public_key_bytes);

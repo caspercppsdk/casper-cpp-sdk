@@ -7,12 +7,17 @@
 #include "Types/PublicKey.h"
 #include "Types/KeyPair.h"
 #include "nlohmann/json.hpp"
-
+#include "Types/Secp256k1Key.h"
 namespace Casper {
 /// <summary>
 /// Header information of a Deploy.
 /// </summary>
 struct Deploy {
+  /// <summary>
+  /// List of signers and signatures for this Deploy.
+  /// </summary>
+  std::vector<DeployApproval> approvals;
+
   // TODOMS3: check with CEP57 Checksum for json serialization
   /// <summary>
   /// A hash over the header of the deploy.
@@ -33,11 +38,6 @@ struct Deploy {
   /// Contains the session information for the deploy.
   /// </summary>
   ExecutableDeployItem session;
-
-  /// <summary>
-  /// List of signers and signatures for this Deploy.
-  /// </summary>
-  std::vector<DeployApproval> approvals;
 
   Deploy() {}
 
@@ -60,6 +60,8 @@ struct Deploy {
 
   void Sign(KeyPair keyPair);
 
+  void Sign(Secp256k1Key& keyPair);
+
   void AddApproval(DeployApproval approval);
 
   bool ValidateHashes(std::string& message);
@@ -68,10 +70,10 @@ struct Deploy {
 
   int GetDeploySizeInBytes() const;
 
-  CryptoPP::SecByteBlock ComputeBodyHash(ExecutableDeployItem payment,
-                                         ExecutableDeployItem session);
+  CBytes ComputeBodyHash(ExecutableDeployItem payment,
+                         ExecutableDeployItem session);
 
-  CryptoPP::SecByteBlock ComputeHeaderHash(DeployHeader header);
+  CBytes ComputeHeaderHash(DeployHeader header);
 
   nlohmann::json toJson() const;
 
@@ -87,11 +89,11 @@ struct Deploy {
  * @param p Deploy object to construct from.
  */
 inline void to_json(nlohmann::json& j, const Deploy& p) {
-  j = nlohmann::json{{"hash", p.hash},
+  j = nlohmann::json{{"approvals", p.approvals},
+                     {"hash", p.hash},
                      {"header", p.header},
                      {"payment", p.payment},
-                     {"session", p.session},
-                     {"approvals", p.approvals}};
+                     {"session", p.session}};
 }
 
 /**

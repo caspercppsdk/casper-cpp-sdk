@@ -12,7 +12,7 @@ namespace Casper {
 /// of [`RuntimeArgs`].
 struct ModuleBytes {
   /// Raw WASM module bytes with assumed "call" export as an entrypoint.
-  CryptoPP::SecByteBlock module_bytes;
+  CBytes module_bytes;
   /// Runtime arguments.
   std::vector<NamedArg> args;
 

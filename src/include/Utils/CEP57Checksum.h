@@ -16,21 +16,19 @@
 #include "cryptopp/hex.h"
 #include "cryptopp/secblock.h"
 
-using namespace CryptoPP;
-
 namespace Casper {
 class CEP57Checksum {
  private:
-  static SecByteBlock _bytes_to_nibbles(SecByteBlock bytes);
+  static CBytes _bytes_to_nibbles(CBytes bytes);
 
-  static std::vector<bool> _bytes_to_bits_cycle(SecByteBlock bytes);
+  static std::vector<bool> _bytes_to_bits_cycle(CBytes bytes);
 
  public:
   static bool HasChecksum(std::string hex);
 
-  static std::string Encode(SecByteBlock decoded);
+  static std::string Encode(CBytes decoded);
 
-  static SecByteBlock Decode(std::string encoded);
+  static CBytes Decode(std::string encoded);
 };
 
 }  // namespace Casper

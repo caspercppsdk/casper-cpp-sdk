@@ -6,7 +6,7 @@ namespace Casper {
 
 Deploy::Deploy(DeployHeader header, ExecutableDeployItem payment,
                ExecutableDeployItem session) {
-    CryptoPP::SecByteBlock body_hash = ComputeBodyHash(payment, session);
+  CBytes body_hash = ComputeBodyHash(payment, session);
 
   this->header = DeployHeader(header.account, header.timestamp, header.ttl,
                               header.gas_price, hexEncode(body_hash),
@@ -22,12 +22,23 @@ Deploy::Deploy(DeployHeader header, ExecutableDeployItem payment,
 /// Signs the deploy with a private key and adds a new Approval to it.
 /// </summary>
 void Deploy::Sign(KeyPair keyPair) {
-  CryptoPP::SecByteBlock signature =
-      keyPair.Sign(CryptoUtil::hexDecode(this->hash));
+  CBytes signature = keyPair.Sign(hexDecode(this->hash));
 
   this->approvals.emplace_back(
       keyPair.public_key,
       Signature::FromRawBytes(signature, keyPair.public_key.key_algorithm));
+}
+
+/// <summary>
+/// Signs the deploy with a private key and adds a new Approval to it.
+/// </summary>
+void Deploy::Sign(Secp256k1Key& sec_key) {
+  CBytes signature = sec_key.sign(CEP57Checksum::Decode(this->hash));
+
+  std::string public_key_str = "0202" + sec_key.getPublicKeyStr();
+  this->approvals.emplace_back(
+      Casper::PublicKey::FromHexString(public_key_str),
+      Signature::FromRawBytes(signature, KeyAlgo::SECP256K1));
 }
 
 /// <summary>
@@ -44,10 +55,9 @@ void Deploy::AddApproval(DeployApproval approval) {
 /// validation fails. empty otherwise.</param> <returns>false if the validation
 /// of hashes is not successful</returns>
 bool Deploy::ValidateHashes(std::string& message) {
-  CryptoPP::SecByteBlock computed_hash =
-      ComputeBodyHash(this->payment, this->session);
+  CBytes computed_hash = ComputeBodyHash(this->payment, this->session);
 
-  if (CryptoUtil::hexDecode(this->header.body_hash) != computed_hash) {
+  if (hexDecode(this->header.body_hash) != computed_hash) {
     message =
         "Computed Body Hash does not match value in deploy header. "
         "Expected: " +
@@ -80,7 +90,7 @@ bool Deploy::VerifySignatures(std::string& message) {
   message = "";
 
   for (auto& approval : this->approvals) {
-    if (!approval.signer.VerifySignature(CryptoUtil::hexDecode(this->hash),
+    if (!approval.signer.VerifySignature(hexDecode(this->hash),
                                          approval.signature.raw_bytes)) {
       message =
           "Error verifying signature with signer " + approval.signer.ToString();
@@ -100,9 +110,9 @@ int Deploy::GetDeploySizeInBytes() const {
   return serializer.ToBytes(*this).size();
 }
 
-CryptoPP::SecByteBlock Deploy::ComputeBodyHash(ExecutableDeployItem payment,
-                                               ExecutableDeployItem session) {
-  SecByteBlock sb;
+CBytes Deploy::ComputeBodyHash(ExecutableDeployItem payment,
+                               ExecutableDeployItem session) {
+  CBytes sb;
   // std::cout << "ComputeBodyHash" << std::endl;
   ExecutableDeployItemByteSerializer itemSerializer;
 
@@ -110,18 +120,18 @@ CryptoPP::SecByteBlock Deploy::ComputeBodyHash(ExecutableDeployItem payment,
   sb += itemSerializer.ToBytes(session);
   // std::cout << "ComputeBodyHash2" << std::endl;
 
-  BLAKE2b bcBl2bdigest(32u);
+  CryptoPP::BLAKE2b bcBl2bdigest(32u);
   bcBl2bdigest.Update(sb, sb.size());
   // std::cout << "ComputeBodyHash3" << std::endl;
 
-  SecByteBlock hash(bcBl2bdigest.DigestSize());
+  CBytes hash(bcBl2bdigest.DigestSize());
   bcBl2bdigest.Final(hash);
   // std::cout << "ComputeBodyHash4" << std::endl;
 
   return hash;
 }
 
-CryptoPP::SecByteBlock Deploy::ComputeHeaderHash(DeployHeader header) {
+CBytes Deploy::ComputeHeaderHash(DeployHeader header) {
   DeployByteSerializer serializer;
 
   nlohmann::json j;
@@ -129,13 +139,13 @@ CryptoPP::SecByteBlock Deploy::ComputeHeaderHash(DeployHeader header) {
   std::cout << "ComputeHeaderHash header: \n";
   std::cout << j.dump(2) << std::endl;
 
-  SecByteBlock bHeader = serializer.ToBytes(header);
+  CBytes bHeader = serializer.ToBytes(header);
 
-  BLAKE2b bcBl2bdigest(32u);
+  CryptoPP::BLAKE2b bcBl2bdigest(32u);
 
   bcBl2bdigest.Update(bHeader, bHeader.size());
 
-  SecByteBlock hash(bcBl2bdigest.DigestSize());
+  CBytes hash(bcBl2bdigest.DigestSize());
   bcBl2bdigest.Final(hash);
 
   return hash;

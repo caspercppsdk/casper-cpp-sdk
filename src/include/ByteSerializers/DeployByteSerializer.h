@@ -7,8 +7,8 @@
 #include <chrono>
 namespace Casper {
 struct DeployByteSerializer : public BaseByteSerializer {
-  SecByteBlock ToBytes(DeployHeader source) {
-    SecByteBlock bytes;
+  CBytes ToBytes(DeployHeader source) {
+    CBytes bytes;
 
     WriteBytes(bytes, source.account.GetBytes());
     // std::cout << "acc:" << hexEncode(source.account.GetBytes()) << std::endl;
@@ -41,8 +41,8 @@ struct DeployByteSerializer : public BaseByteSerializer {
     return bytes;
   }
 
-  SecByteBlock ToBytes(Deploy source) {
-    SecByteBlock bytes;
+  CBytes ToBytes(Deploy source) {
+    CBytes bytes;
 
     ExecutableDeployItemByteSerializer itemSerializer;
     DeployApprovalByteSerializer approvalSerializer;

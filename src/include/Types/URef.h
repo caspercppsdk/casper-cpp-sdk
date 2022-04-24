@@ -25,15 +25,15 @@ struct URef : public GlobalStateKey {
 
   URef(std::string value);
 
-  static std::string byteToStringWithAccessRights(SecByteBlock bytes);
+  static std::string byteToStringWithAccessRights(CBytes bytes);
 
-  std::string byteToString(SecByteBlock bytes, AccessRights rights);
+  std::string byteToString(CBytes bytes, AccessRights rights);
 
-  URef(SecByteBlock bytes);
+  URef(CBytes bytes);
 
-  URef(SecByteBlock rawBytes, AccessRights accessRights);
+  URef(CBytes rawBytes, AccessRights accessRights);
 
-  SecByteBlock GetBytes();
+  CBytes GetBytes();
 
   std::string ToString() const;
 
@@ -44,7 +44,7 @@ struct URef : public GlobalStateKey {
   bool operator!=(const URef& other) const;
 
  protected:
-  SecByteBlock _GetRawBytesFromKey(std::string key) const;
+  CBytes _GetRawBytesFromKey(std::string key) const;
 };
 
 /**

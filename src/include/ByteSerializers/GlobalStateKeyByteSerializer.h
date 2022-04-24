@@ -5,16 +5,16 @@
 
 namespace Casper {
 struct GlobalStateKeyByteSerializer : public BaseByteSerializer {
-  SecByteBlock ToBytes(GlobalStateKey& source) {
-    SecByteBlock bytes;
+  CBytes ToBytes(GlobalStateKey& source) {
+    CBytes bytes;
 
-    WriteByte(bytes, (byte)source.key_identifier);
+    WriteByte(bytes, (CryptoPP::byte)source.key_identifier);
 
     WriteBytes(bytes, source.raw_bytes);
 
     if (source.ToString().find("uref-") != std::string::npos) {
       URef uref(source.ToString());
-      WriteByte(bytes, (byte)uref.access_rights);
+      WriteByte(bytes, (CryptoPP::byte)uref.access_rights);
     }
 
     return bytes;

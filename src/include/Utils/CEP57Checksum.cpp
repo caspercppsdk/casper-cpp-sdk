@@ -5,8 +5,8 @@ constexpr const int SMALL_BYTES_COUNT = 75;
 constexpr const char HexChars[]{'0', '1', '2', '3', '4', '5', '6', '7',
                                 '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
-SecByteBlock CEP57Checksum::_bytes_to_nibbles(SecByteBlock bytes) {
-  SecByteBlock nibbles(bytes.size() * 2);
+CBytes CEP57Checksum::_bytes_to_nibbles(CBytes bytes) {
+  CBytes nibbles(bytes.size() * 2);
   for (int i = 0; i < bytes.size(); i++) {
     nibbles[i * 2] = (bytes.data()[i] & 0xF0) >> 4;
     nibbles[i * 2 + 1] = bytes.data()[i] & 0x0F;
@@ -14,7 +14,7 @@ SecByteBlock CEP57Checksum::_bytes_to_nibbles(SecByteBlock bytes) {
   return nibbles;
 }
 
-std::vector<bool> CEP57Checksum::_bytes_to_bits_cycle(SecByteBlock bytes) {
+std::vector<bool> CEP57Checksum::_bytes_to_bits_cycle(CBytes bytes) {
   size_t bit_size = bytes.size() * 8;
   std::vector<bool> bits(bit_size);
   for (int i = 0, k = 0; i < bytes.size(); i++)
@@ -38,21 +38,21 @@ bool CEP57Checksum::HasChecksum(std::string hex) {
   return mix > 2;
 }
 
-std::string CEP57Checksum::Encode(SecByteBlock decoded) {
+std::string CEP57Checksum::Encode(CBytes decoded) {
   if (decoded.size() > SMALL_BYTES_COUNT) {
     std::string encoded;
 
-    StringSource ss(decoded, decoded.size(), true,
-                    new HexEncoder(new StringSink(encoded))  // HexEncoder
+    CStringSource ss(decoded, decoded.size(), true,
+                    new CHexEncoder(new CStringSink(encoded))  // HexEncoder
     );                                                       // StringSource
     return encoded;
   }
 
-  SecByteBlock nibbles = _bytes_to_nibbles(decoded);
+  CBytes nibbles = _bytes_to_nibbles(decoded);
 
-  BLAKE2b hash(32u);
+  CryptoPP::BLAKE2b hash(32u);
   hash.Update(decoded.data(), decoded.size());
-  SecByteBlock digest_bytes(hash.DigestSize());
+  CBytes digest_bytes(hash.DigestSize());
   hash.Final(digest_bytes.data());
 
   std::vector<bool> hashBits = _bytes_to_bits_cycle(digest_bytes);
@@ -73,8 +73,8 @@ std::string CEP57Checksum::Encode(SecByteBlock decoded) {
   return encoded_bytes;
 }
 
-SecByteBlock CEP57Checksum::Decode(std::string encoded) {
-  CryptoPP::SecByteBlock decoded = CryptoUtil::hexDecode(encoded);
+CBytes CEP57Checksum::Decode(std::string encoded) {
+  CBytes decoded = CryptoUtil::hexDecode(encoded);
   if (decoded.size() > SMALL_BYTES_COUNT || !HasChecksum(encoded)) {
     return decoded;
   }

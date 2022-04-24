@@ -10,6 +10,9 @@
 #include "ByteSerializers/DeployByteSerializer.h"
 #include "Types/CLValue.h"
 #include "date/date.h"
+#include "Types/ED25519Key.h"
+#include "Types/Secp256k1Key.h"
+#include "cryptopp/osrng.h"
 #include <chrono>
 #include "acutest.h"
 
@@ -203,7 +206,6 @@ void chainGetBlockTransfers_with_blockHashTest() {
   // Call the rpc function
   std::string block_hash =
       "35f86b6ab5e13b823daee5d23f3373f6b35048e0b0ea993adfadc5ba8ee7aae5";
-  StringUtil::toLower(block_hash);
   GetBlockTransfersResult result = client.GetBlockTransfers(block_hash);
 
   // Expected Values
@@ -566,12 +568,12 @@ void publicKey_getAccountHashTest() {
       "01cd807fb41345d8dd5a61da7991e1468173acbee53920e4dfe0d28cb8825ac664");
 
   std::string lower_case_account_hash = publicKey.GetAccountHash();
-  StringUtil::toLower(lower_case_account_hash);
 
   std::string expected_account_hash =
       "account-hash-"
       "998c5fd4e7b568bedd78e05555c83c61893dc5d8546ce0bec8b30e1c570f21aa";
-
+  std::cout << "lower_case_account_hash: " << lower_case_account_hash
+            << std::endl;
   TEST_ASSERT(iequals(lower_case_account_hash, expected_account_hash));
 }
 
@@ -678,7 +680,10 @@ void serializeU64Test() {
 void serializeU128Test() {
   std::string u128_bytes1 = "060000C0D0E0F0";
   uint128_t expected_value1 = u128FromDec("264848365584384");
-  uint128_t actual_value1 = u128FromDec(u128_bytes1);
+  uint128_t actual_value1 = u128FromHex(u128_bytes1);
+
+  std::cout << "actual_value1: " << actual_value1 << std::endl;
+  std::cout << "expected_value1: " << expected_value1 << std::endl;
   TEST_ASSERT(actual_value1 == expected_value1);
 
   std::string encoded_value1 = u128ToHex(expected_value1);
@@ -701,7 +706,10 @@ void serializeU256Test() {
 
   std::string u256_bytes2 = "020e08";
   uint256_t expected_value2{"2062"};
+  std::cout << "expected_value2: " << expected_value2 << std::endl;
+
   uint256_t actual_value2 = u256FromHex(u256_bytes2);
+  std::cout << "actual_value2: " << actual_value2 << std::endl;
   TEST_ASSERT(actual_value2 == expected_value2);
 
   std::string encoded_value2 = u256ToHex(expected_value2);
@@ -798,7 +806,7 @@ void serializeKeyTest() {
   std::string key_str =
       "hash-23cd4354304f4eb1dd6739cba66d41579936e2cec1553096d97aa4efb6b661e6";
 
-  CryptoPP::SecByteBlock key_bytes = CEP57Checksum::Decode(key_bytes_str);
+  CBytes key_bytes = CEP57Checksum::Decode(key_bytes_str);
 
   nlohmann::json parsed_key;
   to_json(parsed_key, GlobalStateKey::FromBytes(key_bytes));
@@ -826,8 +834,7 @@ void serializePublicKeyTest() {
   std::string public_key_bytes_str =
       "01b92e36567350dd7b339d709bfe341df6fda853e85315418f1bb3ddd414d9f5be";
 
-  CryptoPP::SecByteBlock public_key_bytes =
-      CEP57Checksum::Decode(public_key_bytes_str);
+  CBytes public_key_bytes = CEP57Checksum::Decode(public_key_bytes_str);
 
   nlohmann::json parsed_public_key;
   to_json(parsed_public_key, Casper::PublicKey::FromBytes(public_key_bytes));
@@ -1055,13 +1062,11 @@ CLTypeRVA createTuple1(CLTypeRVA value1) {
   std::vector<CLTypeRVA> cl_tuple1_type;
   cl_tuple1_type.push_back(value1);
 
-  CLTypeRVA rva = cl_tuple1_type;
+  std::map<std::string, std::vector<CLTypeRVA>> cl_tuple_type;
+  cl_tuple_type["Tuple1"] = cl_tuple1_type;
+  CLTypeRVA rva = cl_tuple_type;
 
-  nlohmann::json j;
-  to_json(j, rva);
-  std::cout << j.dump() << std::endl;
-
-  return createContainerMap("Tuple1", rva);
+  return rva;
 }
 
 CLTypeRVA createTuple2(CLTypeRVA value1, CLTypeRVA value2) {
@@ -1069,9 +1074,11 @@ CLTypeRVA createTuple2(CLTypeRVA value1, CLTypeRVA value2) {
   cl_tuple2_type.push_back(value1);
   cl_tuple2_type.push_back(value2);
 
-  CLTypeRVA rva = cl_tuple2_type;
+  std::map<std::string, std::vector<CLTypeRVA>> cl_tuple_type;
+  cl_tuple_type["Tuple2"] = cl_tuple2_type;
+  CLTypeRVA rva = cl_tuple_type;
 
-  return createContainerMap("Tuple2", rva);
+  return rva;
 }
 
 CLTypeRVA createTuple3(CLTypeRVA value1, CLTypeRVA value2, CLTypeRVA value3) {
@@ -1080,9 +1087,11 @@ CLTypeRVA createTuple3(CLTypeRVA value1, CLTypeRVA value2, CLTypeRVA value3) {
   cl_tuple3_type.push_back(value2);
   cl_tuple3_type.push_back(value3);
 
-  CLTypeRVA rva = cl_tuple3_type;
+  std::map<std::string, std::vector<CLTypeRVA>> cl_tuple_type;
+  cl_tuple_type["Tuple3"] = cl_tuple3_type;
+  CLTypeRVA rva = cl_tuple_type;
 
-  return createContainerMap("Tuple3", rva);
+  return rva;
 }
 
 bool threeWayCompare(CLTypeRVA rva) {
@@ -1340,7 +1349,7 @@ template <typename T>
 void globalStateKey_serialize(T key, std::string& expected_bytes_str) {
   GlobalStateKeyByteSerializer gsk_serializer;
 
-  CryptoPP::SecByteBlock key_bytes = gsk_serializer.ToBytes(key);
+  CBytes key_bytes = gsk_serializer.ToBytes(key);
 
   std::string bytes_str = CEP57Checksum::Encode(key_bytes);
 
@@ -1404,9 +1413,9 @@ void transfer_deploy_test() {
        << std::setw(3) << millis.count() << 'Z';
   */
 
-  std::string timestamp_str2 = "2021-09-25T17:01:24.399Z";
-  // current date/time based on current system according to RFC3339
-  // std::cout << "timestamp: " << strToTimestamp(timestamp_str2);
+  // std::string timestamp_str2 = "2021-09-25T17:01:24.399Z";
+  //  current date/time based on current system according to RFC3339
+  //  std::cout << "timestamp: " << strToTimestamp(timestamp_str2);
   /*std::stringstream ss;
   auto tp = std::chrono::system_clock::now();
   auto tt = std::chrono::system_clock::to_time_t(tp);
@@ -1429,23 +1438,22 @@ void transfer_deploy_test() {
   std::string timestamp_str = ss.str();
   // std::asctime(std::localtime(&tt)),
   DeployHeader header(
-      Casper::PublicKey::FromHexString("02033d06a3e1f9b96cf353f4086620b6e052903"
-                                       "5eb1f02805cb67e8831c372488d4f"),
+      Casper::PublicKey::FromHexString("0202a6e2d25621758e2c92900f842ff367bbb5e"
+                                       "4b6a849cacb43c3eaebf371b24b85"),
       timestamp_str, "30m", 1, "", {}, "casper-test");
 
   Casper::PublicKey tgt_key = Casper::PublicKey::FromHexString(
-      "0202a6e2d25621758e2c92900f842ff367bbb5e4b6a849cacb43c3eaebf371b24b85");
+      "0202e17fe297055df6a4f5c26be3c046cde2ec84132f9087141844790cefe16fdf06");
 
   uint512_t amount = u512FromDec("1000000000");
-  std::cout << "before payment" << std::endl;
-  std::cout << "amount: " << amount << std::endl;
+  // std::cout << "before payment" << std::endl;
+  // std::cout << "amount: " << amount << std::endl;
   // create a payment
   ModuleBytes payment(amount);
-
   // create a payment executable deploy item
   // ExecutableDeployItem payment(paymentInner);
 
-  std::cout << "after payment" << std::endl;
+  // std::cout << "after payment" << std::endl;
 
   // create transfer executable deploy item
   TransferDeployItem session(u512FromDec("2500000000"), AccountHashKey(tgt_key),
@@ -1453,33 +1461,51 @@ void transfer_deploy_test() {
   // ExecutableDeployItem session(sessionInner);
 
   // Create deploy object
-  std::cout << "before deploy" << std::endl;
+  // std::cout << "before deploy" << std::endl;
   Deploy deploy(header, payment, session);
-  std::cout << "after deploy" << std::endl;
+  // std::cout << "after deploy" << std::endl;
   std::string signer =
-      "02033d06a3e1f9b96cf353f4086620b6e0529035eb1f02805cb67e8831c372488d4f";
-  std::string signature =
-      "02231163918d65537fc4d03153600f6cf429763039e18bc9c96889025c33ad05557a26fa"
-      "61ec75454007f145c499f3b72ad9f7f0aad48906dc493c211c5e8b4307";
-  std::cout << "before approval" << std::endl;
+      "0202a6e2d25621758e2c92900f842ff367bbb5e4b6a849cacb43c3eaebf371b24b85";
+
+  // std::cout << "before approval" << std::endl;
+
+  std::string privKeyPemFile =
+      "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/secp_secret_test2_key.pem";
+
+  Casper::Secp256k1Key secp256k1Key(privKeyPemFile);
+  /*
+  std::cout << "private key: " << secp256k1Key.getPrivateKeyStr() << std::endl;
+  std::cout << "public key: " << secp256k1Key.getPublicKeyStr() << std::endl;
+
+  std::string signature = secp256k1Key.sign(deploy.hash);
+  std::cout << "signature: "
+            << Casper::Secp256k1Key::signatureToString(signature) << std::endl;
+
+  signature = Casper::Secp256k1Key::signatureToString(signature);
+
   DeployApproval approval(Casper::PublicKey::FromHexString(signer),
                           Signature::FromHexString(signature));
+
+  std::cout << approval.signature.ToString() << std::endl;
+  std::cout << approval.signer.ToString() << std::endl;
   std::cout << "after approval" << std::endl;
   deploy.AddApproval(approval);
   std::cout << "after add approval" << std::endl;
-  nlohmann::json j;
-  to_json(j, deploy);
-  std::cout << j.dump(2) << std::endl;
+*/
 
   Client client(CASPER_TEST_ADDRESS);
   Deploy dp(deploy.header, deploy.payment, deploy.session);
-  dp.AddApproval(approval);
+  dp.Sign(secp256k1Key);
   DeployByteSerializer sery;
-  std::cout << "\n\n\ntest\n\n\n";
-  std::cout << "testttt:" << hexEncode(sery.ToBytes(dp)) << std::endl
-            << std::endl
-            << std::endl
-            << std::endl;
+  nlohmann::json j;
+  to_json(j, dp);
+  std::cout << j.dump(2) << std::endl;
+
+  // std::cout << "\n\n\ntest\n\n\n";
+  // std::cout << "testttt:" << hexEncode(sery.ToBytes(dp)) << std::endl
+  //           << std::endl
+  //           << std::endl
+  //           << std::endl;
 
   PutDeployResult res = client.PutDeploy(dp);
   std::cout << "deploy id: " << res.deploy_hash << std::endl;
@@ -1487,7 +1513,7 @@ void transfer_deploy_test() {
 
 void CLValueByteSerializerTest() {
   using namespace Casper;
-  using ByteArr = CryptoPP::SecByteBlock;
+  using ByteArr = CBytes;
   CLValueByteSerializer ser;
   /*
     uint128_t p1(UINT64_MAX);
@@ -1661,7 +1687,7 @@ void CLValueByteSerializerTest() {
   // U64 Byte Serialization
   // U64
   uint64_t u64_val = UINT64_MAX;
-  CLValue clv_u64 = CLValue::U64(u64_val);
+  CLValue clv_u64 = Casper::CLValue::U64(u64_val);
   std::string expected_u64 = "08000000ffffffffffffffff05";
   std::string actual_u64 = hexEncode(ser.ToBytes(clv_u64));
   std::cout << "u64: " << actual_u64 << std::endl;
@@ -1695,7 +1721,7 @@ void CLValueByteSerializerTest() {
   // U128 Byte Serialization 2
   // Optional U128
 
-  uint128_t u128_val_2 = u128FromHex("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+  uint128_t u128_val_2 = u128FromHex("10FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
   u128_val_2 -= 1;
 
   CLValue clv_u128_2 = CLValue::Option(CLValue::U128(u128_val_2));
@@ -1725,18 +1751,18 @@ void CLValueByteSerializerTest() {
 
   // Optional U256
   uint256_t u256_b_val_2 = u256FromHex(
-      "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+      "20FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
 
   std::cout << "u256_b_val_2: " << u256_b_val_2 << std::endl;
-  uint256_t subtract_val = u256FromHex("80");
+  uint256_t subtract_val{0x80};
   u256_b_val_2 -= subtract_val;
 
   uint256_t u256_val_2(u256_b_val_2);
 
   CLValue clv_opt_u256 = CLValue::Option(CLValue::U256(u256_val_2));
   std::string expected_opt_u256 =
-      "220000000"
-      "1207fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0d07";
+      "2200000001207fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      "ffff0d07";
   std::string actual_opt_u256 = hexEncode(ser.ToBytes(clv_opt_u256));
   std::cout << "optional u256: " << actual_opt_u256 << std::endl;
   TEST_ASSERT(expected_opt_u256 == actual_opt_u256);
@@ -1762,10 +1788,11 @@ void CLValueByteSerializerTest() {
 
   //   // Optional U512
   uint512_t u512_val_2 = u512FromHex(
-      "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+      "40FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+      "FF"
       "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
 
-  uint512_t sub512_val = u512FromHex("80");
+  uint512_t sub512_val{0x80};
   u512_val_2 -= sub512_val;
 
   CLValue clv_opt_u512 = CLValue::Option(CLValue::U512(u512_val_2));
@@ -1916,7 +1943,7 @@ void CLValueByteSerializerTest() {
   ///
   // ByteArray Byte Serialization
   // ByteArray
-  SecByteBlock byte_array_bytes = hexDecode("0102030405060708");
+  CBytes byte_array_bytes = hexDecode("0102030405060708");
   CLValue clv_byte_array = CLValue::ByteArray(byte_array_bytes);
   std::string expected_byte_array_str = "0800000001020304050607080f08000000";
   std::string actual_byte_array_str = hexEncode(ser.ToBytes(clv_byte_array));
@@ -1947,7 +1974,7 @@ void CLValueByteSerializerTest() {
 
 void DeployItemByteSerializerTest() {
   using namespace Casper;
-  using ByteArr = CryptoPP::SecByteBlock;
+  using ByteArr = CBytes;
   ExecutableDeployItemByteSerializer ser;
 
   // DeployItem Byte Serialization
@@ -2005,15 +2032,72 @@ void DeployItemByteSerializerTest() {
     */
 }
 
+std::string genSignature(const std::string& privKeyIn,
+                         const std::string& messageIn) {
+  CryptoPP::AutoSeededRandomPool prng;
+
+  CryptoPP::SecByteBlock message(hexDecode(messageIn));
+  CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::PrivateKey privateKey;
+  std::string exp(privKeyIn);
+  exp.insert(0, "0x");
+  CryptoPP::Integer x(exp.c_str());
+  privateKey.Initialize(CryptoPP::ASN1::secp256r1(), x);
+  if (!privateKey.Validate(prng, 3)) {
+    std::cout << "unable to verify key" << std::endl;
+    return "failed to verify key";
+  }
+
+  CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::Signer signer(privateKey);
+  size_t siglen = signer.MaxSignatureLength();
+  std::string signature(siglen, 0x00);
+  siglen = signer.SignMessage(prng, message.BytePtr(), message.size(),
+                              (CryptoPP::byte*)signature.data());
+  signature.resize(siglen);
+
+  std::string encoded;
+  CryptoPP::HexEncoder encoder;
+  encoder.Put((CryptoPP::byte*)signature.data(), signature.size());
+  encoder.MessageEnd();
+  CryptoPP::word64 size = encoder.MaxRetrievable();
+  if (size) {
+    encoded.resize(size);
+    encoder.Get((CryptoPP::byte*)encoded.data(), encoded.size());
+  }
+
+  return encoded;
+}
+
+void publicKey_load_fromFileTest() {
+  // edKeyTest();
+  //  secpTest();
+
+  /// Create a Private Key from pem file
+  // CryptoPP::AutoSeededRandomPool prng;
+  std::string privKeyPemFile =
+      "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/secp256k1_secret_key.pem";
+
+  Casper::Secp256k1Key secp256k1Key(privKeyPemFile);
+  std::cout << "private key: " << secp256k1Key.getPrivateKeyStr() << std::endl;
+  std::cout << "public key: " << secp256k1Key.getPublicKeyStr() << std::endl;
+
+  std::string message = "Do or do not. There is no try.";
+  std::string signature = secp256k1Key.sign(message);
+  std::cout << "signature: "
+            << Casper::Secp256k1Key::signatureToString(signature) << std::endl;
+  // verify
+  bool is_valid = secp256k1Key.verify(message, signature);
+  std::cout << "Verification: " << std::boolalpha << is_valid << std::endl;
+}
+
 #define RPC_TEST 0
 #define SER_DE_TEST 0
 #define CL_TYPE_TEST 0
 #define CL_VALUE_TEST 0
 
 TEST_LIST = {
-
-    {"CLValue Byte Serializer", CLValueByteSerializerTest},
-    {"DeployItemByteSer", DeployItemByteSerializerTest},
+    // {"PublicKey Load fromFile", publicKey_load_fromFileTest},
+    //{"CLValue Byte Serializer", CLValueByteSerializerTest},
+    //{"DeployItemByteSer", DeployItemByteSerializerTest},
     //{"gsk test", globalStateKey_serializer_test},
     {"transfer_deploy", transfer_deploy_test},
 #if RPC_TEST == 1
@@ -2102,29 +2186,30 @@ TEST_LIST = {
     {"CLValue using U512-0", clValue_with_U512_0Test},
     {"CLValue using Unit", clValue_with_UnitTest},
     {"CLValue using String", clValue_with_StringTest},
-    {"CLValue using URef", clValue_with_URefTest},
+    //  {"CLValue using URef", clValue_with_URefTest},
     // {"CLValue using Key", clValue_with_KeyTest},
     // {"CLValue using Account Key", clValue_with_accountKeyTest},
     // {"CLValue using Hash Key", clValue_with_hashKeyTest},
-    {"CLValue using PublicKey", clValue_with_PublicKeyTest},
+    //  {"CLValue using PublicKey", clValue_with_PublicKeyTest},
     {"CLValue using Option", clValue_with_OptionTest},
-    {"CLValue using Option<List<Key>> = NULL",
-     clValue_with_OptionListKeyNULLTest},
+    // {"CLValue using Option<List<Key>> = NULL",
+    //  clValue_with_OptionListKeyNULLTest},
     {"CLValue using Option<U64> = NULL", clValue_with_OptionU64NULLTest},
     {"CLValue using Option<U64>", clValue_with_OptionU64Test},
-    {"CLValue using List", clValue_with_ListTest},
-    {"CLValue using List<ByteArray:32>", clValue_with_ListByteArray32Test},
-    {"CLValue using List<Option<String>>", clValue_with_ListOptionStringTest},
-    {"CLValue using List<U8>", clValue_with_ListU8Test},
-    {"CLValue using List<U256>", clValue_with_ListU256Test},
+    // {"CLValue using List", clValue_with_ListTest},
+    // {"CLValue using List<ByteArray:32>", clValue_with_ListByteArray32Test},
+    // {"CLValue using List<Option<String>>",
+    // clValue_with_ListOptionStringTest},
+    // {"CLValue using List<U8>", clValue_with_ListU8Test},
+    // {"CLValue using List<U256>", clValue_with_ListU256Test},
     {"CLValue using ByteArray", clValue_with_ByteArrayTest},
-    // {"CLValue using ResultOk", clValue_with_ResultOkTest},
-    // {"CLValue using ResultErr", clValue_with_ResultErrTest},
-    {"CLValue using Map", clValue_with_MapTest},
-    {"CLValue using Tuple1", clValue_with_Tuple1Test},
-    {"CLValue using Tuple2", clValue_with_Tuple2Test},
-    {"CLValue using Tuple3", clValue_with_Tuple3Test},
-    {"CLValue using Any", clValue_with_AnyTest},
+// {"CLValue using ResultOk", clValue_with_ResultOkTest},
+// {"CLValue using ResultErr", clValue_with_ResultErrTest},
+// {"CLValue using Map", clValue_with_MapTest},
+// {"CLValue using Tuple1", clValue_with_Tuple1Test},
+// {"CLValue using Tuple2", clValue_with_Tuple2Test},
+// {"CLValue using Tuple3", clValue_with_Tuple3Test},
+// {"CLValue using Any", clValue_with_AnyTest},
 
 #endif
 

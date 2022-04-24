@@ -70,10 +70,10 @@ struct GlobalStateKey {
 
  public:
   KeyIdentifier key_identifier;
-  CryptoPP::SecByteBlock raw_bytes;
+  CBytes raw_bytes;
 
  protected:
-  virtual CryptoPP::SecByteBlock _GetRawBytesFromKey(std::string key);
+  virtual CBytes _GetRawBytesFromKey(std::string key);
 
  public:
   GlobalStateKey();
@@ -100,9 +100,9 @@ struct GlobalStateKey {
   /// Converts a global state key from a byte array to its specific key object.
   /// First byte in the array indicates the Key identifier.
   /// </summary>
-  static GlobalStateKey FromBytes(const CryptoPP::SecByteBlock& bytes);
+  static GlobalStateKey FromBytes(const CBytes& bytes);
 
-  virtual CryptoPP::SecByteBlock GetBytes();
+  virtual CBytes GetBytes();
 
   /// <summary>
   /// Converts a key object to a string with the right prefix
@@ -134,7 +134,7 @@ struct AccountHashKey : public GlobalStateKey {
 struct HashKey : public GlobalStateKey {
   HashKey(std::string key);
 
-  HashKey(CryptoPP::SecByteBlock key);
+  HashKey(CBytes key);
 };
 
 /// <summary>
@@ -144,7 +144,7 @@ struct HashKey : public GlobalStateKey {
 struct TransferKey : public GlobalStateKey {
   TransferKey(std::string key);
 
-  TransferKey(CryptoPP::SecByteBlock key);
+  TransferKey(CBytes key);
 };
 
 /// <summary>
@@ -154,7 +154,7 @@ struct TransferKey : public GlobalStateKey {
 struct DeployInfoKey : public GlobalStateKey {
   DeployInfoKey(std::string key);
 
-  DeployInfoKey(CryptoPP::SecByteBlock key);
+  DeployInfoKey(CBytes key);
 };
 
 /// <summary>
@@ -164,10 +164,10 @@ struct DeployInfoKey : public GlobalStateKey {
 struct EraInfoKey : public GlobalStateKey {
   EraInfoKey(std::string key);
 
-  CryptoPP::SecByteBlock GetBytes() override;
+  CBytes GetBytes() override;
 
  protected:
-  CryptoPP::SecByteBlock _GetRawBytesFromKey(std::string key) override;
+  CBytes _GetRawBytesFromKey(std::string key) override;
 };
 
 /// <summary>
@@ -177,7 +177,7 @@ struct EraInfoKey : public GlobalStateKey {
 struct BalanceKey : public GlobalStateKey {
   BalanceKey(std::string key);
 
-  BalanceKey(CryptoPP::SecByteBlock key);
+  BalanceKey(CBytes key);
 };
 
 /// <summary>
@@ -187,7 +187,7 @@ struct BalanceKey : public GlobalStateKey {
 struct BidKey : public GlobalStateKey {
   BidKey(std::string key);
 
-  BidKey(CryptoPP::SecByteBlock key);
+  BidKey(CBytes key);
 };
 
 /// <summary>
@@ -197,7 +197,7 @@ struct BidKey : public GlobalStateKey {
 struct WithdrawKey : public GlobalStateKey {
   WithdrawKey(std::string key);
 
-  WithdrawKey(CryptoPP::SecByteBlock key);
+  WithdrawKey(CBytes key);
 };
 
 /// <summary>
@@ -207,7 +207,7 @@ struct WithdrawKey : public GlobalStateKey {
 struct DictionaryKey : public GlobalStateKey {
   DictionaryKey(std::string key);
 
-  DictionaryKey(CryptoPP::SecByteBlock key);
+  DictionaryKey(CBytes key);
 };
 
 /**

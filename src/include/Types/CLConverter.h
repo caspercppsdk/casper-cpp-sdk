@@ -20,9 +20,9 @@ namespace Casper {
 
 uint64_t strToTimestamp(std::string str);
 
-CryptoPP::SecByteBlock hexDecode(std::string hex);
+CBytes hexDecode(std::string hex);
 
-std::string hexEncode(CryptoPP::SecByteBlock decoded);
+std::string hexEncode(CBytes decoded);
 
 // Encoding && Decoding
 

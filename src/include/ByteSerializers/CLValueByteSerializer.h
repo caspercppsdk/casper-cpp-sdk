@@ -5,9 +5,9 @@
 namespace Casper {
 struct CLValueByteSerializer : public BaseByteSerializer {
   ///
-  SecByteBlock ToBytes(CLValue source) {
+  CBytes ToBytes(CLValue source) {
     // ByteQueue byte_queue;
-    SecByteBlock bytes;
+    CBytes bytes;
     // serialize data length (4 bytes)
     //
     WriteInteger(bytes, source.bytes.size());
@@ -34,7 +34,7 @@ struct CLValueByteSerializer : public BaseByteSerializer {
     return bytes;
   }
 
-  void CLTypeToBytes(SecByteBlock& sb, CLType innerType,
+  void CLTypeToBytes(CBytes& sb, CLType innerType,
                      CLTypeParsedRVA parsed) {
     // std::cout << "CLTypeToBytes1: " << std::endl;
     int type_idx = innerType.type.index();

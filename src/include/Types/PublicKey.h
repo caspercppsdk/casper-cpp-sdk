@@ -19,11 +19,11 @@ struct PublicKey {
   /// <summary>
   /// Byte array without the Key algorithm identifier.
   /// </summary>
-  SecByteBlock raw_bytes;
+  CBytes raw_bytes;
   KeyAlgo key_algorithm;
 
  protected:
-  PublicKey(SecByteBlock raw_bytes_, KeyAlgo key_algorithm_)
+  PublicKey(CBytes raw_bytes_, KeyAlgo key_algorithm_)
       : raw_bytes(raw_bytes_), key_algorithm(key_algorithm_) {}
 
  public:
@@ -35,7 +35,7 @@ struct PublicKey {
   /// </summary>
   static Casper::PublicKey FromHexString(const std::string& hexKey) {
     try {
-      SecByteBlock rawBytes = CryptoUtil::hexDecode(hexKey.substr(2));
+      CBytes rawBytes = CEP57Checksum::Decode(hexKey.substr(2));
       if (hexKey.substr(0, 2) == "01") {
         return FromRawBytes(rawBytes, KeyAlgo::ED25519);
       } else if (hexKey.substr(0, 2) == "02") {
@@ -54,14 +54,14 @@ struct PublicKey {
   /// </summary>
   static Casper::PublicKey FromPemFile(const std::string& pemFilePath) {
     try {
-      CryptoPP::FileSource fs1("rsa-pub.pem", true);
+      CryptoPP::FileSource fs1(pemFilePath.c_str(), true);
       if (CryptoPP::PEM_GetType(fs1) == CryptoPP::PEM_EC_PUBLIC_KEY) {
-        CryptoPP::ECDSA<ECP, SHA256>::PublicKey publicKey;
+        CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::PublicKey publicKey;
 
         publicKey.Load(fs1);
 
         // TODOMS3: Check the false below if any error occurs
-        SecByteBlock rawBytes(
+        CBytes rawBytes(
             publicKey.GetGroupParameters().GetEncodedElementSize(false));
 
         // TODOMS3: Check the false below if any error occurs
@@ -73,7 +73,7 @@ struct PublicKey {
       } else {
         CryptoPP::ed25519PublicKey k1;
         k1.Load(fs1);
-        SecByteBlock rawBytes(k1.GetPublicElement().MinEncodedSize());
+        CBytes rawBytes(k1.GetPublicElement().MinEncodedSize());
         k1.GetPublicElement().Encode(rawBytes, rawBytes.size());
         return PublicKey(rawBytes, KeyAlgo::ED25519);
       }
@@ -87,7 +87,7 @@ struct PublicKey {
   /// Creates a PublicKey object from a byte array. First byte in the array
   /// must contain the key algorithm identifier.
   /// </summary>
-  static Casper::PublicKey FromBytes(const SecByteBlock& bytes) {
+  static Casper::PublicKey FromBytes(const CBytes& bytes) {
     if (bytes.empty())
       throw std::invalid_argument("Public key bytes cannot be empty.");
 
@@ -110,7 +110,7 @@ struct PublicKey {
       throw std::runtime_error("Wrong public key format. Expected length is " +
                                std::to_string(expectedPublicKeySize));
 
-    SecByteBlock rawBytes(expectedPublicKeySize - 1);
+    CBytes rawBytes(expectedPublicKeySize - 1);
 
     std::copy(bytes.begin() + 1, bytes.begin() + expectedPublicKeySize,
               rawBytes.begin());
@@ -123,11 +123,13 @@ struct PublicKey {
   /// Creates a PublicKey object from a byte array and the key algorithm
   /// identifier.
   /// </summary>
-  static Casper::PublicKey FromRawBytes(const SecByteBlock& rawBytes,
+  static Casper::PublicKey FromRawBytes(const CBytes& rawBytes,
                                         KeyAlgo keyAlgo) {
     try {
       int expectedPublicKeySize = KeyAlgo::GetKeySizeInBytes(keyAlgo) - 1;
       if (rawBytes.size() != expectedPublicKeySize) {
+        std::cout << "Bytes size: " << rawBytes.size() << std::endl;
+
         throw std::runtime_error(
             "Wrong public key format. Expected length is " +
             std::to_string(expectedPublicKeySize));
@@ -180,24 +182,22 @@ struct PublicKey {
   /// Returns the Account Hash associated to this Public Key.
   /// </summary>
   std::string GetAccountHash() const {
-    BLAKE2b hash(32u);
+    CryptoPP::BLAKE2b hash(32u);
 
     std::string algo_str = KeyAlgo::GetName(key_algorithm);
-    StringUtil::toLower(algo_str);
-
-    hash.Update(reinterpret_cast<const byte*>(algo_str.data()),
+    hash.Update(reinterpret_cast<const CryptoPP::byte*>(algo_str.data()),
                 algo_str.size());
 
-    SecByteBlock empty_byte(1);
+    CBytes empty_byte(1);
     empty_byte.CleanNew(1);
     hash.Update(empty_byte.data(), 1);
 
     hash.Update(raw_bytes.begin(), raw_bytes.size());
 
-    SecByteBlock digest_bytes(hash.DigestSize());
+    CBytes digest_bytes(hash.DigestSize());
     hash.Final(digest_bytes.data());
 
-    return "account-hash-" + CryptoUtil::hexEncode(digest_bytes);
+    return "account-hash-" + CEP57Checksum::Encode(digest_bytes);
   }
 
   /// <summary>
@@ -207,13 +207,12 @@ struct PublicKey {
   std::string ToAccountHex() const {
     std::string pk_hex = "";
     if (key_algorithm == KeyAlgo::ED25519) {
-      pk_hex = "01" + CryptoUtil::hexEncode(raw_bytes);
+      pk_hex = "01" + CEP57Checksum::Encode(raw_bytes);
     } else if (key_algorithm == KeyAlgo::SECP256K1) {
-      pk_hex = "02" + CryptoUtil::hexEncode(raw_bytes);
+      pk_hex = "02" + CEP57Checksum::Encode(raw_bytes);
     } else {
       throw std::runtime_error("Unsupported key type.");
     }
-    StringUtil::toLower(pk_hex);
     return pk_hex;
   }
 
@@ -226,8 +225,8 @@ struct PublicKey {
   /// Returns the bytes of the public key, including the Key algorithm as the
   /// first byte.
   /// </summary>
-  SecByteBlock GetBytes() {
-    SecByteBlock bytes = SecByteBlock(raw_bytes.size() + 1);
+  CBytes GetBytes() {
+    CBytes bytes = CBytes(raw_bytes.size() + 1);
 
     if (key_algorithm == KeyAlgo::ED25519) {
       bytes[0] = 0x01;
@@ -245,8 +244,7 @@ struct PublicKey {
   /// <summary>
   /// Verifies the signature given its value and the original message.
   /// </summary>
-  bool VerifySignature(CryptoPP::SecByteBlock message,
-                       CryptoPP::SecByteBlock signature) {
+  bool VerifySignature(CBytes message, CBytes signature) {
     /*
     if (key_algorithm == KeyAlgo::ED25519) {
       Ed25519PublicKeyParameters edPk =
@@ -269,6 +267,7 @@ struct PublicKey {
       return signer.VerifySignature(signature);
     }
 */
+    throw std::runtime_error("Not implemented VerifySignature()");
     throw std::runtime_error("Unsupported key type.");
   }
 
@@ -276,8 +275,7 @@ struct PublicKey {
   /// Verifies the signature given its value and the original message.
   /// </summary>
   bool VerifySignature(std::string message, std::string signature) {
-    return VerifySignature(CryptoUtil::hexDecode(message),
-                           CryptoUtil::hexDecode(signature));
+    return VerifySignature(hexDecode(message), hexDecode(signature));
   }
 
   /// <summary>
