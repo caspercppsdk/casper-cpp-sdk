@@ -1443,7 +1443,7 @@ void transfer_deploy_test() {
       timestamp_str, "30m", 1, "", {}, "casper-test");
 
   Casper::PublicKey tgt_key = Casper::PublicKey::FromHexString(
-      "0202e17fe297055df6a4f5c26be3c046cde2ec84132f9087141844790cefe16fdf06");
+      "018afa98ca4be12d613617f7339a2d576950a2f9a92102ca4d6508ee31b54d2c02");
 
   uint512_t amount = u512FromDec("1000000000");
   // std::cout << "before payment" << std::endl;
@@ -1456,8 +1456,8 @@ void transfer_deploy_test() {
   // std::cout << "after payment" << std::endl;
 
   // create transfer executable deploy item
-  TransferDeployItem session(u512FromDec("2500000000"), AccountHashKey(tgt_key),
-                             123456789012345u, true);
+  TransferDeployItem session(u512FromDec("12345678925"),
+                             AccountHashKey(tgt_key), 123456789012345u, true);
   // ExecutableDeployItem session(sessionInner);
 
   // Create deploy object
@@ -2089,17 +2089,25 @@ void publicKey_load_fromFileTest() {
   std::cout << "Verification: " << std::boolalpha << is_valid << std::endl;
 }
 
+void ed25KeyTest() {
+  std::string keys = edKeyTest();
+  std::cout << "private key: " << keys.substr(0, keys.find(":")) << std::endl;
+  std::cout << "public key: " << keys.substr(keys.find(":") + 1) << std::endl;
+}
+
 #define RPC_TEST 0
 #define SER_DE_TEST 0
 #define CL_TYPE_TEST 0
 #define CL_VALUE_TEST 0
 
 TEST_LIST = {
-    // {"PublicKey Load fromFile", publicKey_load_fromFileTest},
-    //{"CLValue Byte Serializer", CLValueByteSerializerTest},
-    //{"DeployItemByteSer", DeployItemByteSerializerTest},
-    //{"gsk test", globalStateKey_serializer_test},
-    {"transfer_deploy", transfer_deploy_test},
+
+    {"ED25519 Key Test", ed25KeyTest},
+// {"PublicKey Load fromFile", publicKey_load_fromFileTest},
+//{"CLValue Byte Serializer", CLValueByteSerializerTest},
+//{"DeployItemByteSer", DeployItemByteSerializerTest},
+//{"gsk test", globalStateKey_serializer_test},
+//{"transfer_deploy", transfer_deploy_test},
 #if RPC_TEST == 1
     {"infoGetPeers checks node list size", infoGetPeers_Test},
     {"chainGetStateRootHash using Block height parameter",

@@ -1,6 +1,6 @@
 #pragma once
-
+#include <string>
 namespace Casper {
-int edKeyTest();
+std::string edKeyTest();
 
 }  // namespace Casper

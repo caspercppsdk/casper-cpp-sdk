@@ -19,41 +19,7 @@ int do_sign(EVP_PKEY *ed_key, unsigned char *msg, size_t msg_len) {
   OPENSSL_free(sig);
   EVP_MD_CTX_free(md_ctx);
 }
-/*
-int main() {
-  int ret = EXIT_FAILURE;
-  const char *str = "I am watching you!I am watching you!";
-  unsigned char *sig = NULL;
-  size_t slen = 0;
-  unsigned char msg[BUFFSIZE];
-  size_t mlen = 0;
 
-  EVP_PKEY *key = read_secret_key_from_file(KEYFILE);
-  if (!key) goto err;
-
-  for (int i = 0; i < N; i++) {
-    if (snprintf((char *)msg, BUFFSIZE, "%s %d", str, i + 1) < 0) goto err;
-    mlen = strlen((const char *)msg);
-    if (!do_sign(key, msg, mlen, &sig, &slen)) goto err;
-    OPENSSL_free(sig);
-    sig = NULL;
-    printf("\"%s\" -> siglen=%lu\n", msg, slen);
-  }
-
-  printf("DONE\n");
-  ret = EXIT_SUCCESS;
-
-err:
-  if (ret != EXIT_SUCCESS) {
-    ERR_print_errors_fp(stderr);
-    fprintf(stderr, "Something broke!\n");
-  }
-
-  if (key) EVP_PKEY_free(key);
-
-  exit(ret);
-}
-*/
 /*
 void do_sign(EVP_PKEY *ed_key, unsigned char *msg, size_t msg_len) {
   size_t sig_len;
@@ -71,25 +37,25 @@ void do_sign(EVP_PKEY *ed_key, unsigned char *msg, size_t msg_len) {
   EVP_MD_CTX_free(md_ctx);
 }
 */
-void FromPemFile(std::string filename) {
+std::string FromPemFile(std::string filename) {
   FILE *fp = fopen(filename.c_str(), "r");
 
   if (!fp) {
     printf("ERROR: file %s does not exist\n", filename.c_str());
-    return;
+    return "err1";
   }
 
   EVP_PKEY *pkey = PEM_read_PrivateKey(fp, nullptr, nullptr, nullptr);
 
   if (pkey == nullptr) {
     printf("ERROR: file %s is not a valid private key\n", filename.c_str());
-    return;
+    return "err2";
   }
 
   if (EVP_PKEY_id(pkey) != EVP_PKEY_ED25519) {
     printf("ERROR: file %s is not a valid ED25519 private key\n",
            filename.c_str());
-    return;
+    return "err3";
   }
 
   fclose(fp);
@@ -142,6 +108,7 @@ void FromPemFile(std::string filename) {
   //
   BIO_free(keybio);  // Private key
 
+  return priv_key_str + ":" + pub_key_str;
   /*
     const char *str = "I am watching you!I am watching you!";
     unsigned char *sig = NULL;
@@ -166,11 +133,9 @@ void FromPemFile(std::string filename) {
     */
 }
 
-int edKeyTest() {
+std::string edKeyTest() {
   std::string pem_priv_path =
       "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/eddsa_secret_key.pem";
-  FromPemFile(pem_priv_path);
-
-  return 1;
+  return FromPemFile(pem_priv_path);
 }
 }  // namespace Casper
