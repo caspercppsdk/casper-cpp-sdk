@@ -2041,7 +2041,7 @@ std::string genSignature(const std::string& privKeyIn,
   std::string exp(privKeyIn);
   exp.insert(0, "0x");
   CryptoPP::Integer x(exp.c_str());
-  privateKey.Initialize(CryptoPP::ASN1::secp256r1(), x);
+  privateKey.Initialize(CryptoPP::ASN1::secp256k1(), x);
   if (!privateKey.Validate(prng, 3)) {
     std::cout << "unable to verify key" << std::endl;
     return "failed to verify key";

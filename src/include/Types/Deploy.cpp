@@ -22,7 +22,7 @@ Deploy::Deploy(DeployHeader header, ExecutableDeployItem payment,
 /// Signs the deploy with a private key and adds a new Approval to it.
 /// </summary>
 void Deploy::Sign(KeyPair keyPair) {
-  CBytes signature = keyPair.Sign(hexDecode(this->hash));
+  CBytes signature = keyPair.Sign(CEP57Checksum::Decode(this->hash));
 
   this->approvals.emplace_back(
       keyPair.public_key,
@@ -35,7 +35,7 @@ void Deploy::Sign(KeyPair keyPair) {
 void Deploy::Sign(Secp256k1Key& sec_key) {
   CBytes signature = sec_key.sign(CEP57Checksum::Decode(this->hash));
 
-  std::string public_key_str = "0202" + sec_key.getPublicKeyStr();
+  std::string public_key_str = "02" + sec_key.getPublicKeyStr();
   this->approvals.emplace_back(
       Casper::PublicKey::FromHexString(public_key_str),
       Signature::FromRawBytes(signature, KeyAlgo::SECP256K1));

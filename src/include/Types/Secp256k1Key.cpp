@@ -31,11 +31,29 @@ Secp256k1Key::Secp256k1Key(std::string pem_file_path) {
     throw std::runtime_error("Unable to verify the SECP256K1 Public Key");
   }
 
+  CryptoPP::ECP::Point q = _public_key.GetPublicElement();
+
+  uint8_t pub_key_prefix;
+  if (q.y.IsEven()) {
+    pub_key_prefix = 0x02;
+  } else {
+    pub_key_prefix = 0x03;
+  }
+
+  std::stringstream ss;
+  ss << integerToHex<uint8_t>(pub_key_prefix);
+  ss << std::hex << q.x;
+  std::string out_str = ss.str();
+
+  std::string out_str_no_h = out_str.substr(0, 66);
+  std::cout << "out_str_no_h: " << out_str_no_h << std::endl;
+  std::cout << "out_str_no_h size: " << out_str_no_h.size() << std::endl;
+
   // Convert CryptoPP::Integer values to std::string with eliminate the h(0x)
   private_key_str = integerToString(_private_key.GetPrivateExponent());
 
   // use the first part, not Y value
-  public_key_str = integerToString(_public_key.GetPublicElement().x);
+  public_key_str = out_str_no_h;
 }
 
 std::string Secp256k1Key::getPublicKeyStr() { return public_key_str; }
@@ -62,15 +80,18 @@ CryptoPP::SecByteBlock Secp256k1Key::sign(
   CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::Signer signer(_private_key);
 
   size_t siglen = signer.MaxSignatureLength();
-  std::string signature(siglen, 0x00);
+  CryptoPP::SecByteBlock sig_bytes(siglen);
 
-  siglen = signer.SignMessage(prng, message.data(), message.size(),
-                              (CryptoPP::byte*)&signature[0]);
-  signature.resize(siglen);
-  CryptoPP::SecByteBlock sig_bytes(signature.size());
-  std::cout << "signature size: " << signature.size() << std::endl;
-  std::cout << signatureToString(signature) << std::endl;
-  sig_bytes = CEP57Checksum::Decode(signatureToString(signature));
+  do {
+    siglen = signer.SignMessage(prng, (const CryptoPP::byte*)&message[0],
+                                message.size(), sig_bytes);
+    sig_bytes.resize(siglen);
+
+    std::cout << "sig bytes while loop\n";
+
+  } while ((sig_bytes[32] & 0x80) == 0x80);
+
+  std::cout << "signature size: " << sig_bytes.size() << std::endl;
   std::cout << "aftter sig decode: " << sig_bytes.size() << std::endl;
   return sig_bytes;
 }
@@ -106,6 +127,8 @@ std::string Secp256k1Key::integerToString(CryptoPP::Integer x) {
   std::stringstream ss;
   ss << std::hex << x;
   std::string out_str = ss.str();
+  std::cout << "out_str: " << out_str << std::endl;
+  std::cout << "out_str size: " << out_str.size() << std::endl;
   std::string out_str_no_h = out_str.substr(0, 64);
   return out_str.substr(0, 64);
 }
