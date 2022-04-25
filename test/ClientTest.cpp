@@ -1686,7 +1686,7 @@ void CLValueByteSerializerTest() {
 
   // U64 Byte Serialization
   // U64
-#undef U64(C)
+#undef U64
   Casper::CLValue clv_u64 = Casper::CLValue::U64(UINT64_MAX);
   std::string expected_u64 = "08000000ffffffffffffffff05";
   std::string actual_u64 = hexEncode(ser.ToBytes(clv_u64));
@@ -2204,19 +2204,19 @@ void ed25KeyTest() {
   std::cout << "Verification: " << std::boolalpha << is_valid << std::endl;
 }
 
-#define RPC_TEST 0
-#define SER_DE_TEST 0
-#define CL_TYPE_TEST 0
-#define CL_VALUE_TEST 0
+#define RPC_TEST 1
+#define SER_DE_TEST 1
+#define CL_TYPE_TEST 1
+#define CL_VALUE_TEST 1
 
 TEST_LIST = {
 
     {"ED25519 Key Test", ed25KeyTest},
-// {"PublicKey Load fromFile", publicKey_load_fromFileTest},
-//{"CLValue Byte Serializer", CLValueByteSerializerTest},
-//{"DeployItemByteSer", DeployItemByteSerializerTest},
-//{"gsk test", globalStateKey_serializer_test},
-//{"transfer_deploy", transfer_deploy_test},
+    {"PublicKey Load fromFile", publicKey_load_fromFileTest},
+    {"CLValue Byte Serializer", CLValueByteSerializerTest},
+    {"DeployItemByteSer", DeployItemByteSerializerTest},
+    {"gsk test", globalStateKey_serializer_test},
+    {"transfer_deploy", transfer_deploy_test},
 #if RPC_TEST == 1
     {"infoGetPeers checks node list size", infoGetPeers_Test},
     {"chainGetStateRootHash using Block height parameter",
