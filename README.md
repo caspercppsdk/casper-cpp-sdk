@@ -81,6 +81,7 @@ On CentOS and Rocky Linux:
 | GetDictionaryItem       	| Casper::GetDictionaryItemResult 	|
 | GetAccountBalance       	| Casper::GetBalanceResult        	|
 | GetAuctionInfo          	| Casper::GetAuctionInfoResult    	|
+| PutDeploy               	| Casper::PutDeployResult        	|
 
 ## Documentation
     cd docs
