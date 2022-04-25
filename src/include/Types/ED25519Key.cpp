@@ -18,7 +18,6 @@ Ed25519Key::Ed25519Key(std::string pem_file_path)
     printf("ERROR: file %s does not exist\n", pem_file_path.c_str());
     return;
   }
-  std::cout << "1" << std::endl;
   EVP_PKEY* pkey = PEM_read_PrivateKey(fp, nullptr, nullptr, nullptr);
 
   if (pkey == nullptr) {
@@ -33,11 +32,7 @@ Ed25519Key::Ed25519Key(std::string pem_file_path)
     return;
   }
 
-  std::cout << "2" << std::endl;
   fclose(fp);
-
-  //   std::string output_pem_path =
-  //       "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/generated_key_25519.pem";
 
   BIO* keybio = BIO_new(BIO_s_mem());
 
@@ -45,15 +40,12 @@ Ed25519Key::Ed25519Key(std::string pem_file_path)
   EVP_PKEY_print_public(keybio, pkey, 0, nullptr);
   BIO_free(keybio);  // Private key
 
-  std::cout << "3" << std::endl;
-
   size_t priv_key_len = priv_key.size();
   EVP_PKEY_get_raw_private_key(pkey, (unsigned char*)priv_key.data(),
                                &priv_key_len);
 
   // resize
   priv_key.resize(priv_key_len);
-  std::cout << "4" << std::endl;
 
   size_t pub_key_len = pub_key.size();
   EVP_PKEY_get_raw_public_key(pkey, (unsigned char*)pub_key.data(),
@@ -61,31 +53,9 @@ Ed25519Key::Ed25519Key(std::string pem_file_path)
 
   // resize
   pub_key.resize(pub_key_len);
-  std::cout << "5" << std::endl;
-
-  /*
-    std::stringstream priv_key_ss;
-    priv_key_ss << std::hex << std::setfill('0');
-    for (size_t i = 0; i < priv_key_len; i++) {
-      priv_key_ss << std::setw(2) << (unsigned int)priv_key_buf[i];
-    }
-
-    std::cout << "6" << std::endl;
-
-    std::stringstream pub_key_ss;
-    pub_key_ss << std::hex << std::setfill('0');
-    for (size_t i = 0; i < pub_key_len; i++) {
-      pub_key_ss << std::setw(2) << (unsigned int)pub_key_buf[i];
-    }
-
-    std::cout << "7" << std::endl;
-  */
 
   std::string priv_key_str = hexEncode(priv_key);
   std::string pub_key_str = hexEncode(pub_key);
-
-  std::cout << "Private Key: " << priv_key_str << std::endl;
-  std::cout << "Public Key: " << pub_key_str << std::endl;
 
   this->private_key_str = priv_key_str;
   this->public_key_str = pub_key_str;
@@ -97,17 +67,6 @@ std::string Ed25519Key::sign(std::string message_str) {
   CryptoPP::SecByteBlock signature = sign(message);
   std::string signature_str = hexEncode(signature);
   return signature_str;
-  /*
-  CryptoPP::ed25519Verifier verifier(pub_key.data());
-
-
-
-  // verify
-  bool is_valid = verifier.VerifyMessage(message.BytePtr(), message.size(),
-                                         (CryptoPP::byte*)signature.data(),
-                                         signature.size());
-  std::cout << "Verification: " << std::boolalpha << is_valid << std::endl;
-  */
 }
 
 CryptoPP::SecByteBlock Ed25519Key::sign(const CryptoPP::SecByteBlock& message) {
