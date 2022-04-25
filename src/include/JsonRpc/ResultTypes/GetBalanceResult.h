@@ -1,7 +1,6 @@
 #pragma once
 
 #include "JsonRpc/ResultTypes/RpcResult.h"
-#include "Types/Definitions.h"
 
 namespace Casper {
 

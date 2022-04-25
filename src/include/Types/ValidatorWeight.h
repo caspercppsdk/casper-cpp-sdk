@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Definitions.h"
 #include "Types/PublicKey.h"
 #include "nlohmann/json.hpp"
 

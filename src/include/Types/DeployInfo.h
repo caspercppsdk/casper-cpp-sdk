@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Base.h"
-#include "Types/Definitions.h"
 #include "Types/GlobalStateKey.h"
 #include "Types/URef.h"
 #include "nlohmann/json.hpp"

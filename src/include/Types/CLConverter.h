@@ -2,7 +2,6 @@
 
 #include "Base.h"
 #include "nlohmann/json.hpp"
-#include "Types/Definitions.h"
 
 #include "Types/GlobalStateKey.h"
 #include "Types/PublicKey.h"

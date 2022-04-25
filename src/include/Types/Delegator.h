@@ -3,7 +3,6 @@
 #include <optional>
 
 #include "Base.h"
-#include "Definitions.h"
 #include "Types/URef.h"
 #include "Types/VestingSchedule.h"
 #include "nlohmann/json.hpp"

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Types/Definitions.h"
 #include "Types/PublicKey.h"
 #include "Types/URef.h"
 

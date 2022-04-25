@@ -6,7 +6,6 @@
 #include "nlohmann/json.hpp"
 
 // Types
-#include "Definitions.h"
 #include "Types/Bid.h"
 #include "Types/CLValue.h"
 #include "Types/DeployInfo.h"

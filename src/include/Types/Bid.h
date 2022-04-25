@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Base.h"
-#include "Types/Definitions.h"
 #include "Types/Delegator.h"
 #include "Types/PublicKey.h"
 #include "Types/URef.h"

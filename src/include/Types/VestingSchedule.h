@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "Types/Definitions.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
