@@ -2,79 +2,60 @@
 #include "Base.h"
 #include <openssl/pem.h>
 #include <openssl/evp.h>
+#include "Base.h"
+#include "cryptopp/osrng.h"
+#include "cryptopp/filters.h"  // CryptoPP::StringSink, CryptoPP::StringSource
+#include "cryptopp/files.h"
+#include "cryptopp/pem.h"
+#include "Utils/CEP57Checksum.h"
 
 namespace Casper {
-
-int do_sign(EVP_PKEY *ed_key, unsigned char *msg, size_t msg_len) {
-  size_t sig_len;
-  unsigned char *sig = NULL;
-  EVP_MD_CTX *md_ctx = EVP_MD_CTX_new();
-
-  EVP_DigestSignInit(md_ctx, NULL, NULL, NULL, ed_key);
-
-  EVP_DigestSign(md_ctx, NULL, &sig_len, msg, msg_len);
-  sig = static_cast<unsigned char *>(OPENSSL_zalloc(sig_len));
-
-  EVP_DigestSign(md_ctx, sig, &sig_len, msg, msg_len);
-  OPENSSL_free(sig);
-  EVP_MD_CTX_free(md_ctx);
-}
-
-/*
-void do_sign(EVP_PKEY *ed_key, unsigned char *msg, size_t msg_len) {
-  size_t sig_len;
-  unsigned char *sig = NULL;
-  EVP_MD_CTX *md_ctx = EVP_MD_CTX_new();
-
-  EVP_DigestSignInit(md_ctx, NULL, NULL, NULL, ed_key);
-  /* Calculate the requires size for the signature by passing a NULL buffer
-  EVP_DigestSign(md_ctx, NULL, &sig_len, msg, msg_len);
-  sig = static_cast<unsigned char *>(OPENSSL_zalloc(sig_len));
-
-  EVP_DigestSign(md_ctx, sig, &sig_len, msg, msg_len);
-
-  OPENSSL_free(sig);
-  EVP_MD_CTX_free(md_ctx);
-}
-*/
-std::string FromPemFile(std::string filename) {
-  FILE *fp = fopen(filename.c_str(), "r");
+Ed25519Key::Ed25519Key(std::string pem_file_path) {
+  FILE* fp = fopen(pem_file_path.c_str(), "r");
 
   if (!fp) {
-    printf("ERROR: file %s does not exist\n", filename.c_str());
-    return "err1";
+    printf("ERROR: file %s does not exist\n", pem_file_path.c_str());
+    return;
   }
-
-  EVP_PKEY *pkey = PEM_read_PrivateKey(fp, nullptr, nullptr, nullptr);
+  std::cout << "1" << std::endl;
+  EVP_PKEY* pkey = PEM_read_PrivateKey(fp, nullptr, nullptr, nullptr);
 
   if (pkey == nullptr) {
-    printf("ERROR: file %s is not a valid private key\n", filename.c_str());
-    return "err2";
+    printf("ERROR: file %s is not a valid private key\n",
+           pem_file_path.c_str());
+    return;
   }
 
   if (EVP_PKEY_id(pkey) != EVP_PKEY_ED25519) {
     printf("ERROR: file %s is not a valid ED25519 private key\n",
-           filename.c_str());
-    return "err3";
+           pem_file_path.c_str());
+    return;
   }
 
+  std::cout << "2" << std::endl;
   fclose(fp);
 
   //   std::string output_pem_path =
   //       "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/generated_key_25519.pem";
 
-  BIO *keybio = BIO_new(BIO_s_mem());
+  BIO* keybio = BIO_new(BIO_s_mem());
 
   EVP_PKEY_print_private(keybio, pkey, 0, nullptr);
   EVP_PKEY_print_public(keybio, pkey, 0, nullptr);
+  BIO_free(keybio);  // Private key
 
+  std::cout << "3" << std::endl;
   unsigned char priv_key_buf[1024];
   size_t priv_key_len;
   EVP_PKEY_get_raw_private_key(pkey, priv_key_buf, &priv_key_len);
 
+  std::cout << "4" << std::endl;
+
   unsigned char pub_key_buf[1024];
   size_t pub_key_len;
   EVP_PKEY_get_raw_public_key(pkey, pub_key_buf, &pub_key_len);
+
+  std::cout << "5" << std::endl;
 
   std::stringstream priv_key_ss;
   priv_key_ss << std::hex << std::setfill('0');
@@ -82,11 +63,15 @@ std::string FromPemFile(std::string filename) {
     priv_key_ss << std::setw(2) << (unsigned int)priv_key_buf[i];
   }
 
+  std::cout << "6" << std::endl;
+
   std::stringstream pub_key_ss;
   pub_key_ss << std::hex << std::setfill('0');
   for (size_t i = 0; i < pub_key_len; i++) {
     pub_key_ss << std::setw(2) << (unsigned int)pub_key_buf[i];
   }
+
+  std::cout << "7" << std::endl;
 
   std::string priv_key_str = priv_key_ss.str();
   std::string pub_key_str = pub_key_ss.str();
@@ -94,48 +79,52 @@ std::string FromPemFile(std::string filename) {
   std::cout << "Private Key: " << priv_key_str << std::endl;
   std::cout << "Public Key: " << pub_key_str << std::endl;
 
-  //
-  char buffer[1024];
-  std::string res = "";
-  while (BIO_read(keybio, buffer, 1024) > 0) {
-    res += buffer;
+  std::cout << "8" << std::endl;
+
+  CryptoPP::SecByteBlock priv_key = hexDecode(priv_key_str);
+
+  std::cout << "9" << std::endl;
+
+  CryptoPP::SecByteBlock pub_key = hexDecode(pub_key_str);
+
+  std::cout << "10" << std::endl;
+
+  CryptoPP::AutoSeededRandomPool prng;
+  CryptoPP::SecByteBlock message(hexDecode("Do or do not. There is no try."));
+
+  CryptoPP::ed25519Signer signer(priv_key.data());
+  CryptoPP::ed25519Verifier verifier(pub_key.data());
+
+  size_t siglen = signer.MaxSignatureLength();
+  std::string signature(siglen, 0x00);
+  siglen = signer.SignMessage(prng, message.BytePtr(), message.size(),
+                              (CryptoPP::byte*)signature.data());
+  signature.resize(siglen);
+
+  std::string encoded;
+  CryptoPP::HexEncoder encoder;
+  encoder.Put((CryptoPP::byte*)signature.data(), signature.size());
+  encoder.MessageEnd();
+  CryptoPP::word64 size = encoder.MaxRetrievable();
+  if (size) {
+    encoded.resize(size);
+    encoder.Get((CryptoPP::byte*)encoded.data(), encoded.size());
   }
-  std::cout << "test prev" << std::endl;
-  std::cout << res << std::endl;
-  std::cout << "test end" << std::endl;
 
-  //
-  //
-  BIO_free(keybio);  // Private key
+  std::cout << "signature: " << encoded << std::endl;
 
-  return priv_key_str + ":" + pub_key_str;
-  /*
-    const char *str = "I am watching you!I am watching you!";
-    unsigned char *sig = NULL;
-    size_t slen = 0;
-    unsigned char msg[BUFFSIZE];
-    size_t mlen = 0;
+  // verify
+  bool is_valid = verifier.VerifyMessage(message.BytePtr(), message.size(),
+                                         (CryptoPP::byte*)signature.data(),
+                                         signature.size());
+  std::cout << "Verification: " << std::boolalpha << is_valid << std::endl;
 
-    for (int i = 0; i < N; i++) {
-      if (snprintf((char *)msg, BUFFSIZE, "%s %d", str, i + 1) < 0) {
-        printf("ERROR: snprintf failed\n");
-        return;
-      }
-      mlen = strlen((const char *)msg);
-      if (!do_sign(pkey, msg, mlen)) {
-        printf("ERROR: do_sign failed\n");
-        return;
-      }
-    }
-
-    printf("DONE\n");
-    if (pkey) EVP_PKEY_free(pkey);
-    */
+  this->private_key_str = priv_key_str;
+  this->public_key_str = pub_key_str;
 }
 
-std::string edKeyTest() {
-  std::string pem_priv_path =
-      "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/eddsa_secret_key.pem";
-  return FromPemFile(pem_priv_path);
-}
+std::string Ed25519Key::getPrivateKeyStr() { return this->private_key_str; }
+
+std::string Ed25519Key::getPublicKeyStr() { return this->public_key_str; }
+
 }  // namespace Casper

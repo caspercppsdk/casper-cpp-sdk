@@ -2090,9 +2090,14 @@ void publicKey_load_fromFileTest() {
 }
 
 void ed25KeyTest() {
-  std::string pem_priv_path =
+    std::string pem_priv_path =
       "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/eddsa_secret_key.pem";
-
+  Ed25519Key ed_key(pem_priv_path);
+  std::cout << "ed_key.getPrivateKeyStr(): " << ed_key.getPrivateKeyStr()
+            << std::endl;
+  std::cout << "ed_key.getPublicKeyStr(): " << ed_key.getPublicKeyStr()
+            << std::endl;
+  /*
   FILE* fp = fopen(pem_priv_path.c_str(), "r");
 
   if (!fp) {
@@ -2117,7 +2122,7 @@ void ed25KeyTest() {
   fclose(fp);
 
   //   std::string output_pem_path =
-  //       "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/generated_key_25519.pem";
+  // "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/generated_key_25519.pem";
 
   BIO* keybio = BIO_new(BIO_s_mem());
 
@@ -2168,7 +2173,7 @@ void ed25KeyTest() {
 
     std::cout << "private key: " << priv_key_str << std::endl;
     std::cout << "public key: " << pub_key_str << std::endl;
-  */
+
   CryptoPP::SecByteBlock priv_key = hexDecode(priv_key_str);
 
   CryptoPP::SecByteBlock pub_key = hexDecode(pub_key_str);
@@ -2202,21 +2207,22 @@ void ed25KeyTest() {
                                          (CryptoPP::byte*)signature.data(),
                                          signature.size());
   std::cout << "Verification: " << std::boolalpha << is_valid << std::endl;
+   */
 }
 
-#define RPC_TEST 1
-#define SER_DE_TEST 1
-#define CL_TYPE_TEST 1
-#define CL_VALUE_TEST 1
+#define RPC_TEST 0
+#define SER_DE_TEST 0
+#define CL_TYPE_TEST 0
+#define CL_VALUE_TEST 0
 
 TEST_LIST = {
 
     {"ED25519 Key Test", ed25KeyTest},
-    {"PublicKey Load fromFile", publicKey_load_fromFileTest},
-    {"CLValue Byte Serializer", CLValueByteSerializerTest},
-    {"DeployItemByteSer", DeployItemByteSerializerTest},
-    {"gsk test", globalStateKey_serializer_test},
-    {"transfer_deploy", transfer_deploy_test},
+// {"PublicKey Load fromFile", publicKey_load_fromFileTest},
+// {"CLValue Byte Serializer", CLValueByteSerializerTest},
+// {"DeployItemByteSer", DeployItemByteSerializerTest},
+// {"gsk test", globalStateKey_serializer_test},
+// {"transfer_deploy", transfer_deploy_test},
 #if RPC_TEST == 1
     {"infoGetPeers checks node list size", infoGetPeers_Test},
     {"chainGetStateRootHash using Block height parameter",
