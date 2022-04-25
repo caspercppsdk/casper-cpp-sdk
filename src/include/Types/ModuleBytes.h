@@ -18,7 +18,7 @@ struct ModuleBytes {
 
   ModuleBytes() {}
 
-  ModuleBytes(uint512_t amount) {
+  ModuleBytes(uint512_t amount) : module_bytes(0) {
     args.push_back(NamedArg("amount", CLValue::U512(amount)));
   }
 };

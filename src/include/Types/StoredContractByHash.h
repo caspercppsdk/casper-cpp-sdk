@@ -17,6 +17,10 @@ struct StoredContractByHash {
   std::vector<NamedArg> args;
 
   StoredContractByHash() {}
+
+  StoredContractByHash(const std::string& hash, const std::string& entry_point,
+                       const std::vector<NamedArg>& args = {})
+      : hash(hash), entry_point(entry_point), args(args) {}
 };
 
 /**

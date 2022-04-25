@@ -22,6 +22,20 @@ struct StoredVersionedContractByHash {
   std::vector<NamedArg> args;
 
   StoredVersionedContractByHash() {}
+
+  StoredVersionedContractByHash(const std::string& hash, const uint32_t version,
+                                const std::string& entry_point,
+                                const std::vector<NamedArg>& args)
+      : hash(hash), version(version), entry_point(entry_point), args(args) {}
+
+  StoredVersionedContractByHash(const std::string& hash,
+                                const std::string& entry_point,
+                                const std::vector<NamedArg>& args = {})
+      : hash(hash), entry_point(entry_point), args(args) {}
+
+  StoredVersionedContractByHash(const std::string& hash, const uint32_t version,
+                                const std::string& entry_point)
+      : hash(hash), version(version), entry_point(entry_point) {}
 };
 
 /**

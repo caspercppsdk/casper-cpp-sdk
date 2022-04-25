@@ -1971,6 +1971,114 @@ void CLValueByteSerializerTest() {
               actual_opt_none_byte_array_str);
 }
 
+void ModuleBytesByteSerializationTest() {
+  ExecutableDeployItemByteSerializer ser;
+  uint512_t amount = u512FromDec("1000");
+  ModuleBytes module_bytes(amount);
+
+  TEST_ASSERT(module_bytes.module_bytes.size() == 0);
+  TEST_ASSERT(module_bytes.args.size() == 1);
+
+  std::string expected_module_bytes_str =
+      "00000000000100000006000000616d6f756e740300000002e80308";
+  std::string actual_module_bytes_str = hexEncode(ser.ToBytes(module_bytes));
+  std::cout << "module bytes: " << actual_module_bytes_str << std::endl;
+  TEST_ASSERT(expected_module_bytes_str == actual_module_bytes_str);
+}
+
+void StoredContractByHashSerializationTest() {
+  ExecutableDeployItemByteSerializer ser;
+  Casper::HashKey hash_key(
+      "hash-0102030401020304010203040102030401020304010203040102030401020304");
+  StoredContractByHash stored_contract_by_hash(hash_key.ToHexString(),
+                                               "counter_inc");
+  TEST_ASSERT(stored_contract_by_hash.hash ==
+              CEP57Checksum::Encode(hash_key.raw_bytes));
+  TEST_ASSERT(stored_contract_by_hash.entry_point == "counter_inc");
+  TEST_ASSERT(stored_contract_by_hash.args.size() == 0);
+
+  std::string expected_stored_contract_by_hash_str =
+      "0101020304010203040102030401020304010203040102030401020304010203040b0000"
+      "00636f756e7465725f696e6300000000";
+
+  std::string actual_stored_contract_by_hash_str =
+      hexEncode(ser.ToBytes(stored_contract_by_hash));
+
+  std::cout << "stored contract by hash: " << actual_stored_contract_by_hash_str
+            << std::endl;
+
+  TEST_ASSERT(expected_stored_contract_by_hash_str ==
+              actual_stored_contract_by_hash_str);
+}
+
+void StoredContractByNameSerializationTest() {
+  ExecutableDeployItemByteSerializer ser;
+
+  StoredContractByName stored_contract_by_name("counter", "counter_inc");
+
+  TEST_ASSERT(stored_contract_by_name.name == "counter");
+  TEST_ASSERT(stored_contract_by_name.entry_point == "counter_inc");
+  TEST_ASSERT(stored_contract_by_name.args.size() == 0);
+
+  std::string expected_stored_contract_by_name_str =
+      "0207000000636f756e7465720b000000636f756e7465725f696e6300000000";
+
+  std::string actual_stored_contract_by_name_str =
+      hexEncode(ser.ToBytes(stored_contract_by_name));
+
+  std::cout << "stored contract by name: " << actual_stored_contract_by_name_str
+            << std::endl;
+
+  TEST_ASSERT(expected_stored_contract_by_name_str ==
+              actual_stored_contract_by_name_str);
+}
+
+void StoredVersionedContractByHashSerializationTest() {
+  ExecutableDeployItemByteSerializer ser;
+  Casper::HashKey hash_key(
+      "hash-0102030401020304010203040102030401020304010203040102030401020304");
+  StoredVersionedContractByHash stored_versioned_contract_by_hash(
+      hash_key.ToHexString(), 1, "counter_inc");
+  TEST_ASSERT(stored_versioned_contract_by_hash.hash ==
+              CEP57Checksum::Encode(hash_key.raw_bytes));
+  TEST_ASSERT(stored_versioned_contract_by_hash.version == 1);
+  TEST_ASSERT(stored_versioned_contract_by_hash.entry_point == "counter_inc");
+  TEST_ASSERT(stored_versioned_contract_by_hash.args.size() == 0);
+
+  std::string expected_stored_versioned_contract_by_hash_str =
+      "030102030401020304010203040102030401020304010203040102030401020304010100"
+      "00000b000000636f756e7465725f696e6300000000";
+
+  std::string actual_stored_versioned_contract_by_hash_str =
+      hexEncode(ser.ToBytes(stored_versioned_contract_by_hash));
+
+  std::cout << "stored versioned contract by hash: "
+            << actual_stored_versioned_contract_by_hash_str << std::endl;
+
+  TEST_ASSERT(expected_stored_versioned_contract_by_hash_str ==
+              actual_stored_versioned_contract_by_hash_str);
+}
+
+void StoredVersionedContractByNameSerializationTest() {
+  ExecutableDeployItemByteSerializer ser;
+  Casper::StoredVersionedContractByName stored_v_contract("counter", 15,
+                                                          "counter_inc");
+  TEST_ASSERT(stored_v_contract.name == "counter");
+  TEST_ASSERT(stored_v_contract.version == 15);
+  TEST_ASSERT(stored_v_contract.entry_point == "counter_inc");
+
+  TEST_ASSERT(stored_v_contract.args.size() == 0);
+
+  std::string expected_stored_v_contract_str =
+      "0407000000636f756e746572010f0000000b000000636f756e7465725f696e630000000"
+      "0";
+  std::string actual_stored_v_contract_str =
+      hexEncode(ser.ToBytes(stored_v_contract));
+  std::cout << "stored versioned contract: " << actual_stored_v_contract_str
+            << std::endl;
+  TEST_ASSERT(expected_stored_v_contract_str == actual_stored_v_contract_str);
+}
+
 void DeployItemByteSerializerTest() {
   using namespace Casper;
   using ByteArr = CBytes;
@@ -2075,13 +2183,22 @@ void ed25KeyTest() {
 #define CL_VALUE_TEST 0
 
 TEST_LIST = {
-
-    {"ED25519 Key Test", ed25KeyTest},
-    {"PublicKey Load fromFile", publicKey_load_fromFileTest},
-    {"getAccountHash checks internal PublicKey to AccountHash converter",
-     publicKey_getAccountHashTest},
+    {"ModuleBytes serialize", ModuleBytesByteSerializationTest},
+    {"StoredContractByHashSerialization",
+     StoredContractByHashSerializationTest},
+    {"StoredContractByNameSerialization",
+     StoredContractByNameSerializationTest},
+    {"StoredVersionedContractByHashSerialization",
+     StoredVersionedContractByHashSerializationTest},
+    {"StoredVersionedContractByNameSerialization",
+     StoredVersionedContractByNameSerializationTest},
+    {"DeployItemByteSer", DeployItemByteSerializerTest},
+//  {"ED25519 Key Test", ed25KeyTest},
+//   {"PublicKey Load fromFile", publicKey_load_fromFileTest},
+// {"getAccountHash checks internal PublicKey to AccountHash converter",
+//  publicKey_getAccountHashTest},
 // {"CLValue Byte Serializer", CLValueByteSerializerTest},
-// {"DeployItemByteSer", DeployItemByteSerializerTest},
+
 // {"gsk test", globalStateKey_serializer_test},
 // {"transfer_deploy", transfer_deploy_test},
 #if RPC_TEST == 1

@@ -16,6 +16,10 @@ struct StoredContractByName {
   std::vector<NamedArg> args;
 
   StoredContractByName() {}
+
+  StoredContractByName(const std::string& name, const std::string& entry_point,
+                       const std::vector<NamedArg>& args = {})
+      : name(name), entry_point(entry_point), args(args) {}
 };
 
 /**
