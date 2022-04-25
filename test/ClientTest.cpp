@@ -2068,9 +2068,6 @@ std::string genSignature(const std::string& privKeyIn,
 }
 
 void publicKey_load_fromFileTest() {
-  // edKeyTest();
-  //  secpTest();
-
   /// Create a Private Key from pem file
   // CryptoPP::AutoSeededRandomPool prng;
   std::string privKeyPemFile =
@@ -2090,13 +2087,21 @@ void publicKey_load_fromFileTest() {
 }
 
 void ed25KeyTest() {
-    std::string pem_priv_path =
+  std::string pem_priv_path =
       "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/eddsa_secret_key.pem";
   Ed25519Key ed_key(pem_priv_path);
   std::cout << "ed_key.getPrivateKeyStr(): " << ed_key.getPrivateKeyStr()
             << std::endl;
   std::cout << "ed_key.getPublicKeyStr(): " << ed_key.getPublicKeyStr()
             << std::endl;
+
+  std::string message =
+      "e0a081fbf1ea9c716852df2bbfbfb1daecb9719f67c63c64cc49267d8038ebcf";
+  std::string signature = ed_key.sign(message);
+
+  std::cout << "in test verify: " << std::boolalpha
+            << ed_key.verify(message, signature) << std::endl;
+
   /*
   FILE* fp = fopen(pem_priv_path.c_str(), "r");
 
@@ -2218,7 +2223,7 @@ void ed25KeyTest() {
 TEST_LIST = {
 
     {"ED25519 Key Test", ed25KeyTest},
-// {"PublicKey Load fromFile", publicKey_load_fromFileTest},
+    {"PublicKey Load fromFile", publicKey_load_fromFileTest},
 // {"CLValue Byte Serializer", CLValueByteSerializerTest},
 // {"DeployItemByteSer", DeployItemByteSerializerTest},
 // {"gsk test", globalStateKey_serializer_test},

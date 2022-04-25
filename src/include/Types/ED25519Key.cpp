@@ -10,7 +10,8 @@
 #include "Utils/CEP57Checksum.h"
 
 namespace Casper {
-Ed25519Key::Ed25519Key(std::string pem_file_path) {
+Ed25519Key::Ed25519Key(std::string pem_file_path)
+    : pub_key(1024), priv_key(1024) {
   FILE* fp = fopen(pem_file_path.c_str(), "r");
 
   if (!fp) {
@@ -45,55 +46,73 @@ Ed25519Key::Ed25519Key(std::string pem_file_path) {
   BIO_free(keybio);  // Private key
 
   std::cout << "3" << std::endl;
-  unsigned char priv_key_buf[1024];
-  size_t priv_key_len;
-  EVP_PKEY_get_raw_private_key(pkey, priv_key_buf, &priv_key_len);
 
+  size_t priv_key_len = priv_key.size();
+  EVP_PKEY_get_raw_private_key(pkey, (unsigned char*)priv_key.data(),
+                               &priv_key_len);
+
+  // resize
+  priv_key.resize(priv_key_len);
   std::cout << "4" << std::endl;
 
-  unsigned char pub_key_buf[1024];
-  size_t pub_key_len;
-  EVP_PKEY_get_raw_public_key(pkey, pub_key_buf, &pub_key_len);
+  size_t pub_key_len = pub_key.size();
+  EVP_PKEY_get_raw_public_key(pkey, (unsigned char*)pub_key.data(),
+                              &pub_key_len);
 
+  // resize
+  pub_key.resize(pub_key_len);
   std::cout << "5" << std::endl;
 
-  std::stringstream priv_key_ss;
-  priv_key_ss << std::hex << std::setfill('0');
-  for (size_t i = 0; i < priv_key_len; i++) {
-    priv_key_ss << std::setw(2) << (unsigned int)priv_key_buf[i];
-  }
+  /*
+    std::stringstream priv_key_ss;
+    priv_key_ss << std::hex << std::setfill('0');
+    for (size_t i = 0; i < priv_key_len; i++) {
+      priv_key_ss << std::setw(2) << (unsigned int)priv_key_buf[i];
+    }
 
-  std::cout << "6" << std::endl;
+    std::cout << "6" << std::endl;
 
-  std::stringstream pub_key_ss;
-  pub_key_ss << std::hex << std::setfill('0');
-  for (size_t i = 0; i < pub_key_len; i++) {
-    pub_key_ss << std::setw(2) << (unsigned int)pub_key_buf[i];
-  }
+    std::stringstream pub_key_ss;
+    pub_key_ss << std::hex << std::setfill('0');
+    for (size_t i = 0; i < pub_key_len; i++) {
+      pub_key_ss << std::setw(2) << (unsigned int)pub_key_buf[i];
+    }
 
-  std::cout << "7" << std::endl;
+    std::cout << "7" << std::endl;
+  */
 
-  std::string priv_key_str = priv_key_ss.str();
-  std::string pub_key_str = pub_key_ss.str();
+  std::string priv_key_str = hexEncode(priv_key);
+  std::string pub_key_str = hexEncode(pub_key);
 
   std::cout << "Private Key: " << priv_key_str << std::endl;
   std::cout << "Public Key: " << pub_key_str << std::endl;
 
-  std::cout << "8" << std::endl;
+  this->private_key_str = priv_key_str;
+  this->public_key_str = pub_key_str;
+}
 
-  CryptoPP::SecByteBlock priv_key = hexDecode(priv_key_str);
-
-  std::cout << "9" << std::endl;
-
-  CryptoPP::SecByteBlock pub_key = hexDecode(pub_key_str);
-
-  std::cout << "10" << std::endl;
-
-  CryptoPP::AutoSeededRandomPool prng;
-  CryptoPP::SecByteBlock message(hexDecode("Do or do not. There is no try."));
-
-  CryptoPP::ed25519Signer signer(priv_key.data());
+// sign
+std::string Ed25519Key::sign(std::string message_str) {
+  CryptoPP::SecByteBlock message(hexDecode(message_str));
+  CryptoPP::SecByteBlock signature = sign(message);
+  std::string signature_str = hexEncode(signature);
+  return signature_str;
+  /*
   CryptoPP::ed25519Verifier verifier(pub_key.data());
+
+
+
+  // verify
+  bool is_valid = verifier.VerifyMessage(message.BytePtr(), message.size(),
+                                         (CryptoPP::byte*)signature.data(),
+                                         signature.size());
+  std::cout << "Verification: " << std::boolalpha << is_valid << std::endl;
+  */
+}
+
+CryptoPP::SecByteBlock Ed25519Key::sign(const CryptoPP::SecByteBlock& message) {
+  CryptoPP::AutoSeededRandomPool prng;
+  CryptoPP::ed25519Signer signer(priv_key.data());
 
   size_t siglen = signer.MaxSignatureLength();
   std::string signature(siglen, 0x00);
@@ -109,18 +128,34 @@ Ed25519Key::Ed25519Key(std::string pem_file_path) {
   if (size) {
     encoded.resize(size);
     encoder.Get((CryptoPP::byte*)encoded.data(), encoded.size());
+  } else {
+    throw std::runtime_error("Error encoding signature to hex");
   }
 
   std::cout << "signature: " << encoded << std::endl;
+
+  CryptoPP::SecByteBlock signature_block(hexDecode(encoded));
+
+  return signature_block;
+}
+
+bool Ed25519Key::verify(const CryptoPP::SecByteBlock& message,
+                        const CryptoPP::SecByteBlock& signature) {
+  CryptoPP::ed25519Verifier verifier(pub_key.data());
 
   // verify
   bool is_valid = verifier.VerifyMessage(message.BytePtr(), message.size(),
                                          (CryptoPP::byte*)signature.data(),
                                          signature.size());
   std::cout << "Verification: " << std::boolalpha << is_valid << std::endl;
+  return is_valid;
+}
 
-  this->private_key_str = priv_key_str;
-  this->public_key_str = pub_key_str;
+bool Ed25519Key::verify(std::string message, std::string signature) {
+  CryptoPP::SecByteBlock message_block(hexDecode(message));
+  CryptoPP::SecByteBlock signature_block(hexDecode(signature));
+
+  return verify(message_block, signature_block);
 }
 
 std::string Ed25519Key::getPrivateKeyStr() { return this->private_key_str; }
