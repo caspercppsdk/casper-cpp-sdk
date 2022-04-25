@@ -14,6 +14,8 @@
 #include "Types/Secp256k1Key.h"
 #include "cryptopp/osrng.h"
 #include <chrono>
+#include <openssl/pem.h>
+#include <openssl/evp.h>
 #include "acutest.h"
 
 using namespace Casper;
@@ -1512,8 +1514,6 @@ void transfer_deploy_test() {
 }
 
 void CLValueByteSerializerTest() {
-  using namespace Casper;
-  using ByteArr = CBytes;
   CLValueByteSerializer ser;
   /*
     uint128_t p1(UINT64_MAX);
@@ -1686,8 +1686,8 @@ void CLValueByteSerializerTest() {
 
   // U64 Byte Serialization
   // U64
-  uint64_t u64_val = UINT64_MAX;
-  CLValue clv_u64 = Casper::CLValue::U64(u64_val);
+#undef U64(C)
+  Casper::CLValue clv_u64 = Casper::CLValue::U64(UINT64_MAX);
   std::string expected_u64 = "08000000ffffffffffffffff05";
   std::string actual_u64 = hexEncode(ser.ToBytes(clv_u64));
   std::cout << "u64: " << actual_u64 << std::endl;
@@ -2090,9 +2090,118 @@ void publicKey_load_fromFileTest() {
 }
 
 void ed25KeyTest() {
-  std::string keys = edKeyTest();
-  std::cout << "private key: " << keys.substr(0, keys.find(":")) << std::endl;
-  std::cout << "public key: " << keys.substr(keys.find(":") + 1) << std::endl;
+  std::string pem_priv_path =
+      "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/eddsa_secret_key.pem";
+
+  FILE* fp = fopen(pem_priv_path.c_str(), "r");
+
+  if (!fp) {
+    printf("ERROR: file %s does not exist\n", pem_priv_path.c_str());
+    return;
+  }
+
+  EVP_PKEY* pkey = PEM_read_PrivateKey(fp, nullptr, nullptr, nullptr);
+
+  if (pkey == nullptr) {
+    printf("ERROR: file %s is not a valid private key\n",
+           pem_priv_path.c_str());
+    return;
+  }
+
+  if (EVP_PKEY_id(pkey) != EVP_PKEY_ED25519) {
+    printf("ERROR: file %s is not a valid ED25519 private key\n",
+           pem_priv_path.c_str());
+    return;
+  }
+
+  fclose(fp);
+
+  //   std::string output_pem_path =
+  //       "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/generated_key_25519.pem";
+
+  BIO* keybio = BIO_new(BIO_s_mem());
+
+  EVP_PKEY_print_private(keybio, pkey, 0, nullptr);
+  EVP_PKEY_print_public(keybio, pkey, 0, nullptr);
+  BIO_free(keybio);  // Private key
+
+  unsigned char priv_key_buf[1024];
+  size_t priv_key_len;
+  EVP_PKEY_get_raw_private_key(pkey, priv_key_buf, &priv_key_len);
+
+  unsigned char pub_key_buf[1024];
+  size_t pub_key_len;
+  EVP_PKEY_get_raw_public_key(pkey, pub_key_buf, &pub_key_len);
+
+  std::stringstream priv_key_ss;
+  priv_key_ss << std::hex << std::setfill('0');
+  for (size_t i = 0; i < priv_key_len; i++) {
+    priv_key_ss << std::setw(2) << (unsigned int)priv_key_buf[i];
+  }
+
+  std::stringstream pub_key_ss;
+  pub_key_ss << std::hex << std::setfill('0');
+  for (size_t i = 0; i < pub_key_len; i++) {
+    pub_key_ss << std::setw(2) << (unsigned int)pub_key_buf[i];
+  }
+
+  std::string priv_key_str = priv_key_ss.str();
+  std::string pub_key_str = pub_key_ss.str();
+
+  std::cout << "Private Key: " << priv_key_str << std::endl;
+  std::cout << "Public Key: " << pub_key_str << std::endl;
+
+  /*
+    //
+    char buffer[1024];
+    std::string res = "";
+    while (BIO_read(keybio, buffer, 1024) > 0) {
+      res += buffer;
+    }
+    std::cout << "test prev" << std::endl;
+    std::cout << res << std::endl;
+    std::cout << "test end" << std::endl;
+
+    //
+    //
+
+
+    std::cout << "private key: " << priv_key_str << std::endl;
+    std::cout << "public key: " << pub_key_str << std::endl;
+  */
+  CryptoPP::SecByteBlock priv_key = hexDecode(priv_key_str);
+
+  CryptoPP::SecByteBlock pub_key = hexDecode(pub_key_str);
+
+  CryptoPP::AutoSeededRandomPool prng;
+  CryptoPP::SecByteBlock message(hexDecode("Do or do not. There is no try."));
+
+  CryptoPP::ed25519Signer signer(priv_key.data());
+  CryptoPP::ed25519Verifier verifier(pub_key.data());
+
+  size_t siglen = signer.MaxSignatureLength();
+  std::string signature(siglen, 0x00);
+  siglen = signer.SignMessage(prng, message.BytePtr(), message.size(),
+                              (CryptoPP::byte*)signature.data());
+  signature.resize(siglen);
+
+  std::string encoded;
+  CryptoPP::HexEncoder encoder;
+  encoder.Put((CryptoPP::byte*)signature.data(), signature.size());
+  encoder.MessageEnd();
+  CryptoPP::word64 size = encoder.MaxRetrievable();
+  if (size) {
+    encoded.resize(size);
+    encoder.Get((CryptoPP::byte*)encoded.data(), encoded.size());
+  }
+
+  std::cout << "signature: " << encoded << std::endl;
+
+  // verify
+  bool is_valid = verifier.VerifyMessage(message.BytePtr(), message.size(),
+                                         (CryptoPP::byte*)signature.data(),
+                                         signature.size());
+  std::cout << "Verification: " << std::boolalpha << is_valid << std::endl;
 }
 
 #define RPC_TEST 0
