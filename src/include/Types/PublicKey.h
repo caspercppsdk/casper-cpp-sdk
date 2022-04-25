@@ -53,6 +53,10 @@ struct PublicKey {
   /// Loads a PublicKey from a PEM file
   /// </summary>
   static Casper::PublicKey FromPemFile(const std::string& pemFilePath) {
+    throw std::runtime_error(
+        "Not implemented: static Casper::PublicKey FromPemFile(const "
+        "std::string& pemFilePath)");
+
     try {
       CryptoPP::FileSource fs1(pemFilePath.c_str(), true);
       if (CryptoPP::PEM_GetType(fs1) == CryptoPP::PEM_EC_PUBLIC_KEY) {
@@ -144,6 +148,8 @@ struct PublicKey {
   /// Saves the public key to a PEM file.
   /// </summary>
   void WriteToPem(const std::string& filePath) {
+    throw std::runtime_error(
+        "Not implemented: void WriteToPem(const std::string& filePath)");
     // Optional TODO: Implement this
 
     /*
@@ -182,22 +188,25 @@ struct PublicKey {
   /// Returns the Account Hash associated to this Public Key.
   /// </summary>
   std::string GetAccountHash() const {
-    CryptoPP::BLAKE2b hash(32u);
-
+    CBytes sb;
     std::string algo_str = KeyAlgo::GetName(key_algorithm);
-    hash.Update(reinterpret_cast<const CryptoPP::byte*>(algo_str.data()),
-                algo_str.size());
+    CryptoPP::SecByteBlock algo_bytes =
+        hexDecode(StringUtil::getStringBytesWithoutLength(algo_str));
+    CBytes interm_byte(1);
+    interm_byte[0] = 0;
 
-    CBytes empty_byte(1);
-    empty_byte.CleanNew(1);
-    hash.Update(empty_byte.data(), 1);
+    sb += algo_bytes;
+    sb += interm_byte;
+    sb += raw_bytes;
 
-    hash.Update(raw_bytes.begin(), raw_bytes.size());
+    CryptoPP::BLAKE2b bcBl2bdigest(32u);
+    bcBl2bdigest.Update(sb, sb.size());
+    // std::cout << "ComputeBodyHash3" << std::endl;
 
-    CBytes digest_bytes(hash.DigestSize());
-    hash.Final(digest_bytes.data());
+    CBytes hash(bcBl2bdigest.DigestSize());
+    bcBl2bdigest.Final(hash);
 
-    return "account-hash-" + CEP57Checksum::Encode(digest_bytes);
+    return "account-hash-" + CEP57Checksum::Encode(hash);
   }
 
   /// <summary>

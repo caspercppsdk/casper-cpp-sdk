@@ -46,8 +46,8 @@ Secp256k1Key::Secp256k1Key(std::string pem_file_path) {
   std::string out_str = ss.str();
 
   std::string out_str_no_h = out_str.substr(0, 66);
-  std::cout << "out_str_no_h: " << out_str_no_h << std::endl;
-  std::cout << "out_str_no_h size: " << out_str_no_h.size() << std::endl;
+  // std::cout << "out_str_no_h: " << out_str_no_h << std::endl;
+  // std::cout << "out_str_no_h size: " << out_str_no_h.size() << std::endl;
 
   // Convert CryptoPP::Integer values to std::string with eliminate the h(0x)
   private_key_str = integerToString(_private_key.GetPrivateExponent());
@@ -127,8 +127,8 @@ std::string Secp256k1Key::integerToString(CryptoPP::Integer x) {
   std::stringstream ss;
   ss << std::hex << x;
   std::string out_str = ss.str();
-  std::cout << "out_str: " << out_str << std::endl;
-  std::cout << "out_str size: " << out_str.size() << std::endl;
+  // std::cout << "out_str: " << out_str << std::endl;
+  // std::cout << "out_str size: " << out_str.size() << std::endl;
   std::string out_str_no_h = out_str.substr(0, 64);
   return out_str.substr(0, 64);
 }

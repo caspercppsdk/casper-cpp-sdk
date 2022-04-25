@@ -32,9 +32,9 @@ class KeyAlgo {
 
   static std::string GetName(Value value) {
     if (value == Value::ED25519) {
-      return "ED25519";
+      return "ed25519";
     } else if (value == Value::SECP256K1) {
-      return "SECP256K1";
+      return "secp256k1";
     } else {
       throw std::invalid_argument("Wrong key algorithm type");
     }
