@@ -10,7 +10,7 @@ namespace Casper {
 URef::URef() {}
 
 URef::URef(std::string value) : GlobalStateKey::GlobalStateKey(value) {
-  key_identifier = KeyIdentifier::UREF;
+  key_identifier = KeyIdentifier::URef;
   if (!StringUtil::startsWith(value, "uref-")) {
     throw std::runtime_error("Invalid URef format");
   }

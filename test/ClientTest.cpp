@@ -1266,7 +1266,7 @@ void clValue_with_jsonFile(std::string file_name) {
   std::cout << std::endl << generated_json.dump(2) << std::endl;
 
   // compare the final parsed json with the initial json
-  TEST_ASSERT(generated_json.dump() == input_json.dump());
+  TEST_ASSERT(iequals(generated_json.dump(), input_json.dump()));
 }
 void clValue_with_boolTrueTest() { clValue_with_jsonFile("Bool-True.json"); }
 
@@ -1298,7 +1298,7 @@ void clValue_with_StringTest() { clValue_with_jsonFile("String.json"); }
 
 void clValue_with_URefTest() { clValue_with_jsonFile("URef.json"); }
 
-// void clValue_with_KeyTest() { clValue_with_jsonFile("Key.json"); }
+void clValue_with_KeyTest() { clValue_with_jsonFile("Key.json"); }
 
 void clValue_with_PublicKeyTest() { clValue_with_jsonFile("PublicKey.json"); }
 
@@ -2177,10 +2177,10 @@ void ed25KeyTest() {
             << ed_key.verify(message, signature) << std::endl;
 }
 
-#define RPC_TEST 0
-#define SER_DE_TEST 0
-#define CL_TYPE_TEST 0
-#define CL_VALUE_TEST 0
+#define RPC_TEST 1
+#define SER_DE_TEST 1
+#define CL_TYPE_TEST 1
+#define CL_VALUE_TEST 1
 
 TEST_LIST = {
     {"ModuleBytes serialize", ModuleBytesByteSerializationTest},
@@ -2193,14 +2193,14 @@ TEST_LIST = {
     {"StoredVersionedContractByNameSerialization",
      StoredVersionedContractByNameSerializationTest},
     {"DeployItemByteSer", DeployItemByteSerializerTest},
-//  {"ED25519 Key Test", ed25KeyTest},
-//   {"PublicKey Load fromFile", publicKey_load_fromFileTest},
-// {"getAccountHash checks internal PublicKey to AccountHash converter",
-//  publicKey_getAccountHashTest},
-// {"CLValue Byte Serializer", CLValueByteSerializerTest},
+    {"ED25519 Key Test", ed25KeyTest},
+    {"PublicKey Load fromFile", publicKey_load_fromFileTest},
+    {"getAccountHash checks internal PublicKey to AccountHash converter",
+     publicKey_getAccountHashTest},
+    {"CLValue Byte Serializer", CLValueByteSerializerTest},
 
-// {"gsk test", globalStateKey_serializer_test},
-// {"transfer_deploy", transfer_deploy_test},
+    {"gsk test", globalStateKey_serializer_test},
+    {"transfer_deploy", transfer_deploy_test},
 #if RPC_TEST == 1
     {"infoGetPeers checks node list size", infoGetPeers_Test},
     {"chainGetStateRootHash using Block height parameter",
@@ -2286,11 +2286,11 @@ TEST_LIST = {
     {"CLValue using U512-0", clValue_with_U512_0Test},
     {"CLValue using Unit", clValue_with_UnitTest},
     {"CLValue using String", clValue_with_StringTest},
-    //  {"CLValue using URef", clValue_with_URefTest},
-    // {"CLValue using Key", clValue_with_KeyTest},
-    // {"CLValue using Account Key", clValue_with_accountKeyTest},
-    // {"CLValue using Hash Key", clValue_with_hashKeyTest},
-    //  {"CLValue using PublicKey", clValue_with_PublicKeyTest},
+    {"CLValue using URef", clValue_with_URefTest},
+    {"CLValue using Key", clValue_with_KeyTest},
+    //{"CLValue using Account Key", clValue_with_accountKeyTest},
+    //{"CLValue using Hash Key", clValue_with_hashKeyTest},
+    {"CLValue using PublicKey", clValue_with_PublicKeyTest},
     {"CLValue using Option", clValue_with_OptionTest},
     // {"CLValue using Option<List<Key>> = NULL",
     //  clValue_with_OptionListKeyNULLTest},
@@ -2303,13 +2303,13 @@ TEST_LIST = {
     // {"CLValue using List<U8>", clValue_with_ListU8Test},
     // {"CLValue using List<U256>", clValue_with_ListU256Test},
     {"CLValue using ByteArray", clValue_with_ByteArrayTest},
-// {"CLValue using ResultOk", clValue_with_ResultOkTest},
-// {"CLValue using ResultErr", clValue_with_ResultErrTest},
-// {"CLValue using Map", clValue_with_MapTest},
-// {"CLValue using Tuple1", clValue_with_Tuple1Test},
-// {"CLValue using Tuple2", clValue_with_Tuple2Test},
-// {"CLValue using Tuple3", clValue_with_Tuple3Test},
-// {"CLValue using Any", clValue_with_AnyTest},
+    // {"CLValue using ResultOk", clValue_with_ResultOkTest},
+    // {"CLValue using ResultErr", clValue_with_ResultErrTest},
+    // {"CLValue using Map", clValue_with_MapTest},
+    // {"CLValue using Tuple1", clValue_with_Tuple1Test},
+    // {"CLValue using Tuple2", clValue_with_Tuple2Test},
+    // {"CLValue using Tuple3", clValue_with_Tuple3Test},
+    {"CLValue using Any", clValue_with_AnyTest},
 
 #endif
 

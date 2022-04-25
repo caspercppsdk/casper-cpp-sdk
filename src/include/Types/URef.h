@@ -68,7 +68,7 @@ inline void to_json(nlohmann::json& j, const URef& p) {
 
 inline void from_json(const nlohmann::json& j, URef& p) {
   std::string value = j.get<std::string>();
-  p.key_identifier = KeyIdentifier::UREF;
+  p.key_identifier = KeyIdentifier::URef;
   p.key = value;
 
   if (!StringUtil::startsWith(value, "uref-")) {

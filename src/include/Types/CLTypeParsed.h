@@ -94,7 +94,15 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
     j = p_type.ToString();
   } else if (p.index() == 11) {
     auto p_type = rva::get<GlobalStateKey>(p);
-    j = p_type.ToString();
+    std::string key_identifier{magic_enum::enum_name(p_type.key_identifier)};
+
+    // URef does not have a key_identifier as an enum in parsed
+    if (iequals(key_identifier, "URef")) {
+      j = p_type.ToString();
+    } else {
+      j[key_identifier] = p_type.ToString();
+    }
+
   } else if (p.index() == 12) {
     auto p_type = rva::get<PublicKey>(p);
     j = p_type.ToString();

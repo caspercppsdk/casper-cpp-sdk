@@ -27,8 +27,7 @@ GlobalStateKey::GlobalStateKey(std::string key_, std::string key_prefix) {
   if (key_.rfind(key_prefix, 0) != 0)
     throw std::invalid_argument(
         "Key not valid. It should start with '{key_prefix}'.");
-  CBytes res =
-      CEP57Checksum::Decode(key_.substr(key_.find_last_of('-') + 1));
+  CBytes res = CEP57Checksum::Decode(key_.substr(key_.find_last_of('-') + 1));
   key = key_prefix + CEP57Checksum::Encode(res);
   raw_bytes = _GetRawBytesFromKey(key);
 }
@@ -132,7 +131,7 @@ bool GlobalStateKey::operator!=(const GlobalStateKey& other) const {
 
 AccountHashKey::AccountHashKey(std::string key)
     : GlobalStateKey::GlobalStateKey(key, "account-hash-") {
-  key_identifier = KeyIdentifier::ACCOUNT;
+  key_identifier = KeyIdentifier::Account;
 }
 
 AccountHashKey::AccountHashKey(PublicKey publicKey)
@@ -141,7 +140,7 @@ AccountHashKey::AccountHashKey(PublicKey publicKey)
 
 HashKey::HashKey(std::string key)
     : GlobalStateKey::GlobalStateKey(key, "hash-") {
-  key_identifier = KeyIdentifier::HASH;
+  key_identifier = KeyIdentifier::Hash;
 }
 
 HashKey::HashKey(CBytes key)
@@ -149,7 +148,7 @@ HashKey::HashKey(CBytes key)
 
 TransferKey::TransferKey(std::string key)
     : GlobalStateKey::GlobalStateKey(key, "transfer-") {
-  key_identifier = KeyIdentifier::TRANSFER;
+  key_identifier = KeyIdentifier::Transfer;
 }
 
 TransferKey::TransferKey(CBytes key)
@@ -157,14 +156,14 @@ TransferKey::TransferKey(CBytes key)
 
 DeployInfoKey::DeployInfoKey(std::string key)
     : GlobalStateKey::GlobalStateKey(key, "deploy-") {
-  key_identifier = KeyIdentifier::DEPLOYINFO;
+  key_identifier = KeyIdentifier::DeployInfo;
 }
 
 DeployInfoKey::DeployInfoKey(CBytes key)
     : DeployInfoKey::DeployInfoKey("deploy-" + CEP57Checksum::Encode(key)) {}
 
 EraInfoKey::EraInfoKey(std::string key) : GlobalStateKey::GlobalStateKey(key) {
-  key_identifier = KeyIdentifier::ERAINFO;
+  key_identifier = KeyIdentifier::EraInfo;
   if (!StringUtil::startsWith(key, "era-"))
     throw std::invalid_argument("EraInfoKey must start with 'era-'");
 
@@ -201,14 +200,14 @@ CBytes EraInfoKey::_GetRawBytesFromKey(std::string key) {
 
 BalanceKey::BalanceKey(std::string key)
     : GlobalStateKey::GlobalStateKey(key, "balance-") {
-  key_identifier = KeyIdentifier::BALANCE;
+  key_identifier = KeyIdentifier::Balance;
 }
 
 BalanceKey::BalanceKey(CBytes key)
     : BalanceKey::BalanceKey("balance-" + CEP57Checksum::Encode(key)) {}
 
 BidKey::BidKey(std::string key) : GlobalStateKey::GlobalStateKey(key, "bid-") {
-  key_identifier = KeyIdentifier::BID;
+  key_identifier = KeyIdentifier::Bid;
 }
 
 BidKey::BidKey(CBytes key)
@@ -216,7 +215,7 @@ BidKey::BidKey(CBytes key)
 
 WithdrawKey::WithdrawKey(std::string key)
     : GlobalStateKey::GlobalStateKey(key, "withdraw-") {
-  key_identifier = KeyIdentifier::WITHDRAW;
+  key_identifier = KeyIdentifier::Withdraw;
 }
 
 WithdrawKey::WithdrawKey(CBytes key)
@@ -224,7 +223,7 @@ WithdrawKey::WithdrawKey(CBytes key)
 
 DictionaryKey::DictionaryKey(std::string key)
     : GlobalStateKey::GlobalStateKey(key, "dictionary-") {
-  key_identifier = KeyIdentifier::DICTIONARY;
+  key_identifier = KeyIdentifier::Dictionary;
 }
 DictionaryKey::DictionaryKey(CBytes key)
     : DictionaryKey::DictionaryKey("dictionary-" + CEP57Checksum::Encode(key)) {

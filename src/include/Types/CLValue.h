@@ -449,7 +449,7 @@ struct CLValue {
 
     CBytes bytes(1 + accountHash.size());
 
-    bytes[0] = (CryptoPP::byte)KeyIdentifier::ACCOUNT;
+    bytes[0] = (CryptoPP::byte)KeyIdentifier::Account;
 
     std::copy(accountHash.begin(), accountHash.end(), bytes.begin() + 1);
 

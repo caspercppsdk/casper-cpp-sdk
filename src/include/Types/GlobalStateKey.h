@@ -2,7 +2,7 @@
 
 #include "Base.h"
 #include "Types/PublicKey.h"
-
+#include "magic_enum/magic_enum.hpp"
 // Crypto
 #include "cryptopp/secblock.h"
 
@@ -20,46 +20,46 @@ enum class KeyIdentifier {
   /// <summary>
   /// AccountHash keys store accounts in the global state.
   /// </summary>
-  ACCOUNT = 0x00,
+  Account = 0x00,
   /// <summary>
   /// Hash keys store contracts immutably in the global state.
   /// </summary>
-  HASH = 0x01,
+  Hash = 0x01,
   /// <summary>
   /// URef keys store values and manage permissions to interact with the value
   /// stored under the URef.
   /// </summary>
-  UREF = 0x02,
+  URef = 0x02,
   /// <summary>
   /// Transfer keys store transfers in the global state.
   /// </summary>
-  TRANSFER = 0x03,
+  Transfer = 0x03,
   /// <summary>
   /// DeployInfo keys store information related to deploys in the global state.
   /// </summary>
-  DEPLOYINFO = 0x04,
+  DeployInfo = 0x04,
   /// <summary>
   /// EraInfo keys store information related to the Auction metadata for a
   /// particular era.
   /// </summary>
-  ERAINFO = 0x05,
+  EraInfo = 0x05,
   /// <summary>
   /// Balance keys store information related to the balance of a given purse.
   /// </summary>
-  BALANCE = 0x06,
+  Balance = 0x06,
   /// <summary>
   /// Bid keys store information related to auction bids in the global state.
   /// </summary>
-  BID = 0x07,
+  Bid = 0x07,
   /// <summary>
   /// Withdraw keys store information related to auction withdraws in the global
   /// state.
   /// </summary>
-  WITHDRAW = 0x08,
+  Withdraw = 0x08,
   /// <summary>
   /// Dictionary keys store dictionary items.
   /// </summary>
-  DICTIONARY = 0x09
+  Dictionary = 0x09
 };
 
 /// <summary>
@@ -123,7 +123,7 @@ struct GlobalStateKey {
 /// </summary>
 struct AccountHashKey : public GlobalStateKey {
   AccountHashKey(std::string key);
-  AccountHashKey() { key_identifier = KeyIdentifier::ACCOUNT; }
+  AccountHashKey() { key_identifier = KeyIdentifier::Account; }
   AccountHashKey(PublicKey publicKey);
 };
 
@@ -216,8 +216,14 @@ struct DictionaryKey : public GlobalStateKey {
  * @param j JSON object to construct.
  * @param p GlobalStateKey object to construct from.
  */
-inline void to_json(nlohmann::json& j, const GlobalStateKey& p) { j = p.key; }
+inline void to_json(nlohmann::json& j, const GlobalStateKey& p) {
+  /*std::string key_identifier_str{magic_enum::enum_name(p.key_identifier)};
 
+  j[key_identifier_str] = p.key;
+  */
+
+  j = p.key;
+}
 /**
  * @brief Construct a GlobalStateKey object from a JSON object.
  *
