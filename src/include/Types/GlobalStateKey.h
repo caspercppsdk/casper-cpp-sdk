@@ -2,7 +2,7 @@
 
 #include "Base.h"
 #include "Types/PublicKey.h"
-
+#include "magic_enum/magic_enum.hpp"
 // Crypto
 #include "cryptopp/secblock.h"
 
@@ -20,46 +20,46 @@ enum class KeyIdentifier {
   /// <summary>
   /// AccountHash keys store accounts in the global state.
   /// </summary>
-  ACCOUNT = 0x00,
+  Account = 0x00,
   /// <summary>
   /// Hash keys store contracts immutably in the global state.
   /// </summary>
-  HASH = 0x01,
+  Hash = 0x01,
   /// <summary>
   /// URef keys store values and manage permissions to interact with the value
   /// stored under the URef.
   /// </summary>
-  UREF = 0x02,
+  URef = 0x02,
   /// <summary>
   /// Transfer keys store transfers in the global state.
   /// </summary>
-  TRANSFER = 0x03,
+  Transfer = 0x03,
   /// <summary>
   /// DeployInfo keys store information related to deploys in the global state.
   /// </summary>
-  DEPLOYINFO = 0x04,
+  DeployInfo = 0x04,
   /// <summary>
   /// EraInfo keys store information related to the Auction metadata for a
   /// particular era.
   /// </summary>
-  ERAINFO = 0x05,
+  EraInfo = 0x05,
   /// <summary>
   /// Balance keys store information related to the balance of a given purse.
   /// </summary>
-  BALANCE = 0x06,
+  Balance = 0x06,
   /// <summary>
   /// Bid keys store information related to auction bids in the global state.
   /// </summary>
-  BID = 0x07,
+  Bid = 0x07,
   /// <summary>
   /// Withdraw keys store information related to auction withdraws in the global
   /// state.
   /// </summary>
-  WITHDRAW = 0x08,
+  Withdraw = 0x08,
   /// <summary>
   /// Dictionary keys store dictionary items.
   /// </summary>
-  DICTIONARY = 0x09
+  Dictionary = 0x09
 };
 
 /// <summary>
@@ -70,10 +70,10 @@ struct GlobalStateKey {
 
  public:
   KeyIdentifier key_identifier;
-  CryptoPP::SecByteBlock raw_bytes;
+  CBytes raw_bytes;
 
  protected:
-  virtual CryptoPP::SecByteBlock _GetRawBytesFromKey(std::string key);
+  virtual CBytes _GetRawBytesFromKey(std::string key);
 
  public:
   GlobalStateKey();
@@ -100,9 +100,9 @@ struct GlobalStateKey {
   /// Converts a global state key from a byte array to its specific key object.
   /// First byte in the array indicates the Key identifier.
   /// </summary>
-  static GlobalStateKey FromBytes(const CryptoPP::SecByteBlock& bytes);
+  static GlobalStateKey FromBytes(const CBytes& bytes);
 
-  virtual CryptoPP::SecByteBlock GetBytes();
+  virtual CBytes GetBytes();
 
   /// <summary>
   /// Converts a key object to a string with the right prefix
@@ -123,7 +123,7 @@ struct GlobalStateKey {
 /// </summary>
 struct AccountHashKey : public GlobalStateKey {
   AccountHashKey(std::string key);
-  AccountHashKey(){};
+  AccountHashKey() { key_identifier = KeyIdentifier::Account; }
   AccountHashKey(PublicKey publicKey);
 };
 
@@ -134,7 +134,7 @@ struct AccountHashKey : public GlobalStateKey {
 struct HashKey : public GlobalStateKey {
   HashKey(std::string key);
 
-  HashKey(CryptoPP::SecByteBlock key);
+  HashKey(CBytes key);
 };
 
 /// <summary>
@@ -144,7 +144,7 @@ struct HashKey : public GlobalStateKey {
 struct TransferKey : public GlobalStateKey {
   TransferKey(std::string key);
 
-  TransferKey(CryptoPP::SecByteBlock key);
+  TransferKey(CBytes key);
 };
 
 /// <summary>
@@ -154,7 +154,7 @@ struct TransferKey : public GlobalStateKey {
 struct DeployInfoKey : public GlobalStateKey {
   DeployInfoKey(std::string key);
 
-  DeployInfoKey(CryptoPP::SecByteBlock key);
+  DeployInfoKey(CBytes key);
 };
 
 /// <summary>
@@ -164,10 +164,10 @@ struct DeployInfoKey : public GlobalStateKey {
 struct EraInfoKey : public GlobalStateKey {
   EraInfoKey(std::string key);
 
-  CryptoPP::SecByteBlock GetBytes() override;
+  CBytes GetBytes() override;
 
  protected:
-  CryptoPP::SecByteBlock _GetRawBytesFromKey(std::string key) override;
+  CBytes _GetRawBytesFromKey(std::string key) override;
 };
 
 /// <summary>
@@ -177,7 +177,7 @@ struct EraInfoKey : public GlobalStateKey {
 struct BalanceKey : public GlobalStateKey {
   BalanceKey(std::string key);
 
-  BalanceKey(CryptoPP::SecByteBlock key);
+  BalanceKey(CBytes key);
 };
 
 /// <summary>
@@ -187,7 +187,7 @@ struct BalanceKey : public GlobalStateKey {
 struct BidKey : public GlobalStateKey {
   BidKey(std::string key);
 
-  BidKey(CryptoPP::SecByteBlock key);
+  BidKey(CBytes key);
 };
 
 /// <summary>
@@ -197,7 +197,7 @@ struct BidKey : public GlobalStateKey {
 struct WithdrawKey : public GlobalStateKey {
   WithdrawKey(std::string key);
 
-  WithdrawKey(CryptoPP::SecByteBlock key);
+  WithdrawKey(CBytes key);
 };
 
 /// <summary>
@@ -207,7 +207,7 @@ struct WithdrawKey : public GlobalStateKey {
 struct DictionaryKey : public GlobalStateKey {
   DictionaryKey(std::string key);
 
-  DictionaryKey(CryptoPP::SecByteBlock key);
+  DictionaryKey(CBytes key);
 };
 
 /**
@@ -216,8 +216,14 @@ struct DictionaryKey : public GlobalStateKey {
  * @param j JSON object to construct.
  * @param p GlobalStateKey object to construct from.
  */
-inline void to_json(nlohmann::json& j, const GlobalStateKey& p) { j = p.key; }
+inline void to_json(nlohmann::json& j, const GlobalStateKey& p) {
+  /*std::string key_identifier_str{magic_enum::enum_name(p.key_identifier)};
 
+  j[key_identifier_str] = p.key;
+  */
+
+  j = p.key;
+}
 /**
  * @brief Construct a GlobalStateKey object from a JSON object.
  *

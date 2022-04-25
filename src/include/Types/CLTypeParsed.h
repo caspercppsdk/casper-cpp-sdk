@@ -2,7 +2,6 @@
 
 #include "Base.h"
 #include "nlohmann/json.hpp"
-#include "Types/Definitions.h"
 #include "Types/GlobalStateKey.h"
 #include "Types/PublicKey.h"
 #include "Types/URef.h"
@@ -14,25 +13,19 @@
 #include <optional>
 #include "magic_enum/magic_enum.hpp"
 
-#include "Types/CLTypeParsedConverter.h"
+#include "Types/CLConverter.h"
 
 namespace Casper {
 
-// Helper function to compare two strings in a case insensitive way
-bool iequals(const std::string& a, const std::string& b) {
-  return std::equal(a.begin(), a.end(), b.begin(), b.end(),
-                    [](char a, char b) { return tolower(a) == tolower(b); });
-}
-
 using CLTypeParsedRVA = rva::variant<
-    bool,      // Bool, // boolean primitive
-    int32_t,   // I32, // signed 32-bit integer primitive
-    int64_t,   // I64, // signed 64-bit integer primitive
-    uint8_t,   // U8, // unsigned 8-bit integer primitive
-    uint32_t,  // U32, // unsigned 32-bit integer primitive
-    uint64_t,  // U64, // unsigned 64-bit integer primitive
-    big_int,   // U128, // unsigned 128-bit integer primitive
-
+    bool,       // Bool, // boolean primitive
+    int32_t,    // I32, // signed 32-bit integer primitive
+    int64_t,    // I64, // signed 64-bit integer primitive
+    uint8_t,    // U8, // unsigned 8-bit integer primitive
+    uint32_t,   // U32, // unsigned 32-bit integer primitive
+    uint64_t,   // U64, // unsigned 64-bit integer primitive
+    uint128_t,  // U128, // unsigned 128-bit integer primitive
+    uint256_t, uint512_t,
     // Unit, // singleton value without additional semantics
 
     std::string,  // String, // e.g. "Hello, World!"
@@ -83,28 +76,42 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
     auto& p_type = rva::get<uint64_t>(p);
     j = p_type;
   } else if (p.index() == 6) {
-    auto& p_type = rva::get<big_int>(p);
-    j = p_type.toString();
+    auto p_type = rva::get<uint128_t>(p);
+    j = p_type;
   } else if (p.index() == 7) {
-    auto& p_type = rva::get<std::string>(p);
+    auto p_type = rva::get<uint256_t>(p);
     j = p_type;
   } else if (p.index() == 8) {
+    auto p_type = rva::get<uint512_t>(p);
+    j = p_type;
+  } else if (p.index() == 9) {
+    auto& p_type = rva::get<std::string>(p);
+    j = p_type;
+  } else if (p.index() == 10) {
     auto& p_type = rva::get<URef>(p);
     std::cout << "\nURef to_json\n" << std::endl;
     j = p_type.ToString();
-  } else if (p.index() == 9) {
+  } else if (p.index() == 11) {
     auto p_type = rva::get<GlobalStateKey>(p);
-    j = p_type.ToString();
-  } else if (p.index() == 10) {
+    std::string key_identifier{magic_enum::enum_name(p_type.key_identifier)};
+
+    // URef does not have a key_identifier as an enum in parsed
+    if (iequals(key_identifier, "URef")) {
+      j = p_type.ToString();
+    } else {
+      j[key_identifier] = p_type.ToString();
+    }
+
+  } else if (p.index() == 12) {
     auto p_type = rva::get<PublicKey>(p);
     j = p_type.ToString();
-  } else if (p.index() == 11) {
+  } else if (p.index() == 13) {
     auto p_type = rva::get<std::vector<CLTypeParsedRVA>>(p);
     j = p_type;
-  } else if (p.index() == 12) {
+  } else if (p.index() == 14) {
     auto& p_type = rva::get<std::map<std::string, CLTypeParsedRVA>>(p);
     j = p_type;
-  } else if (p.index() == 13) {
+  } else if (p.index() == 15) {
     auto& p_type = rva::get<std::map<CLTypeParsedRVA, CLTypeParsedRVA>>(p);
 
     int i = 0;
@@ -113,7 +120,7 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
     }
 
     // j = p_type;
-  } else if (p.index() == 14) {
+  } else if (p.index() == 16) {
     auto& p_type = rva::get<std::nullptr_t>(p);
     j = p_type;
   }
@@ -152,9 +159,13 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
         p = j.get<uint64_t>();
         break;
       case CLTypeEnum::U128:
+        p = u128FromDec(j.get<std::string>());
+        break;
       case CLTypeEnum::U256:
+        p = u256FromDec(j.get<std::string>());
+        break;
       case CLTypeEnum::U512:
-        p = j.get<big_int>();
+        p = u512FromDec(j.get<std::string>());
         break;
       case CLTypeEnum::Unit:
       case CLTypeEnum::Any:
@@ -316,6 +327,10 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
 
 struct CLTypeParsed {
   CLTypeParsedRVA parsed;
+
+  CLTypeParsed() : parsed(std::nullptr_t()) {}
+
+  CLTypeParsed(CLTypeParsedRVA parsed) : parsed(parsed) {}
 };
 
 // to_json of CLTypeParsed

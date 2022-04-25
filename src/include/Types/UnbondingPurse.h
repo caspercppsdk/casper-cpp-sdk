@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Types/Definitions.h"
 #include "Types/PublicKey.h"
 #include "Types/URef.h"
 
@@ -29,7 +28,7 @@ struct UnbondingPurse {
   /// <summary>
   /// Unbonding Amount.
   /// </summary>
-  big_int amount;
+  uint512_t amount;
 
   UnbondingPurse() {}
 };
@@ -40,7 +39,7 @@ inline void to_json(nlohmann::json& j, const UnbondingPurse& p) {
        {"validator_public_key", p.validator_public_key},
        {"unbonder_public_key", p.unbonder_public_key},
        {"era_of_creation", p.era_of_creation},
-       {"amount", p.amount.toString()}};
+       {"amount", p.amount}};
 }
 
 // from_json of UnbondingPurse

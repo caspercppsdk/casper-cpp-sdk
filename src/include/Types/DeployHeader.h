@@ -13,7 +13,7 @@ struct DeployHeader {
   /// Public Key from the Account owning the Deploy.
   /// </summary>
   // TODOMS3: Make PublicKey instead of std::string
-  std::string account;
+  PublicKey account;
 
   /// <summary>
   /// Timestamp formatted as per RFC 3339
@@ -48,6 +48,19 @@ struct DeployHeader {
   std::string chain_name;
 
   DeployHeader() {}
+
+  DeployHeader(const PublicKey& account_, const std::string& timestamp_,
+               const std::string& ttl_, uint64_t gas_price_,
+               const std::string& body_hash_,
+               const std::vector<std::string>& dependencies_,
+               const std::string& chain_name_)
+      : account(account_),
+        timestamp(timestamp_),
+        ttl(ttl_),
+        gas_price(gas_price_),
+        body_hash(body_hash_),
+        dependencies(dependencies_),
+        chain_name(chain_name_) {}
 };
 
 // to_json of DeployHeader

@@ -4,12 +4,20 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 ## Dependencies
 1. [CMake Version 3.0.0 or newer](https://cmake.org)
 2. [Doxygen Version 1.8.8 or newer](https://www.doxygen.nl)
+3. [OpenSSL Version 1.1.1 or newer](https://www.openssl.org)
 
-## Install instruction of doxygen
 
-On Ubuntu and Debian:
+## Install Instruction of Dependencies
+
+    sudo apt-get install build-essential libssl-dev
+
+    sudo apt-get install cmake
+
+    sudo apt-get install graphviz
 
     sudo apt-get install doxygen
+
+### Install instruction of doxygen for CentOS
 
 On CentOS and Rocky Linux:
 
@@ -59,6 +67,7 @@ On CentOS and Rocky Linux:
         Casper::Client client("http://127.0.0.1:7777");
 
     2. Call the client object member functions listed with their return types below to perform RPC functions.
+
 | **Client Function**     	| **Return Type**                 	|
 |-------------------------	|---------------------------------	|
 | GetNodePeers            	| Casper::InfoGetPeersResult      	|
@@ -85,10 +94,6 @@ On CentOS and Rocky Linux:
 3. https://github.com/yhirose/cpp-httplib
 4. https://github.com/weidai11/cryptopp
 5. https://github.com/Neargye/magic_enum
+6. https://github.com/codeinred/recursive-variant
+7. https://github.com/ckormanyos/wide-integer
 
-## TODO
-1. C++ version of CLType primitives(Milestone 3)
-2. C++ version for Casper Domain Specific Objects(Milestone 3)
-3. Serialization of Casper Domain Specific Objects(Milestone 3)
-4. ED25519/SECP256K1 key pairs  Wrappers(Milestone 3)
-5. PutDeploy RPC call implemented(Milestone 3)

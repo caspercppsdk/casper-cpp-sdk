@@ -6,7 +6,6 @@
 #include "nlohmann/json.hpp"
 
 // Types
-#include "Definitions.h"
 #include "Types/Bid.h"
 #include "Types/CLValue.h"
 #include "Types/DeployInfo.h"
@@ -45,11 +44,11 @@ struct Transform {
   /// Adds the given `u64`.
   std::optional<uint64_t> AddUInt64 = std::nullopt;
   /// Adds the given `U128`.
-  std::optional<big_int> AddUInt128 = std::nullopt;
+  std::optional<uint128_t> AddUInt128 = std::nullopt;
   /// Adds the given `U256`.
-  std::optional<big_int> AddUInt256 = std::nullopt;
+  std::optional<uint256_t> AddUInt256 = std::nullopt;
   /// Adds the given `U512`.
-  std::optional<big_int> AddUInt512 = std::nullopt;
+  std::optional<uint512_t> AddUInt512 = std::nullopt;
   /// Adds the given collection of named keys.
   std::optional<std::vector<NamedKey>> AddKeys = std::nullopt;
   /// A failed transformation, containing an error message.
@@ -107,15 +106,15 @@ inline void to_json(nlohmann::json& j, const Transform& p) {
   }
 
   if (p.AddUInt128.has_value()) {
-    j["AddUInt128"] = p.AddUInt128.value().toString();
+    j["AddUInt128"] = u128ToDec(p.AddUInt128.value());
   }
 
   if (p.AddUInt256.has_value()) {
-    j["AddUInt256"] = p.AddUInt256.value().toString();
+    j["AddUInt256"] = u256ToDec(p.AddUInt256.value());
   }
 
   if (p.AddUInt512.has_value()) {
-    j["AddUInt512"] = p.AddUInt512.value().toString();
+    j["AddUInt512"] = u512ToDec(p.AddUInt512.value());
   }
 
   if (p.AddKeys.has_value()) {
@@ -178,15 +177,15 @@ inline void from_json(const nlohmann::json& j, Transform& p) {
   }
 
   if (j.find("AddUInt128") != j.end()) {
-    p.AddUInt128 = j.at("AddUInt128").get<std::string>();
+    p.AddUInt128 = u128FromDec(j.at("AddUInt128").get<std::string>());
   }
 
   if (j.find("AddUInt256") != j.end()) {
-    p.AddUInt256 = j.at("AddUInt256").get<std::string>();
+    p.AddUInt256 = u256FromDec(j.at("AddUInt256").get<std::string>());
   }
 
   if (j.find("AddUInt512") != j.end()) {
-    p.AddUInt512 = j.at("AddUInt512").get<std::string>();
+    p.AddUInt512 = u512FromDec(j.at("AddUInt512").get<std::string>());
   }
 
   if (j.find("AddKeys") != j.end()) {

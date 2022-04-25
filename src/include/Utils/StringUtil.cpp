@@ -80,6 +80,20 @@ std::wstring from_utf8(std::string_view s) {
   return converter.from_bytes(begin, end);
 }
 
+std::string StringUtil::getStringBytesWithoutLength(const std::string& str) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+  std::wstring wstr = from_utf8(str);
+
+  std::stringstream input_ss;
+  input_ss << std::hex << std::setfill('0');
+
+  for (auto c : wstr) {
+    input_ss << std::setw(2) << static_cast<uint32_t>(c);
+  }
+  std::string output_str = input_ss.str();
+
+  return output_str;
+}
 std::string StringUtil::stringToHex(const std::string& str) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
   std::wstring wstr = from_utf8(str);

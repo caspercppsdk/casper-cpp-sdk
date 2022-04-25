@@ -21,6 +21,20 @@ struct StoredVersionedContractByName {
   std::vector<NamedArg> args;
 
   StoredVersionedContractByName() {}
+
+  StoredVersionedContractByName(const std::string& name, const uint32_t version,
+                                const std::string& entry_point,
+                                const std::vector<NamedArg>& args)
+      : name(name), version(version), entry_point(entry_point), args(args) {}
+
+  StoredVersionedContractByName(const std::string& name,
+                                const std::string& entry_point,
+                                const std::vector<NamedArg>& args = {})
+      : name(name), entry_point(entry_point), args(args) {}
+
+  StoredVersionedContractByName(const std::string& name, const uint32_t version,
+                                const std::string& entry_point)
+      : name(name), version(version), entry_point(entry_point) {}
 };
 
 /**

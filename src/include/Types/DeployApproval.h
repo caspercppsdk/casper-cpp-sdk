@@ -13,8 +13,7 @@ struct DeployApproval {
   /// <summary>
   /// Public Key that generates the signature.
   /// </summary>
-  // TODOMS3: Make PublicKey instead of std::string
-  std::string signer;
+  PublicKey signer;
 
   /// <summary>
   /// Signature of a deploy.
@@ -22,6 +21,9 @@ struct DeployApproval {
   Signature signature;
 
   DeployApproval() {}
+
+  DeployApproval(const PublicKey& signer, const Signature& signature)
+      : signer(signer), signature(signature) {}
 };
 
 // to_json of DeployApproval

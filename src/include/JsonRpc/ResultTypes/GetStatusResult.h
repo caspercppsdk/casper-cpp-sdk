@@ -2,7 +2,6 @@
 
 #include "RpcResult.h"
 #include "Types/BlockInfo.h"
-#include "Types/Definitions.h"
 #include "Types/NextUpgrade.h"
 #include "Types/Peer.h"
 

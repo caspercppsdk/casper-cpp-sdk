@@ -20,6 +20,8 @@ struct NamedArg {
   CLValue value;
 
   NamedArg() {}
+
+  NamedArg(std::string name, CLValue value) : name(name), value(value) {}
 };
 
 // to_json of NamedArg

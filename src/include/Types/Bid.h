@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Base.h"
-#include "Types/Definitions.h"
 #include "Types/Delegator.h"
 #include "Types/PublicKey.h"
 #include "Types/URef.h"
@@ -37,7 +36,7 @@ struct Bid {
   /// The amount of tokens staked by a validator (not including
   /// delegators).
   /// </summary>
-  big_int staked_amount;
+  uint512_t staked_amount;
 
   /// <summary>
   /// Validator public key
@@ -62,8 +61,8 @@ struct Bid {
  */
 inline void to_json(nlohmann::json& j, const Bid& p) {
   j = {{"validator_public_key", p.validator_public_key},
-       {"bonding_purse", p.bonding_purse.ToString()},
-       {"staked_amount", p.staked_amount.toString()},
+       {"bonding_purse", p.bonding_purse},
+       {"staked_amount", p.staked_amount},
        {"delegation_rate", p.delegation_rate},
        {"delegators", p.delegators},
        {"inactive", p.inactive}};

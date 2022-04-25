@@ -3,7 +3,6 @@
 #include <optional>
 
 #include "Base.h"
-#include "Definitions.h"
 #include "Types/URef.h"
 #include "Types/VestingSchedule.h"
 #include "nlohmann/json.hpp"
@@ -21,7 +20,7 @@ struct Delegator {
   /// <summary>
   /// Amount of Casper token delegated
   /// </summary>
-  big_int staked_amount;
+  uint512_t staked_amount;
 
   /// <summary>
   /// The purse that was used for delegating.
@@ -45,7 +44,7 @@ struct Delegator {
  */
 inline void to_json(nlohmann::json& j, const Delegator& p) {
   j = nlohmann::json{{"delegator_public_key", p.delegator_public_key},
-                     {"staked_amount", p.staked_amount.toString()},
+                     {"staked_amount", p.staked_amount},
                      {"bonding_purse", p.bonding_purse},
                      {"validator_public_key", p.validator_public_key}};
 

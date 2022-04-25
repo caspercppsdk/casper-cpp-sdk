@@ -3,10 +3,9 @@
 #include "Base.h"
 #include "Types/KeyAlgo.h"
 #include "Utils/CEP57Checksum.h"
+#include "Utils/CryptoUtil.h"
 #include "cryptopp/hex.h"
 #include "cryptopp/secblock.h"
-
-using namespace CryptoPP;
 
 namespace Casper {
 /// <summary>
@@ -16,7 +15,7 @@ struct Signature {
   /// <summary>
   /// Byte array without the Key algorithm identifier.
   /// </summary>
-  SecByteBlock raw_bytes;
+  CBytes raw_bytes;
 
   /// <summary>
   /// The Key algorithm used to create the signature.
@@ -26,7 +25,7 @@ struct Signature {
   Signature() {}
 
  protected:
-  Signature(SecByteBlock raw_bytes_, KeyAlgo key_algorithm_)
+  Signature(CBytes raw_bytes_, KeyAlgo key_algorithm_)
       : raw_bytes(raw_bytes_), key_algorithm(key_algorithm_) {}
 
  public:
@@ -36,7 +35,7 @@ struct Signature {
   /// </summary>
   static Signature FromHexString(std::string signature) {
     try {
-      SecByteBlock rawBytes = CEP57Checksum::Decode(signature.substr(2));
+      CBytes rawBytes = CEP57Checksum::Decode(signature.substr(2));
       if (signature.substr(0, 2) == "01") {
         return FromRawBytes(rawBytes, KeyAlgo::ED25519);
       } else if (signature.substr(0, 2) == "02") {
@@ -54,7 +53,7 @@ struct Signature {
   /// Creates a Signature object from a byte array (containing the
   /// Key algorithm identifier).
   /// </summary>
-  static Signature FromBytes(SecByteBlock bytes) {
+  static Signature FromBytes(CBytes bytes) {
     if (bytes.empty())
       throw std::invalid_argument("Signature bytes cannot be empty.");
 
@@ -67,7 +66,7 @@ struct Signature {
       throw std::invalid_argument("Wrong signature algorithm identifier");
     }
 
-    SecByteBlock data_bytes(bytes.size() - 1);
+    CBytes data_bytes(bytes.size() - 1);
     std::copy(bytes.begin() + 1, bytes.end(), data_bytes.begin());
     return Signature(data_bytes, algoIdent);
   }
@@ -76,7 +75,7 @@ struct Signature {
   /// Creates a Signature object from a byte array and the key algorithm
   /// identifier.
   /// </summary>
-  static Signature FromRawBytes(SecByteBlock rawBytes, KeyAlgo keyAlgo) {
+  static Signature FromRawBytes(CBytes rawBytes, KeyAlgo keyAlgo) {
     return Signature(rawBytes, keyAlgo);
   }
 
@@ -84,8 +83,8 @@ struct Signature {
   /// Returns the bytes of the signature, including the Key algorithm as the
   /// first byte.
   /// </summary>
-  SecByteBlock GetBytes() {
-    SecByteBlock bytes = SecByteBlock(raw_bytes.size() + 1);
+  CBytes GetBytes() {
+    CBytes bytes = CBytes(raw_bytes.size() + 1);
     if (key_algorithm == KeyAlgo::ED25519) {
       bytes[0] = 0x01;
     } else if (key_algorithm == KeyAlgo::SECP256K1) {

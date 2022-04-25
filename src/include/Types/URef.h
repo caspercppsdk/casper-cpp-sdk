@@ -25,15 +25,15 @@ struct URef : public GlobalStateKey {
 
   URef(std::string value);
 
-  static std::string byteToStringWithAccessRights(SecByteBlock bytes);
+  static std::string byteToStringWithAccessRights(CBytes bytes);
 
-  std::string byteToString(SecByteBlock bytes, AccessRights rights);
+  std::string byteToString(CBytes bytes, AccessRights rights);
 
-  URef(SecByteBlock bytes);
+  URef(CBytes bytes);
 
-  URef(SecByteBlock rawBytes, AccessRights accessRights);
+  URef(CBytes rawBytes, AccessRights accessRights);
 
-  SecByteBlock GetBytes();
+  CBytes GetBytes();
 
   std::string ToString() const;
 
@@ -44,7 +44,7 @@ struct URef : public GlobalStateKey {
   bool operator!=(const URef& other) const;
 
  protected:
-  SecByteBlock _GetRawBytesFromKey(std::string key) const;
+  CBytes _GetRawBytesFromKey(std::string key) const;
 };
 
 /**
@@ -68,7 +68,7 @@ inline void to_json(nlohmann::json& j, const URef& p) {
 
 inline void from_json(const nlohmann::json& j, URef& p) {
   std::string value = j.get<std::string>();
-  p.key_identifier = KeyIdentifier::UREF;
+  p.key_identifier = KeyIdentifier::URef;
   p.key = value;
 
   if (!StringUtil::startsWith(value, "uref-")) {

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Base.h"
-#include "Types/Definitions.h"
 #include "Types/GlobalStateKey.h"
 #include "Types/URef.h"
 #include "nlohmann/json.hpp"
@@ -36,7 +35,7 @@ struct DeployInfo {
   /// <summary>
   /// Gas cost of executing the Deploy.
   /// </summary>
-  big_int gas;
+  uint512_t gas;
 
   DeployInfo() {}
 };
@@ -56,6 +55,6 @@ inline void to_json(nlohmann::json& j, const DeployInfo& p) {
        {"transfers", p.transfers},
        {"from", p.from},
        {"source", p.source},
-       {"gas", p.gas.toString()}};
+       {"gas", p.gas}};
 }
 }  // namespace Casper

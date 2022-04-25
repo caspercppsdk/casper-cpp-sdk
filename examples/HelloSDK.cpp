@@ -3,7 +3,7 @@
 
 #include "../src/include/CasperClient.h"  // To use Casper::Client features
 #include "../src/include/Types/GlobalStateKey.h"
-
+#include "../src/include/ByteSerializers/DeployByteSerializer.h"
 /// Construct a Casper::Client object
 Casper::Client casper_client(CASPER_TEST_ADDRESS);
 
@@ -167,12 +167,55 @@ void accountPutDeploy() {
       "/home/yusuf/casper-cpp-sdk/examples/example_put_deploy1.json");
   nlohmann::json deploy_params_json = nlohmann::json::parse(ifs);
 
-  std::cout << deploy_params_json.dump(2) << std::endl;
+  // std::cout << deploy_params_json.dump(2) << std::endl;
 
   Casper::Deploy deploy_params;
   Casper::from_json(deploy_params_json, deploy_params);
-  Casper::PutDeployResult put_deploy_result =
-      casper_client.PutDeploy(deploy_params);
+
+  Casper::Deploy dp(deploy_params.header, deploy_params.payment,
+                    deploy_params.session);
+
+  Casper::DeployApproval approval(
+      Casper::PublicKey::FromHexString(
+          deploy_params.approvals[0].signer.ToString()),
+      Casper::Signature::FromHexString(
+          deploy_params.approvals[0].signature.ToHexString()));
+  // dp.AddApproval(approval);
+  /*
+    using namespace std::chrono;
+
+    const auto now_ms = time_point_cast<milliseconds>(system_clock::now());
+    const auto now_s = time_point_cast<seconds>(now_ms);
+    const auto millis = now_ms - now_s;
+    const auto c_now = system_clock::to_time_t(now_s);
+
+    std::stringstream ss;
+    ss << std::put_time(gmtime(&c_now), "%FT%T") << '.' << std::setfill('0')
+       << std::setw(3) << millis.count() << 'Z';
+
+  */
+  dp.header.timestamp = "2022-04-23T09:38:21.700Z";
+  Casper::Deploy t2(dp.header, dp.payment, dp.session);
+  t2.AddApproval(approval);
+
+  nlohmann::json jj;
+  Casper::to_json(jj, t2);
+
+  std::cout << jj.dump(2) << std::endl;
+  t2.header.body_hash =
+      Casper::CEP57Checksum::Encode(t2.ComputeBodyHash(t2.payment, t2.session));
+  t2.hash = Casper::CEP57Checksum::Encode(t2.ComputeHeaderHash(t2.header));
+  std::cout << "\n\nt2 body: " << t2.header.body_hash << std::endl << "\n\n";
+  Casper::DeployByteSerializer sery;
+  std::cout << "\n\n\ntest\n\n\n";
+  std::string deploy_bytes = Casper::hexEncode(sery.ToBytes(t2));
+  std::reverse(deploy_bytes.begin(), deploy_bytes.end());
+  std::cout << "testttt:" << deploy_bytes << std::endl
+            << std::endl
+            << std::endl
+            << std::endl;
+  Casper::PutDeployResult put_deploy_result = casper_client.PutDeploy(t2);
+
   printResult(put_deploy_result, "account_put_deploy");
 }
 
@@ -204,5 +247,5 @@ int main() {
 
   // Milestone 3
 
-  // accountPutDeploy();
+  accountPutDeploy();
 }

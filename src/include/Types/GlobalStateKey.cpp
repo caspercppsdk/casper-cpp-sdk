@@ -9,7 +9,7 @@
 
 namespace Casper {
 
-CryptoPP::SecByteBlock GlobalStateKey::_GetRawBytesFromKey(std::string key) {
+CBytes GlobalStateKey::_GetRawBytesFromKey(std::string key) {
   return CryptoUtil::hexDecode(key.substr(key.find_last_of("-") + 1));
 }
 
@@ -27,9 +27,9 @@ GlobalStateKey::GlobalStateKey(std::string key_, std::string key_prefix) {
   if (key_.rfind(key_prefix, 0) != 0)
     throw std::invalid_argument(
         "Key not valid. It should start with '{key_prefix}'.");
-  CryptoPP::SecByteBlock res =
-      CEP57Checksum::Decode(key_.substr(key_.find_last_of('-') + 1));
+  CBytes res = CEP57Checksum::Decode(key_.substr(key_.find_last_of('-') + 1));
   key = key_prefix + CEP57Checksum::Encode(res);
+  raw_bytes = _GetRawBytesFromKey(key);
 }
 
 std::string GlobalStateKey::ToHexString() {
@@ -76,16 +76,16 @@ GlobalStateKey GlobalStateKey::FromString(std::string value) {
   throw std::invalid_argument("Key not valid. Unknown key prefix.");
 }
 
-GlobalStateKey GlobalStateKey::FromBytes(const CryptoPP::SecByteBlock& bytes) {
-  CryptoPP::SecByteBlock new_bytes(bytes.size() - 1);
+GlobalStateKey GlobalStateKey::FromBytes(const CBytes& bytes) {
+  CBytes new_bytes(bytes.size() - 1);
   std::copy(bytes.begin() + 1, bytes.end(), new_bytes.begin());
   uint64_t era_number = *(uint64_t*)new_bytes.begin();
 
   switch (bytes[0]) {
     case 0x00:
-      return AccountHashKey("account-hash-" + CEP57Checksum::Encode(new_bytes));
+      return AccountHashKey("account-hash-" + CryptoUtil::hexEncode(new_bytes));
     case 0x01:
-      return HashKey("hash-" + CEP57Checksum::Encode(new_bytes));
+      return HashKey("hash-" + CryptoUtil::hexEncode(new_bytes));
     case 0x02:
       return URef("uref-" + CEP57Checksum::Encode(new_bytes));
     case 0x03:
@@ -107,8 +107,8 @@ GlobalStateKey GlobalStateKey::FromBytes(const CryptoPP::SecByteBlock& bytes) {
   }
 }
 
-CryptoPP::SecByteBlock GlobalStateKey::GetBytes() {
-  CryptoPP::SecByteBlock ms(this->raw_bytes.size() + 1);
+CBytes GlobalStateKey::GetBytes() {
+  CBytes ms(this->raw_bytes.size() + 1);
   ms[0] = static_cast<uint8_t>(this->key_identifier);
   std::copy(this->raw_bytes.begin(), this->raw_bytes.end(), ms.begin() + 1);
   return ms;
@@ -131,7 +131,7 @@ bool GlobalStateKey::operator!=(const GlobalStateKey& other) const {
 
 AccountHashKey::AccountHashKey(std::string key)
     : GlobalStateKey::GlobalStateKey(key, "account-hash-") {
-  key_identifier = KeyIdentifier::ACCOUNT;
+  key_identifier = KeyIdentifier::Account;
 }
 
 AccountHashKey::AccountHashKey(PublicKey publicKey)
@@ -140,30 +140,30 @@ AccountHashKey::AccountHashKey(PublicKey publicKey)
 
 HashKey::HashKey(std::string key)
     : GlobalStateKey::GlobalStateKey(key, "hash-") {
-  key_identifier = KeyIdentifier::HASH;
+  key_identifier = KeyIdentifier::Hash;
 }
 
-HashKey::HashKey(CryptoPP::SecByteBlock key)
+HashKey::HashKey(CBytes key)
     : HashKey::HashKey("hash-" + CEP57Checksum::Encode(key)) {}
 
 TransferKey::TransferKey(std::string key)
     : GlobalStateKey::GlobalStateKey(key, "transfer-") {
-  key_identifier = KeyIdentifier::TRANSFER;
+  key_identifier = KeyIdentifier::Transfer;
 }
 
-TransferKey::TransferKey(CryptoPP::SecByteBlock key)
+TransferKey::TransferKey(CBytes key)
     : TransferKey::TransferKey("transfer-" + CEP57Checksum::Encode(key)) {}
 
 DeployInfoKey::DeployInfoKey(std::string key)
     : GlobalStateKey::GlobalStateKey(key, "deploy-") {
-  key_identifier = KeyIdentifier::DEPLOYINFO;
+  key_identifier = KeyIdentifier::DeployInfo;
 }
 
-DeployInfoKey::DeployInfoKey(CryptoPP::SecByteBlock key)
+DeployInfoKey::DeployInfoKey(CBytes key)
     : DeployInfoKey::DeployInfoKey("deploy-" + CEP57Checksum::Encode(key)) {}
 
 EraInfoKey::EraInfoKey(std::string key) : GlobalStateKey::GlobalStateKey(key) {
-  key_identifier = KeyIdentifier::ERAINFO;
+  key_identifier = KeyIdentifier::EraInfo;
   if (!StringUtil::startsWith(key, "era-"))
     throw std::invalid_argument("EraInfoKey must start with 'era-'");
 
@@ -176,19 +176,19 @@ EraInfoKey::EraInfoKey(std::string key) : GlobalStateKey::GlobalStateKey(key) {
   }
 }
 
-CryptoPP::SecByteBlock EraInfoKey::GetBytes() {
-  CryptoPP::SecByteBlock ms(9);
+CBytes EraInfoKey::GetBytes() {
+  CBytes ms(9);
   ms[0] = uint8_t(this->key_identifier);
   std::copy(ms.begin() + 1, ms.end(), raw_bytes.begin());
   return ms;
 }
 
-CryptoPP::SecByteBlock EraInfoKey::_GetRawBytesFromKey(std::string key) {
+CBytes EraInfoKey::_GetRawBytesFromKey(std::string key) {
   uint64_t u64;
   std::istringstream iss(key.substr(4));
   iss >> u64;
 
-  CryptoPP::SecByteBlock bytes(8);
+  CBytes bytes(8);
   std::copy(reinterpret_cast<uint8_t*>(&u64),
             reinterpret_cast<uint8_t*>(&u64) + 8, bytes.begin());
 
@@ -200,32 +200,32 @@ CryptoPP::SecByteBlock EraInfoKey::_GetRawBytesFromKey(std::string key) {
 
 BalanceKey::BalanceKey(std::string key)
     : GlobalStateKey::GlobalStateKey(key, "balance-") {
-  key_identifier = KeyIdentifier::BALANCE;
+  key_identifier = KeyIdentifier::Balance;
 }
 
-BalanceKey::BalanceKey(CryptoPP::SecByteBlock key)
+BalanceKey::BalanceKey(CBytes key)
     : BalanceKey::BalanceKey("balance-" + CEP57Checksum::Encode(key)) {}
 
 BidKey::BidKey(std::string key) : GlobalStateKey::GlobalStateKey(key, "bid-") {
-  key_identifier = KeyIdentifier::BID;
+  key_identifier = KeyIdentifier::Bid;
 }
 
-BidKey::BidKey(CryptoPP::SecByteBlock key)
+BidKey::BidKey(CBytes key)
     : BidKey::BidKey("bid-" + CEP57Checksum::Encode(key)) {}
 
 WithdrawKey::WithdrawKey(std::string key)
     : GlobalStateKey::GlobalStateKey(key, "withdraw-") {
-  key_identifier = KeyIdentifier::WITHDRAW;
+  key_identifier = KeyIdentifier::Withdraw;
 }
 
-WithdrawKey::WithdrawKey(CryptoPP::SecByteBlock key)
+WithdrawKey::WithdrawKey(CBytes key)
     : WithdrawKey::WithdrawKey("withdraw-" + CEP57Checksum::Encode(key)) {}
 
 DictionaryKey::DictionaryKey(std::string key)
     : GlobalStateKey::GlobalStateKey(key, "dictionary-") {
-  key_identifier = KeyIdentifier::DICTIONARY;
+  key_identifier = KeyIdentifier::Dictionary;
 }
-DictionaryKey::DictionaryKey(CryptoPP::SecByteBlock key)
+DictionaryKey::DictionaryKey(CBytes key)
     : DictionaryKey::DictionaryKey("dictionary-" + CEP57Checksum::Encode(key)) {
 }
 

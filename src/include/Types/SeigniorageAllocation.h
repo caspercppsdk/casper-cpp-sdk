@@ -1,6 +1,5 @@
 #pragma once
 #include "Base.h"
-#include "Definitions.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
@@ -26,7 +25,7 @@ struct SeigniorageAllocation {
   /// <summary>
   /// Amount allocated as a reward
   /// </summary>
-  big_int amount;
+  uint512_t amount;
 
   SeigniorageAllocation() {}
 };
@@ -36,10 +35,10 @@ inline void to_json(nlohmann::json& j, const SeigniorageAllocation& p) {
   if (p.is_delegator) {
     j = nlohmann::json{{"delegator_public_key", p.delegator_public_key},
                        {"validator_public_key", p.validator_public_key},
-                       {"amount", p.amount.toString()}};
+                       {"amount", p.amount}};
   } else {
     j = nlohmann::json{{"validator_public_key", p.validator_public_key},
-                       {"amount", p.amount.toString()}};
+                       {"amount", p.amount}};
   }
 }
 

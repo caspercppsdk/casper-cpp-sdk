@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "Types/Definitions.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
@@ -19,7 +18,7 @@ struct VestingSchedule {
   /// <summary>
   /// Amount of locked tokens.
   /// </summary>
-  std::vector<big_int> locked_amounts;
+  std::vector<uint512_t> locked_amounts;
 
   VestingSchedule() {}
 };
@@ -35,7 +34,7 @@ inline void to_json(nlohmann::json& j, const VestingSchedule& p) {
                      p.initial_release_timestamp_millis, "locked_amounts",
                      nlohmann::json::array()};
   for (const auto& amount : p.locked_amounts) {
-    j["locked_amounts"].push_back(amount.toString());
+    j["locked_amounts"].push_back(u512ToDec(amount));
   }
 }
 

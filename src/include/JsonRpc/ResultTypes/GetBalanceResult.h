@@ -1,7 +1,6 @@
 #pragma once
 
 #include "JsonRpc/ResultTypes/RpcResult.h"
-#include "Types/Definitions.h"
 
 namespace Casper {
 
@@ -10,7 +9,7 @@ struct GetBalanceResult : public RpcResult {
   /// <summary>
   /// The balance value as a big integer.
   /// </summary>
-  big_int balance_value;
+  uint512_t balance_value;
 
   /// <summary>
   /// The merkle proof as a string
@@ -28,7 +27,7 @@ struct GetBalanceResult : public RpcResult {
  */
 inline void to_json(nlohmann::json& j, const GetBalanceResult& p) {
   j = static_cast<RpcResult>(p);
-  j["balance_value"] = p.balance_value.toString();
+  j["balance_value"] = p.balance_value;
   j["merkle_proof"] = p.merkle_proof;
 }
 

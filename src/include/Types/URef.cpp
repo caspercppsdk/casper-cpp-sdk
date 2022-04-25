@@ -10,7 +10,7 @@ namespace Casper {
 URef::URef() {}
 
 URef::URef(std::string value) : GlobalStateKey::GlobalStateKey(value) {
-  key_identifier = KeyIdentifier::UREF;
+  key_identifier = KeyIdentifier::URef;
   if (!StringUtil::startsWith(value, "uref-")) {
     throw std::runtime_error("Invalid URef format");
   }
@@ -39,14 +39,14 @@ URef::URef(std::string value) : GlobalStateKey::GlobalStateKey(value) {
   access_rights = (AccessRights)val;
 }
 
-std::string URef::byteToStringWithAccessRights(CryptoPP::SecByteBlock bytes) {
+std::string URef::byteToStringWithAccessRights(CBytes bytes) {
   std::string prefix = "uref-";
   std::string encoded;
 
-  StringSource ss(bytes.data(), bytes.size() - 1, true,
-                  new HexEncoder(new StringSink(encoded))  // HexEncoder
-  );                                                       // StringSource
-  StringUtil::toLower(encoded);
+  CryptoPP::StringSource ss(
+      bytes.data(), bytes.size() - 1, true,
+      new CryptoPP::HexEncoder(new CryptoPP::StringSink(encoded))  // HexEncoder
+  );  // StringSource
   std::string access_rights_str = std::to_string((uint8_t)bytes[32]);
   if (access_rights_str.length() == 1) {
     access_rights_str = "00" + access_rights_str;
@@ -56,14 +56,14 @@ std::string URef::byteToStringWithAccessRights(CryptoPP::SecByteBlock bytes) {
   return prefix + encoded + "-" + access_rights_str;
 }
 
-std::string URef::byteToString(CryptoPP::SecByteBlock bytes,
-                               AccessRights rights) {
+std::string URef::byteToString(CBytes bytes, AccessRights rights) {
   std::string prefix = "uref-";
   std::string encoded;
 
-  StringSource ss(bytes.data(), bytes.size(), true,
-                  new HexEncoder(new StringSink(encoded))  // HexEncoder
-  );                                                       // StringSource
+  CryptoPP::StringSource ss(
+      bytes.data(), bytes.size(), true,
+      new CryptoPP::HexEncoder(new CryptoPP::StringSink(encoded))  // HexEncoder
+  );  // StringSource
 
   std::string access_rights_str = std::to_string((uint8_t)rights);
   return prefix + encoded + "-" + access_rights_str;
@@ -74,17 +74,16 @@ std::string URef::byteToString(CryptoPP::SecByteBlock bytes,
 /// rights.
 /// </summary>
 
-URef::URef(CryptoPP::SecByteBlock bytes)
-    : URef::URef(byteToStringWithAccessRights(bytes)) {}
+URef::URef(CBytes bytes) : URef::URef(byteToStringWithAccessRights(bytes)) {}
 
 /// <summary>
 /// Creates an URef from a 32 bytes array and the access rights.
 /// </summary>
-URef::URef(CryptoPP::SecByteBlock rawBytes, AccessRights accessRights)
+URef::URef(CBytes rawBytes, AccessRights accessRights)
     : URef::URef(byteToString(rawBytes, accessRights)) {}
 
-CryptoPP::SecByteBlock URef::GetBytes() {
-  CryptoPP::SecByteBlock returned_bytes(34);
+CBytes URef::GetBytes() {
+  CBytes returned_bytes(34);
   returned_bytes[0] = (uint8_t)key_identifier;
 
   std::copy(raw_bytes.begin(), raw_bytes.end(), returned_bytes.begin() + 1);
@@ -104,7 +103,7 @@ std::string URef::ToString() const {
          access_rights_str;
 }
 
-CryptoPP::SecByteBlock URef::_GetRawBytesFromKey(std::string key) const {
+CBytes URef::_GetRawBytesFromKey(std::string key) const {
   std::string new_key = key.substr(0, key.find_last_of('-'));
   return CryptoUtil::hexDecode(new_key.substr(new_key.find_last_of('-') + 1));
 }

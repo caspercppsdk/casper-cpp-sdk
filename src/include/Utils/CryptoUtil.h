@@ -7,9 +7,9 @@
 
 namespace Casper {
 struct CryptoUtil {
-  static CryptoPP::SecByteBlock hexDecode(std::string hex);
+  static CBytes hexDecode(std::string hex);
 
-  static std::string hexEncode(CryptoPP::SecByteBlock bytes);
+  static std::string hexEncode(CBytes bytes);
 };
 
 }  // namespace Casper

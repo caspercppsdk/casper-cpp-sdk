@@ -2,7 +2,6 @@
 
 #include "Base.h"
 #include "nlohmann/json.hpp"
-#include "Types/Definitions.h"
 #include "Types/GlobalStateKey.h"
 #include "Types/PublicKey.h"
 #include "Types/URef.h"
@@ -169,20 +168,6 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
       nlohmann::json inner_val = {{"Ok", inner_map["Ok"]},
                                   {"Err", inner_map["Err"]}};
       j = {"Result", inner_val};
-    } else if (key_type == "Tuple1") {
-      auto inner_vec = std::get<1>(p_type.begin()->second);
-      nlohmann::json inner_val = nlohmann::json::array({inner_vec[0]});
-      j = {{"Tuple1", inner_val}};
-    } else if (key_type == "Tuple2") {
-      auto inner_vec = std::get<1>(p_type.begin()->second);
-      nlohmann::json inner_val =
-          nlohmann::json::array({inner_vec[0], inner_vec[1]});
-      j = {{"Tuple2", inner_val}};
-    } else if (key_type == "Tuple3") {
-      auto inner_vec = std::get<1>(p_type.begin()->second);
-      nlohmann::json inner_val =
-          nlohmann::json::array({inner_vec[0], inner_vec[1], inner_vec[2]});
-      j = {{"Tuple3", inner_val}};
     }
   }
   /// tuple1, tuple2, tuple3
@@ -235,10 +220,10 @@ inline void from_json(const nlohmann::json& j, CLTypeRVA& p) {
       list.insert({"List", inner});
       p = list;
     } else if (key_str == "ByteArray") {
-      auto byte_array = std::map<std::string, int32_t>();
+      std::map<std::string, int32_t> byte_array;
       int32_t inner;
       j.at("ByteArray").get_to(inner);
-      byte_array.insert({"ByteArray", inner});
+      byte_array["ByteArray"] = inner;
       p = byte_array;
     } else if (key_str == "Result") {
       auto result = std::map<std::string, CLTypeRVA>();
@@ -313,9 +298,23 @@ inline void from_json(const nlohmann::json& j, CLTypeRVA& p) {
 
 struct CLType {
   CLTypeRVA type;
-
+  // TODO: ADD TAG
   CLType() : type(CLTypeEnum::Any) {}
   CLType(CLTypeRVA type) : type(type) {}
+
+  // TODO: Make functions like CLValue u512, u256, u128, u64, u32, u16, u8, etc.
+
+  CLType(int32_t byte_array_size) {
+    std::map<std::string, int32_t> byte_array;
+    byte_array["ByteArray"] = byte_array_size;
+    type = byte_array;
+  }
+
+  CLType(std::optional<CLTypeRVA>& option) {
+    std::map<std::string, CLTypeRVA> option_map;
+    option_map["Option"] = option.value();
+    type = option_map;
+  }
 };
 
 // to_json of CLType
