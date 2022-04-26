@@ -1,6 +1,6 @@
 set(BINARY ${CMAKE_PROJECT_NAME}_test)
 
-add_executable(${BINARY} ClientTest.cpp)
+add_executable(${BINARY} ClientTest.cpp RpcTest.cpp CLValueByteSerializerTest.cpp DeployItemByteSerializerTest.cpp)
 
 target_link_libraries(${BINARY} PUBLIC ${CMAKE_PROJECT_NAME})
 
