@@ -96,7 +96,7 @@ struct CLValue {
   /// </summary>
   static CLValue U64(uint64_t value) {
     CBytes bytes = hexDecode(u64Encode(value));
-    std::cout << "U64(" << value << ") = " << std::endl;
+    // std::cout << "U64(" << value << ") = " << std::endl;
     return CLValue(bytes, CLTypeEnum::U64, value);
   }
 
@@ -122,9 +122,9 @@ struct CLValue {
   /// Returns a `CLValue` object with an U512 type.
   /// </summary>
   static CLValue U512(uint512_t value) {
-    std::cout << "u512ToHex: " << u512ToHex(value) << std::endl;
+    // std::cout << "u512ToHex: " << u512ToHex(value) << std::endl;
     CBytes bytes = hexDecode(u512ToHex(value));
-    std::cout << "after bytes" << std::endl;
+    // std::cout << "after bytes" << std::endl;
     return CLValue(bytes, CLTypeEnum::U512, u512ToDec(value));
   }
 
@@ -169,14 +169,14 @@ struct CLValue {
   /// </summary>
 
   static CLValue Option(CLValue innerValue) {
-    std::cout << "Option(CLValue innerValue)" << std::endl;
-    // std::cout << "size: " << innerValue.bytes.size() << std::endl;
+    // std::cout << "Option(CLValue innerValue)" << std::endl;
+    //  std::cout << "size: " << innerValue.bytes.size() << std::endl;
     CBytes bytes(1 + innerValue.bytes.size());
     bytes[0] = 0x01;
     // std::cout << "before copy" << std::endl;
     std::copy(innerValue.bytes.begin(), innerValue.bytes.end(),
               bytes.begin() + 1);
-    std::cout << "after copy" << std::endl;
+    // std::cout << "after copy" << std::endl;
 
     nlohmann::json j;
     to_json(j, innerValue.parsed);
@@ -460,19 +460,15 @@ struct CLValue {
 
     return CLValue(bytes, CLType(CLTypeEnum::Key), hexEncode(bytes));
   }
-  /*
-    /// <summary>
-    /// Returns a `CLValue` object with a GlobalStateKey in it
-    /// </summary>
-    static CLValue Key(GlobalStateKey key) {
-      auto key_serializer = GlobalStateKeyByteSerializer();
+  */
+  /// <summary>
+  /// Returns a `CLValue` object with a GlobalStateKey in it
+  /// </summary>
+  static CLValue Key(GlobalStateKey& key) {
+    auto key_serializer = GlobalStateKeyByteSerializer();
 
-      // TODO: Check key type info alternative, there is no info in cltype as it
-      // is an account key, only it is key
-
-      return CLValue(key_serializer.ToBytes(key), CLType(CLTypeEnum::Key), key);
-    }
-    */
+    return CLValue(key_serializer.ToBytes(key), CLType(CLTypeEnum::Key), key);
+  }
 };
 
 // to json

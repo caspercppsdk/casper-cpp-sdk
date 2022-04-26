@@ -16,33 +16,32 @@ struct CLValueByteSerializer : public BaseByteSerializer {
     // serialize data
     //
 
-    std::cout << "CLValueByteSerializer::ToBytes: source.bytes = "
-              << hexEncode(source.bytes) << std::endl;
+    // std::cout << "CLValueByteSerializer::ToBytes: source.bytes = "
+    //           << hexEncode(source.bytes) << std::endl;
     WriteBytes(bytes, source.bytes);
     // std::cout << "CLValueByteSerializer::ToBytes: source.bytes.size() = "
     //          << source.bytes.size() << std::endl;
     // serialize type and inner types (if any) recursively
     //
-    std::cout << "hexencode to bytes:" << hexEncode(bytes) << std::endl;
-    nlohmann::json jjj;
-    to_json(jjj, source.parsed);
+    // std::cout << "hexencode to bytes:" << hexEncode(bytes) << std::endl;
+    // nlohmann::json jjj;
+    // to_json(jjj, source.parsed);
     // std::cout << "CLValueByteSerializer::ToBytes: source.parsed = "
     //  << jjj.dump(2) << std::endl;
     CLTypeToBytes(bytes, source.cl_type, source.parsed.parsed);
-    std::cout << "CLValueByteSerializer::ToBytes: after CLTypeToBytes"
-              << hexEncode(bytes) << std::endl;
+    // std::cout << "CLValueByteSerializer::ToBytes: after CLTypeToBytes"
+    //           << hexEncode(bytes) << std::endl;
     return bytes;
   }
 
-  void CLTypeToBytes(CBytes& sb, CLType innerType,
-                     CLTypeParsedRVA parsed) {
+  void CLTypeToBytes(CBytes& sb, CLType innerType, CLTypeParsedRVA parsed) {
     // std::cout << "CLTypeToBytes1: " << std::endl;
     int type_idx = innerType.type.index();
     // std::cout << "CLTypeToBytes idx: " << type_idx << std::endl;
 
     nlohmann::json j;
     to_json(j, innerType);
-    std::cout << "CLTypeToBytes json: " << j.dump(2) << std::endl;
+    // std::cout << "CLTypeToBytes json: " << j.dump(2) << std::endl;
 
     if (type_idx == 0) {
       CLTypeEnum type = std::get<CLTypeEnum>(innerType.type);
@@ -91,7 +90,7 @@ struct CLValueByteSerializer : public BaseByteSerializer {
         throw std::runtime_error("Unknown inner type with idx:4 not tuple");
       }
     } else if (type_idx == 5) {
-      std::cout << "CLTypeToBytes: type_idx = 5 " << std::endl;
+      // std::cout << "CLTypeToBytes: type_idx = 5 " << std::endl;
       auto inner_type_rva =
           rva::get<std::map<std::string, int32_t>>(innerType.type);
       // std::cout << "after get inner_type_rva" << std::endl;

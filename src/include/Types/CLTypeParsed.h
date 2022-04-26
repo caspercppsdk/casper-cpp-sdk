@@ -128,16 +128,16 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
 
 inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
                       CLType& cl_type_) {
-  std::cout << "from_json, idx: " << p.index() << std::endl;
+  // std::cout << "from_json, idx: " << p.index() << std::endl;
   bool is_primitive = false;
   if (cl_type_.type.index() == 0) {
     is_primitive = true;
   }
 
   if (is_primitive) {
-    std::cout << "enum: "
-              << magic_enum::enum_name(rva::get<CLTypeEnum>(cl_type_.type))
-              << std::endl;
+    // std::cout << "enum: "
+    //           << magic_enum::enum_name(rva::get<CLTypeEnum>(cl_type_.type))
+    //           << std::endl;
     switch (rva::get<CLTypeEnum>(cl_type_.type)) {
       case CLTypeEnum::Bool:
         p = j.get<bool>();
@@ -319,7 +319,7 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
   }
 
   else {
-    std::cout << "\nCLTypeRVA from_json 4\n" << std::endl;
+    std::cout << "\nERROR CLTypeRVA from_json 4\n" << std::endl;
   }
 
   ////////////////////////////

@@ -24,13 +24,12 @@ void BaseByteSerializer::WriteULong(CBytes& sb, uint64_t value) {
 }
 
 void BaseByteSerializer::WriteByte(CBytes& sb, uint8_t value) {
-  std::cout << "byte write u8: " << u8Encode(value) << std::endl;
+  // std::cout << "byte write u8: " << u8Encode(value) << std::endl;
   CBytes bytes = hexDecode(u8Encode(value));
   sb += bytes;
 }
 
-void BaseByteSerializer::WriteBytes(CBytes& sb,
-                                    std::vector<uint8_t> value) {
+void BaseByteSerializer::WriteBytes(CBytes& sb, std::vector<uint8_t> value) {
   // TODO: CHECK BELOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   CBytes bytes(value.size());
   for (size_t i = 0; i < value.size(); i++) {
@@ -39,9 +38,7 @@ void BaseByteSerializer::WriteBytes(CBytes& sb,
   sb += bytes;
 }
 
-void BaseByteSerializer::WriteBytes(CBytes& sb, CBytes value) {
-  sb += value;
-}
+void BaseByteSerializer::WriteBytes(CBytes& sb, CBytes value) { sb += value; }
 
 void BaseByteSerializer::WriteString(CBytes& sb, std::string value) {
   CBytes bytes = hexDecode(stringEncode(value));

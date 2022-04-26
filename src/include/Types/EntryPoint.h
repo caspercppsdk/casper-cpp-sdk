@@ -112,9 +112,9 @@ struct Parameter {
  */
 inline void to_json(nlohmann::json& j, const Parameter& p) {
   j = {{"name", p.name}};
-  std::cout << "parameter to_json" << std::endl;
+  // std::cout << "parameter to_json" << std::endl;
   to_json(j["cl_type"], p.cl_type);
-  std::cout << "parameter to_json end" << std::endl;
+  // std::cout << "parameter to_json end" << std::endl;
 }
 
 /**
@@ -125,10 +125,10 @@ inline void to_json(nlohmann::json& j, const Parameter& p) {
  */
 inline void from_json(const nlohmann::json& j, Parameter& p) {
   j.at("name").get_to(p.name);
-  std::cout << "parameter from_json" << std::endl;
+  // std::cout << "parameter from_json" << std::endl;
   from_json(j.at("cl_type"), p.cl_type);
 
-  std::cout << "parameter from_json end" << std::endl;
+  // std::cout << "parameter from_json end" << std::endl;
 }
 
 /// <summary>

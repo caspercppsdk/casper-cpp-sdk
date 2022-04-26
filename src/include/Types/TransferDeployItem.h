@@ -40,9 +40,9 @@ struct TransferDeployItem {
       args.push_back(NamedArg("id", cl));
     }
 
-    nlohmann::json j;
-    to_json(j, args[2]);
-    std::cout << "args[2]: " << j.dump(2) << std::endl;
+    // nlohmann::json j;
+    // to_json(j, args[2]);
+    // std::cout << "args[2]: " << j.dump(2) << std::endl;
 
     // std::cout << "transfer deploy end" << std::endl;
     //

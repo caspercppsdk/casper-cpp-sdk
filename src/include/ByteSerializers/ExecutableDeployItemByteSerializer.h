@@ -11,9 +11,9 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
     NamedArgByteSerializer namedArgSerializer;
 
     uint8_t source_tag = 0;
-    std::cout << "ExecutableDeployItemByteSerializer: " << std::endl;
+    // std::cout << "ExecutableDeployItemByteSerializer: " << std::endl;
     if (source.module_bytes.has_value()) {
-      std::cout << "has module bytes" << std::endl;
+      // std::cout << "has module bytes" << std::endl;
       source_tag = 0;
       WriteByte(bytes, source_tag);
 
@@ -32,7 +32,7 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
       }
 
     } else if (source.stored_contract_by_hash.has_value()) {
-      std::cout << "has stored contract by hash" << std::endl;
+      // std::cout << "has stored contract by hash" << std::endl;
       source_tag = 1;
       WriteByte(bytes, source_tag);
 
@@ -46,7 +46,7 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
       }
 
     } else if (source.stored_contract_by_name.has_value()) {
-      std::cout << "has stored contract by name" << std::endl;
+      // std::cout << "has stored contract by name" << std::endl;
       source_tag = 2;
       WriteByte(bytes, source_tag);
 
@@ -60,7 +60,7 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
       }
 
     } else if (source.stored_versioned_contract_by_hash.has_value()) {
-      std::cout << "has stored versioned contract by hash" << std::endl;
+      // std::cout << "has stored versioned contract by hash" << std::endl;
       source_tag = 3;
       WriteByte(bytes, source_tag);
 
@@ -81,7 +81,7 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
         WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
       }
     } else if (source.stored_versioned_contract_by_name.has_value()) {
-      std::cout << "has stored versioned contract by name" << std::endl;
+      // std::cout << "has stored versioned contract by name" << std::endl;
       source_tag = 4;
       WriteByte(bytes, source_tag);
 

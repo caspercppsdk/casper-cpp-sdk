@@ -136,8 +136,8 @@ CBytes Deploy::ComputeHeaderHash(DeployHeader header) {
 
   nlohmann::json j;
   to_json(j, header);
-  std::cout << "ComputeHeaderHash header: \n";
-  std::cout << j.dump(2) << std::endl;
+  // std::cout << "ComputeHeaderHash header: \n";
+  // std::cout << j.dump(2) << std::endl;
 
   CBytes bHeader = serializer.ToBytes(header);
 
