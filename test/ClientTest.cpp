@@ -32,6 +32,7 @@ void printResult(const T& result, const std::string& rpc_call_name,
   std::cout << resultJSON.dump(indent) << std::endl;
 }
 
+
 /**
  * @brief Check the "info_get_peers" rpc function. The size of the return value
  * should be greater than 0.
@@ -1512,44 +1513,18 @@ void transfer_deploy_test() {
   std::cout << "deploy id: " << res.deploy_hash << std::endl;
 }
 
-void CLValueByteSerializerTest() {
+/// Bool Byte Serialization
+void CLValue_ByteSer_Bool_Test() {
   CLValueByteSerializer ser;
-  /*
-    uint128_t p1(UINT64_MAX);
-    std::string p1_hex_str = u128ToHex(p1);
-    std::cout << "p1_hex_str: " << p1_hex_str << std::endl;
-    uint128_t p1_from_hex = u128FromHex(p1_hex_str);
-    std::cout << "p1_from_hex: " << p1_from_hex << std::endl;
 
-    //////////////////////////////////////////
-    uint128_t p2 = u128FromHex("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-    std::cout << "p2_from_hex: " << p2 << std::endl;
-
-    p2 -= 1;
-    std::cout << "p2_from_hex: " << p2 << std::endl;
-
-    std::string p2_hex_str = u128ToHex(p2);
-    ;
-    std::cout << "p2-1: " << p2_hex_str << std::endl;
-
-    /*
-    UINT64_MAX = 18446744073709551615
-    UINT64_MAX_HEX = ffffffffffffffff -> 16 HEX -> 8 bytes
-
-    32 hex -> uint128_t(UINT128_MAX)
-    "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" = 340282366920938463463374607431768211455
-
-    64 hex -> uint128_t(UINT64_MAX)
-  return;
-    */
-
-  // Bool Byte Serialization
+  // Bool False
   CLValue clv_bool_false = CLValue::Bool(false);
   std::string expected_bool_false = "010000000000";
   std::string actual_bool_false = hexEncode(ser.ToBytes(clv_bool_false));
   std::cout << "bool false: " << actual_bool_false << std::endl;
   TEST_ASSERT(expected_bool_false == actual_bool_false);
 
+  // Bool True
   CLValue clv_bool_true = CLValue::Bool(true);
   std::string expected_bool_true = "010000000100";
   std::string actual_bool_true = hexEncode(ser.ToBytes(clv_bool_true));
@@ -1557,30 +1532,33 @@ void CLValueByteSerializerTest() {
   TEST_ASSERT(expected_bool_true == actual_bool_true);
 
   // Optional Byte Serialization
-  // False
+  // Option False
   CLValue clv_opt_false = CLValue::Option(CLValue::Bool(false));
   std::string expected_opt_false = "0200000001000d00";
   std::string actual_opt_false = hexEncode(ser.ToBytes(clv_opt_false));
   std::cout << "optional false: " << actual_opt_false << std::endl;
   TEST_ASSERT(expected_opt_false == actual_opt_false);
 
-  // True
+  // Option True
   CLValue clv_opt_true = CLValue::Option(CLValue::Bool(true));
   std::string expected_opt_true = "0200000001010d00";
   std::string actual_opt_true = hexEncode(ser.ToBytes(clv_opt_true));
   std::cout << "optional true: " << actual_opt_true << std::endl;
   TEST_ASSERT(expected_opt_true == actual_opt_true);
 
-  // None
+  // Option None
   CLValue clv_opt_none = CLValue::OptionNone(CLTypeEnum::Bool);
   std::string expected_opt_none = "01000000000d00";
   std::string actual_opt_none = hexEncode(ser.ToBytes(clv_opt_none));
   std::cout << "optional none: " << actual_opt_none << std::endl;
   TEST_ASSERT(expected_opt_none == actual_opt_none);
+}
 
-  ////
+/// I32 Byte Serialization
 
-  // I32 Byte Serialization
+void CLValue_ByteSer_I32_Test() {
+  CLValueByteSerializer ser;
+
   // I32
   CLValue clv_i32 = CLValue::I32(-10);
   std::string expected_i32 = "04000000f6ffffff01";
@@ -1601,10 +1579,12 @@ void CLValueByteSerializerTest() {
   std::string actual_opt_none_i32 = hexEncode(ser.ToBytes(clv_opt_none_i32));
   std::cout << "optional none i32: " << actual_opt_none_i32 << std::endl;
   TEST_ASSERT(expected_opt_none_i32 == actual_opt_none_i32);
+}
 
-  ////
+/// I64 Byte Serialization
+void CLValue_ByteSer_I64_Test() {
+  CLValueByteSerializer ser;
 
-  // I64 Byte Serialization
   // I64
   CLValue clv_i64 = CLValue::I64(-16);
   std::string expected_i64 = "08000000f0ffffffffffffff02";
@@ -1625,10 +1605,12 @@ void CLValueByteSerializerTest() {
   std::string actual_opt_none_i64 = hexEncode(ser.ToBytes(clv_opt_none_i64));
   std::cout << "optional none i64: " << actual_opt_none_i64 << std::endl;
   TEST_ASSERT(expected_opt_none_i64 == actual_opt_none_i64);
+}
 
-  ////
+// U8 Byte Serialization
+void CLValue_ByteSer_U8_Test() {
+  CLValueByteSerializer ser;
 
-  // U8 Byte Serialization
   // U8
   CLValue clv_u8 = CLValue::U8(0x00);
   std::string expected_u8 = "010000000003";
@@ -1656,10 +1638,12 @@ void CLValueByteSerializerTest() {
   std::string actual_opt_none_u8 = hexEncode(ser.ToBytes(clv_opt_none_u8));
   std::cout << "optional none u8: " << actual_opt_none_u8 << std::endl;
   TEST_ASSERT(expected_opt_none_u8 == actual_opt_none_u8);
+}
 
-  ////
+/// U32 Byte Serialization
+void CLValue_ByteSer_U32_Test() {
+  CLValueByteSerializer ser;
 
-  // U32 Byte Serialization
   // U32
   CLValue clv_u32 = CLValue::U32(UINT32_MAX);
   std::string expected_u32 = "04000000ffffffff04";
@@ -1680,12 +1664,13 @@ void CLValueByteSerializerTest() {
   std::string actual_opt_none_u32 = hexEncode(ser.ToBytes(clv_opt_none_u32));
   std::cout << "optional none u32: " << actual_opt_none_u32 << std::endl;
   TEST_ASSERT(expected_opt_none_u32 == actual_opt_none_u32);
+}
 
-  ////
+/// U64 Byte Serialization
+void CLValue_ByteSer_U64_Test() {
+  CLValueByteSerializer ser;
 
-  // U64 Byte Serialization
   // U64
-
   Casper::CLValue clv_u64 = Casper::CLValue::U64(UINT64_MAX);
   std::string expected_u64 = "08000000ffffffffffffffff05";
   std::string actual_u64 = hexEncode(ser.ToBytes(clv_u64));
@@ -1705,10 +1690,12 @@ void CLValueByteSerializerTest() {
   std::string actual_opt_none_u64 = hexEncode(ser.ToBytes(clv_opt_none_u64));
   std::cout << "optional none u64: " << actual_opt_none_u64 << std::endl;
   TEST_ASSERT(expected_opt_none_u64 == actual_opt_none_u64);
+}
 
-  ////
+/// U128 Byte Serialization
+void CLValue_ByteSer_U128_Test() {
+  CLValueByteSerializer ser;
 
-  // U128 Byte Serialization
   // U128
   uint128_t u128_val = uint128_t(UINT64_MAX);
   CLValue clv_u128 = CLValue::U128(u128_val);
@@ -1736,10 +1723,12 @@ void CLValueByteSerializerTest() {
   std::string actual_opt_none_u128 = hexEncode(ser.ToBytes(clv_opt_none_u128));
   std::cout << "optional none u128: " << actual_opt_none_u128 << std::endl;
   TEST_ASSERT(expected_opt_none_u128 == actual_opt_none_u128);
+}
 
-  ////
+/// U256 Byte Serialization
+void CLValue_ByteSer_U256_Test() {
+  CLValueByteSerializer ser;
 
-  // U256 Byte Serialization
   // U256
   uint256_t u256_val = uint256_t(UINT64_MAX);
   CLValue clv_u256 = CLValue::U256(u256_val);
@@ -1772,9 +1761,12 @@ void CLValueByteSerializerTest() {
   std::string actual_opt_none_u256 = hexEncode(ser.ToBytes(clv_opt_none_u256));
   std::cout << "optional none u256: " << actual_opt_none_u256 << std::endl;
   TEST_ASSERT(expected_opt_none_u256 == actual_opt_none_u256);
-  ///
+}
 
-  // U512 Byte Serialization
+/// U512 Byte Serialization
+void CLValue_ByteSer_U512_Test() {
+  CLValueByteSerializer ser;
+
   // U512 to bytes
   uint512_t u512_val = uint512_t(UINT64_MAX);
   CLValue clv_u512 = CLValue::U512(u512_val);
@@ -1785,7 +1777,7 @@ void CLValueByteSerializerTest() {
 
   TEST_ASSERT(expected_u512 == actual_u512);
 
-  //   // Optional U512
+  // Optional U512
   uint512_t u512_val_2 = u512FromHex(
       "40FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
       "FF"
@@ -1810,10 +1802,12 @@ void CLValueByteSerializerTest() {
   std::string actual_opt_u512_none = hexEncode(ser.ToBytes(clv_opt_u512_none));
   std::cout << "optional u512 none: " << actual_opt_u512_none << std::endl;
   TEST_ASSERT(expected_opt_u512_none == actual_opt_u512_none);
+}
 
-  ///
+/// Unit Byte Serialization
+void CLValue_ByteSer_Unit_Test() {
+  CLValueByteSerializer ser;
 
-  // Unit Byte Serialization
   // Unit
   CLValue clv_unit = CLValue::Unit();
   std::string expected_unit = "0000000009";
@@ -1834,10 +1828,12 @@ void CLValueByteSerializerTest() {
   std::string actual_opt_none_unit = hexEncode(ser.ToBytes(clv_opt_none_unit));
   std::cout << "optional none unit: " << actual_opt_none_unit << std::endl;
   TEST_ASSERT(expected_opt_none_unit == actual_opt_none_unit);
+}
 
-  ///
+/// String Byte Serialization
+void CLValue_ByteSer_String_Test() {
+  CLValueByteSerializer ser;
 
-  // String Byte Serialization
   // String
   CLValue clv_str = CLValue::String("Hello, Casper!");
   std::string expected_str = "120000000e00000048656c6c6f2c20436173706572210a";
@@ -1866,15 +1862,25 @@ void CLValueByteSerializerTest() {
   std::string actual_opt_none_str = hexEncode(ser.ToBytes(clv_opt_none_str));
   std::cout << "optional none string: " << actual_opt_none_str << std::endl;
   TEST_ASSERT(expected_opt_none_str == actual_opt_none_str);
+}
 
-  ///
+/// URef Byte Serialization
+void CLValue_ByteSer_URef_Test() {
+  CLValueByteSerializer ser;
 
-  // Key Byte Serialization
-  /*
+  std::cout << "URef Byte Serialization Test IS NOT IMPLEMENTED" << std::endl;
+  TEST_ASSERT(false);
+}
+
+/// Key Byte Serialization
+void CLValue_ByteSer_Key_Test() {
+  CLValueByteSerializer ser;
+
   // Account Hash
-  AccountHashKey acc_key = GlobalStateKey::FromString(
+  AccountHashKey acc_key(
       "account-hash-"
       "989ca079a5e446071866331468ab949483162588d57ec13ba6bb051f1e15f8b7");
+
   CLValue clv_account_hash_key = CLValue::Key(acc_key);
   std::string expected_acc_key_str =
       "2100000000989ca079a5e446071866331468ab949483162588d57ec13ba6bb051f1e15f8"
@@ -1895,22 +1901,22 @@ void CLValueByteSerializerTest() {
   TEST_ASSERT(expected_opt_acc_hash_key_str == actual_opt_acc_hash_key_str);
 
   // Optional None Account Hash
-  // TODO:
-  CLValue clv_opt_none_acc_hash_key =
-      CLValue::OptionNone(CLTypeEnum::Key(acc_key));
-    /* bytes = serializer.ToBytes(CLValue.OptionNone(new
-     CLKeyTypeInfo(KeyIdentifier.Account))); Assert.AreEqual("01000000000d0b",
-     Hex.ToHexString(bytes));
-  */
+  CLValue clv_opt_none_acc_hash_key = CLValue::OptionNone(CLTypeEnum::Key);
 
-  ///
+  std::string expected_opt_none_acc_hash_key_str = "01000000000d0b";
+  std::string actual_opt_none_acc_hash_key_str =
+      hexEncode(ser.ToBytes(clv_opt_none_acc_hash_key));
 
-  // URef Byte Serialization
-  // TODO:
+  std::cout << "optional none account hash key: "
+            << actual_opt_none_acc_hash_key_str << std::endl;
+  TEST_ASSERT(expected_opt_none_acc_hash_key_str ==
+              actual_opt_none_acc_hash_key_str);
+}
 
-  ///
+/// Public Key Byte Serialization
+void CLValue_ByteSer_PublicKey_Test() {
+  CLValueByteSerializer ser;
 
-  // Public Key Byte Serialization
   // Public Key
   Casper::PublicKey pk = Casper::PublicKey::FromHexString(
       "01381b36cd07Ad85348607ffE0fA3A2d033eA941D14763358eBEacE9C8aD3cB771");
@@ -1938,9 +1944,16 @@ void CLValueByteSerializerTest() {
   std::cout << "optional none public key: " << actual_opt_none_pk_str
             << std::endl;
   TEST_ASSERT(expected_opt_none_pk_str == actual_opt_none_pk_str);
+}
 
-  ///
-  // ByteArray Byte Serialization
+void CLValue_ByteSer_Option_Test() { CLValueByteSerializer ser; }
+
+void CLValue_ByteSer_List_Test() { CLValueByteSerializer ser; }
+
+/// ByteArray Byte Serialization
+void CLValue_ByteSer_ByteArray_Test() {
+  CLValueByteSerializer ser;
+
   // ByteArray
   CBytes byte_array_bytes = hexDecode("0102030405060708");
   CLValue clv_byte_array = CLValue::ByteArray(byte_array_bytes);
@@ -1971,6 +1984,45 @@ void CLValueByteSerializerTest() {
               actual_opt_none_byte_array_str);
 }
 
+void CLValue_ByteSer_Result_Test() {
+  CLValueByteSerializer ser;
+  // NOT IMPLEMENTED
+  TEST_ASSERT(false);
+}
+
+void CLValue_ByteSer_Map_Test() {
+  CLValueByteSerializer ser;
+  // NOT IMPLEMENTED
+  TEST_ASSERT(false);
+}
+
+void CLValue_ByteSer_Tuple1_Test() {
+  CLValueByteSerializer ser;
+  // NOT IMPLEMENTED
+  TEST_ASSERT(false);
+}
+
+void CLValue_ByteSer_Tuple2_Test() {
+  CLValueByteSerializer ser;
+  // NOT IMPLEMENTED
+  TEST_ASSERT(false);
+}
+
+void CLValue_ByteSer_Tuple3_Test() {
+  CLValueByteSerializer ser;
+  // NOT IMPLEMENTED
+  TEST_ASSERT(false);
+}
+
+void CLValue_ByteSer_Any_Test() {
+  CLValueByteSerializer ser;
+  // NOT IMPLEMENTED
+  TEST_ASSERT(false);
+}
+
+// Executable Deploy Item Byte Serializer Tests //
+
+/// ModuleBytes Deploy Item Byte Serialization
 void ModuleBytesByteSerializationTest() {
   ExecutableDeployItemByteSerializer ser;
   uint512_t amount = u512FromDec("1000");
@@ -1986,6 +2038,7 @@ void ModuleBytesByteSerializationTest() {
   TEST_ASSERT(expected_module_bytes_str == actual_module_bytes_str);
 }
 
+/// StoredContractByHash Deploy Item Byte Serialization
 void StoredContractByHashSerializationTest() {
   ExecutableDeployItemByteSerializer ser;
   Casper::HashKey hash_key(
@@ -2011,6 +2064,7 @@ void StoredContractByHashSerializationTest() {
               actual_stored_contract_by_hash_str);
 }
 
+/// StoredContractByName Deploy Item Byte Serialization
 void StoredContractByNameSerializationTest() {
   ExecutableDeployItemByteSerializer ser;
 
@@ -2033,6 +2087,7 @@ void StoredContractByNameSerializationTest() {
               actual_stored_contract_by_name_str);
 }
 
+/// StoredVersionedContractByHash Deploy Item Byte Serialization
 void StoredVersionedContractByHashSerializationTest() {
   ExecutableDeployItemByteSerializer ser;
   Casper::HashKey hash_key(
@@ -2059,6 +2114,7 @@ void StoredVersionedContractByHashSerializationTest() {
               actual_stored_versioned_contract_by_hash_str);
 }
 
+/// StoredVersionedContractByName Deploy Item Byte Serialization
 void StoredVersionedContractByNameSerializationTest() {
   ExecutableDeployItemByteSerializer ser;
   Casper::StoredVersionedContractByName stored_v_contract("counter", 15,
@@ -2177,12 +2233,15 @@ void ed25KeyTest() {
             << ed_key.verify(message, signature) << std::endl;
 }
 
-#define RPC_TEST 1
-#define SER_DE_TEST 1
-#define CL_TYPE_TEST 1
-#define CL_VALUE_TEST 1
-
+#define RPC_TEST 0
+#define SER_DE_TEST 0
+#define CL_TYPE_TEST 0
+#define CL_VALUE_TEST 0
+#define DEPLOY_ITEM_BYTE_SER_TEST 1
+// #define CL_VALUE_SER_TEST 1
 TEST_LIST = {
+
+#if DEPLOY_ITEM_BYTE_SER_TEST == 1
     {"ModuleBytes serialize", ModuleBytesByteSerializationTest},
     {"StoredContractByHashSerialization",
      StoredContractByHashSerializationTest},
@@ -2192,17 +2251,21 @@ TEST_LIST = {
      StoredVersionedContractByHashSerializationTest},
     {"StoredVersionedContractByNameSerialization",
      StoredVersionedContractByNameSerializationTest},
+    {"TransferSerialization", TransferSerializationTest},
+
+#endif
+
     {"DeployItemByteSer", DeployItemByteSerializerTest},
     {"ED25519 Key Test", ed25KeyTest},
     {"PublicKey Load fromFile", publicKey_load_fromFileTest},
     {"getAccountHash checks internal PublicKey to AccountHash converter",
      publicKey_getAccountHashTest},
-    {"CLValue Byte Serializer", CLValueByteSerializerTest},
 
     {"gsk test", globalStateKey_serializer_test},
     {"transfer_deploy", transfer_deploy_test},
+    * /
 #if RPC_TEST == 1
-    {"infoGetPeers checks node list size", infoGetPeers_Test},
+        {"infoGetPeers checks node list size", infoGetPeers_Test},
     {"chainGetStateRootHash using Block height parameter",
      chainGetStateRootHash_with_blockHeightTest},
     {"chainGetStateRootHash using invalid Block height parameter",
