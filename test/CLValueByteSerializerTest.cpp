@@ -677,23 +677,113 @@ void CLValue_ByteSer_Map_Test(void) {
 
 void CLValue_ByteSer_Tuple1_Test(void) {
   CLValueByteSerializer ser;
-  // NOT IMPLEMENTED
-  // TODO: Implement
-  TEST_ASSERT(true);
+
+  CLValue clv_tuple1 = CLValue::Tuple1(CLValue::U32(17));
+  std::string expected_tuple1_str = "04000000110000001204";
+  std::string actual_tuple1_str = hexEncode(ser.ToBytes(clv_tuple1));
+  std::cout << "tuple1: " << actual_tuple1_str << std::endl;
+  TEST_ASSERT(expected_tuple1_str == actual_tuple1_str);
+
+  // Tuple1 String
+  CLValue clv_tuple1_str = CLValue::Tuple1(CLValue::String("ABCDE"));
+  std::string expected_tuple1_str_str = "09000000050000004142434445120a";
+  std::string actual_tuple1_str_str = hexEncode(ser.ToBytes(clv_tuple1_str));
+  std::cout << "tuple1 str: " << actual_tuple1_str_str << std::endl;
+  TEST_ASSERT(expected_tuple1_str_str == actual_tuple1_str_str);
+
+  // Optional Tuple1
+  CLValue clv_opt_tuple1 =
+      CLValue::Option(CLValue::Tuple1(CLValue::String("ABCDE")));
+  std::string expected_opt_tuple1_str = "0a000000010500000041424344450d120a";
+  std::string actual_opt_tuple1_str = hexEncode(ser.ToBytes(clv_opt_tuple1));
+  std::cout << "optional tuple1: " << actual_opt_tuple1_str << std::endl;
+  TEST_ASSERT(expected_opt_tuple1_str == actual_opt_tuple1_str);
+
+  // Optional None Tuple1
+  CLValue clv_opt_none_tuple1 = CLValue::OptionNoneTuple1(CLTypeEnum::String);
+  std::string expected_opt_none_tuple1_str = "01000000000d120a";
+  std::string actual_opt_none_tuple1_str =
+      hexEncode(ser.ToBytes(clv_opt_none_tuple1));
+  std::cout << "optional none tuple1: " << actual_opt_none_tuple1_str
+            << std::endl;
+  TEST_ASSERT(expected_opt_none_tuple1_str == actual_opt_none_tuple1_str);
 }
 
 void CLValue_ByteSer_Tuple2_Test(void) {
   CLValueByteSerializer ser;
-  // NOT IMPLEMENTED
-  // TODO: Implement
-  TEST_ASSERT(true);
+
+  CLValue clv_tuple2 = CLValue::Tuple2(CLValue::U32(17), CLValue::U32(127));
+  std::string expected_tuple2_str = "08000000110000007f000000130404";
+  std::string actual_tuple2_str = hexEncode(ser.ToBytes(clv_tuple2));
+  std::cout << "tuple2: " << actual_tuple2_str << std::endl;
+  TEST_ASSERT(expected_tuple2_str == actual_tuple2_str);
+
+  // Tuple2 U32(127), String("ABCDE")
+  CLValue clv_tuple2_str =
+      CLValue::Tuple2(CLValue::U32(127), CLValue::String("ABCDE"));
+  std::string expected_tuple2_str_str =
+      "0d0000007f00000005000000414243444513040a";
+  std::string actual_tuple2_str_str = hexEncode(ser.ToBytes(clv_tuple2_str));
+  std::cout << "tuple2 str: " << actual_tuple2_str_str << std::endl;
+  TEST_ASSERT(expected_tuple2_str_str == actual_tuple2_str_str);
+
+  // Optional Tuple2
+  CLValue clv_opt_tuple2 = CLValue::Option(
+      CLValue::Tuple2(CLValue::U32(127), CLValue::String("ABCDE")));
+  std::string expected_opt_tuple2_str =
+      "0e000000017f0000000500000041424344450d13040a";
+  std::string actual_opt_tuple2_str = hexEncode(ser.ToBytes(clv_opt_tuple2));
+  std::cout << "optional tuple2: " << actual_opt_tuple2_str << std::endl;
+  TEST_ASSERT(expected_opt_tuple2_str == actual_opt_tuple2_str);
+
+  // Optional None Tuple2
+  CLValue clv_opt_none_tuple2 =
+      CLValue::OptionNoneTuple2(CLTypeEnum::U32, CLTypeEnum::String);
+  std::string expected_opt_none_tuple2_str = "01000000000d13040a";
+  std::string actual_opt_none_tuple2_str =
+      hexEncode(ser.ToBytes(clv_opt_none_tuple2));
+  std::cout << "optional none tuple2: " << actual_opt_none_tuple2_str
+            << std::endl;
+  TEST_ASSERT(expected_opt_none_tuple2_str == actual_opt_none_tuple2_str);
 }
 
 void CLValue_ByteSer_Tuple3_Test(void) {
   CLValueByteSerializer ser;
-  // NOT IMPLEMENTED
-  // TODO: Implement
-  TEST_ASSERT(true);
+
+  CLValue clv_tuple3 =
+      CLValue::Tuple3(CLValue::U32(17), CLValue::U32(127), CLValue::U32(17));
+  std::string expected_tuple3_str = "0c000000110000007f0000001100000014040404";
+  std::string actual_tuple3_str = hexEncode(ser.ToBytes(clv_tuple3));
+  std::cout << "tuple3: " << actual_tuple3_str << std::endl;
+  TEST_ASSERT(expected_tuple3_str == actual_tuple3_str);
+
+  // Tuple3 U32(127), String("ABCDE"), U32(127)
+  CLValue clv_tuple3_str = CLValue::Tuple3(
+      CLValue::U32(127), CLValue::String("ABCDE"), CLValue::U32(127));
+  std::string expected_tuple3_str_str =
+      "110000007f0000000500000041424344457f00000014040a04";
+  std::string actual_tuple3_str_str = hexEncode(ser.ToBytes(clv_tuple3_str));
+  std::cout << "tuple3 str: " << actual_tuple3_str_str << std::endl;
+  TEST_ASSERT(expected_tuple3_str_str == actual_tuple3_str_str);
+
+  // Optional Tuple3
+  CLValue clv_opt_tuple3 = CLValue::Option(CLValue::Tuple3(
+      CLValue::U32(127), CLValue::String("ABCDE"), CLValue::U32(127)));
+  std::string expected_opt_tuple3_str =
+      "12000000017f0000000500000041424344457f0000000d14040a04";
+  std::string actual_opt_tuple3_str = hexEncode(ser.ToBytes(clv_opt_tuple3));
+  std::cout << "optional tuple3: " << actual_opt_tuple3_str << std::endl;
+  TEST_ASSERT(expected_opt_tuple3_str == actual_opt_tuple3_str);
+
+  // Optional None Tuple3
+  CLValue clv_opt_none_tuple3 = CLValue::OptionNoneTuple3(
+      CLTypeEnum::U32, CLTypeEnum::String, CLTypeEnum::U32);
+  std::string expected_opt_none_tuple3_str = "01000000000d14040a04";
+  std::string actual_opt_none_tuple3_str =
+      hexEncode(ser.ToBytes(clv_opt_none_tuple3));
+  std::cout << "optional none tuple3: " << actual_opt_none_tuple3_str
+            << std::endl;
+  TEST_ASSERT(expected_opt_none_tuple3_str == actual_opt_none_tuple3_str);
 }
 
 void CLValue_ByteSer_Any_Test(void) {

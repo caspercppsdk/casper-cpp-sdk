@@ -93,7 +93,7 @@ struct CLValueByteSerializer : public BaseByteSerializer {
         WriteByte(sb, 16);
         std::map<std::string, CLTypeRVA> inner_type_rva2 =
             std::get<std::map<std::string, CLTypeRVA>>(inner_type_rva_value);
-            
+
         CLTypeToBytes(sb, inner_type_rva2.at("Ok"), parsed);
         CLTypeToBytes(sb, inner_type_rva2.at("Err"), parsed);
 
@@ -109,10 +109,17 @@ struct CLValueByteSerializer : public BaseByteSerializer {
       std::string inner_type_name = inner_type_rva.begin()->first;
       if (inner_type_name == "Tuple1") {
         WriteByte(sb, 18);
+        CLTypeToBytes(sb, inner_type_rva.begin()->second.at(0), parsed);
       } else if (inner_type_name == "Tuple2") {
         WriteByte(sb, 19);
+        CLTypeToBytes(sb, inner_type_rva.begin()->second.at(0), parsed);
+        CLTypeToBytes(sb, inner_type_rva.begin()->second.at(1), parsed);
+
       } else if (inner_type_name == "Tuple3") {
         WriteByte(sb, 20);
+        CLTypeToBytes(sb, inner_type_rva.begin()->second.at(0), parsed);
+        CLTypeToBytes(sb, inner_type_rva.begin()->second.at(1), parsed);
+        CLTypeToBytes(sb, inner_type_rva.begin()->second.at(2), parsed);
       } else {
         throw std::runtime_error("Unknown inner type with idx:4 not tuple");
       }

@@ -284,6 +284,60 @@ struct CLValue {
     }
   }
 
+  static CLValue OptionNoneTuple1(CLTypeRVA innerTypeInfo) {
+    CBytes bytes(1);
+
+    bytes[0] = (CryptoPP::byte)0x00;
+
+    std::map<std::string, std::vector<CLTypeRVA>> tuple1_type_info;
+    std::vector<CLTypeRVA> tuple1_type_info_vec;
+
+    tuple1_type_info_vec.push_back(innerTypeInfo);
+    tuple1_type_info["Tuple1"] = tuple1_type_info_vec;
+
+    std::optional<CLTypeRVA> opt_with_inner = CLType(tuple1_type_info).type;
+
+    return CLValue(bytes, CLType(opt_with_inner), nullptr);
+  }
+
+  static CLValue OptionNoneTuple2(CLTypeRVA innerTypeInfo1,
+                                  CLTypeRVA innerTypeInfo2) {
+    CBytes bytes(1);
+
+    bytes[0] = (CryptoPP::byte)0x00;
+
+    std::map<std::string, std::vector<CLTypeRVA>> tuple2_type_info;
+    std::vector<CLTypeRVA> tuple2_type_info_vec;
+
+    tuple2_type_info_vec.push_back(innerTypeInfo1);
+    tuple2_type_info_vec.push_back(innerTypeInfo2);
+    tuple2_type_info["Tuple2"] = tuple2_type_info_vec;
+
+    std::optional<CLTypeRVA> opt_with_inner = CLType(tuple2_type_info).type;
+
+    return CLValue(bytes, CLType(opt_with_inner), nullptr);
+  }
+
+  static CLValue OptionNoneTuple3(CLTypeRVA innerTypeInfo1,
+                                  CLTypeRVA innerTypeInfo2,
+                                  CLTypeRVA innerTypeInfo3) {
+    CBytes bytes(1);
+
+    bytes[0] = (CryptoPP::byte)0x00;
+
+    std::map<std::string, std::vector<CLTypeRVA>> tuple3_type_info;
+    std::vector<CLTypeRVA> tuple3_type_info_vec;
+
+    tuple3_type_info_vec.push_back(innerTypeInfo1);
+    tuple3_type_info_vec.push_back(innerTypeInfo2);
+    tuple3_type_info_vec.push_back(innerTypeInfo3);
+    tuple3_type_info["Tuple3"] = tuple3_type_info_vec;
+
+    std::optional<CLTypeRVA> opt_with_inner = CLType(tuple3_type_info).type;
+
+    return CLValue(bytes, CLType(opt_with_inner), nullptr);
+  }
+
   static CLValue OptionNone(CLTypeEnum innerType) {
     return CLValue::OptionNone(CLType(innerType));
   }
@@ -433,56 +487,56 @@ struct CLValue {
 
     return CLValue(bytes, ty, nullptr);
   }
-  /*
-    /// <summary>
-    /// Returns a Tuple1 `CLValue` object.
-    /// </summary>
-    static CLValue Tuple1(CLValue t0) {
-      std::map<std::string, std::vector<CLTypeRVA>> mp;
-      mp["Tuple1"] = {t0.cl_type.type};
-      CLTypeRVA ty(mp);
-      return CLValue(t0.bytes, CLType(ty), t0.parsed);
-    }
 
-    /// <summary>
-    /// Returns a Tuple2 `CLValue` object.
-    /// </summary>
-    static CLValue Tuple2(CLValue t0, CLValue t1) {
-      CBytes bytes(t0.bytes.size() + t1.bytes.size());
+  /// <summary>
+  /// Returns a Tuple1 `CLValue` object.
+  /// </summary>
+  static CLValue Tuple1(CLValue t0) {
+    std::map<std::string, std::vector<CLTypeRVA>> mp;
+    mp["Tuple1"] = {t0.cl_type.type};
+    CLTypeRVA ty(mp);
+    return CLValue(t0.bytes, CLType(ty), t0.parsed);
+  }
 
-      std::copy(t0.bytes.begin(), t0.bytes.end(), bytes.begin());
+  /// <summary>
+  /// Returns a Tuple2 `CLValue` object.
+  /// </summary>
+  static CLValue Tuple2(CLValue t0, CLValue t1) {
+    CBytes bytes(t0.bytes.size() + t1.bytes.size());
 
-      std::copy(t1.bytes.begin(), t1.bytes.end(),
-                bytes.begin() + t0.bytes.size());
+    std::copy(t0.bytes.begin(), t0.bytes.end(), bytes.begin());
 
-      std::map<std::string, std::vector<CLTypeRVA>> mp;
-      mp["Tuple2"] = {t0.cl_type.type, t1.cl_type.type};
-      CLTypeRVA ty(mp);
+    std::copy(t1.bytes.begin(), t1.bytes.end(),
+              bytes.begin() + t0.bytes.size());
 
-      return CLValue(bytes, CLType(ty), hexEncode(bytes));
-    }
+    std::map<std::string, std::vector<CLTypeRVA>> mp;
+    mp["Tuple2"] = {t0.cl_type.type, t1.cl_type.type};
+    CLTypeRVA ty(mp);
 
-    /// <summary>
-    /// Returns a Tuple3 `CLValue` object.
-    /// </summary>
-    static CLValue Tuple3(CLValue t0, CLValue t1, CLValue t2) {
-      CBytes bytes(t0.bytes.size() + t1.bytes.size() + t2.bytes.size());
+    return CLValue(bytes, CLType(ty), hexEncode(bytes));
+  }
 
-      std::copy(t0.bytes.begin(), t0.bytes.end(), bytes.begin());
+  /// <summary>
+  /// Returns a Tuple3 `CLValue` object.
+  /// </summary>
+  static CLValue Tuple3(CLValue t0, CLValue t1, CLValue t2) {
+    CBytes bytes(t0.bytes.size() + t1.bytes.size() + t2.bytes.size());
 
-      std::copy(t1.bytes.begin(), t1.bytes.end(),
-                bytes.begin() + t0.bytes.size());
+    std::copy(t0.bytes.begin(), t0.bytes.end(), bytes.begin());
 
-      std::copy(t2.bytes.begin(), t2.bytes.end(),
-                bytes.begin() + t0.bytes.size() + t1.bytes.size());
+    std::copy(t1.bytes.begin(), t1.bytes.end(),
+              bytes.begin() + t0.bytes.size());
 
-      std::map<std::string, std::vector<CLTypeRVA>> mp;
-      mp["Tuple3"] = {t0.cl_type.type, t1.cl_type.type, t2.cl_type.type};
-      CLTypeRVA ty(mp);
+    std::copy(t2.bytes.begin(), t2.bytes.end(),
+              bytes.begin() + t0.bytes.size() + t1.bytes.size());
 
-      return CLValue(bytes, CLType(ty), hexEncode(bytes));
-    }
-  */
+    std::map<std::string, std::vector<CLTypeRVA>> mp;
+    mp["Tuple3"] = {t0.cl_type.type, t1.cl_type.type, t2.cl_type.type};
+    CLTypeRVA ty(mp);
+
+    return CLValue(bytes, CLType(ty), hexEncode(bytes));
+  }
+
   /// <summary>
   /// Returns a `CLValue` object with a PublicKey type.
   /// </summary>

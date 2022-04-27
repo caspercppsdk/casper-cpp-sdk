@@ -346,6 +346,8 @@ struct CLType {
     res_mp["Result"] = result_map;
     type = res_mp;
     }
+
+
 };
 
 // to_json of CLType
