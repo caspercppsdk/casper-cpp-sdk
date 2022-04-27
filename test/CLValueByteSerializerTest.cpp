@@ -511,6 +511,15 @@ void CLValue_ByteSer_List_Test(void) {
 
   std::cout << "optional none list: " << actual_opt_none_list_str << std::endl;
   TEST_ASSERT(expected_opt_none_list_str == actual_opt_none_list_str);
+
+  // Empty List
+  CLValue clv_empty_list =
+      CLValue::EmptyList(CLType(CLTypeEnum::Key, CLTypeEnum::List));
+
+  std::string expected_empty_list_str = "04000000000000000e0b";
+  std::string actual_empty_list_str = hexEncode(ser.ToBytes(clv_empty_list));
+  std::cout << "empty list: " << actual_empty_list_str << std::endl;
+  TEST_ASSERT(expected_empty_list_str == actual_empty_list_str);
 }
 
 /// ByteArray Byte Serialization

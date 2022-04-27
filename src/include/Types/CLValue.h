@@ -298,6 +298,11 @@ struct CLValue {
     return CLValue(sb, CLType(first_elem_type, CLTypeEnum::List), parsed_elems);
   }
 
+  static CLValue EmptyList(CLType innerType) {
+    CBytes bytes = hexDecode(u32Encode(0));
+    return CLValue(bytes, innerType, nullptr);
+  }
+
   /// <summary>
   /// Returns a `CLValue` object with a ByteArray type.
   /// </summary>
