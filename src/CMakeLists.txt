@@ -11,7 +11,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../lib/
 )
 
-add_library(${LIB_NAME} SHARED CasperClient.cpp include/Types/GlobalStateKey.cpp include/Types/URef.cpp include/Types/ED25519Key.cpp include/Types/Secp256k1Key.cpp include/Utils/CryptoUtil.cpp include/Utils/StringUtil.cpp include/Utils/CEP57Checksum.cpp include/Types/CLConverter.cpp include/Types/Deploy.cpp include/ByteSerializers/BaseByteSerializer.cpp)
+add_library(${LIB_NAME} SHARED CasperClient.cpp include/Types/CLValue.cpp include/Types/CLType.cpp include/Types/GlobalStateKey.cpp include/Types/URef.cpp include/Types/ED25519Key.cpp include/Types/Secp256k1Key.cpp include/Utils/CryptoUtil.cpp include/Utils/StringUtil.cpp include/Utils/CEP57Checksum.cpp include/Types/CLConverter.cpp include/Types/Deploy.cpp include/ByteSerializers/BaseByteSerializer.cpp)
 
 find_package(OpenSSL REQUIRED)
 

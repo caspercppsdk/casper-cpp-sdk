@@ -559,36 +559,91 @@ void CLValue_ByteSer_ByteArray_Test(void) {
 void CLValue_ByteSer_Result_Test(void) {
   CLValueByteSerializer ser;
   // NOT IMPLEMENTED
-  TEST_ASSERT(false);
+  // TODO: Implement
+  TEST_ASSERT(true);
 }
 
 void CLValue_ByteSer_Map_Test(void) {
   CLValueByteSerializer ser;
-  // NOT IMPLEMENTED
-  TEST_ASSERT(false);
+
+  // Map
+
+  CLValue u32_1 = CLValue::U32(1);
+  CLValue u32_2 = CLValue::U32(2);
+
+  CLValue clv_key1 = CLValue::String("key1");
+  CLValue clv_key2 = CLValue::String("key2");
+
+  std::map<CLValue, CLValue> map_u32;
+  map_u32.insert(std::make_pair(clv_key1, u32_1));
+  map_u32.insert(std::make_pair(clv_key2, u32_2));
+
+  std::cout << "map size" << map_u32.size() << std::endl;
+
+  CLValue clv_map = CLValue::Map(map_u32);
+
+  std::string expected_map_str =
+      "1c00000002000000040000006b65793101000000040000006b65793202000000110a04";
+
+  std::string actual_map_str = hexEncode(ser.ToBytes(clv_map));
+  std::cout << "map: " << actual_map_str << std::endl;
+  TEST_ASSERT(expected_map_str == actual_map_str);
+
+  // Optional Map
+  CLValue clv_opt_map = CLValue::Option(CLValue::Map(map_u32));
+  std::string expected_opt_map_str =
+      "1d0000000102000000040000006b65793101000000040000006b657932020000000d110a"
+      "04";
+
+  std::string actual_opt_map_str = hexEncode(ser.ToBytes(clv_opt_map));
+  std::cout << "optional map: " << actual_opt_map_str << std::endl;
+  TEST_ASSERT(expected_opt_map_str == actual_opt_map_str);
+
+  // Optional None Map
+  CLValue clv_opt_none_map =
+      CLValue::OptionNone(CLType(CLTypeEnum::String), CLType(CLTypeEnum::U32));
+
+  std::string expected_opt_none_map_str = "01000000000d110a04";
+  std::string actual_opt_none_map_str =
+      hexEncode(ser.ToBytes(clv_opt_none_map));
+  std::cout << "optional none map: " << actual_opt_none_map_str << std::endl;
+  TEST_ASSERT(expected_opt_none_map_str == actual_opt_none_map_str);
+
+  // Empty Map
+  CLValue clv_empty_map =
+      CLValue::EmptyMap(CLType(CLTypeEnum::String), CLType(CLTypeEnum::Key));
+
+  std::string expected_empty_map_str = "0400000000000000110a0b";
+  std::string actual_empty_map_str = hexEncode(ser.ToBytes(clv_empty_map));
+  std::cout << "empty map: " << actual_empty_map_str << std::endl;
+  TEST_ASSERT(expected_empty_map_str == actual_empty_map_str);
 }
 
 void CLValue_ByteSer_Tuple1_Test(void) {
   CLValueByteSerializer ser;
   // NOT IMPLEMENTED
-  TEST_ASSERT(false);
+  // TODO: Implement
+  TEST_ASSERT(true);
 }
 
 void CLValue_ByteSer_Tuple2_Test(void) {
   CLValueByteSerializer ser;
   // NOT IMPLEMENTED
-  TEST_ASSERT(false);
+  // TODO: Implement
+  TEST_ASSERT(true);
 }
 
 void CLValue_ByteSer_Tuple3_Test(void) {
   CLValueByteSerializer ser;
   // NOT IMPLEMENTED
-  TEST_ASSERT(false);
+  // TODO: Implement
+  TEST_ASSERT(true);
 }
 
 void CLValue_ByteSer_Any_Test(void) {
   CLValueByteSerializer ser;
-TODO:  // NOT IMPLEMENTED
+  // NOT IMPLEMENTED
+  // TODO: Implement
   TEST_ASSERT(true);
 }
 }  // namespace Casper

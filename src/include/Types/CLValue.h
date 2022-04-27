@@ -44,6 +44,8 @@ struct CLValue {
     parsed = parsed;
   }
 
+  bool operator<(const CLValue& b) const;
+
   /// <summary>
   /// Returns a `CLValue` object with a boolean type.
   /// </summary>
@@ -253,6 +255,18 @@ struct CLValue {
     return CLValue(bytes, CLType(opt_with_inner), nullptr);
   }
 
+  static CLValue OptionNone(CLType innerKeyTypeInfo,
+                            CLType innerValueTypeInfo) {
+    CBytes bytes(1);
+
+    bytes[0] = (CryptoPP::byte)0x00;
+    std::map<CLTypeRVA, CLTypeRVA> inner_type_info;
+    inner_type_info[innerKeyTypeInfo.type] = innerValueTypeInfo.type;
+    std::optional<CLTypeRVA> opt_with_inner = CLType(inner_type_info).type;
+
+    return CLValue(bytes, CLType(opt_with_inner), nullptr);
+  }
+
   static CLValue OptionNone(CLTypeEnum innerType) {
     return CLValue::OptionNone(CLType(innerType));
   }
@@ -351,36 +365,53 @@ struct CLValue {
   /// <summary>
   /// Returns a Map `CLValue` object.
   /// </summary>
-  static CLValue Map(std::map<CLValue, CLValue> dict) {
+  static CLValue Map(std::map<CLValue, CLValue>& dict) {
     CLTypeRVA keyType;
     CLTypeRVA valueType;
     CBytes bytes;
+    std::cout << "dict size: " << dict.size() << std::endl;
 
     CBytes len = hexDecode(u32Encode(dict.size()));
-
+    std::map<CLTypeParsedRVA, CLTypeParsedRVA> parsed_dict;
     bytes += len;
     int i = 0;
-    /*
-        for (auto kv : dict) {
-          if (i == 0) {
-            keyType = kv.first.cl_type.type;
-            valueType = kv.second.cl_type.type;
-          } else if (keyType != kv.first.cl_type.type ||
-                     valueType != kv.second.cl_type.type) {
-            throw std::runtime_error(
-                "All elements in a map must be of the same "
-                "type");
-          }
+    std::cout << "dict size: " << dict.size() << std::endl;
+    for (auto kv : dict) {
+      parsed_dict[kv.first.parsed.parsed] = kv.second.parsed.parsed;
+      if (i == 0) {
+        keyType = kv.first.cl_type.type;
+        valueType = kv.second.cl_type.type;
+      } else if (keyType.index() != kv.first.cl_type.type.index() ||
+                 valueType.index() != kv.second.cl_type.type.index()) {
+        throw std::runtime_error(
+            "All elements in a map must be of the same "
+            "type");
+      }
 
-    bytes += kv.first.bytes;
-    bytes += kv.second.bytes;
-    i++;
-  }*/
+      bytes += kv.first.bytes;
+      bytes += kv.second.bytes;
+      i++;
+    }
+    std::cout << "bytes: " << bytes.size() << std::endl;
     std::map<CLTypeRVA, CLTypeRVA> mp;
     mp[keyType] = valueType;
+    std::cout << "map: " << mp.size() << std::endl;
+    CLTypeRVA ty(mp);
+    std::cout << "ty: " << std::endl;
+
+    return CLValue(bytes, CLType(ty), parsed_dict);
+  }
+
+  static CLValue EmptyMap(CLType keyType, CLType valueType) {
+    CBytes bytes = hexDecode(u32Encode(0));
+
+    // Custom key and value type map
+    std::map<CLTypeRVA, CLTypeRVA> mp;
+    mp[keyType.type] = valueType.type;
+
     CLTypeRVA ty(mp);
 
-    return CLValue(bytes, CLType(ty), nullptr);
+    return CLValue(bytes, ty, nullptr);
   }
   /*
     /// <summary>

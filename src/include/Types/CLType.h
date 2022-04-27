@@ -303,6 +303,7 @@ struct CLType {
   CLType(CLTypeRVA type) : type(type) {}
 
   // TODO: Make functions like CLValue u512, u256, u128, u64, u32, u16, u8, etc.
+  bool operator<(const CLType& b) const;
 
   CLType(int32_t byte_array_size) {
     std::map<std::string, int32_t> byte_array;
@@ -322,6 +323,7 @@ struct CLType {
         type = list_map;
         std::cout << "list cltype switch end" << std::endl;
         break;
+
       default:
         std::cout << "Invalid Tag" << std::endl;
         throw std::runtime_error("Invalid CLType");

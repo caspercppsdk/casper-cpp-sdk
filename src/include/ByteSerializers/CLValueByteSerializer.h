@@ -53,10 +53,16 @@ struct CLValueByteSerializer : public BaseByteSerializer {
       WriteByte(sb, 17);
       std::map<CLTypeRVA, CLTypeRVA> mp =
           std::get<std::map<CLTypeRVA, CLTypeRVA>>(innerType.type);
+      if (parsed.index() == 16) {
+        CLTypeToBytes(sb, mp.begin()->first, parsed);
+        CLTypeToBytes(sb, mp.begin()->second, parsed);
+      } else {
+        std::map<CLTypeParsedRVA, CLTypeParsedRVA> mp2 =
+            std::get<std::map<CLTypeParsedRVA, CLTypeParsedRVA>>(parsed);
 
-      CLTypeToBytes(sb, mp.begin()->first, parsed);
-      CLTypeToBytes(sb, mp.begin()->second, parsed);
-
+        CLTypeToBytes(sb, mp.begin()->first, mp2.begin()->first);
+        CLTypeToBytes(sb, mp.begin()->second, mp2.begin()->second);
+      }
     } else if (type_idx == 3) {
       auto inner_type_rva =
           std::get<std::map<std::string, CLTypeRVA>>(innerType.type);
