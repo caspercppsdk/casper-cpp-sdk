@@ -28,6 +28,7 @@ struct CLValueByteSerializer : public BaseByteSerializer {
     // to_json(jjj, source.parsed);
     // std::cout << "CLValueByteSerializer::ToBytes: source.parsed = "
     //  << jjj.dump(2) << std::endl;
+
     CLTypeToBytes(bytes, source.cl_type, source.parsed.parsed);
     // std::cout << "CLValueByteSerializer::ToBytes: after CLTypeToBytes"
     //           << hexEncode(bytes) << std::endl;
@@ -37,7 +38,7 @@ struct CLValueByteSerializer : public BaseByteSerializer {
   void CLTypeToBytes(CBytes& sb, CLType innerType, CLTypeParsedRVA parsed) {
     // std::cout << "CLTypeToBytes1: " << std::endl;
     int type_idx = innerType.type.index();
-    // std::cout << "CLTypeToBytes idx: " << type_idx << std::endl;
+    std::cout << "CLTypeToBytes idx: " << type_idx << std::endl;
 
     nlohmann::json j;
     to_json(j, innerType);
@@ -59,20 +60,40 @@ struct CLValueByteSerializer : public BaseByteSerializer {
     } else if (type_idx == 3) {
       auto inner_type_rva =
           std::get<std::map<std::string, CLTypeRVA>>(innerType.type);
+      // std::cout << "3-1" << std::endl;
       std::string inner_type_name = inner_type_rva.begin()->first;
+      // std::cout << "3-2" << std::endl;
       CLTypeRVA inner_type_rva_value = inner_type_rva.begin()->second;
+      // std::cout << "3-3" << std::endl;
       if (inner_type_name == "Option") {
         WriteByte(sb, 13);
         // if (parsed.index() != 14) {
+        // std::cout << "3-option" << std::endl;
         CLTypeToBytes(sb, inner_type_rva_value, parsed);
         // }
       } else if (inner_type_name == "List") {
         WriteByte(sb, 14);
+        // std::cout << "3-4" << std::endl;
+
+        // Option None, parsed is nullptr case
+        if (parsed.index() == 16) {
+          CLTypeToBytes(sb, inner_type_rva_value, parsed);
+          return;
+        }
+
         std::vector<CLTypeParsedRVA> parsed_list =
             std::get<std::vector<CLTypeParsedRVA>>(parsed);
+        // std::cout << "3-5" << std::endl;
+
+        // TODO: Check if this is correct, maybe whole list can be serialized
         CLTypeToBytes(sb, inner_type_rva_value, parsed_list[0]);
+        // std::cout << "3-6" << std::endl;
+
       } else if (inner_type_name == "Result") {
         WriteByte(sb, 16);
+      } else {
+        throw std::runtime_error("CLTypeToBytes: inner_type_name = " +
+                                 inner_type_name + " not implemented");
       }
 
     } else if (type_idx == 4) {

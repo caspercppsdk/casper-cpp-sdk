@@ -310,6 +310,24 @@ struct CLType {
     type = byte_array;
   }
 
+  CLType(CLTypeRVA type_, CLTypeEnum tag) {
+    std::map<std::string, CLTypeRVA> list_map;
+    CLTypeRVA obj_type;
+
+    switch (tag) {
+      case CLTypeEnum::List:
+        std::cout << "list cltype switch" << std::endl;
+        obj_type = type_;
+        list_map["List"] = obj_type;
+        type = list_map;
+        std::cout << "list cltype switch end" << std::endl;
+        break;
+      default:
+        std::cout << "Invalid Tag" << std::endl;
+        throw std::runtime_error("Invalid CLType");
+    }
+  }
+
   CLType(std::optional<CLTypeRVA>& option) {
     std::map<std::string, CLTypeRVA> option_map;
     option_map["Option"] = option.value();

@@ -18,41 +18,42 @@
 namespace Casper {
 
 using CLTypeParsedRVA = rva::variant<
-    bool,       // Bool, // boolean primitive
-    int32_t,    // I32, // signed 32-bit integer primitive
-    int64_t,    // I64, // signed 64-bit integer primitive
-    uint8_t,    // U8, // unsigned 8-bit integer primitive
-    uint32_t,   // U32, // unsigned 32-bit integer primitive
-    uint64_t,   // U64, // unsigned 64-bit integer primitive
-    uint128_t,  // U128, // unsigned 128-bit integer primitive
-    uint256_t, uint512_t,
+    bool,       // 0 Bool, // boolean primitive
+    int32_t,    // 1 I32, // signed 32-bit integer primitive
+    int64_t,    // 2 I64, // signed 64-bit integer primitive
+    uint8_t,    // 3 U8, // unsigned 8-bit integer primitive
+    uint32_t,   // 4 U32, // unsigned 32-bit integer primitive
+    uint64_t,   // 5 U64, // unsigned 64-bit integer primitive
+    uint128_t,  // 6 U128, // unsigned 128-bit integer primitive
+    uint256_t,  // 7 U256, // unsigned 256-bit integer primitive
+    uint512_t,  // 8 U512, // unsigned 512-bit integer primitive
     // Unit, // singleton value without additional semantics
 
-    std::string,  // String, // e.g. "Hello, World!"
+    std::string,  // 9 String, // e.g. "Hello, World!"
 
-    URef,  // URef, // unforgeable reference (see above)
+    URef,  // 10 URef, // unforgeable reference (see above)
 
-    GlobalStateKey,  // Key, // global state key (see above)
+    GlobalStateKey,  // 11 Key, // global state key (see above)
 
-    PublicKey,  // PublicKey // A Casper system PublicKey type
+    PublicKey,  // 12 PublicKey // A Casper system PublicKey type
 
     //  Option(CLType), // optional value of the given type
 
-    std::vector<rva::self_t>,  // List(CLType), Tuple1(CLType),
+    std::vector<rva::self_t>,  // 13 List(CLType), Tuple1(CLType),
                                // Tuple2(CLType, CLType), Tuple3(CLType, CLType,
                                // CLType)
 
     // ByteArray(CLType, u32), // same as `List` above, but number
     // of elements is statically known (e.g. arrays in rust)
 
-    std::map<std::string, rva::self_t>,  // result ok err, two elems
+    std::map<std::string, rva::self_t>,  // 14 result ok err, two elems
 
-    std::map<rva::self_t, rva::self_t>,  //  Map(CLType, CLType), //
+    std::map<rva::self_t, rva::self_t>,  //  15 Map(CLType, CLType), //
                                          //  key-value association
                                          //  where keys and values have
                                          //  the given types
 
-    std::nullptr_t  // Any // Indicates the type is not known
+    std::nullptr_t  // 16 Any // Indicates the type is not known
 
     >;
 

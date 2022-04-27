@@ -224,27 +224,27 @@ struct CLValue {
   01000000 00 0d 00   opt bool none
   01000000 00 0d
   */
-  /*
-      static CLValue Option(PublicKey innerValue) {
-        return CLValue::Option(CLValue::PublicKey(innerValue));
-      }
 
-      static CLValue Option(GlobalStateKey innerValue) {
-        return CLValue::Option(CLValue::Key(innerValue));
-      }
+  static CLValue Option(PublicKey innerValue) {
+    return CLValue::Option(CLValue::PublicKey(innerValue));
+  }
 
-      static CLValue Option(CBytes innerValue) {
-        return CLValue::Option(CLValue::ByteArray(innerValue));
-      }
+  static CLValue Option(GlobalStateKey innerValue) {
+    return CLValue::Option(CLValue::Key(innerValue));
+  }
 
-      static CLValue Option(std::vector<CLValue> innerValue) {
-        return CLValue::Option(CLValue::List(innerValue));
-      }
+  static CLValue Option(CBytes innerValue) {
+    return CLValue::Option(CLValue::ByteArray(innerValue));
+  }
 
-      static CLValue Option(std::map<CLValue, CLValue> innerValue) {
-        return CLValue::Option(CLValue::Map(innerValue));
-      }
- */
+  static CLValue Option(std::vector<CLValue>& innerValue) {
+    return CLValue::Option(CLValue::List(innerValue));
+  }
+
+  static CLValue Option(std::map<CLValue, CLValue> innerValue) {
+    return CLValue::Option(CLValue::Map(innerValue));
+  }
+
   static CLValue OptionNone(CLType innerTypeInfo) {
     CBytes bytes(1);
 
@@ -257,39 +257,47 @@ struct CLValue {
     return CLValue::OptionNone(CLType(innerType));
   }
 
-  /*
-      /// <summary>
-      /// Returns a List `CLValue` object.
-      /// </summary>
+  /// <summary>
+  /// Returns a List `CLValue` object.
+  /// </summary>
 
-      static CLValue List(std::vector<CLValue> values) {
-        if (values.size() == 0) throw std::runtime_error("List cannot be
-     empty");
+  static CLValue List(std::vector<CLValue>& values) {
+    if (values.size() == 0) {
+      std::cout << "List size is 0" << std::endl;
+      throw std::runtime_error("List cannot be empty");
+    }
 
-        CBytes sb;
+    CBytes sb;
 
-        CBytes bytes = hexDecode(u32Encode(values.size()));
+    CBytes bytes = hexDecode(u32Encode(values.size()));
 
-        sb += bytes;
+    std::cout << "bytes: " << bytes.size() << std::endl;
+    std::cout << "bytes: " << hexEncode(bytes) << std::endl;
 
-        auto typeInfo = values[0].cl_type;
+    sb += bytes;
 
-        for (auto value : values) {
-          if (value.cl_type.type != typeInfo.type) {
-            throw std::runtime_error(
-                "All elements in a list must be of the same type");
-          }
+    CLTypeRVA first_elem_type = values[0].cl_type.type;
 
-          sb += value.bytes;
-        }
+    std::vector<CLTypeParsedRVA> parsed_values;
+    CLTypeParsedRVA parsed_elems;
 
-        std::map<std::string, CLTypeRVA> mp;
-        mp["List"] = typeInfo.type;
-        CLTypeRVA ty(mp);
-        return CLValue(sb, CLType(ty), nullptr);
+    std::cout << "after typeInfo" << std::endl;
+    for (auto& value : values) {
+      sb += value.bytes;
+      parsed_values.push_back(value.parsed.parsed);
+
+      if (value.cl_type.type.index() != first_elem_type.index()) {
+        throw std::runtime_error(
+            "All elements in a list must be of the same type");
       }
+    }
 
-    */
+    std::cout << "after for" << std::endl;
+    parsed_elems = parsed_values;
+
+    return CLValue(sb, CLType(first_elem_type, CLTypeEnum::List), parsed_elems);
+  }
+
   /// <summary>
   /// Returns a `CLValue` object with a ByteArray type.
   /// </summary>
@@ -334,6 +342,7 @@ struct CLValue {
       return CLValue(bytes, typeInfo, nullptr);
     }
 
+*/
   /// <summary>
   /// Returns a Map `CLValue` object.
   /// </summary>
@@ -346,78 +355,78 @@ struct CLValue {
 
     bytes += len;
     int i = 0;
+    /*
+        for (auto kv : dict) {
+          if (i == 0) {
+            keyType = kv.first.cl_type.type;
+            valueType = kv.second.cl_type.type;
+          } else if (keyType != kv.first.cl_type.type ||
+                     valueType != kv.second.cl_type.type) {
+            throw std::runtime_error(
+                "All elements in a map must be of the same "
+                "type");
+          }
 
-    for (auto kv : dict) {
-      if (i == 0) {
-        keyType = kv.first.cl_type.type;
-        valueType = kv.second.cl_type.type;
-      } else if (keyType != kv.first.cl_type.type ||
-                 valueType != kv.second.cl_type.type) {
-        throw std::runtime_error(
-            "All elements in a map must be of the same "
-            "type");
-      }
-
-      bytes += kv.first.bytes;
-      bytes += kv.second.bytes;
-      i++;
-    }
+    bytes += kv.first.bytes;
+    bytes += kv.second.bytes;
+    i++;
+  }*/
     std::map<CLTypeRVA, CLTypeRVA> mp;
     mp[keyType] = valueType;
     CLTypeRVA ty(mp);
 
     return CLValue(bytes, CLType(ty), nullptr);
   }
+  /*
+    /// <summary>
+    /// Returns a Tuple1 `CLValue` object.
+    /// </summary>
+    static CLValue Tuple1(CLValue t0) {
+      std::map<std::string, std::vector<CLTypeRVA>> mp;
+      mp["Tuple1"] = {t0.cl_type.type};
+      CLTypeRVA ty(mp);
+      return CLValue(t0.bytes, CLType(ty), t0.parsed);
+    }
 
-  /// <summary>
-  /// Returns a Tuple1 `CLValue` object.
-  /// </summary>
-  static CLValue Tuple1(CLValue t0) {
-    std::map<std::string, std::vector<CLTypeRVA>> mp;
-    mp["Tuple1"] = {t0.cl_type.type};
-    CLTypeRVA ty(mp);
-    return CLValue(t0.bytes, CLType(ty), t0.parsed);
-  }
+    /// <summary>
+    /// Returns a Tuple2 `CLValue` object.
+    /// </summary>
+    static CLValue Tuple2(CLValue t0, CLValue t1) {
+      CBytes bytes(t0.bytes.size() + t1.bytes.size());
 
-  /// <summary>
-  /// Returns a Tuple2 `CLValue` object.
-  /// </summary>
-  static CLValue Tuple2(CLValue t0, CLValue t1) {
-    CBytes bytes(t0.bytes.size() + t1.bytes.size());
+      std::copy(t0.bytes.begin(), t0.bytes.end(), bytes.begin());
 
-    std::copy(t0.bytes.begin(), t0.bytes.end(), bytes.begin());
+      std::copy(t1.bytes.begin(), t1.bytes.end(),
+                bytes.begin() + t0.bytes.size());
 
-    std::copy(t1.bytes.begin(), t1.bytes.end(),
-              bytes.begin() + t0.bytes.size());
+      std::map<std::string, std::vector<CLTypeRVA>> mp;
+      mp["Tuple2"] = {t0.cl_type.type, t1.cl_type.type};
+      CLTypeRVA ty(mp);
 
-    std::map<std::string, std::vector<CLTypeRVA>> mp;
-    mp["Tuple2"] = {t0.cl_type.type, t1.cl_type.type};
-    CLTypeRVA ty(mp);
+      return CLValue(bytes, CLType(ty), hexEncode(bytes));
+    }
 
-    return CLValue(bytes, CLType(ty), hexEncode(bytes));
-  }
+    /// <summary>
+    /// Returns a Tuple3 `CLValue` object.
+    /// </summary>
+    static CLValue Tuple3(CLValue t0, CLValue t1, CLValue t2) {
+      CBytes bytes(t0.bytes.size() + t1.bytes.size() + t2.bytes.size());
 
-  /// <summary>
-  /// Returns a Tuple3 `CLValue` object.
-  /// </summary>
-  static CLValue Tuple3(CLValue t0, CLValue t1, CLValue t2) {
-    CBytes bytes(t0.bytes.size() + t1.bytes.size() + t2.bytes.size());
+      std::copy(t0.bytes.begin(), t0.bytes.end(), bytes.begin());
 
-    std::copy(t0.bytes.begin(), t0.bytes.end(), bytes.begin());
+      std::copy(t1.bytes.begin(), t1.bytes.end(),
+                bytes.begin() + t0.bytes.size());
 
-    std::copy(t1.bytes.begin(), t1.bytes.end(),
-              bytes.begin() + t0.bytes.size());
+      std::copy(t2.bytes.begin(), t2.bytes.end(),
+                bytes.begin() + t0.bytes.size() + t1.bytes.size());
 
-    std::copy(t2.bytes.begin(), t2.bytes.end(),
-              bytes.begin() + t0.bytes.size() + t1.bytes.size());
+      std::map<std::string, std::vector<CLTypeRVA>> mp;
+      mp["Tuple3"] = {t0.cl_type.type, t1.cl_type.type, t2.cl_type.type};
+      CLTypeRVA ty(mp);
 
-    std::map<std::string, std::vector<CLTypeRVA>> mp;
-    mp["Tuple3"] = {t0.cl_type.type, t1.cl_type.type, t2.cl_type.type};
-    CLTypeRVA ty(mp);
-
-    return CLValue(bytes, CLType(ty), hexEncode(bytes));
-  }
-*/
+      return CLValue(bytes, CLType(ty), hexEncode(bytes));
+    }
+  */
   /// <summary>
   /// Returns a `CLValue` object with a PublicKey type.
   /// </summary>

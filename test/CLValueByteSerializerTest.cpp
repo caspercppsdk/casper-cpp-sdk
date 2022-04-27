@@ -470,8 +470,47 @@ void CLValue_ByteSer_PublicKey_Test(void) {
 void CLValue_ByteSer_List_Test(void) {
   CLValueByteSerializer ser;
 
-  // NOT IMPLEMENTED
-  TEST_ASSERT(false);
+  // List
+  CLValue u32_1 = CLValue::U32(1);
+  CLValue u32_2 = CLValue::U32(2);
+  CLValue u32_3 = CLValue::U32(3);
+  CLValue u32_4 = CLValue::U32(4);
+
+  std::vector<CLValue> list_u32;
+  list_u32.push_back(u32_1);
+  list_u32.push_back(u32_2);
+  list_u32.push_back(u32_3);
+  list_u32.push_back(u32_4);
+
+  CLValue clv_list = CLValue::List(list_u32);
+
+  std::string expected_list_str =
+      "1400000004000000010000000200000003000000040000000e04";
+
+  std::string actual_list_str = hexEncode(ser.ToBytes(clv_list));
+  std::cout << "list: " << actual_list_str << std::endl;
+  TEST_ASSERT(expected_list_str == actual_list_str);
+
+  // Optional List
+  CLValue clv_opt_list = CLValue::Option(CLValue::List(list_u32));
+
+  std::string expected_opt_list_str =
+      "150000000104000000010000000200000003000000040000000d0e04";
+
+  std::string actual_opt_list_str = hexEncode(ser.ToBytes(clv_opt_list));
+  std::cout << "optional list: " << actual_opt_list_str << std::endl;
+  TEST_ASSERT(expected_opt_list_str == actual_opt_list_str);
+
+  // Optional None List
+  CLValue clv_opt_none_list =
+      CLValue::OptionNone(CLType(CLTypeEnum::U32, CLTypeEnum::List));
+
+  std::string expected_opt_none_list_str = "01000000000d0e04";
+  std::string actual_opt_none_list_str =
+      hexEncode(ser.ToBytes(clv_opt_none_list));
+
+  std::cout << "optional none list: " << actual_opt_none_list_str << std::endl;
+  TEST_ASSERT(expected_opt_none_list_str == actual_opt_none_list_str);
 }
 
 /// ByteArray Byte Serialization
