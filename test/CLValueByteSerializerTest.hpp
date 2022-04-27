@@ -40,8 +40,6 @@ void CLValue_ByteSer_Key_Test(void);
 
 void CLValue_ByteSer_PublicKey_Test(void);
 
-void CLValue_ByteSer_Option_Test(void);
-
 void CLValue_ByteSer_List_Test(void);
 
 void CLValue_ByteSer_ByteArray_Test(void);

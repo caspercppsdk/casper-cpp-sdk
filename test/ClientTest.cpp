@@ -363,11 +363,9 @@ void clValue_with_ListU256Test() { clValue_with_jsonFile("ListU256.json"); }
 
 void clValue_with_ByteArrayTest() { clValue_with_jsonFile("ByteArray.json"); }
 
-// void clValue_with_ResultOkTest() { clValue_with_jsonFile("ResultOk.json");
-// }
+void clValue_with_ResultOkTest() { clValue_with_jsonFile("ResultOk.json"); }
 
-// void clValue_with_ResultErrTest() {
-// clValue_with_jsonFile("ResultErr.json");
+void clValue_with_ResultErrTest() { clValue_with_jsonFile("ResultErr.json"); }
 
 void clValue_with_MapTest() { clValue_with_jsonFile("Map.json"); }
 
@@ -406,7 +404,8 @@ void globalStateKey_serializer_test() {
 
   // HASH TEST
   HashKey hash_key(
-      "hash-96053169b397360449b4de964200be449594ca93f252153f0a679b804e214a54");
+      "hash-"
+      "96053169b397360449b4de964200be449594ca93f252153f0a679b804e214a54");
 
   std::string expected_hash_bytes_str =
       "0196053169b397360449b4de964200be449594ca93f252153f0a679b804e214a54";
@@ -430,119 +429,6 @@ void globalStateKey_serializer_test() {
   // TODO:
   // globalStateKey_serialize<EraInfoKey>(era_info_key,
   // expected_era_bytes_str);
-}
-
-void transfer_deploy_test() {
-  using namespace Casper;
-  /*
-    using namespace std::chrono;
-
-    const auto now_ms = time_point_cast<milliseconds>(system_clock::now());
-    const auto now_s = time_point_cast<seconds>(now_ms);
-    const auto millis = now_ms - now_s;
-    const auto c_now = system_clock::to_time_t(now_s);
-
-    std::stringstream ss;
-    ss << std::put_time(gmtime(&c_now), "%FT%T") << '.' << std::setfill('0')
-       << std::setw(3) << millis.count() << 'Z';
-  */
-
-  // std::string timestamp_str2 = "2021-09-25T17:01:24.399Z";
-  //  current date/time based on current system according to RFC3339
-  //  std::cout << "timestamp: " << strToTimestamp(timestamp_str2);
-  /*std::stringstream ss;
-  auto tp = std::chrono::system_clock::now();
-  auto tt = std::chrono::system_clock::to_time_t(tp);
-  ss << std::put_time(std::gmtime(&tt), "%FT%T") << std::setw(3)
-     << std::millis.count() << 'Z';
-
-*/
-
-  using namespace std::chrono;
-
-  const auto now_ms = time_point_cast<milliseconds>(system_clock::now());
-  const auto now_s = time_point_cast<seconds>(now_ms);
-  const auto millis = now_ms - now_s;
-  const auto c_now = system_clock::to_time_t(now_s);
-
-  std::stringstream ss;
-  ss << std::put_time(gmtime(&c_now), "%FT%T") << '.' << std::setfill('0')
-     << std::setw(3) << millis.count() << 'Z';
-
-  std::string timestamp_str = ss.str();
-  // std::asctime(std::localtime(&tt)),
-  DeployHeader header(
-      Casper::PublicKey::FromHexString("0202a6e2d25621758e2c92900f842ff367bbb5e"
-                                       "4b6a849cacb43c3eaebf371b24b85"),
-      timestamp_str, "30m", 1, "", {}, "casper-test");
-
-  Casper::PublicKey tgt_key = Casper::PublicKey::FromHexString(
-      "018afa98ca4be12d613617f7339a2d576950a2f9a92102ca4d6508ee31b54d2c02");
-
-  uint512_t amount = u512FromDec("1000000000");
-  // std::cout << "before payment" << std::endl;
-  // std::cout << "amount: " << amount << std::endl;
-  // create a payment
-  ModuleBytes payment(amount);
-  // create a payment executable deploy item
-  // ExecutableDeployItem payment(paymentInner);
-
-  // std::cout << "after payment" << std::endl;
-
-  // create transfer executable deploy item
-  TransferDeployItem session(u512FromDec("12345678925"),
-                             AccountHashKey(tgt_key), 123456789012345u, true);
-  // ExecutableDeployItem session(sessionInner);
-
-  // Create deploy object
-  // std::cout << "before deploy" << std::endl;
-  Deploy deploy(header, payment, session);
-  // std::cout << "after deploy" << std::endl;
-  std::string signer =
-      "0202a6e2d25621758e2c92900f842ff367bbb5e4b6a849cacb43c3eaebf371b24b85";
-
-  // std::cout << "before approval" << std::endl;
-
-  std::string privKeyPemFile =
-      "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/secp_secret_test2_key.pem";
-
-  Casper::Secp256k1Key secp256k1Key(privKeyPemFile);
-  /*
-  std::cout << "private key: " << secp256k1Key.getPrivateKeyStr() << std::endl;
-  std::cout << "public key: " << secp256k1Key.getPublicKeyStr() << std::endl;
-
-  std::string signature = secp256k1Key.sign(deploy.hash);
-  std::cout << "signature: "
-            << Casper::Secp256k1Key::signatureToString(signature) << std::endl;
-
-  signature = Casper::Secp256k1Key::signatureToString(signature);
-
-  DeployApproval approval(Casper::PublicKey::FromHexString(signer),
-                          Signature::FromHexString(signature));
-
-  std::cout << approval.signature.ToString() << std::endl;
-  std::cout << approval.signer.ToString() << std::endl;
-  std::cout << "after approval" << std::endl;
-  deploy.AddApproval(approval);
-  std::cout << "after add approval" << std::endl;
-*/
-
-  Client client(CASPER_TEST_ADDRESS);
-  Deploy dp(deploy.header, deploy.payment, deploy.session);
-  dp.Sign(secp256k1Key);
-  DeployByteSerializer sery;
-  nlohmann::json j;
-  to_json(j, dp);
-  std::cout << j.dump(2) << std::endl;
-
-  // std::cout << "\n\n\ntest\n\n\n";
-  // std::cout << "testttt:" << hexEncode(sery.ToBytes(dp)) << std::endl
-  //           << std::endl
-  //           << std::endl
-  //           << std::endl;
-
-  PutDeployResult res = client.PutDeploy(dp);
-  std::cout << "deploy id: " << res.deploy_hash << std::endl;
 }
 
 // Executable Deploy Item Byte Serializer Tests //
@@ -586,14 +472,14 @@ void ed25KeyTest() {
 }
 
 #define RPC_TEST 1
-#define SER_DE_TEST 1
+#define SER_DE_TEST 0
 #define CL_TYPE_TEST 1
 #define CL_VALUE_TEST 1
 #define DEPLOY_ITEM_BYTE_SERIALIZER_TEST 1
 #define CL_VALUE_BYTE_SERIALIZER_TEST 1
 TEST_LIST = {
 
-#if CL_VALUE_BYTE_SERIALIZER_TEST
+#if CL_VALUE_BYTE_SERIALIZER_TEST == 1
     {"CLValue_ByteSer_Bool_Test", CLValue_ByteSer_Bool_Test},
     {"CLValue_ByteSer_I32_Test", CLValue_ByteSer_I32_Test},
     {"CLValue_ByteSer_I64_Test", CLValue_ByteSer_I64_Test},
@@ -608,7 +494,6 @@ TEST_LIST = {
     {"CLValue_ByteSer_URef_Test", CLValue_ByteSer_URef_Test},
     {"CLValue_ByteSer_Key_Test", CLValue_ByteSer_Key_Test},
     {"CLValue_ByteSer_PublicKey_Test", CLValue_ByteSer_PublicKey_Test},
-    {"CLValue_ByteSer_Option_Test", CLValue_ByteSer_Option_Test},
     {"CLValue_ByteSer_List_Test", CLValue_ByteSer_List_Test},
     {"CLValue_ByteSer_ByteArray_Test", CLValue_ByteSer_ByteArray_Test},
     {"CLValue_ByteSer_Result_Test", CLValue_ByteSer_Result_Test},
@@ -632,14 +517,12 @@ TEST_LIST = {
     {"TransferDeployItemSerialization", DeployItem_ByteSer_Transfer_Test},
 #endif
 
-    {"DeployItemByteSer", DeployItemByteSerializerTest},
     {"ED25519 Key Test", ed25KeyTest},
     {"PublicKey Load fromFile", publicKey_load_fromFileTest},
     {"getAccountHash checks internal PublicKey to AccountHash converter",
      publicKey_getAccountHashTest},
     {"toLower checks internal lower case converter", stringUtil_toLowerTest},
     {"gsk test", globalStateKey_serializer_test},
-    {"transfer_deploy", transfer_deploy_test},
 
 #if RPC_TEST == 1
     {"infoGetPeers checks node list size", infoGetPeers_Test},
@@ -676,6 +559,11 @@ TEST_LIST = {
      stateGetBalance_with_invalidUrefTest},
     {"stateGetAuctionInfo using Block hash parameter (may take a while)",
      stateGetAuctionInfo_with_blockHashTest},
+    {"PutDeploy RPC Call with a Stored Contract by Name",
+     PutDeploy_StoredContractByName_Test},
+    {"PutDeploy RPC Call with a Transfer", PutDeploy_Transfer_Test},
+    {"PutDeploy RPC Call with a Stored Contract by Hash",
+     PutDeploy_StoredContractByHash_Test},
 #endif
 
 #if SER_DE_TEST == 1
@@ -726,27 +614,26 @@ TEST_LIST = {
     {"CLValue using String", clValue_with_StringTest},
     {"CLValue using URef", clValue_with_URefTest},
     {"CLValue using Key", clValue_with_KeyTest},
-    //{"CLValue using Account Key", clValue_with_accountKeyTest},
-    //{"CLValue using Hash Key", clValue_with_hashKeyTest},
+    //   {"CLValue using Account Key", clValue_with_accountKeyTest},
+    //  {"CLValue using Hash Key", clValue_with_hashKeyTest},
     {"CLValue using PublicKey", clValue_with_PublicKeyTest},
     {"CLValue using Option", clValue_with_OptionTest},
-    // {"CLValue using Option<List<Key>> = NULL",
-    //  clValue_with_OptionListKeyNULLTest},
+    {"CLValue using Option<List<Key>> = NULL",
+     clValue_with_OptionListKeyNULLTest},
     {"CLValue using Option<U64> = NULL", clValue_with_OptionU64NULLTest},
     {"CLValue using Option<U64>", clValue_with_OptionU64Test},
-    // {"CLValue using List", clValue_with_ListTest},
-    // {"CLValue using List<ByteArray:32>", clValue_with_ListByteArray32Test},
-    // {"CLValue using List<Option<String>>",
-    // clValue_with_ListOptionStringTest},
-    // {"CLValue using List<U8>", clValue_with_ListU8Test},
-    // {"CLValue using List<U256>", clValue_with_ListU256Test},
+    {"CLValue using List", clValue_with_ListTest},
+    {"CLValue using List<ByteArray:32>", clValue_with_ListByteArray32Test},
+    {"CLValue using List<Option<String>>", clValue_with_ListOptionStringTest},
+    {"CLValue using List<U8>", clValue_with_ListU8Test},
+    {"CLValue using List<U256>", clValue_with_ListU256Test},
     {"CLValue using ByteArray", clValue_with_ByteArrayTest},
-    // {"CLValue using ResultOk", clValue_with_ResultOkTest},
-    // {"CLValue using ResultErr", clValue_with_ResultErrTest},
-    // {"CLValue using Map", clValue_with_MapTest},
-    // {"CLValue using Tuple1", clValue_with_Tuple1Test},
-    // {"CLValue using Tuple2", clValue_with_Tuple2Test},
-    // {"CLValue using Tuple3", clValue_with_Tuple3Test},
+    {"CLValue using ResultOk", clValue_with_ResultOkTest},
+    {"CLValue using ResultErr", clValue_with_ResultErrTest},
+    {"CLValue using Map", clValue_with_MapTest},
+    {"CLValue using Tuple1", clValue_with_Tuple1Test},
+    {"CLValue using Tuple2", clValue_with_Tuple2Test},
+    {"CLValue using Tuple3", clValue_with_Tuple3Test},
     {"CLValue using Any", clValue_with_AnyTest},
 
 #endif

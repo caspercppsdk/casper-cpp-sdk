@@ -532,4 +532,225 @@ void stateGetAuctionInfo_with_blockHashTest(void) {
   TEST_ASSERT(auction_result.auction_state.bids[0].bid.staked_amount > 0);
   TEST_ASSERT(auction_result.auction_state.bids[0].bid.delegation_rate > 0);
 }
+
+void PutDeploy_Transfer_Test(void) {
+  using namespace Casper;
+  /*
+    using namespace std::chrono;
+
+    const auto now_ms = time_point_cast<milliseconds>(system_clock::now());
+    const auto now_s = time_point_cast<seconds>(now_ms);
+    const auto millis = now_ms - now_s;
+    const auto c_now = system_clock::to_time_t(now_s);
+
+    std::stringstream ss;
+    ss << std::put_time(gmtime(&c_now), "%FT%T") << '.' << std::setfill('0')
+       << std::setw(3) << millis.count() << 'Z';
+  */
+
+  // std::string timestamp_str2 = "2021-09-25T17:01:24.399Z";
+  //  current date/time based on current system according to RFC3339
+  //  std::cout << "timestamp: " << strToTimestamp(timestamp_str2);
+  /*std::stringstream ss;
+  auto tp = std::chrono::system_clock::now();
+  auto tt = std::chrono::system_clock::to_time_t(tp);
+  ss << std::put_time(std::gmtime(&tt), "%FT%T") << std::setw(3)
+     << std::millis.count() << 'Z';
+
+*/
+
+  using namespace std::chrono;
+
+  const auto now_ms = time_point_cast<milliseconds>(system_clock::now());
+  const auto now_s = time_point_cast<seconds>(now_ms);
+  const auto millis = now_ms - now_s;
+  const auto c_now = system_clock::to_time_t(now_s);
+
+  std::stringstream ss;
+  ss << std::put_time(gmtime(&c_now), "%FT%T") << '.' << std::setfill('0')
+     << std::setw(3) << millis.count() << 'Z';
+
+  std::string timestamp_str = ss.str();
+  // std::asctime(std::localtime(&tt)),
+  DeployHeader header(
+      Casper::PublicKey::FromHexString("0202a6e2d25621758e2c92900f842ff367bbb5e"
+                                       "4b6a849cacb43c3eaebf371b24b85"),
+      timestamp_str, "30m", 1, "", {}, "casper-test");
+
+  Casper::PublicKey tgt_key = Casper::PublicKey::FromHexString(
+      "018afa98ca4be12d613617f7339a2d576950a2f9a92102ca4d6508ee31b54d2c02");
+
+  uint512_t amount = u512FromDec("1000000000");
+  // std::cout << "before payment" << std::endl;
+  // std::cout << "amount: " << amount << std::endl;
+  // create a payment
+  ModuleBytes payment(amount);
+  // create a payment executable deploy item
+  // ExecutableDeployItem payment(paymentInner);
+
+  // std::cout << "after payment" << std::endl;
+
+  // create transfer executable deploy item
+  TransferDeployItem session(u512FromDec("2845678925"), AccountHashKey(tgt_key),
+                             123456789012345u, true);
+  // ExecutableDeployItem session(sessionInner);
+
+  // Create deploy object
+  // std::cout << "before deploy" << std::endl;
+  Deploy deploy(header, payment, session);
+  // std::cout << "after deploy" << std::endl;
+  std::string signer =
+      "0202a6e2d25621758e2c92900f842ff367bbb5e4b6a849cacb43c3eaebf371b24b85";
+
+  // std::cout << "before approval" << std::endl;
+
+  std::string privKeyPemFile =
+      "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/secp_secret_test2_key.pem";
+
+  Casper::Secp256k1Key secp256k1Key(privKeyPemFile);
+  /*
+  std::cout << "private key: " << secp256k1Key.getPrivateKeyStr() << std::endl;
+  std::cout << "public key: " << secp256k1Key.getPublicKeyStr() << std::endl;
+
+  std::string signature = secp256k1Key.sign(deploy.hash);
+  std::cout << "signature: "
+            << Casper::Secp256k1Key::signatureToString(signature) << std::endl;
+
+  signature = Casper::Secp256k1Key::signatureToString(signature);
+
+  DeployApproval approval(Casper::PublicKey::FromHexString(signer),
+                          Signature::FromHexString(signature));
+
+  std::cout << approval.signature.ToString() << std::endl;
+  std::cout << approval.signer.ToString() << std::endl;
+  std::cout << "after approval" << std::endl;
+  deploy.AddApproval(approval);
+  std::cout << "after add approval" << std::endl;
+*/
+
+  Client client(CASPER_TEST_ADDRESS);
+  Deploy dp(deploy.header, deploy.payment, deploy.session);
+  dp.Sign(secp256k1Key);
+  DeployByteSerializer sery;
+  nlohmann::json j;
+  to_json(j, dp);
+  std::cout << j.dump(2) << std::endl;
+
+  // std::cout << "\n\n\ntest\n\n\n";
+  // std::cout << "testttt:" << hexEncode(sery.ToBytes(dp)) << std::endl
+  //           << std::endl
+  //           << std::endl
+  //           << std::endl;
+
+  PutDeployResult res = client.PutDeploy(dp);
+  std::cout << "deploy id: " << res.deploy_hash << std::endl;
+}
+
+std::string getTimestampNow() {
+  using namespace std::chrono;
+
+  const auto now_ms = time_point_cast<milliseconds>(system_clock::now());
+  const auto now_s = time_point_cast<seconds>(now_ms);
+  const auto millis = now_ms - now_s;
+  const auto c_now = system_clock::to_time_t(now_s);
+
+  std::stringstream ss;
+  ss << std::put_time(gmtime(&c_now), "%FT%T") << '.' << std::setfill('0')
+     << std::setw(3) << millis.count() << 'Z';
+
+  std::string timestamp_str = ss.str();
+
+  return timestamp_str;
+}
+
+void PutDeploy_StoredContractByName_Test(void) {
+  std::string timestamp_str = getTimestampNow();
+
+  DeployHeader header(
+      Casper::PublicKey::FromHexString("0202a6e2d25621758e2c92900f842ff367bbb5e"
+                                       "4b6a849cacb43c3eaebf371b24b85"),
+      timestamp_str, "30m", 1, "", {}, "casper-test");
+
+  uint512_t amount = u512FromDec("15000000000");
+  ModuleBytes payment(amount);
+
+  NamedArg arg1(
+      "target",
+      CLValue::ByteArray(
+          "9131b2356aa604ced1725bc2d1814683f4ccfc0050ccbd17991daf669c48d327"));
+
+  uint512_t amount2 = u512FromDec("100000000000");
+  NamedArg arg2("amount", CLValue::U512(amount2));
+
+  std::vector<NamedArg> y_args = {arg1, arg2};
+
+  StoredContractByName scbn("faucet", "call_faucet", y_args);
+
+  Deploy deploy(header, payment, scbn);
+
+  std::string signer =
+      "0202a6e2d25621758e2c92900f842ff367bbb5e4b6a849cacb43c3eaebf371b24b85";
+
+  std::string privKeyPemFile =
+      "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/secp_secret_test2_key.pem";
+
+  Casper::Secp256k1Key secp256k1Key(privKeyPemFile);
+
+  Client client(CASPER_TEST_ADDRESS);
+  Deploy dp(deploy.header, deploy.payment, deploy.session);
+  dp.Sign(secp256k1Key);
+  DeployByteSerializer sery;
+  nlohmann::json j;
+  to_json(j, dp);
+  std::cout << j.dump(2) << std::endl;
+
+  PutDeployResult res = client.PutDeploy(dp);
+  std::cout << "deploy id: " << res.deploy_hash << std::endl;
+}
+
+void PutDeploy_StoredContractByHash_Test(void) {
+  std::string timestamp_str = getTimestampNow();
+
+  DeployHeader header(
+      Casper::PublicKey::FromHexString("0202a6e2d25621758e2c92900f842ff367bbb5e"
+                                       "4b6a849cacb43c3eaebf371b24b85"),
+      timestamp_str, "30m", 1, "", {}, "casper-test");
+
+  uint512_t amount = u512FromDec("5000000000");
+  ModuleBytes payment(amount);
+
+  StoredContractByHash scbh(
+      "e3523602448b6085b861890b1c214181e2c1a7bdd2b23424b1941d1301256517",
+      "unlock_cspr",
+      {NamedArg("receipient_publickey",
+                CLValue::String("01f28f169dad17315a03d15e16aa93d5342303ae11f"
+                                "15c68aadfdab3df31b0fcbf")),
+       NamedArg("bsc_transaction_hash",
+                CLValue::String("0xd6e7f5aa561e069c385d0f63a3c8dc5501f63d3616c3"
+                                "61749e5efab9776fa33e")),
+
+       NamedArg("amount", CLValue::U512("33780000000"))});
+
+  Deploy deploy(header, payment, scbh);
+
+  std::string signer =
+      "0202a6e2d25621758e2c92900f842ff367bbb5e4b6a849cacb43c3eaebf371b24b85";
+
+  std::string privKeyPemFile =
+      "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/secp_secret_test2_key.pem";
+
+  Casper::Secp256k1Key secp256k1Key(privKeyPemFile);
+
+  Client client(CASPER_TEST_ADDRESS);
+  Deploy dp(deploy.header, deploy.payment, deploy.session);
+  dp.Sign(secp256k1Key);
+  DeployByteSerializer sery;
+  nlohmann::json j;
+  to_json(j, dp);
+  std::cout << j.dump(2) << std::endl;
+
+  PutDeployResult res = client.PutDeploy(dp);
+  std::cout << "deploy id: " << res.deploy_hash << std::endl;
+}
+
 }  // namespace Casper

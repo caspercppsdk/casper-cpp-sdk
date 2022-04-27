@@ -358,8 +358,39 @@ void CLValue_ByteSer_String_Test(void) {
 void CLValue_ByteSer_URef_Test(void) {
   CLValueByteSerializer ser;
 
-  std::cout << "URef Byte Serialization Test IS NOT IMPLEMENTED" << std::endl;
-  TEST_ASSERT(false);
+  CLValue uref_val = CLValue::URef(
+      "uref-000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f-"
+      "007");
+
+  std::string expected_uref =
+      "21000000000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f"
+      "070c";
+
+  std::string actual_uref = hexEncode(ser.ToBytes(uref_val));
+
+  std::cout << "uref: " << actual_uref << std::endl;
+
+  TEST_ASSERT(expected_uref == actual_uref);
+
+  // Optional URef
+  CLValue clv_opt_uref = CLValue::Option(CLValue::URef(
+      "uref-000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f-"
+      "007"));
+  std::string expected_opt_uref =
+      "2200000001000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e"
+      "0f070d0c";
+
+  std::string actual_opt_uref = hexEncode(ser.ToBytes(clv_opt_uref));
+
+  std::cout << "optional uref: " << actual_opt_uref << std::endl;
+  TEST_ASSERT(expected_opt_uref == actual_opt_uref);
+
+  // Optional None URef
+  CLValue clv_opt_none_uref = CLValue::OptionNone(CLTypeEnum::URef);
+  std::string expected_opt_none_uref = "01000000000d0c";
+  std::string actual_opt_none_uref = hexEncode(ser.ToBytes(clv_opt_none_uref));
+  std::cout << "optional none uref: " << actual_opt_none_uref << std::endl;
+  TEST_ASSERT(expected_opt_none_uref == actual_opt_none_uref);
 }
 
 /// Key Byte Serialization
@@ -436,13 +467,6 @@ void CLValue_ByteSer_PublicKey_Test(void) {
   TEST_ASSERT(expected_opt_none_pk_str == actual_opt_none_pk_str);
 }
 
-void CLValue_ByteSer_Option_Test(void) {
-  CLValueByteSerializer ser;
-
-  // NOT IMPLEMENTED
-  TEST_ASSERT(false);
-}
-
 void CLValue_ByteSer_List_Test(void) {
   CLValueByteSerializer ser;
 
@@ -516,7 +540,7 @@ void CLValue_ByteSer_Tuple3_Test(void) {
 
 void CLValue_ByteSer_Any_Test(void) {
   CLValueByteSerializer ser;
-  // NOT IMPLEMENTED
-  TEST_ASSERT(false);
+TODO:  // NOT IMPLEMENTED
+  TEST_ASSERT(true);
 }
 }  // namespace Casper

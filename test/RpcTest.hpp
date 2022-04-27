@@ -7,6 +7,8 @@
 #include <sstream>
 #include "Types/CLType.h"
 #include "Types/CLConverter.h"
+#include "ByteSerializers/DeployByteSerializer.h"
+
 
 namespace Casper {
 
@@ -47,5 +49,13 @@ void stateGetBalance_with_urefTest(void);
 void stateGetBalance_with_invalidUrefTest(void);
 
 void stateGetAuctionInfo_with_blockHashTest(void);
+
+void PutDeploy_Transfer_Test(void);
+
+void PutDeploy_StoredContractByName_Test(void);
+
+void PutDeploy_StoredContractByHash_Test(void);
+
+
 
 }  // namespace Casper
