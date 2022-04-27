@@ -255,16 +255,33 @@ struct CLValue {
     return CLValue(bytes, CLType(opt_with_inner), nullptr);
   }
 
-  static CLValue OptionNone(CLType innerKeyTypeInfo,
-                            CLType innerValueTypeInfo) {
-    CBytes bytes(1);
+  static CLValue OptionNone(CLType innerKeyTypeInfo, CLType innerValueTypeInfo,
+                            CLTypeEnum innerType = CLTypeEnum::Map) {
+    if (innerType == CLTypeEnum::Map) {
+      CBytes bytes(1);
 
-    bytes[0] = (CryptoPP::byte)0x00;
-    std::map<CLTypeRVA, CLTypeRVA> inner_type_info;
-    inner_type_info[innerKeyTypeInfo.type] = innerValueTypeInfo.type;
-    std::optional<CLTypeRVA> opt_with_inner = CLType(inner_type_info).type;
+      bytes[0] = (CryptoPP::byte)0x00;
+      std::map<CLTypeRVA, CLTypeRVA> inner_type_info;
+      inner_type_info[innerKeyTypeInfo.type] = innerValueTypeInfo.type;
+      std::optional<CLTypeRVA> opt_with_inner = CLType(inner_type_info).type;
 
-    return CLValue(bytes, CLType(opt_with_inner), nullptr);
+      return CLValue(bytes, CLType(opt_with_inner), nullptr);
+    } else {
+      // Result None
+      CBytes bytes(1);
+      bytes[0] = (CryptoPP::byte)0x00;
+
+      std::map<std::string, CLTypeRVA> result_type_info;
+      result_type_info["Ok"] = innerKeyTypeInfo.type;
+      result_type_info["Err"] = innerValueTypeInfo.type;
+
+      std::map<std::string, CLTypeRVA> res_info;
+      res_info["Result"] = result_type_info;
+
+      std::optional<CLTypeRVA> opt_with_inner = CLType(res_info).type;
+
+      return CLValue(bytes, CLType(opt_with_inner), nullptr);
+    }
   }
 
   static CLValue OptionNone(CLTypeEnum innerType) {
@@ -333,35 +350,38 @@ struct CLValue {
     return CLValue(bytes, CLType(bytes.size()), hex_val);
   }
 
-  /*
-    /// <summary>
-    /// Returns a Result `CLValue` with wrapped OK value inside.
-    /// To be complete, it must be indicated the type for an err value
-    /// </summary>
-    static CLValue Ok(CLValue ok, CLTypeInfo errTypeInfo) {
-      var typeInfo = CLResultTypeInfo(ok.TypeInfo, errTypeInfo);
-      CBytes bytes(1 + ok.bytes.size());
-      bytes[0] = 0x01;
-      std::copy(ok.bytes.begin(), ok.bytes.end(), bytes.begin() + 1);
+  /// <summary>
+  /// Returns a Result `CLValue` with wrapped OK value inside.
+  /// To be complete, it must be indicated the type for an err value
+  /// </summary>
+  static CLValue Ok(CLValue ok, CLType errTypeInfo) {
+    CLType okTypeInfo(ok.cl_type.type, errTypeInfo.type, CLTypeEnum::Result);
 
-      return CLValue(bytes, typeInfo, nullptr);
-    }
+    CBytes sb(1 + ok.bytes.size());
 
-    /// <summary>
-    /// Returns a Result `CLValue` with wrapped Err value inside.
-    /// To be complete, it must be indicated the type for an ok value
-    /// </summary>
-    static CLValue Err(CLValue err, CLTypeInfo okTypeInfo) {
-      var typeInfo = CLResultTypeInfo(okTypeInfo, err.cl_type);
+    sb[0] = (CryptoPP::byte)0x01;
 
-      CBytes bytes(1 + err.bytes.size());
-      bytes[0] = 0x00;
-      std::copy(err.bytes.begin(), err.bytes.end(), bytes.begin() + 1);
+    std::copy(ok.bytes.begin(), ok.bytes.end(), sb.begin() + 1);
 
-      return CLValue(bytes, typeInfo, nullptr);
-    }
+    return CLValue(sb, okTypeInfo, ok.parsed);
+  }
 
-*/
+  /// <summary>
+  /// Returns a Result `CLValue` with wrapped Err value inside.
+  /// To be complete, it must be indicated the type for an ok value
+  /// </summary>
+  static CLValue Err(CLValue err, CLType okTypeInfo) {
+    CLType errTypeInfo(okTypeInfo.type, err.cl_type.type, CLTypeEnum::Result);
+
+    CBytes sb(1 + err.bytes.size());
+
+    sb[0] = (CryptoPP::byte)0x00;
+
+    std::copy(err.bytes.begin(), err.bytes.end(), sb.begin() + 1);
+
+    return CLValue(sb, errTypeInfo, err.parsed);
+  }
+
   /// <summary>
   /// Returns a Map `CLValue` object.
   /// </summary>

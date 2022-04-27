@@ -91,6 +91,12 @@ struct CLValueByteSerializer : public BaseByteSerializer {
 
       } else if (inner_type_name == "Result") {
         WriteByte(sb, 16);
+        std::map<std::string, CLTypeRVA> inner_type_rva2 =
+            std::get<std::map<std::string, CLTypeRVA>>(inner_type_rva_value);
+            
+        CLTypeToBytes(sb, inner_type_rva2.at("Ok"), parsed);
+        CLTypeToBytes(sb, inner_type_rva2.at("Err"), parsed);
+
       } else {
         throw std::runtime_error("CLTypeToBytes: inner_type_name = " +
                                  inner_type_name + " not implemented");

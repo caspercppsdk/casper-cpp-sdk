@@ -285,7 +285,29 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
     // Result Parsing
     // Result is a map with two keys: Ok and Err
     else if (type_name == "Result") {
-      // TODO: implement result parsing
+      CLTypeParsedRVA parsed_ok;
+      CLTypeParsedRVA parsed_err;
+
+      // types
+      CLType ok_type;
+      ok_type.type = obj.at("Ok");
+
+      CLType err_type;
+      err_type.type = obj.at("Err");
+
+      std::string bytes_parsed = j.at("bytes").get<std::string>();
+
+      if (bytes_parsed.substr(0, 2) == "00") {
+        // Err
+        from_json(j.at("Err"), parsed_err, err_type);
+        p = parsed_err;
+      } else if (bytes_parsed.substr(0, 2) == "01") {
+        // Ok
+        from_json(j.at("Ok"), parsed_ok, ok_type);
+        p = parsed_ok;
+      } else {
+        throw std::runtime_error("Invalid Result Ok/Err!");
+      }
 
     } else {
       std::cout << "Unknown type\n" << std::endl;

@@ -231,12 +231,9 @@ inline void from_json(const nlohmann::json& j, CLTypeRVA& p) {
       CLTypeRVA innerErr;
       from_json(j.at("Result").at("Ok"), innerOk);
       from_json(j.at("Result").at("Err"), innerErr);
-      auto ok = std::map<std::string, CLTypeRVA>();
-      ok.insert({"Ok", innerOk});
-      auto err = std::map<std::string, CLTypeRVA>();
-      err.insert({"Err", innerErr});
-      result.insert({"Ok", ok});
-      result.insert({"Err", err});
+
+      result.insert({"Ok", innerOk});
+      result.insert({"Err", innerErr});
       p = result;
     } else if (key_str == "Tuple1") {
       auto tuple1 = std::map<std::string, std::vector<CLTypeRVA>>();
@@ -335,6 +332,20 @@ struct CLType {
     option_map["Option"] = option.value();
     type = option_map;
   }
+
+  CLType(CLTypeRVA ok, CLTypeRVA err, CLTypeEnum tag) {
+    if (tag != CLTypeEnum::Result) {
+      throw std::runtime_error("Invalid CLType");
+    }
+    std::map<std::string, CLTypeRVA> result_map;
+
+    result_map["Ok"] = ok;
+    result_map["Err"] = err;
+
+    std::map<std::string, CLTypeRVA> res_mp;
+    res_mp["Result"] = result_map;
+    type = res_mp;
+    }
 };
 
 // to_json of CLType

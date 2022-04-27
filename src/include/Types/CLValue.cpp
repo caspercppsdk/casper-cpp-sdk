@@ -61,6 +61,8 @@ bool CLValue::operator<(const CLValue& b) const {
     }
     // TODO: Implement CLValue comparison for other types.
   }
+
+  return false;
 }
 
 }  // namespace Casper

@@ -558,9 +558,65 @@ void CLValue_ByteSer_ByteArray_Test(void) {
 
 void CLValue_ByteSer_Result_Test(void) {
   CLValueByteSerializer ser;
-  // NOT IMPLEMENTED
-  // TODO: Implement
-  TEST_ASSERT(true);
+
+  // Result Ok
+  CLValue clv_result_ok =
+      CLValue::Ok(CLValue::U8(255), CLType(CLTypeEnum::String));
+
+  std::string expected_result_ok_str = "0200000001ff10030a";
+  std::string actual_result_ok_str = hexEncode(ser.ToBytes(clv_result_ok));
+  std::cout << "result ok: " << actual_result_ok_str << std::endl;
+  TEST_ASSERT(expected_result_ok_str == actual_result_ok_str);
+
+  // Optional Result Ok
+  CLValue clv_opt_result_ok = CLValue::Option(
+      CLValue::Ok(CLValue::U8(255), CLType(CLTypeEnum::String)));
+
+  std::string expected_opt_result_ok_str = "030000000101ff0d10030a";
+  std::string actual_opt_result_ok_str =
+      hexEncode(ser.ToBytes(clv_opt_result_ok));
+  std::cout << "optional result ok: " << actual_opt_result_ok_str << std::endl;
+  TEST_ASSERT(expected_opt_result_ok_str == actual_opt_result_ok_str);
+
+  //
+  CLValue clv_2 = CLValue::Ok(CLValue::Unit(), CLType(CLTypeEnum::String));
+  std::string expected_result_ok_str_2 = "010000000110090a";
+  std::string actual_result_ok_str_2 = hexEncode(ser.ToBytes(clv_2));
+  std::cout << "result ok_2: " << actual_result_ok_str_2 << std::endl;
+  TEST_ASSERT(expected_result_ok_str_2 == actual_result_ok_str_2);
+
+  // Result Err
+  CLValue clv_result_err =
+      CLValue::Err(CLValue::String("Error!"), CLType(CLTypeEnum::Unit));
+
+  std::string expected_result_err_str = "0b00000000060000004572726f722110090a";
+  std::string actual_result_err_str = hexEncode(ser.ToBytes(clv_result_err));
+  std::cout << "result err: " << actual_result_err_str << std::endl;
+  TEST_ASSERT(expected_result_err_str == actual_result_err_str);
+
+  // Optional Result Err
+  CLValue clv_opt_result_err = CLValue::Option(
+      CLValue::Err(CLValue::String("Error!"), CLType(CLTypeEnum::Unit)));
+
+  std::string expected_opt_result_err_str =
+      "0c0000000100060000004572726f72210d10090a";
+  std::string actual_opt_result_err_str =
+      hexEncode(ser.ToBytes(clv_opt_result_err));
+  std::cout << "optional result err: " << actual_opt_result_err_str
+            << std::endl;
+  TEST_ASSERT(expected_opt_result_err_str == actual_opt_result_err_str);
+
+  // Optional None Result Err
+  CLValue clv_opt_none_result_err = CLValue::OptionNone(
+      CLType(CLTypeEnum::U8), CLType(CLTypeEnum::String), CLTypeEnum::Result);
+
+  std::string expected_opt_none_result_err_str = "01000000000d10030a";
+  std::string actual_opt_none_result_err_str =
+      hexEncode(ser.ToBytes(clv_opt_none_result_err));
+  std::cout << "optional none result err: " << actual_opt_none_result_err_str
+            << std::endl;
+  TEST_ASSERT(expected_opt_none_result_err_str ==
+              actual_opt_none_result_err_str);
 }
 
 void CLValue_ByteSer_Map_Test(void) {
