@@ -150,7 +150,11 @@ struct CLValue {
   /// </summary>
   static CLValue URef(std::string value) {
     Casper::URef uref(value);
-    CBytes bytes = uref.GetBytes();
+    CBytes bytes(33);
+
+    std::copy(uref.raw_bytes.begin(), uref.raw_bytes.end(), bytes.begin());
+
+    bytes[32] = (CryptoPP::byte)uref.access_rights;
 
     return CLValue(bytes, CLTypeEnum::URef, value);
   }
@@ -158,9 +162,11 @@ struct CLValue {
   /// <summary>
   /// Returns a `CLValue` object with a URef type.
   /// </summary>
-  static CLValue URef(Casper::URef value) {
-    CBytes bytes = value.GetBytes();
+  static CLValue URef(Casper::URef& value) {
+    CBytes bytes(33);
 
+    std::copy(value.raw_bytes.begin(), value.raw_bytes.end(), bytes.begin());
+    bytes[32] = (CryptoPP::byte)value.access_rights;
     return CLValue(bytes, CLTypeEnum::URef, value.ToString());
   }
 
