@@ -261,7 +261,7 @@ struct CLValue {
   /// Returns a List `CLValue` object.
   /// </summary>
 
-  static CLValue List(std::vector<CLValue>& values) {
+  static CLValue List(std::vector<CLValue> values) {
     if (values.size() == 0) {
       std::cout << "List size is 0" << std::endl;
       throw std::runtime_error("List cannot be empty");
@@ -271,8 +271,8 @@ struct CLValue {
 
     CBytes bytes = hexDecode(u32Encode(values.size()));
 
-    std::cout << "bytes: " << bytes.size() << std::endl;
-    std::cout << "bytes: " << hexEncode(bytes) << std::endl;
+    // std::cout << "bytes: " << bytes.size() << std::endl;
+    // std::cout << "bytes: " << hexEncode(bytes) << std::endl;
 
     sb += bytes;
 
@@ -281,8 +281,8 @@ struct CLValue {
     std::vector<CLTypeParsedRVA> parsed_values;
     CLTypeParsedRVA parsed_elems;
 
-    std::cout << "after typeInfo" << std::endl;
-    for (auto& value : values) {
+    // std::cout << "after typeInfo" << std::endl;
+    for (auto value : values) {
       sb += value.bytes;
       parsed_values.push_back(value.parsed.parsed);
 
@@ -292,7 +292,7 @@ struct CLValue {
       }
     }
 
-    std::cout << "after for" << std::endl;
+    // std::cout << "after for" << std::endl;
     parsed_elems = parsed_values;
 
     return CLValue(sb, CLType(first_elem_type, CLTypeEnum::List), parsed_elems);

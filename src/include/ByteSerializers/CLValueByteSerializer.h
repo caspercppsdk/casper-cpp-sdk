@@ -76,17 +76,11 @@ struct CLValueByteSerializer : public BaseByteSerializer {
         // std::cout << "3-4" << std::endl;
 
         // Option None, parsed is nullptr case
-        if (parsed.index() == 16) {
-          CLTypeToBytes(sb, inner_type_rva_value, parsed);
-          return;
-        }
 
-        std::vector<CLTypeParsedRVA> parsed_list =
-            std::get<std::vector<CLTypeParsedRVA>>(parsed);
         // std::cout << "3-5" << std::endl;
 
         // TODO: Check if this is correct, maybe whole list can be serialized
-        CLTypeToBytes(sb, inner_type_rva_value, parsed_list[0]);
+        CLTypeToBytes(sb, inner_type_rva_value, parsed);
         // std::cout << "3-6" << std::endl;
 
       } else if (inner_type_name == "Result") {
