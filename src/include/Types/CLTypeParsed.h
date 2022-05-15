@@ -1,19 +1,18 @@
 #pragma once
 
+#include <optional>
+#include <tuple>
+#include <unordered_map>
+
 #include "Base.h"
-#include "nlohmann/json.hpp"
+#include "CLType.h"
+#include "Types/CLConverter.h"
 #include "Types/GlobalStateKey.h"
 #include "Types/PublicKey.h"
 #include "Types/URef.h"
-
-#include "rva/variant.hpp"
-#include <tuple>
-
-#include <unordered_map>
-#include <optional>
 #include "magic_enum/magic_enum.hpp"
-
-#include "Types/CLConverter.h"
+#include "nlohmann/json.hpp"
+#include "rva/variant.hpp"
 
 namespace Casper {
 
@@ -53,7 +52,7 @@ using CLTypeParsedRVA = rva::variant<
                                          //  where keys and values have
                                          //  the given types
 
-    std::nullptr_t  // 16 Any // Indicates the type is not known
+    std::monostate  // 16 Any // Indicates the type is not known
 
     >;
 
@@ -122,8 +121,7 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
 
     // j = p_type;
   } else if (p.index() == 16) {
-    auto& p_type = rva::get<std::nullptr_t>(p);
-    j = p_type;
+    j = nullptr;
   }
 }
 
@@ -170,7 +168,7 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
         break;
       case CLTypeEnum::Unit:
       case CLTypeEnum::Any:
-        p = std::nullptr_t();
+        p = std::monostate{};
         break;
       case CLTypeEnum::String:
         p = j.get<std::string>();
@@ -206,13 +204,10 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
                 .begin()
                 ->second;
 
-        CLTypeParsedRVA key_parsed;
-        CLTypeParsedRVA value_parsed;
+        CLTypeParsedRVA key_parsed = item.at("key").get<CLTypeParsedRVA>();
+        CLTypeParsedRVA value_parsed = item.at("value").get<CLTypeParsedRVA>();
 
-        key_parsed = item.at("key").get<CLTypeParsedRVA>();
-        value_parsed = item.at("value").get<CLTypeParsedRVA>();
-
-        parsed_map[key_parsed] = value_parsed;
+        parsed_map.insert({key_parsed, value_parsed});
       }
 
       p = parsed_map;
@@ -258,7 +253,7 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
     if (type_name == "Option") {
       // parse with inner type
       if (j.is_null()) {
-        parsed_obj = std::nullptr_t();
+        parsed_obj = std::monostate{};
       } else {
         from_json(j, parsed_obj, inner_type);
       }
@@ -351,9 +346,12 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
 struct CLTypeParsed {
   CLTypeParsedRVA parsed;
 
-  CLTypeParsed() : parsed(std::nullptr_t()) {}
+  CLTypeParsed() : parsed(std::monostate{}) {}
 
   CLTypeParsed(CLTypeParsedRVA parsed) : parsed(parsed) {}
+
+  bool operator<(const CLTypeParsed& b) const;
+  bool operator<(CLTypeParsed&& b) const;
 };
 
 // to_json of CLTypeParsed

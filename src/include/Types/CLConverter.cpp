@@ -1,6 +1,8 @@
 #include "Types/CLConverter.h"
-#include "date/date.h"
+
 #include <chrono>
+
+#include "date/date.h"
 //#include "bigint/BigIntegerLibrary.hh"
 namespace Casper {
 
@@ -11,13 +13,11 @@ uint64_t strToTimestamp(std::string str_date) {
 
   istringstream in{str_date};
   in.exceptions(ios::failbit);
-  sys_time<milliseconds> tp;
+  std::chrono::sys_time<milliseconds> tp;
   in >> parse("%FT%TZ", tp);
   cout << tp << " = " << tp.time_since_epoch() << '\n';
   return duration_cast<milliseconds>(tp.time_since_epoch()).count();
 }
-
-
 
 // Encoding & Decoding
 

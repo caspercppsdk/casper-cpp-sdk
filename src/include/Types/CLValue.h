@@ -1,12 +1,11 @@
 #pragma once
 
 #include "Base.h"
+#include "ByteSerializers/GlobalStateKeyByteSerializer.h"
 #include "Types/CLType.h"
 #include "Types/CLTypeParsed.h"
-
-#include "cryptopp/secblock.h"
-#include "ByteSerializers/GlobalStateKeyByteSerializer.h"
 #include "Utils/CEP57Checksum.h"
+#include "cryptopp/secblock.h"
 #include "nlohmann/json.hpp"
 
 namespace Casper {
@@ -135,7 +134,7 @@ struct CLValue {
   /// </summary>
   static CLValue Unit() {
     // TODO: Check CBytes(), maybe (0), should be empty
-    return CLValue(CBytes(0), CLTypeEnum::Unit, nullptr);
+    return CLValue(CBytes(0), CLTypeEnum::Unit, std::monostate{});
   }
 
   /// <summary>
@@ -252,7 +251,7 @@ struct CLValue {
 
     bytes[0] = (CryptoPP::byte)0x00;
     std::optional<CLTypeRVA> opt_with_inner = innerTypeInfo.type;
-    return CLValue(bytes, CLType(opt_with_inner), nullptr);
+    return CLValue(bytes, CLType(opt_with_inner), std::monostate{});
   }
 
   static CLValue OptionNone(CLType innerKeyTypeInfo, CLType innerValueTypeInfo,
@@ -265,7 +264,7 @@ struct CLValue {
       inner_type_info[innerKeyTypeInfo.type] = innerValueTypeInfo.type;
       std::optional<CLTypeRVA> opt_with_inner = CLType(inner_type_info).type;
 
-      return CLValue(bytes, CLType(opt_with_inner), nullptr);
+      return CLValue(bytes, CLType(opt_with_inner), std::monostate{});
     } else {
       // Result None
       CBytes bytes(1);
@@ -280,7 +279,7 @@ struct CLValue {
 
       std::optional<CLTypeRVA> opt_with_inner = CLType(res_info).type;
 
-      return CLValue(bytes, CLType(opt_with_inner), nullptr);
+      return CLValue(bytes, CLType(opt_with_inner), std::monostate{});
     }
   }
 
@@ -297,7 +296,7 @@ struct CLValue {
 
     std::optional<CLTypeRVA> opt_with_inner = CLType(tuple1_type_info).type;
 
-    return CLValue(bytes, CLType(opt_with_inner), nullptr);
+    return CLValue(bytes, CLType(opt_with_inner), std::monostate{});
   }
 
   static CLValue OptionNoneTuple2(CLTypeRVA innerTypeInfo1,
@@ -315,7 +314,7 @@ struct CLValue {
 
     std::optional<CLTypeRVA> opt_with_inner = CLType(tuple2_type_info).type;
 
-    return CLValue(bytes, CLType(opt_with_inner), nullptr);
+    return CLValue(bytes, CLType(opt_with_inner), std::monostate{});
   }
 
   static CLValue OptionNoneTuple3(CLTypeRVA innerTypeInfo1,
@@ -335,7 +334,7 @@ struct CLValue {
 
     std::optional<CLTypeRVA> opt_with_inner = CLType(tuple3_type_info).type;
 
-    return CLValue(bytes, CLType(opt_with_inner), nullptr);
+    return CLValue(bytes, CLType(opt_with_inner), std::monostate{});
   }
 
   static CLValue OptionNone(CLTypeEnum innerType) {
@@ -385,7 +384,7 @@ struct CLValue {
 
   static CLValue EmptyList(CLType innerType) {
     CBytes bytes = hexDecode(u32Encode(0));
-    return CLValue(bytes, innerType, nullptr);
+    return CLValue(bytes, innerType, std::monostate{});
   }
 
   /// <summary>
@@ -485,7 +484,7 @@ struct CLValue {
 
     CLTypeRVA ty(mp);
 
-    return CLValue(bytes, ty, nullptr);
+    return CLValue(bytes, ty, std::monostate{});
   }
 
   /// <summary>
