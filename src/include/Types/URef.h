@@ -95,6 +95,7 @@ inline void from_json(const nlohmann::json& j, URef& p) {
   try {
     p.raw_bytes = CEP57Checksum::Decode(parts[0]);
   } catch (std::exception& e) {
+    std::cout << e.what();
     throw std::runtime_error("URef checksum mismatch.");
   }
 

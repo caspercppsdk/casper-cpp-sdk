@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+#include <map>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -105,7 +106,7 @@ inline std::string u128ToHex(uint128_t value) {
   }
 
   //
-  uint8_t bytes_length = u128_str.length() / 2;
+  uint8_t bytes_length = static_cast<uint8_t>(u128_str.length()) / 2;
   std::string bytes_length_str = integerToHex<uint8_t>(bytes_length);
 
   reverseHex(u128_str);
@@ -169,7 +170,7 @@ inline std::string u256ToHex(uint256_t value) {
 
   // std::cout << "u256_str2: " << u256_str << std::endl;
   //
-  uint8_t bytes_length = u256_str.length() / 2;
+  uint8_t bytes_length = static_cast<uint8_t>(u256_str.length()) / 2;
   std::string bytes_length_str = integerToHex<uint8_t>(bytes_length);
 
   // std::cout << "u256_str3: " << u256_str << std::endl;
@@ -229,7 +230,7 @@ inline std::string u512ToHex(uint512_t value) {
   }
 
   //
-  uint8_t bytes_length = u512_str.length() / 2;
+  uint8_t bytes_length = static_cast<uint8_t>(u512_str.length()) / 2;
   std::string bytes_length_str = integerToHex<uint8_t>(bytes_length);
 
   // std::cout << "u512_str: " << u512_str << std::endl;

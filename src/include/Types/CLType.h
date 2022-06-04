@@ -7,14 +7,13 @@
 #include "Types/URef.h"
 
 #include "rva/variant.hpp"
-#include <tuple>
 
 #include <unordered_map>
 #include <optional>
 #include "magic_enum/magic_enum.hpp"
 
 namespace Casper {
-enum class CLTypeEnum : uint8_t {
+enum class CLTypeEnum : int {
   /// <summary>
   /// Boolean primitive.
   /// </summary>
@@ -113,19 +112,21 @@ enum class CLTypeEnum : uint8_t {
 };
 
 using CLTypeRVA = rva::variant<
-    CLTypeEnum,                                       // primitives
+
     std::vector<rva::self_t>,                         // check this
-    std::map<rva::self_t, rva::self_t>,               // map
-    std::map<std::string, rva::self_t>,               // opt, list,
     std::map<std::string, std::vector<rva::self_t>>,  // tuple1,t2,t3
-    std::map<std::string, int32_t>                    // byte array
+    std::map<std::string, int32_t>,                    // byte array
+    CLTypeEnum,                                       // primitives
+    std::map<std::string, rva::self_t>,               // opt, list,
+    std::map<rva::self_t, rva::self_t>               // map
     >;
 
-inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
+inline void to_json(nlohmann::json& j, const CLTypeRVA& pp) {
   /// bool, i32, i64, u8, u32, u64, u128, u256, u512, unit, string, key, uref,
   /// any, public key
+    CLTypeRVA p = pp;
   if (p.index() == 0) {
-    auto& p_type = rva::get<CLTypeEnum>(p);
+    auto p_type = rva::get<CLTypeEnum>(p);
 
     // check if the enum is primitive
     if (p_type == CLTypeEnum::Bool || p_type == CLTypeEnum::I32 ||
@@ -143,28 +144,29 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
   else if (p.index() == 1) {
     std::cout << "\n\nrva::get<std::vector<CLTypeRVA>>(p)\n\n" << std::endl;
 
-    auto& p_type = rva::get<std::vector<CLTypeRVA>>(p);
+    auto p_type = rva::get<std::vector<CLTypeRVA>>(p);
     // TODO: should not be called, be careful check this.
     j = p_type;
 
   }
   /// map
   else if (p.index() == 2) {
-    auto& p_type = rva::get<std::map<CLTypeRVA, CLTypeRVA>>(p);
+    auto p_type = rva::get<std::map<CLTypeRVA, CLTypeRVA>>(p);
+
     j["Map"] = {{"key", p_type.begin()->first},
                 {"value", p_type.begin()->second}};
   }
   /// option, list, result
   else if (p.index() == 3) {
-    auto& p_type = rva::get<std::map<std::string, CLTypeRVA>>(p);
+    std::map<std::string, CLTypeRVA> p_type = rva::get<std::map<std::string, CLTypeRVA>>(p);
     std::string key_type = p_type.begin()->first;
-
+    CLTypeRVA val_type = p_type[key_type];
     if (key_type == "Option") {
-      j = {{"Option", p_type.begin()->second}};
+      j = {{"Option", val_type}};
     } else if (key_type == "List") {
-      j = {{"List", p_type.begin()->second}};
+      j = {{"List", val_type}};
     } else if (key_type == "Result") {
-      auto inner_map = std::get<3>(p_type.begin()->second);
+        std::map<std::string, CLTypeRVA> inner_map = rva::get<std::map<std::string, CLTypeRVA>>(val_type);
       nlohmann::json inner_val = {{"Ok", inner_map["Ok"]},
                                   {"Err", inner_map["Err"]}};
       j = {"Result", inner_val};
@@ -172,7 +174,7 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
   }
   /// tuple1, tuple2, tuple3
   else if (p.index() == 4) {
-    auto& p_type = rva::get<std::map<std::string, std::vector<CLTypeRVA>>>(p);
+    auto p_type = rva::get<std::map<std::string, std::vector<CLTypeRVA>>>(p);
     std::string key_type = p_type.begin()->first;
     /*
       "cl_type":{"Tuple1":["Bool"]}
@@ -188,10 +190,10 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
     }
 
   } else if (p.index() == 5) {
-    auto& p_type = rva::get<std::map<std::string, int32_t>>(p);
+    auto p_type = rva::get<std::map<std::string, int32_t>>(p);
     std::string key_type = p_type.begin()->first;
     if (key_type == "ByteArray") {
-      j["ByteArray"] = p_type.begin()->second;
+        j["ByteArray"] = p_type[key_type];
     }
   }
 }

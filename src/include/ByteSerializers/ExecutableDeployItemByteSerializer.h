@@ -22,11 +22,11 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
           item.module_bytes.data() == nullptr) {
         WriteInteger(bytes, 0);
       } else {
-        WriteInteger(bytes, item.module_bytes.size());
+        WriteInteger(bytes, static_cast<int>(item.module_bytes.size()));
         WriteBytes(bytes, item.module_bytes);
       }
 
-      bytes += hexDecode(u32Encode(item.args.size()));
+      bytes += hexDecode(u32Encode(static_cast<uint32_t>(item.args.size())));
       for (auto arg : item.args) {
         WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
       }
@@ -40,7 +40,7 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
       WriteBytes(bytes, hexDecode(item.hash));
       WriteString(bytes, item.entry_point);
 
-      bytes += hexDecode(u32Encode(item.args.size()));
+      bytes += hexDecode(u32Encode(static_cast<uint32_t>(item.args.size())));
       for (auto arg : item.args) {
         WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
       }
@@ -54,7 +54,7 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
       WriteString(bytes, item.name);
       WriteString(bytes, item.entry_point);
 
-      bytes += hexDecode(u32Encode(item.args.size()));
+      bytes += hexDecode(u32Encode(static_cast<uint32_t>(item.args.size())));
       for (auto arg : item.args) {
         WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
       }
@@ -76,7 +76,7 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
 
       WriteString(bytes, item.entry_point);
 
-      bytes += hexDecode(u32Encode(item.args.size()));
+      bytes += hexDecode(u32Encode(static_cast<uint32_t>(item.args.size())));
       for (auto arg : item.args) {
         WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
       }
@@ -97,7 +97,7 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
 
       WriteString(bytes, item.entry_point);
 
-      bytes += hexDecode(u32Encode(item.args.size()));
+      bytes += hexDecode(u32Encode(static_cast<uint32_t>(item.args.size())));
       for (auto arg : item.args) {
         WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
       }
@@ -109,7 +109,7 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
       // std::cout << "after tag" << std::endl;
       TransferDeployItem item = source.transfer.value();
 
-      bytes += hexDecode(u32Encode(item.args.size()));
+      bytes += hexDecode(u32Encode(static_cast<uint32_t>(item.args.size())));
 
       // std::cout << "after bytes write" << std::endl;
       // std::cout << "args size: " << item.args.size() << std::endl;

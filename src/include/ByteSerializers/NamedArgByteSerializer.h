@@ -12,7 +12,7 @@ struct NamedArgByteSerializer : public BaseByteSerializer {
     CBytes bName =
         hexDecode(StringUtil::getStringBytesWithoutLength(source.name));
     // std::cout << "before write integer len:" << bName.size() << std::endl;
-    WriteInteger(bytes, bName.size());
+    WriteInteger(bytes, static_cast<int>(bName.size()));
     WriteBytes(bytes, bName);
 
     // std::cout << "before write clvalue" << std::endl;

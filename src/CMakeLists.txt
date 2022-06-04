@@ -11,7 +11,28 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../lib/
 )
 
-add_library(${LIB_NAME} SHARED CasperClient.cpp include/Types/CLValue.cpp include/Types/CLType.cpp include/Types/CLTypeParsed.cpp include/Types/GlobalStateKey.cpp include/Types/URef.cpp include/Types/ED25519Key.cpp include/Types/Secp256k1Key.cpp include/Utils/CryptoUtil.cpp include/Utils/StringUtil.cpp include/Utils/CEP57Checksum.cpp include/Types/CLConverter.cpp include/Types/Deploy.cpp include/ByteSerializers/BaseByteSerializer.cpp)
+file(GLOB all_SRCS
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/*.cpp"
+
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/ByteSerializers/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/ByteSerializers/*.cpp"
+
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/JsonRpc/Connection/*.h"
+
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/JsonRpc/ResultTypes/*.h"
+
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/Types/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/Types/*.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/Types/*.cpp"
+
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/Utils/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/Utils/*.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/Utils/*.cpp"
+)
+
+add_library(${LIB_NAME} SHARED CasperClient.cpp ${all_SRCS})
 
 find_package(OpenSSL REQUIRED)
 

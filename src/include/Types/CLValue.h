@@ -353,7 +353,7 @@ struct CLValue {
 
     CBytes sb;
 
-    CBytes bytes = hexDecode(u32Encode(values.size()));
+    CBytes bytes = hexDecode(u32Encode(static_cast<uint32_t>(values.size())));
 
     // std::cout << "bytes: " << bytes.size() << std::endl;
     // std::cout << "bytes: " << hexEncode(bytes) << std::endl;
@@ -391,7 +391,7 @@ struct CLValue {
   /// Returns a `CLValue` object with a ByteArray type.
   /// </summary>
   static CLValue ByteArray(CBytes bytes) {
-    return CLValue(bytes, CLType(bytes.size()), hexEncode(bytes));
+    return CLValue(bytes, CLType(static_cast<int32_t>(bytes.size())), hexEncode(bytes));
   }
 
   /// <summary>
@@ -400,7 +400,7 @@ struct CLValue {
   static CLValue ByteArray(std::string hex_val) {
     CBytes bytes = CryptoUtil::hexDecode(hex_val);
 
-    return CLValue(bytes, CLType(bytes.size()), hex_val);
+    return CLValue(bytes, CLType(static_cast<int32_t>(bytes.size())), hex_val);
   }
 
   /// <summary>
@@ -444,7 +444,7 @@ struct CLValue {
     CBytes bytes;
     std::cout << "dict size: " << dict.size() << std::endl;
 
-    CBytes len = hexDecode(u32Encode(dict.size()));
+    CBytes len = hexDecode(u32Encode(static_cast<uint32_t>(dict.size())));
     std::map<CLTypeParsedRVA, CLTypeParsedRVA> parsed_dict;
     bytes += len;
     int i = 0;

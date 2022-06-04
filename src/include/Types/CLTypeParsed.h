@@ -1,15 +1,14 @@
 #pragma once
 
 #include <optional>
-#include <tuple>
 #include <unordered_map>
 
 #include "Base.h"
-#include "CLType.h"
 #include "Types/CLConverter.h"
 #include "Types/GlobalStateKey.h"
 #include "Types/PublicKey.h"
 #include "Types/URef.h"
+#include "CLType.h"
 #include "magic_enum/magic_enum.hpp"
 #include "nlohmann/json.hpp"
 #include "rva/variant.hpp"
@@ -193,16 +192,12 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
     if (j.is_array()) {
       // Multiple key-value pairs
       for (auto& item : j) {
-        CLType key_type;
-        key_type.type = std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
-                            .begin()
-                            ->first;
+        
+        std::map<CLTypeRVA, CLTypeRVA> key_type_inner = std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type);
 
-        CLType value_type;
-        value_type.type =
-            std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
-                .begin()
-                ->second;
+        CLType key_type(key_type_inner.begin()->first);
+
+        CLType value_type(std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type).begin()->second);
 
         CLTypeParsedRVA key_parsed = item.at("key").get<CLTypeParsedRVA>();
         CLTypeParsedRVA value_parsed = item.at("value").get<CLTypeParsedRVA>();
@@ -213,21 +208,15 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
       p = parsed_map;
     } else {
       // Single key-value pair
-      CLType key_type;
-      key_type.type = std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
-                          .begin()
-                          ->first;
+      CLType key_type(std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type).begin()->first);
 
-      CLType value_type;
-      value_type.type = std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
-                            .begin()
-                            ->second;
+      CLType value_type(std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type).begin()->second);
 
-      CLTypeParsedRVA key_parsed;
-      CLTypeParsedRVA value_parsed;
+      
+      
 
-      key_parsed = j.at("key").get<CLTypeParsedRVA>();
-      value_parsed = j.at("value").get<CLTypeParsedRVA>();
+      CLTypeParsedRVA key_parsed(j.at("key").get<CLTypeParsedRVA>());
+      CLTypeParsedRVA value_parsed(j.at("value").get<CLTypeParsedRVA>());
 
       parsed_map[key_parsed] = value_parsed;
       p = parsed_map;
@@ -243,8 +232,7 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
     std::string type_name = obj.begin()->first;
 
     // Type of the object's value to be parsed inside the from_json below
-    CLType inner_type;
-    inner_type.type = obj.begin()->second;
+    CLType inner_type(obj.begin()->second);
 
     // object to be parsed below
     CLTypeParsedRVA parsed_obj;

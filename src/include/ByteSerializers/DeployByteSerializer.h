@@ -30,7 +30,7 @@ struct DeployByteSerializer : public BaseByteSerializer {
     // std::cout << "body hash " << source.body_hash << std::endl;
     WriteBytes(bytes, hexDecode(source.body_hash));
     // std::cout << "after body hash:" << hexEncode(bytes) << std::endl;
-    WriteInteger(bytes, source.dependencies.size());
+    WriteInteger(bytes, static_cast<int>(source.dependencies.size()));
     for (auto& dependency : source.dependencies) {
       WriteBytes(bytes, hexDecode(dependency));
     }
@@ -57,7 +57,7 @@ struct DeployByteSerializer : public BaseByteSerializer {
 
     // add the approvals
     //
-    WriteInteger(bytes, source.approvals.size());
+    WriteInteger(bytes, static_cast<int>(source.approvals.size()));
     for (auto& approval : source.approvals) {
       WriteBytes(bytes, approvalSerializer.ToBytes(approval));
     }

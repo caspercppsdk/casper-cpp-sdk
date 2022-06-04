@@ -22,12 +22,12 @@ struct PublicKey {
   CBytes raw_bytes;
   KeyAlgo key_algorithm;
 
- protected:
+
   PublicKey(CBytes raw_bytes_, KeyAlgo key_algorithm_)
       : raw_bytes(raw_bytes_), key_algorithm(key_algorithm_) {}
 
- public:
-  PublicKey() {}
+
+     PublicKey() : key_algorithm( KeyAlgo::ED25519), raw_bytes(){}
 
   /// <summary>
   /// Creates a PublicKey object from an hexadecimal string (containing the
@@ -84,6 +84,7 @@ struct PublicKey {
     } catch (std::exception& e) {
       std::cerr << "Unsupported key format or it's not a public key PEM object."
                 << std::endl;
+      std::cout << e.what();
     }
   }
 

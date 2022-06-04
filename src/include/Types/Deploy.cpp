@@ -107,7 +107,7 @@ bool Deploy::VerifySignatures(std::string& message) {
 /// </summary>
 int Deploy::GetDeploySizeInBytes() const {
   DeployByteSerializer serializer;
-  return serializer.ToBytes(*this).size();
+  return static_cast<int>(serializer.ToBytes(*this).size());
 }
 
 CBytes Deploy::ComputeBodyHash(ExecutableDeployItem payment,
