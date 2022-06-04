@@ -1,7 +1,6 @@
 #include "CasperClient.h"
-#include "Types/GlobalStateKey.cpp"
+#include "Types/GlobalStateKey.h"
 #include "Types/PublicKey.h"
-#include "Utils/CryptoUtil.h"
 #include <sstream>
 #include "Types/CLType.h"
 #include "Types/CLConverter.h"
@@ -12,7 +11,6 @@
 #include "date/date.h"
 #include "Types/ED25519Key.h"
 #include "Types/Secp256k1Key.h"
-#include "cryptopp/osrng.h"
 #include <chrono>
 
 // Tests
@@ -42,7 +40,8 @@ void printResult(const T& result, const std::string& rpc_call_name,
 /// <summary>
 /// Check the Casper lower-case convert function
 /// </summary>
-void stringUtil_toLowerTest() {
+void stringUtil_toLowerTest()
+{
   std::string str = "Hello World";
   std::string str_lower = "hello world";
   TEST_ASSERT(str_lower == StringUtil::toLower(str));
@@ -51,7 +50,8 @@ void stringUtil_toLowerTest() {
 /// <summary>
 /// Check the public key to account hash convert function
 /// </summary>
-void publicKey_getAccountHashTest() {
+void publicKey_getAccountHashTest()
+{
   Casper::PublicKey publicKey = Casper::PublicKey::FromHexString(
       "01cd807fb41345d8dd5a61da7991e1468173acbee53920e4dfe0d28cb8825ac664");
 
@@ -66,7 +66,8 @@ void publicKey_getAccountHashTest() {
 }
 
 // to store list inside map map["List"]: list_inner_type
-CLTypeRVA createContainerMap(std::string key, CLTypeRVA value) {
+CLTypeRVA createContainerMap(std::string key, CLTypeRVA value)
+{
   std::map<std::string, CLTypeRVA> cl_map_type;
   cl_map_type[key] = value;
 
@@ -75,15 +76,18 @@ CLTypeRVA createContainerMap(std::string key, CLTypeRVA value) {
   return rva;
 }
 
-CLTypeRVA createOption(CLTypeRVA value) {
+CLTypeRVA createOption(CLTypeRVA value)
+{
   return createContainerMap("Option", value);
 }
 
-CLTypeRVA createList(CLTypeRVA value) {
+CLTypeRVA createList(CLTypeRVA value)
+{
   return createContainerMap("List", value);
 }
 
-CLTypeRVA createMap(CLTypeRVA key, CLTypeRVA value) {
+CLTypeRVA createMap(CLTypeRVA key, CLTypeRVA value)
+{
   std::map<CLTypeRVA, CLTypeRVA> cl_map_type;
   cl_map_type[key] = value;
 
@@ -92,7 +96,8 @@ CLTypeRVA createMap(CLTypeRVA key, CLTypeRVA value) {
   return rva;
 }
 
-CLTypeRVA createTuple1(CLTypeRVA value1) {
+CLTypeRVA createTuple1(CLTypeRVA value1)
+{
   std::vector<CLTypeRVA> cl_tuple1_type;
   cl_tuple1_type.push_back(value1);
 
@@ -103,7 +108,8 @@ CLTypeRVA createTuple1(CLTypeRVA value1) {
   return rva;
 }
 
-CLTypeRVA createTuple2(CLTypeRVA value1, CLTypeRVA value2) {
+CLTypeRVA createTuple2(CLTypeRVA value1, CLTypeRVA value2)
+{
   std::vector<CLTypeRVA> cl_tuple2_type;
   cl_tuple2_type.push_back(value1);
   cl_tuple2_type.push_back(value2);
@@ -115,7 +121,8 @@ CLTypeRVA createTuple2(CLTypeRVA value1, CLTypeRVA value2) {
   return rva;
 }
 
-CLTypeRVA createTuple3(CLTypeRVA value1, CLTypeRVA value2, CLTypeRVA value3) {
+CLTypeRVA createTuple3(CLTypeRVA value1, CLTypeRVA value2, CLTypeRVA value3)
+{
   std::vector<CLTypeRVA> cl_tuple3_type;
   cl_tuple3_type.push_back(value1);
   cl_tuple3_type.push_back(value2);
@@ -128,7 +135,8 @@ CLTypeRVA createTuple3(CLTypeRVA value1, CLTypeRVA value2, CLTypeRVA value3) {
   return rva;
 }
 
-bool threeWayCompare(CLTypeRVA rva) {
+bool threeWayCompare(CLTypeRVA rva)
+{
   // create a json from the initial type object
   nlohmann::json obj_to_json;
   to_json(obj_to_json, rva);
@@ -151,7 +159,8 @@ bool threeWayCompare(CLTypeRVA rva) {
 }
 
 /// map<String, List<PublicKey>>
-void cltype_test() {
+void cltype_test()
+{
   // String
   auto key_type = CLTypeEnum::String;
 
@@ -166,7 +175,8 @@ void cltype_test() {
 }
 
 /// List<String>
-void cltype_str_list_test() {
+void cltype_str_list_test()
+{
   // List<String>
   CLTypeRVA list_type = createList(CLTypeEnum::String);
 
@@ -175,7 +185,8 @@ void cltype_str_list_test() {
 }
 
 // TODO:
-void cltype_json_test() {
+void cltype_json_test()
+{
   nlohmann::json j_map;
 
   j_map["cl_type"] = {{"Map", {{"key", "String"}, {"value", "String"}}}};
@@ -193,7 +204,8 @@ void cltype_json_test() {
 }
 
 /// Option<Bool>
-void clType_option_test() {
+void clType_option_test()
+{
   // Option<Bool>
   CLTypeRVA opt_type = createOption(CLTypeEnum::Bool);
 
@@ -202,7 +214,8 @@ void clType_option_test() {
 }
 
 /// Option<List<Map<U64, U8>>>
-void clType_option_recursiveTest() {
+void clType_option_recursiveTest()
+{
   // Option<List<Map<U64, U8>>>
   CLTypeRVA opt_type =
       createOption(createList(createMap(CLTypeEnum::U64, CLTypeEnum::U8)));
@@ -212,14 +225,16 @@ void clType_option_recursiveTest() {
 }
 
 /// Tuple1<Bool>
-void clType_tuple1_test() {
+void clType_tuple1_test()
+{
   CLTypeRVA tuple1_type = createTuple1(CLTypeEnum::Unit);
 
   TEST_ASSERT(threeWayCompare(tuple1_type));
 }
 
 /// Tuple2<Bool, I32>
-void clType_tuple2_test() {
+void clType_tuple2_test()
+{
   auto elem1 = CLTypeEnum::Bool;
   auto elem2 = CLTypeEnum::I32;
 
@@ -229,7 +244,8 @@ void clType_tuple2_test() {
 }
 
 /// Tuple2<U256, List<Any>>
-void clType_tuple2_recursiveTest() {
+void clType_tuple2_recursiveTest()
+{
   auto elem1 = CLTypeEnum::U256;
   auto elem2 = createList(CLTypeEnum::Any);
 
@@ -238,7 +254,8 @@ void clType_tuple2_recursiveTest() {
   TEST_ASSERT(threeWayCompare(tuple2_type));
 }
 
-void clType_tuple3_test() {
+void clType_tuple3_test()
+{
   auto elem1 = CLTypeEnum::I32;
   auto elem2 = CLTypeEnum::String;
   auto elem3 = createOption(CLTypeEnum::U512);
@@ -248,7 +265,8 @@ void clType_tuple3_test() {
   TEST_ASSERT(threeWayCompare(tuple3_type));
 }
 
-void clTypeParsed_test() {
+void clTypeParsed_test()
+{
   std::string json_str = R"(
   {
     "bytes": "06da6662305f01",
@@ -258,7 +276,8 @@ void clTypeParsed_test() {
   )";
 
   nlohmann::json j = nlohmann::json::parse(json_str);
-  std::cout << std::endl << j.dump(2) << std::endl;
+  std::cout << std::endl
+            << j.dump(2) << std::endl;
   CLValue cl;
   from_json(j, cl);
 
@@ -266,27 +285,33 @@ void clTypeParsed_test() {
 
   nlohmann::json j2;
   to_json(j2, cl);
-  std::cout << std::endl << j2.dump(2) << std::endl;
+  std::cout << std::endl
+            << j2.dump(2) << std::endl;
 
   TEST_ASSERT(j2.dump() == j.dump());
 }
 
 /// test the serialization of a CLValue using a json file as input
-void clValue_with_jsonFile(std::string file_name) {
+void clValue_with_jsonFile(std::string file_name)
+{
   // read the json file
   nlohmann::json input_json;
-  try {
+  try
+  {
     std::string file_path = __FILE__;
     std::string dir_path = file_path.substr(0, file_path.rfind("/"));
     std::cout << dir_path << std::endl;
     std::string file_path_name = dir_path + "/data/CLValue/" + file_name;
     std::ifstream ifs(file_path_name);
     input_json = nlohmann::json::parse(ifs);
-  } catch (std::exception& e) {
+  }
+  catch (std::exception &e)
+  {
     std::cout << "clValue_with_jsonFile: " << e.what() << std::endl;
   }
 
-  std::cout << std::endl << input_json.dump(2) << std::endl;
+  std::cout << std::endl
+            << input_json.dump(2) << std::endl;
 
   // create a CLValue from the json
   CLValue generated_obj;
@@ -296,7 +321,8 @@ void clValue_with_jsonFile(std::string file_name) {
   nlohmann::json generated_json;
   to_json(generated_json, generated_obj);
 
-  std::cout << std::endl << generated_json.dump(2) << std::endl;
+  std::cout << std::endl
+            << generated_json.dump(2) << std::endl;
 
   // compare the final parsed json with the initial json
   TEST_ASSERT(iequals(generated_json.dump(), input_json.dump()));
@@ -337,11 +363,13 @@ void clValue_with_PublicKeyTest() { clValue_with_jsonFile("PublicKey.json"); }
 
 void clValue_with_OptionTest() { clValue_with_jsonFile("Option.json"); }
 
-void clValue_with_OptionListKeyNULLTest() {
+void clValue_with_OptionListKeyNULLTest()
+{
   clValue_with_jsonFile("OptionListKey-NULL.json");
 }
 
-void clValue_with_OptionU64NULLTest() {
+void clValue_with_OptionU64NULLTest()
+{
   clValue_with_jsonFile("OptionU64-NULL.json");
 }
 
@@ -349,11 +377,13 @@ void clValue_with_OptionU64Test() { clValue_with_jsonFile("OptionU64.json"); }
 
 void clValue_with_ListTest() { clValue_with_jsonFile("List.json"); }
 
-void clValue_with_ListByteArray32Test() {
+void clValue_with_ListByteArray32Test()
+{
   clValue_with_jsonFile("ListByteArray32.json");
 }
 
-void clValue_with_ListOptionStringTest() {
+void clValue_with_ListOptionStringTest()
+{
   clValue_with_jsonFile("ListOptionString.json");
 }
 
@@ -378,20 +408,23 @@ void clValue_with_Tuple3Test() { clValue_with_jsonFile("Tuple3.json"); }
 void clValue_with_AnyTest() { clValue_with_jsonFile("Any.json"); }
 
 template <typename T>
-void globalStateKey_serialize(T key, std::string& expected_bytes_str) {
+void globalStateKey_serialize(T key, std::string &expected_bytes_str)
+{
   GlobalStateKeyByteSerializer gsk_serializer;
 
   CBytes key_bytes = gsk_serializer.ToBytes(key);
 
   std::string bytes_str = CEP57Checksum::Encode(key_bytes);
 
-  std::cout << std::endl << "key_bytes: " << key_bytes.size() << std::endl;
+  std::cout << std::endl
+            << "key_bytes: " << key_bytes.size() << std::endl;
   std::cout << bytes_str << std::endl;
 
   TEST_ASSERT(iequals(expected_bytes_str, bytes_str));
 }
 
-void globalStateKey_serializer_test() {
+void globalStateKey_serializer_test()
+{
   /// ACCOUNT HASH TEST
   AccountHashKey acc_key(
       "account-hash-"
@@ -433,7 +466,8 @@ void globalStateKey_serializer_test() {
 
 // Executable Deploy Item Byte Serializer Tests //
 
-void publicKey_load_fromFileTest() {
+void publicKey_load_fromFileTest()
+{
   std::cout << "\n";
   /// Create a Private Key from pem file
   // CryptoPP::AutoSeededRandomPool prng;
@@ -453,7 +487,8 @@ void publicKey_load_fromFileTest() {
   std::cout << "Verification: " << std::boolalpha << is_valid << std::endl;
 }
 
-void ed25KeyTest() {
+void ed25KeyTest()
+{
   std::cout << "\n";
   std::string pem_priv_path =
       "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/eddsa_secret_key.pem";

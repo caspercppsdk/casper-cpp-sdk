@@ -18,7 +18,7 @@ namespace Casper
     in >> parse("%FT%TZ", tp);
     //std::chrono::milliseconds epc = tp.time_since_epoch();
    // cout << tp << " = " << epc << '\n';
-    return duration_cast<std::chrono::milliseconds>(tp.time_since_epoch()).count();
+    return chrono::duration_cast<chrono::milliseconds>(tp.time_since_epoch()).count();
   }
 
   // Encoding & Decoding

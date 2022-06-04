@@ -32,8 +32,15 @@ file(GLOB all_SRCS
         "${CMAKE_CURRENT_SOURCE_DIR}/include/Utils/*.cpp"
 )
 
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -m64 -Wa,-mbig-obj")
+
+
 add_library(${LIB_NAME} SHARED CasperClient.cpp ${all_SRCS})
 
 find_package(OpenSSL REQUIRED)
 
-target_link_libraries(${LIB_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../lib/cryptopp/libcryptopp.a OpenSSL::SSL)
+target_link_libraries(${LIB_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../lib/cryptopp/libcryptopp.a OpenSSL::SSL)
+if(WIN32)
+  target_link_libraries(${LIB_NAME} PUBLIC wsock32 ws2_32)
+endif()

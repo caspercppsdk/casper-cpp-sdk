@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.h"
+#include "rva/variant.hpp"
 #include "ByteSerializers/GlobalStateKeyByteSerializer.h"
 #include "Types/CLType.h"
 #include "Types/CLTypeParsed.h"
@@ -629,19 +630,19 @@ inline void from_json(const nlohmann::json& j, CLValue& p) {
 }  // namespace Casper
 
 namespace nlohmann {
-template <typename T>
-struct adl_serializer<std::map<rva::variant<T>, rva::variant<T>>> {
-  static void to_json(json& j, const rva::variant<T>& var) {
-    j = to_json(std::get<var.index()>(var));
-  }
+    template <typename T>
+    struct adl_serializer<std::map<rva::variant<T&&>, rva::variant<T&&>>> {
+        using value_type = typename std::remove_reference<T>::type;
+        static void to_json(json& j, const rva::variant<value_type>& var) {
+            j = to_json(std::get<var.index()>(var));
+        }
 
-  static void from_json(const json& j, rva::variant<T>& var) {
-    from_json(j, std::get<var.index()>(var));
-  }
-};
+        static void from_json(const json& j, rva::variant<value_type>& var) {
+            from_json(j, std::get<var.index()>(var));
+        }
+    };
 
 }  // namespace nlohmann
-
 /*
 
 namespace nlohmann {

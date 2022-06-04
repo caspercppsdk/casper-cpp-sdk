@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <iostream>
 
-#include "../src/include/CasperClient.h"  // To use Casper::Client features
+#include "../src/include/CasperClient.h" // To use Casper::Client features
 #include "../src/include/Types/GlobalStateKey.h"
 #include "../src/include/ByteSerializers/DeployByteSerializer.h"
 /// Construct a Casper::Client object
@@ -9,8 +9,9 @@ Casper::Client casper_client(CASPER_TEST_ADDRESS);
 
 /// Helper function to print a result object
 template <typename T>
-void printResult(const T& result, const std::string& rpc_call_name,
-                 int indent = 2) {
+void printResult(const T &result, const std::string &rpc_call_name,
+                 int indent = 2)
+{
   std::cout << "-----------------------------------------------" << std::endl;
   std::cout << rpc_call_name << std::endl;
 
@@ -21,14 +22,16 @@ void printResult(const T& result, const std::string& rpc_call_name,
 }
 
 /// "info_get_peers" RPC function call example
-void infoGetPeers() {
+void infoGetPeers()
+{
   /// Call GetNodePeers function from the client object.
   Casper::InfoGetPeersResult peers_result = casper_client.GetNodePeers();
   printResult(peers_result, "info_get_peers");
 }
 
 /// "chain_get_state_root_hash" RPC function call example
-void chainGetStateRootHash() {
+void chainGetStateRootHash()
+{
   /// Call the function with a block height.
   const uint64_t block_height = 10;
   Casper::GetStateRootHashResult height_result =
@@ -50,7 +53,8 @@ void chainGetStateRootHash() {
 }
 
 /// "info_get_deploy" RPC function call example
-void infoGetDeploy() {
+void infoGetDeploy()
+{
   std::cout << "-----------------------------------------------";
   std::cout << "\ninfo_get_deploy\n";
 
@@ -66,13 +70,15 @@ void infoGetDeploy() {
 }
 
 /// "info_get_status" RPC function call example
-void infoGetStatus() {
+void infoGetStatus()
+{
   Casper::GetStatusResult status_result = casper_client.GetStatusInfo();
   printResult(status_result, "info_get_status");
 }
 
 /// "chain_get_block_transfers" RPC function call example
-void chainGetBlockTransfers() {
+void chainGetBlockTransfers()
+{
   // https://testnet.cspr.live/deploy/8e535d2baed76141ab47fd93b04dd61f65a07893b7c950022978a2b29628edd7
   const std::string block_hash =
       "35f86b6ab5e13b823daee5d23f3373f6b35048e0b0ea993adfadc5ba8ee7aae5";
@@ -84,7 +90,8 @@ void chainGetBlockTransfers() {
 }
 
 /// "chain_get_block" RPC function call example
-void chainGetBlock() {
+void chainGetBlock()
+{
   const std::string block_hash =
       "acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330";
 
@@ -95,7 +102,8 @@ void chainGetBlock() {
 }
 
 /// "chain_get_era_info_by_switch_block" RPC function call example
-void chainGetEraInfoBySwitchBlock() {
+void chainGetEraInfoBySwitchBlock()
+{
   const std::string block_hash =
       "d2077716e5b8796723c5720237239720f54e6ada54e3357f2c4896f2a51a6d8f";
 
@@ -106,7 +114,8 @@ void chainGetEraInfoBySwitchBlock() {
 }
 
 /// "state_get_item" RPC function call example
-void stateGetItem() {
+void stateGetItem()
+{
   const std::string state_root_hash =
       "39f2800688b94f68ca640b26c7d0f50a90d2ce9af55c9484e66151b544345303";
 
@@ -121,7 +130,8 @@ void stateGetItem() {
 }
 
 /// "state_get_dictionary_item" RPC function call example
-void stateGetDictionaryItem() {
+void stateGetDictionaryItem()
+{
   std::string state_root_hash =
       "322b8d17faea2ee780b9b952a25a86520d36a78e20113f0658ae0b29a68a7384";
 
@@ -136,7 +146,8 @@ void stateGetDictionaryItem() {
 }
 
 /// "state_get_balance" RPC function call example
-void stateGetBalance() {
+void stateGetBalance()
+{
   const std::string purse_uref =
       "uref-54fd72455872082a254b0160e94a86245acd0c441f526688bda1261d0969057a-"
       "007";
@@ -151,7 +162,8 @@ void stateGetBalance() {
 }
 
 /// "state_get_auction_info" RPC function call example
-void stateGetAuctionInfo() {
+void stateGetAuctionInfo()
+{
   const std::string block_hash =
       "a5ce9e1ea4ff786cf1eb9dfbe3a79f70ae33d723134a060910a2db80daf85bab";
 
@@ -162,7 +174,8 @@ void stateGetAuctionInfo() {
 }
 
 /// "account_put_deploy" RPC function call example
-void accountPutDeploy() {
+void accountPutDeploy()
+{
   std::ifstream ifs(
       "/home/yusuf/casper-cpp-sdk/examples/example_put_deploy1.json");
   nlohmann::json deploy_params_json = nlohmann::json::parse(ifs);
@@ -205,7 +218,8 @@ void accountPutDeploy() {
   t2.header.body_hash =
       Casper::CEP57Checksum::Encode(t2.ComputeBodyHash(t2.payment, t2.session));
   t2.hash = Casper::CEP57Checksum::Encode(t2.ComputeHeaderHash(t2.header));
-  std::cout << "\n\nt2 body: " << t2.header.body_hash << std::endl << "\n\n";
+  std::cout << "\n\nt2 body: " << t2.header.body_hash << std::endl
+            << "\n\n";
   Casper::DeployByteSerializer sery;
   std::cout << "\n\n\ntest\n\n\n";
   std::string deploy_bytes = Casper::hexEncode(sery.ToBytes(t2));
@@ -219,7 +233,8 @@ void accountPutDeploy() {
   printResult(put_deploy_result, "account_put_deploy");
 }
 
-int main() {
+int main()
+{
   // Milestone 1
   infoGetPeers();
 
