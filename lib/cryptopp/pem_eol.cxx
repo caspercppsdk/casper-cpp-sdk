@@ -5,7 +5,7 @@
 //
 // We don't use unix2dos and mac2dos on Travis because it means we have
 // to install it using Apt or Brew. This toy program will do, instead.
-
+#include "pch.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>

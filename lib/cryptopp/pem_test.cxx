@@ -1,6 +1,6 @@
 // pem_test.cxx - PEM testing routines.
 //                Written and placed in the public domain by Jeffrey Walton
-
+#include "pch.h"
 #include <string>
 #include <iostream>
 #include <cstdlib>

@@ -5,7 +5,7 @@
 // then it writes the cert to badcert.der. badcert.exe then
 // reads the cert and attempts to parse it. badcert.exe is
 // the prebuilt stand alone reproducer.
-
+#include "pch.h"
 #include "cryptlib.h"
 #include "x509cert.h"
 #include "secblock.h"
