@@ -160,10 +160,16 @@
       <TargetMachine>MachineX64</TargetMachine>
     </Lib>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <!-- Original File with special treatment -->
   <!-- Source Files -->
   <!-- The order of the first three matters -->
   <ItemGroup>
+    <ClCompile Include="badcert.cxx" />
     <ClCompile Include="cryptlib.cpp" />
     <ClCompile Include="cpu.cpp" />
     <ClCompile Include="integer.cpp" />
@@ -286,6 +292,11 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="pem_common.cpp" />
+    <ClCompile Include="pem_eol.cxx" />
+    <ClCompile Include="pem_read.cpp" />
+    <ClCompile Include="pem_test.cxx" />
+    <ClCompile Include="pem_write.cpp" />
     <ClCompile Include="pkcspad.cpp" />
     <ClCompile Include="poly1305.cpp" />
     <ClCompile Include="polynomi.cpp" />
@@ -346,6 +357,7 @@
     <ClCompile Include="vmac.cpp" />
     <ClCompile Include="wake.cpp" />
     <ClCompile Include="whrlpool.cpp" />
+    <ClCompile Include="x509cert.cpp" />
     <ClCompile Include="xed25519.cpp" />
     <ClCompile Include="xtr.cpp" />
     <ClCompile Include="xtrcrypt.cpp" />
@@ -512,6 +524,8 @@
     <ClInclude Include="padlkrng.h" />
     <ClInclude Include="panama.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="pem.h" />
+    <ClInclude Include="pem_common.h" />
     <ClInclude Include="pkcspad.h" />
     <ClInclude Include="poly1305.h" />
     <ClInclude Include="polynomi.h" />
@@ -570,6 +584,7 @@
     <ClInclude Include="wake.h" />
     <ClInclude Include="whrlpool.h" />
     <ClInclude Include="words.h" />
+    <ClInclude Include="x509cert.h" />
     <ClInclude Include="xed25519.h" />
     <ClInclude Include="xtr.h" />
     <ClInclude Include="xtrcrypt.h" />

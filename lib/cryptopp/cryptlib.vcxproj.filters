@@ -539,6 +539,13 @@
     <ClCompile Include="zlib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="badcert.cxx" />
+    <ClCompile Include="pem_common.cpp" />
+    <ClCompile Include="pem_eol.cxx" />
+    <ClCompile Include="pem_read.cpp" />
+    <ClCompile Include="pem_test.cxx" />
+    <ClCompile Include="pem_write.cpp" />
+    <ClCompile Include="x509cert.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Doxyfile">
@@ -1086,6 +1093,9 @@
     <ClInclude Include="chachapoly.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="pem.h" />
+    <ClInclude Include="pem_common.h" />
+    <ClInclude Include="x509cert.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="rdrand.asm">
