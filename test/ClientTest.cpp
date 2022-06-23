@@ -277,10 +277,33 @@ void clValue_with_jsonFile(std::string file_name) {
   nlohmann::json input_json;
   try {
     std::string file_path = __FILE__;
-    std::string dir_path = file_path.substr(0, file_path.rfind("/"));
-    std::cout << dir_path << std::endl;
-    std::string file_path_name = dir_path + "/data/CLValue/" + file_name;
+
+    std::string dir_path;
+    std::string file_path_name;
+
+    if (file_path.rfind("/") != std::string::npos)
+    {
+        dir_path = file_path.substr(0, file_path.rfind("/"));
+        file_path_name = dir_path + "/data/CLValue/" + file_name;
+    } else if (file_path.rfind("\\") != std::string::npos)
+    {
+        dir_path = file_path.substr(0, file_path.rfind("\\"));
+        file_path_name = dir_path + "\\data\\CLValue\\" + file_name;
+    } else
+    {
+        std::cerr << "Your OS is not supported!\n";
+    }
+    
+    
+
+
+    
+    
+
+    std::cout << "ERROR! file location: " << file_path_name << "\n";
+
     std::ifstream ifs(file_path_name);
+
     input_json = nlohmann::json::parse(ifs);
   } catch (std::exception& e) {
     std::cout << "clValue_with_jsonFile: " << e.what() << std::endl;

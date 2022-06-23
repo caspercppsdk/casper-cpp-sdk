@@ -74,6 +74,9 @@ using wstring_utf8_converter =
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t>;
 
 std::wstring from_utf8(std::string_view s) {
+    if (s.empty())
+        return std::wstring();
+
   wstring_utf8_converter converter;
   const char* begin = &(*s.begin());
   const char* end = begin + s.size();
