@@ -21,8 +21,15 @@ struct PutDeployResult : public RpcResult {
  * @param p PutDeployResult Result object to construct from.
  */
 inline void to_json(nlohmann::json& j, const PutDeployResult& p) {
-  j = static_cast<RpcResult>(p);
-  j["deploy_hash"] = p.deploy_hash;
+	try
+	{
+		j = static_cast<RpcResult>(p);
+		j["deploy_hash"] = p.deploy_hash;
+	} catch (std::exception& e)
+	{
+		std::cout << e.what();
+	}
+  
 }
 
 /**

@@ -197,8 +197,12 @@ PutDeployResult Client::PutDeploy(Deploy deploy) {
   nlohmann::json deploy_json;
   to_json(deploy_json, deploy);
   nlohmann::json paramsJSON{{"deploy", deploy_json}};
-  return mRpcClient.CallMethodNamed<PutDeployResult>(1, "account_put_deploy",
-                                                     paramsJSON);
+  try {
+      return mRpcClient.CallMethodNamed<PutDeployResult>(1, "account_put_deploy",
+          paramsJSON);
+  } catch (std::exception& e){
+      throw e;
+  }
 }
 
 }  // namespace Casper

@@ -11,13 +11,21 @@ Casper::Client casper_client(CASPER_TEST_ADDRESS);
 template <typename T>
 void printResult(const T& result, const std::string& rpc_call_name,
                  int indent = 2) {
-  std::cout << "-----------------------------------------------" << std::endl;
-  std::cout << rpc_call_name << std::endl;
+	try
+	{
+	    std::cout << "-----------------------------------------------" << std::endl;
+	    std::cout << rpc_call_name << std::endl;
 
-  nlohmann::json resultJSON;
-  nlohmann::to_json(resultJSON, result);
+	    nlohmann::json resultJSON;
+	    nlohmann::to_json(resultJSON, result);
 
-  std::cout << resultJSON.dump(indent) << std::endl;
+	    std::cout << resultJSON.dump(indent) << std::endl;
+	}
+	catch (std::exception& e)
+	{
+	std::cout << e.what();
+	}
+ 
 }
 
 /// "info_get_peers" RPC function call example
@@ -161,10 +169,47 @@ void stateGetAuctionInfo() {
   printResult(auction_result, "state_get_auction_info");
 }
 
+std::string getFileLocation(std::string file_name)
+{
+
+
+    try {
+        std::string file_path = __FILE__;
+
+        std::string dir_path;
+        std::string file_path_name;
+
+        if (file_path.rfind("/") != std::string::npos)
+        {
+            dir_path = file_path.substr(0, file_path.rfind("/"));
+            file_path_name = dir_path + "/" + file_name;
+        }
+        else if (file_path.rfind("\\") != std::string::npos)
+        {
+            dir_path = file_path.substr(0, file_path.rfind("\\"));
+            file_path_name = dir_path + "\\" + file_name;
+        }
+        else
+        {
+            std::cerr << "Your OS is not supported!\n";
+            throw std::runtime_error("File path is wrong!");
+        }
+
+        return file_path_name;
+    } catch(std::exception& e)
+    {
+        std::cout << "Error: " << e.what();
+    }
+        //std::cout << "ERROR! file location: " << file_path_name << "\n";
+
+        
+
+}
+
 /// "account_put_deploy" RPC function call example
 void accountPutDeploy() {
-  std::ifstream ifs(
-      "/home/yusuf/casper-cpp-sdk/examples/example_put_deploy1.json");
+    std::string example_json_path = getFileLocation("example_put_deploy1.json");
+  std::ifstream ifs(example_json_path);
   nlohmann::json deploy_params_json = nlohmann::json::parse(ifs);
 
   // std::cout << deploy_params_json.dump(2) << std::endl;
@@ -214,9 +259,16 @@ void accountPutDeploy() {
             << std::endl
             << std::endl
             << std::endl;
-  Casper::PutDeployResult put_deploy_result = casper_client.PutDeploy(t2);
 
-  printResult(put_deploy_result, "account_put_deploy");
+  try
+  {
+      Casper::PutDeployResult put_deploy_result = casper_client.PutDeploy(t2);
+      printResult(put_deploy_result, "account_put_deploy");
+  } catch (std::exception& e)
+  {
+      std::cout << "PutDeploy Error!\n";
+  }
+
 }
 
 int main() {
