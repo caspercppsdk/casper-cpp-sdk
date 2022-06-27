@@ -1,6 +1,7 @@
 #include "Types/Deploy.h"
-#include "ByteSerializers/ExecutableDeployItemByteSerializer.h"
+
 #include "ByteSerializers/DeployByteSerializer.h"
+#include "ByteSerializers/ExecutableDeployItemByteSerializer.h"
 
 namespace Casper {
 
@@ -113,20 +114,16 @@ int Deploy::GetDeploySizeInBytes() const {
 CBytes Deploy::ComputeBodyHash(ExecutableDeployItem payment,
                                ExecutableDeployItem session) {
   CBytes sb;
-  // std::cout << "ComputeBodyHash" << std::endl;
   ExecutableDeployItemByteSerializer itemSerializer;
 
   sb += itemSerializer.ToBytes(payment);
   sb += itemSerializer.ToBytes(session);
-  // std::cout << "ComputeBodyHash2" << std::endl;
 
   CryptoPP::BLAKE2b bcBl2bdigest(32u);
   bcBl2bdigest.Update(sb, sb.size());
-  // std::cout << "ComputeBodyHash3" << std::endl;
 
   CBytes hash(bcBl2bdigest.DigestSize());
   bcBl2bdigest.Final(hash);
-  // std::cout << "ComputeBodyHash4" << std::endl;
 
   return hash;
 }
@@ -136,8 +133,6 @@ CBytes Deploy::ComputeHeaderHash(DeployHeader header) {
 
   nlohmann::json j;
   to_json(j, header);
-  // std::cout << "ComputeHeaderHash header: \n";
-  // std::cout << j.dump(2) << std::endl;
 
   CBytes bHeader = serializer.ToBytes(header);
 

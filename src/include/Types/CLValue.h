@@ -97,7 +97,6 @@ struct CLValue {
   /// </summary>
   static CLValue U64(uint64_t value) {
     CBytes bytes = hexDecode(u64Encode(value));
-    // std::cout << "U64(" << value << ") = " << std::endl;
     return CLValue(bytes, CLTypeEnum::U64, value);
   }
 
@@ -123,9 +122,7 @@ struct CLValue {
   /// Returns a `CLValue` object with an U512 type.
   /// </summary>
   static CLValue U512(uint512_t value) {
-    // std::cout << "u512ToHex: " << u512ToHex(value) << std::endl;
     CBytes bytes = hexDecode(u512ToHex(value));
-    // std::cout << "after bytes" << std::endl;
     return CLValue(bytes, CLTypeEnum::U512, u512ToDec(value));
   }
 
@@ -176,18 +173,15 @@ struct CLValue {
   /// </summary>
 
   static CLValue Option(CLValue innerValue) {
-    // std::cout << "Option(CLValue innerValue)" << std::endl;
-    //  std::cout << "size: " << innerValue.bytes.size() << std::endl;
     CBytes bytes(1 + innerValue.bytes.size());
     bytes[0] = 0x01;
-    // std::cout << "before copy" << std::endl;
+
     std::copy(innerValue.bytes.begin(), innerValue.bytes.end(),
               bytes.begin() + 1);
-    // std::cout << "after copy" << std::endl;
 
     nlohmann::json j;
     to_json(j, innerValue.parsed);
-    // std::cout << "innerValue.parsed: " << j.dump() << std::endl;
+
     std::optional<CLTypeRVA> opt_with_inner = innerValue.cl_type.type;
     return CLValue(bytes, CLType(opt_with_inner), innerValue.parsed);
   }
@@ -355,9 +349,6 @@ struct CLValue {
 
     CBytes bytes = hexDecode(u32Encode(values.size()));
 
-    // std::cout << "bytes: " << bytes.size() << std::endl;
-    // std::cout << "bytes: " << hexEncode(bytes) << std::endl;
-
     sb += bytes;
 
     CLTypeRVA first_elem_type = values[0].cl_type.type;
@@ -365,7 +356,6 @@ struct CLValue {
     std::vector<CLTypeParsedRVA> parsed_values;
     CLTypeParsedRVA parsed_elems;
 
-    // std::cout << "after typeInfo" << std::endl;
     for (auto value : values) {
       sb += value.bytes;
       parsed_values.push_back(value.parsed.parsed);
@@ -376,7 +366,6 @@ struct CLValue {
       }
     }
 
-    // std::cout << "after for" << std::endl;
     parsed_elems = parsed_values;
 
     return CLValue(sb, CLType(first_elem_type, CLTypeEnum::List), parsed_elems);

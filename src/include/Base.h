@@ -1,16 +1,17 @@
 #pragma once
 
+#include <fstream>
+#include <iostream>
 #include <optional>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <sstream>
-#include <fstream>
-#include "wide-integer/uintwide_t.h"
-#include "cryptopp/secblock.h"
+
 #include "cryptopp/filters.h"  // CryptoPP::StringSink
 #include "cryptopp/hex.h"      // CryptoPP::HexEncoder
+#include "cryptopp/secblock.h"
 #include "nlohmann/json.hpp"
+#include "wide-integer/uintwide_t.h"
 
 using uint512_t = math::wide_integer::uint512_t;
 using uint256_t = math::wide_integer::uint256_t;
@@ -161,18 +162,13 @@ inline std::string u256ToHex(uint256_t value) {
   std::string u256_str;
   u256_str = ss.str();
 
-  // std::cout << "u256_str1: " << u256_str << std::endl;
-
   if (u256_str.length() % 2 != 0) {
     u256_str = "0" + u256_str;
   }
 
-  // std::cout << "u256_str2: " << u256_str << std::endl;
-  //
   uint8_t bytes_length = u256_str.length() / 2;
   std::string bytes_length_str = integerToHex<uint8_t>(bytes_length);
 
-  // std::cout << "u256_str3: " << u256_str << std::endl;
   reverseHex(u256_str);
 
   // this string includes the length of the string and its hex representation

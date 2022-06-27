@@ -201,7 +201,6 @@ struct PublicKey {
 
     CryptoPP::BLAKE2b bcBl2bdigest(32u);
     bcBl2bdigest.Update(sb, sb.size());
-    // std::cout << "ComputeBodyHash3" << std::endl;
 
     CBytes hash(bcBl2bdigest.DigestSize());
     bcBl2bdigest.Final(hash);
