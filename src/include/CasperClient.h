@@ -1,5 +1,11 @@
 #pragma once
 
+#if _WIN32
+#define SLASH "\\"
+#else
+#define SLASH "/"
+#endif
+
 #include <filesystem>
 #include <string>
 

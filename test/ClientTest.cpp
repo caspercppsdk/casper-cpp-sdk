@@ -468,12 +468,13 @@ void publicKey_load_fromFileTest() {
   // CryptoPP::AutoSeededRandomPool prng;
 
   std::string file{ __FILE__ };
-  std::string test_dir{ file.substr(0, file.rfind("\\")) };
-  std::string keyPair_dir = test_dir + "\\data\\KeyPair";
+  std::string test_dir{ file.substr(0, file.rfind(SLASH)) };
+
+  std::string keyPair_dir = test_dir + SLASH + "data" + SLASH + "KeyPair";
 
 
   std::string privKeyPemFile =
-	  keyPair_dir + "\\cppsdkSECP256k1_secret_key.pem";
+	  keyPair_dir + SLASH + "cppsdkSECP256k1_secret_key.pem";
 
 
   Casper::Secp256k1Key secp256k1Key(privKeyPemFile);
@@ -492,12 +493,14 @@ void publicKey_load_fromFileTest() {
 void ed25KeyTest() {
   std::cout << "\n";
   std::string file{ __FILE__ };
-  std::string test_dir{ file.substr(0, file.rfind("\\")) };
-  std::string keyPair_dir = test_dir + "\\data\\KeyPair";
+  std::string test_dir{ file.substr(0, file.rfind(SLASH)) };
+
+  std::string keyPair_dir = test_dir + SLASH + "data" + SLASH + "KeyPair";
 
 
   std::string pem_priv_path =
-	  keyPair_dir + "\\cppsdkED25519_secret_key.pem";
+	  keyPair_dir + SLASH + "cppsdkED25519_secret_key.pem";
+
 
   Ed25519Key ed_key(pem_priv_path);
   std::cout << "ed_key.getPrivateKeyStr(): " << ed_key.getPrivateKeyStr()
