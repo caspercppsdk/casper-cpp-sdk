@@ -11,7 +11,11 @@
 #include "Types/CLValue.h"
 #include "date/date.h"
 #include "Types/ED25519Key.h"
+
+#if _WIN32
 #include <openssl/applink.c>
+#endif
+
 #include "Types/Secp256k1Key.h"
 
 #include "cryptopp/osrng.h"
