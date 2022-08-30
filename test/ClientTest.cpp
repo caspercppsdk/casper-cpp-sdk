@@ -11,7 +11,9 @@
 #include "Types/CLValue.h"
 #include "date/date.h"
 #include "Types/ED25519Key.h"
+#include <openssl/applink.c>
 #include "Types/Secp256k1Key.h"
+
 #include "cryptopp/osrng.h"
 #include <chrono>
 
@@ -460,8 +462,15 @@ void publicKey_load_fromFileTest() {
   std::cout << "\n";
   /// Create a Private Key from pem file
   // CryptoPP::AutoSeededRandomPool prng;
+
+  std::string file{ __FILE__ };
+  std::string test_dir{ file.substr(0, file.rfind("\\")) };
+  std::string keyPair_dir = test_dir + "\\data\\KeyPair";
+
+
   std::string privKeyPemFile =
-      "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/secp256k1_secret_key.pem";
+	  keyPair_dir + "\\cppsdkSECP256k1_secret_key.pem";
+
 
   Casper::Secp256k1Key secp256k1Key(privKeyPemFile);
   std::cout << "private key: " << secp256k1Key.getPrivateKeyStr() << std::endl;
@@ -478,8 +487,14 @@ void publicKey_load_fromFileTest() {
 
 void ed25KeyTest() {
   std::cout << "\n";
+  std::string file{ __FILE__ };
+  std::string test_dir{ file.substr(0, file.rfind("\\")) };
+  std::string keyPair_dir = test_dir + "\\data\\KeyPair";
+
+
   std::string pem_priv_path =
-      "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/eddsa_secret_key.pem";
+	  keyPair_dir + "\\cppsdkED25519_secret_key.pem";
+
   Ed25519Key ed_key(pem_priv_path);
   std::cout << "ed_key.getPrivateKeyStr(): " << ed_key.getPrivateKeyStr()
             << std::endl;
