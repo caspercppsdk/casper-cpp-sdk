@@ -13,10 +13,11 @@
 #include "magic_enum/magic_enum.hpp"
 #include "nlohmann/json.hpp"
 #include "rva/variant.hpp"
+#include <boost/variant/get.hpp>
 
 namespace Casper {
 
-using CLTypeParsedRVA = rva::variant<
+using CLTypeParsedRVA = boost::make_recursive_variant<
     bool,       // 0 Bool, // boolean primitive
     int32_t,    // 1 I32, // signed 32-bit integer primitive
     int64_t,    // 2 I64, // signed 64-bit integer primitive
@@ -38,61 +39,61 @@ using CLTypeParsedRVA = rva::variant<
 
     //  Option(CLType), // optional value of the given type
 
-    std::vector<rva::self_t>,  // 13 List(CLType), Tuple1(CLType),
+    std::vector<boost::recursive_variant_>,  // 13 List(CLType), Tuple1(CLType),
                                // Tuple2(CLType, CLType), Tuple3(CLType, CLType,
                                // CLType)
 
     // ByteArray(CLType, u32), // same as `List` above, but number
     // of elements is statically known (e.g. arrays in rust)
 
-    std::map<std::string, rva::self_t>,  // 14 result ok err, two elems
+    std::map<std::string, boost::recursive_variant_>,  // 14 result ok err, two elems
 
-    std::map<rva::self_t, rva::self_t>,  //  15 Map(CLType, CLType), //
+    std::map<boost::recursive_variant_, boost::recursive_variant_>,  //  15 Map(CLType, CLType), //
                                          //  key-value association
                                          //  where keys and values have
                                          //  the given types
 
     std::monostate  // 16 Any // Indicates the type is not known
 
-    >;
+    >::type;
 
 inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
-  if (p.index() == 0) {
-    auto& p_type = rva::get<bool>(p);
+  if (p.which() == 0) {
+    auto& p_type = boost::get<bool>(p);
     j = p_type;
-  } else if (p.index() == 1) {
-    auto& p_type = rva::get<int32_t>(p);
+  } else if (p.which() == 1) {
+    auto& p_type = boost::get<int32_t>(p);
     j = p_type;
-  } else if (p.index() == 2) {
-    auto& p_type = rva::get<int64_t>(p);
+  } else if (p.which() == 2) {
+    auto& p_type = boost::get<int64_t>(p);
     j = p_type;
-  } else if (p.index() == 3) {
-    auto& p_type = rva::get<uint8_t>(p);
+  } else if (p.which() == 3) {
+    auto& p_type = boost::get<uint8_t>(p);
     j = p_type;
-  } else if (p.index() == 4) {
-    auto& p_type = rva::get<uint32_t>(p);
+  } else if (p.which() == 4) {
+    auto& p_type = boost::get<uint32_t>(p);
     j = p_type;
-  } else if (p.index() == 5) {
-    auto& p_type = rva::get<uint64_t>(p);
+  } else if (p.which() == 5) {
+    auto& p_type = boost::get<uint64_t>(p);
     j = p_type;
-  } else if (p.index() == 6) {
-    auto p_type = rva::get<uint128_t>(p);
+  } else if (p.which() == 6) {
+    auto p_type = boost::get<uint128_t>(p);
     j = p_type;
-  } else if (p.index() == 7) {
-    auto p_type = rva::get<uint256_t>(p);
+  } else if (p.which() == 7) {
+    auto p_type = boost::get<uint256_t>(p);
     j = p_type;
-  } else if (p.index() == 8) {
-    auto p_type = rva::get<uint512_t>(p);
+  } else if (p.which() == 8) {
+    auto p_type = boost::get<uint512_t>(p);
     j = p_type;
-  } else if (p.index() == 9) {
-    auto& p_type = rva::get<std::string>(p);
+  } else if (p.which() == 9) {
+    auto& p_type = boost::get<std::string>(p);
     j = p_type;
-  } else if (p.index() == 10) {
-    auto& p_type = rva::get<URef>(p);
+  } else if (p.which() == 10) {
+    auto& p_type = boost::get<URef>(p);
     std::cout << "\nURef to_json\n" << std::endl;
     j = p_type.ToString();
-  } else if (p.index() == 11) {
-    auto p_type = rva::get<GlobalStateKey>(p);
+  } else if (p.which() == 11) {
+    auto p_type = boost::get<GlobalStateKey>(p);
     std::string key_identifier{magic_enum::enum_name(p_type.key_identifier)};
 
     // URef does not have a key_identifier as an enum in parsed
@@ -102,17 +103,17 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
       j[key_identifier] = p_type.ToString();
     }
 
-  } else if (p.index() == 12) {
-    auto p_type = rva::get<PublicKey>(p);
+  } else if (p.which() == 12) {
+    auto p_type = boost::get<PublicKey>(p);
     j = p_type.ToString();
-  } else if (p.index() == 13) {
-    auto p_type = rva::get<std::vector<CLTypeParsedRVA>>(p);
+  } else if (p.which() == 13) {
+    auto p_type = boost::get<std::vector<CLTypeParsedRVA>>(p);
     j = p_type;
-  } else if (p.index() == 14) {
-    auto& p_type = rva::get<std::map<std::string, CLTypeParsedRVA>>(p);
+  } else if (p.which() == 14) {
+    auto& p_type = boost::get<std::map<std::string, CLTypeParsedRVA>>(p);
     j = p_type;
-  } else if (p.index() == 15) {
-    auto& p_type = rva::get<std::map<CLTypeParsedRVA, CLTypeParsedRVA>>(p);
+  } else if (p.which() == 15) {
+    auto& p_type = boost::get<std::map<CLTypeParsedRVA, CLTypeParsedRVA>>(p);
 
     int i = 0;
     for (auto& [key, value] : p_type) {
@@ -120,24 +121,24 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
     }
 
     // j = p_type;
-  } else if (p.index() == 16) {
+  } else if (p.which() == 16) {
     j = nullptr;
   }
 }
 
 inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
                       CLType& cl_type_) {
-  // std::cout << "from_json, idx: " << p.index() << std::endl;
+  // std::cout << "from_json, idx: " << p.which() << std::endl;
   bool is_primitive = false;
-  if (cl_type_.type.index() == 0) {
+  if (cl_type_.type.which() == 0) {
     is_primitive = true;
   }
 
   if (is_primitive) {
     // std::cout << "enum: "
-    //           << magic_enum::enum_name(rva::get<CLTypeEnum>(cl_type_.type))
+    //           << magic_enum::enum_name(boost::get<CLTypeEnum>(cl_type_.type))
     //           << std::endl;
-    switch (rva::get<CLTypeEnum>(cl_type_.type)) {
+    switch (boost::get<CLTypeEnum>(cl_type_.type)) {
       case CLTypeEnum::Bool:
         p = j.get<bool>();
         break;
@@ -183,10 +184,10 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
         p = PublicKey::FromHexString(j.get<std::string>());
         break;
     }
-  } else if (cl_type_.type.index() == 1) {
+  } else if (cl_type_.type.which() == 1) {
     // vector<CLTypeRVA>
     // std::cout << "\nvector<CLTypeRVA> from_json\n" << std::endl;
-  } else if (cl_type_.type.index() == 2) {
+  } else if (cl_type_.type.which() == 2) {
     // Map(CLType, CLType)
     auto parsed_map = std::map<CLTypeParsedRVA, CLTypeParsedRVA>();
 
@@ -194,13 +195,13 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
       // Multiple key-value pairs
       for (auto& item : j) {
         CLType key_type;
-        key_type.type = std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
+        key_type.type = boost::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
                             .begin()
                             ->first;
 
         CLType value_type;
         value_type.type =
-            std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
+            boost::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
                 .begin()
                 ->second;
 
@@ -214,12 +215,12 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
     } else {
       // Single key-value pair
       CLType key_type;
-      key_type.type = std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
+      key_type.type = boost::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
                           .begin()
                           ->first;
 
       CLType value_type;
-      value_type.type = std::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
+      value_type.type = boost::get<std::map<CLTypeRVA, CLTypeRVA>>(cl_type_.type)
                             .begin()
                             ->second;
 
@@ -233,11 +234,11 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
       p = parsed_map;
     }
 
-  } else if (cl_type_.type.index() == 3) {
+  } else if (cl_type_.type.which() == 3) {
     std::cout << "\nCLTypeRVA from_json 3\n" << std::endl;
     /// option, list, result
 
-    auto obj = std::get<std::map<std::string, CLTypeRVA>>(cl_type_.type);
+    auto obj = boost::get<std::map<std::string, CLTypeRVA>>(cl_type_.type);
 
     // Type of the current object
     std::string type_name = obj.begin()->first;
@@ -310,11 +311,11 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
     }
   }
   // Tuple1, Tuple2, and Tuple3
-  else if (cl_type_.type.index() == 4) {
+  else if (cl_type_.type.which() == 4) {
     std::vector<CLTypeParsedRVA> parsed_list;
 
     auto inner_types =
-        std::get<std::map<std::string, std::vector<CLTypeRVA>>>(cl_type_.type)
+        boost::get<std::map<std::string, std::vector<CLTypeRVA>>>(cl_type_.type)
             .begin()
             ->second;
 
@@ -332,7 +333,7 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
 
   }
   // ByteArray
-  else if (cl_type_.type.index() == 5) {
+  else if (cl_type_.type.which() == 5) {
     p = j.get<std::string>();
   }
 

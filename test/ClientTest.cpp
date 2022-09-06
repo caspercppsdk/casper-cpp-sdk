@@ -22,6 +22,7 @@
 
 // Test Library
 #include "acutest.h"
+#include <boost/variant/get.hpp>
 
 using namespace Casper;
 
@@ -262,7 +263,7 @@ void clTypeParsed_test() {
   CLValue cl;
   from_json(j, cl);
 
-  TEST_ASSERT(rva::get<CLTypeEnum>(cl.cl_type.type) == CLTypeEnum::U512);
+  TEST_ASSERT(boost::get<CLTypeEnum>(cl.cl_type.type) == CLTypeEnum::U512);
 
   nlohmann::json j2;
   to_json(j2, cl);

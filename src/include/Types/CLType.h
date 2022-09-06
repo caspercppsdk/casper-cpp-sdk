@@ -12,6 +12,8 @@
 #include <unordered_map>
 #include <optional>
 #include "magic_enum/magic_enum.hpp"
+#include <boost/variant/recursive_variant.hpp>
+#include <boost/variant/get.hpp>
 
 namespace Casper {
 enum class CLTypeEnum : uint8_t {
@@ -112,20 +114,21 @@ enum class CLTypeEnum : uint8_t {
   PublicKey = 22
 };
 
-using CLTypeRVA = rva::variant<
+using CLTypeRVA = boost::make_recursive_variant<
     CLTypeEnum,                                       // primitives
-    std::vector<rva::self_t>,                         // check this
-    std::map<rva::self_t, rva::self_t>,               // map
-    std::map<std::string, rva::self_t>,               // opt, list,
-    std::map<std::string, std::vector<rva::self_t>>,  // tuple1,t2,t3
+    std::vector<boost::recursive_variant_>,                         // check this
+    std::map<boost::recursive_variant_, boost::recursive_variant_>,               // map
+    std::map<std::string, boost::recursive_variant_>,               // opt, list,
+    std::map<std::string, std::vector<boost::recursive_variant_>>,  // tuple1,t2,t3
     std::map<std::string, int32_t>                    // byte array
-    >;
+    >::type;
 
 inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
   /// bool, i32, i64, u8, u32, u64, u128, u256, u512, unit, string, key, uref,
   /// any, public key
-  if (p.index() == 0) {
-    auto& p_type = rva::get<CLTypeEnum>(p);
+  if (p.which() == 0) 
+  {
+    auto& p_type = boost::get<CLTypeEnum>(p);
 
     // check if the enum is primitive
     if (p_type == CLTypeEnum::Bool || p_type == CLTypeEnum::I32 ||
@@ -140,23 +143,23 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
     }
   }
   /// inner type - maybe delete
-  else if (p.index() == 1) {
-    std::cout << "\n\nrva::get<std::vector<CLTypeRVA>>(p)\n\n" << std::endl;
+  else if (p.which() == 1) {
+    std::cout << "\n\nboost::get<std::vector<CLTypeRVA>>(p)\n\n" << std::endl;
 
-    auto& p_type = rva::get<std::vector<CLTypeRVA>>(p);
+    auto& p_type = boost::get<std::vector<CLTypeRVA>>(p);
     // TODO: should not be called, be careful check this.
     j = p_type;
 
   }
   /// map
-  else if (p.index() == 2) {
-    auto& p_type = rva::get<std::map<CLTypeRVA, CLTypeRVA>>(p);
+  else if (p.which() == 2) {
+    auto& p_type = boost::get<std::map<CLTypeRVA, CLTypeRVA>>(p);
     j["Map"] = {{"key", p_type.begin()->first},
                 {"value", p_type.begin()->second}};
   }
   /// option, list, result
-  else if (p.index() == 3) {
-    auto& p_type = rva::get<std::map<std::string, CLTypeRVA>>(p);
+  else if (p.which() == 3) {
+    auto& p_type = boost::get<std::map<std::string, CLTypeRVA>>(p);
     std::string key_type = p_type.begin()->first;
 
     if (key_type == "Option") {
@@ -164,15 +167,15 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
     } else if (key_type == "List") {
       j = {{"List", p_type.begin()->second}};
     } else if (key_type == "Result") {
-      auto inner_map = std::get<3>(p_type.begin()->second);
+      auto inner_map = boost::get<std::map<std::string, CLTypeRVA>>(p_type.begin()->second);
       nlohmann::json inner_val = {{"Ok", inner_map["Ok"]},
                                   {"Err", inner_map["Err"]}};
       j = {"Result", inner_val};
     }
   }
   /// tuple1, tuple2, tuple3
-  else if (p.index() == 4) {
-    auto& p_type = rva::get<std::map<std::string, std::vector<CLTypeRVA>>>(p);
+  else if (p.which() == 4) {
+    auto& p_type = boost::get<std::map<std::string, std::vector<CLTypeRVA>>>(p);
     std::string key_type = p_type.begin()->first;
     /*
       "cl_type":{"Tuple1":["Bool"]}
@@ -187,8 +190,8 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
       j = {{key_type, inner_types}};
     }
 
-  } else if (p.index() == 5) {
-    auto& p_type = rva::get<std::map<std::string, int32_t>>(p);
+  } else if (p.which() == 5) {
+    auto& p_type = boost::get<std::map<std::string, int32_t>>(p);
     std::string key_type = p_type.begin()->first;
     if (key_type == "ByteArray") {
       j["ByteArray"] = p_type.begin()->second;

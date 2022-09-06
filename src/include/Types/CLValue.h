@@ -370,7 +370,7 @@ struct CLValue {
       sb += value.bytes;
       parsed_values.push_back(value.parsed.parsed);
 
-      if (value.cl_type.type.index() != first_elem_type.index()) {
+      if (value.cl_type.type.which() != first_elem_type.which()) {
         throw std::runtime_error(
             "All elements in a list must be of the same type");
       }
@@ -454,8 +454,8 @@ struct CLValue {
       if (i == 0) {
         keyType = kv.first.cl_type.type;
         valueType = kv.second.cl_type.type;
-      } else if (keyType.index() != kv.first.cl_type.type.index() ||
-                 valueType.index() != kv.second.cl_type.type.index()) {
+      } else if (keyType.which() != kv.first.cl_type.type.which() ||
+                 valueType.which() != kv.second.cl_type.type.which()) {
         throw std::runtime_error(
             "All elements in a map must be of the same "
             "type");
@@ -630,13 +630,13 @@ inline void from_json(const nlohmann::json& j, CLValue& p) {
 
 namespace nlohmann {
 template <typename T>
-struct adl_serializer<std::map<rva::variant<T>, rva::variant<T>>> {
-  static void to_json(json& j, const rva::variant<T>& var) {
-    j = to_json(std::get<var.index()>(var));
+struct adl_serializer<std::map<boost::make_recursive_variant<T>, boost::make_recursive_variant<T>>> {
+  static void to_json(json& j, const boost::make_recursive_variant<T>& var) {
+    j = to_json(boost::get<var.which()>(var));
   }
 
-  static void from_json(const json& j, rva::variant<T>& var) {
-    from_json(j, std::get<var.index()>(var));
+  static void from_json(const json& j, boost::make_recursive_variant<T>& var) {
+    from_json(j, boost::get<var.which()>(var));
   }
 };
 
