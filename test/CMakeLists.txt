@@ -1,4 +1,5 @@
-set(BINARY casper_sdk_test)
+cmake_minimum_required(VERSION 3.15)
+
 
 add_executable(${BINARY}
     ClientTest.cpp
@@ -10,3 +11,10 @@ add_executable(${BINARY}
 target_link_libraries(${BINARY} PUBLIC ${LIB_NAME})
 
 add_test(NAME ${BINARY} COMMAND ./${BINARY})
+
+set(DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/data)
+
+set(PEM_FILE
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/cpp_sdk_test_secret_key.pem)
+
+file(COPY ${PEM_FILE} DESTINATION ${DESTINATION})
