@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.0)
 project(CasperSDK VERSION 1.0.0)
 
-enable_testing()
-
 message("CasperSDK Version: ${CMAKE_PROJECT_VERSION}")
 
 # Set C++17 as the default C++ standard
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_FLAGS "-Werror -Wno-missing-declarations -O3 -fPIC")
+set(LIB_NAME "casper_sdk")
+set(SDK_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Set the include paths.
 include_directories(
@@ -32,12 +33,28 @@ ExternalProject_Add(
     BUILD_IN_SOURCE TRUE
     INSTALL_COMMAND ""
     CMAKE_ARGS ""
+    BUILD_COMMAND make
 )
 
-# Set the CMake lists for the SDK and the SDK's dependencies
 add_subdirectory(src)
-add_subdirectory(test)
-add_subdirectory(examples)
+if (CASPER_SDK_TESTS)
+    enable_testing()
+    add_subdirectory(test)
+    add_subdirectory(examples)
+endif()
 
-install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/lib/CasperSDK)
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/include DESTINATION /usr/lib/CasperSDK)
+if (NOT LIBRARIES_DIR)
+    set(LIBRARIES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
+    file(MAKE_DIRECTORY ${LIBRARIES_DIR})
+endif()
+
+if (NOT EXTERNAL_INCLUDES_DIR)
+    set(EXTERNAL_INCLUDES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    file(MAKE_DIRECTORY ${EXTERNAL_INCLUDES_DIR})
+endif()
+
+
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/src/include/" DESTINATION "${EXTERNAL_INCLUDES_DIR}/casper_sdk")
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/lib/" DESTINATION "${EXTERNAL_INCLUDES_DIR}")
+install(TARGETS ${LIB_NAME} DESTINATION ${LIBRARIES_DIR})
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/include/" DESTINATION ${EXTERNAL_INCLUDES_DIR})
