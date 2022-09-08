@@ -25,7 +25,6 @@
 #include <boost/variant/get.hpp>
 
 using namespace Casper;
-
 /*
 /// Helper function to print a result object
 template <typename T>
@@ -438,8 +437,6 @@ void publicKey_load_fromFileTest() {
   std::cout << "\n";
   /// Create a Private Key from pem file
   // CryptoPP::AutoSeededRandomPool prng;
-  std::string privKeyPemFile =
-      "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/secp256k1_secret_key.pem";
 
   Casper::Secp256k1Key secp256k1Key(privKeyPemFile);
   std::cout << "private key: " << secp256k1Key.getPrivateKeyStr() << std::endl;
@@ -456,9 +453,8 @@ void publicKey_load_fromFileTest() {
 
 void ed25KeyTest() {
   std::cout << "\n";
-  std::string pem_priv_path =
-      "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/eddsa_secret_key.pem";
-  Ed25519Key ed_key(pem_priv_path);
+  
+  Ed25519Key ed_key(privKeyPemFile);
   std::cout << "ed_key.getPrivateKeyStr(): " << ed_key.getPrivateKeyStr()
             << std::endl;
   std::cout << "ed_key.getPublicKeyStr(): " << ed_key.getPublicKeyStr()
