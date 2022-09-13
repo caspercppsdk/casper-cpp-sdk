@@ -183,6 +183,8 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
       case CLTypeEnum::PublicKey:
         p = PublicKey::FromHexString(j.get<std::string>());
         break;
+      default:
+        break;
     }
   } else if (cl_type_.type.which() == 1) {
     // vector<CLTypeRVA>

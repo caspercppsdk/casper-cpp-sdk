@@ -85,6 +85,7 @@ struct PublicKey {
       std::cerr << "Unsupported key format or it's not a public key PEM object."
                 << std::endl;
     }
+      return {};
   }
 
   /// <summary>

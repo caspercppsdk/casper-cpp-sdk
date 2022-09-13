@@ -9,12 +9,15 @@ set(CMAKE_CXX_FLAGS "-Werror -Wno-missing-declarations -O3 -fPIC")
 set(LIB_NAME "casper_sdk")
 set(SDK_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
+find_package(Boost 1.75.0 REQUIRED)
+
 # Set the include paths.
 include_directories(
     src/include
     lib
     test/TestLibrary
     lib/cryptopp
+    ${Boost_INCLUDE_DIR}
 )
 
 find_program(
