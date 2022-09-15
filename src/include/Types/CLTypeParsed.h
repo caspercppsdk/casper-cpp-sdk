@@ -184,7 +184,7 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
         p = PublicKey::FromHexString(j.get<std::string>());
         break;
       default:
-        std::cerr << "Unsupported type in json : " << static_cast<int>(cl_type_.type) << std::endl;
+        std::cerr << "Unsupported type in json " << std::endl;
         break;
     }
   } else if (cl_type_.type.which() == 1) {
