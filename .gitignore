@@ -62,6 +62,7 @@ test/Testing
 examples/example
 
 include
+!src/include
 libs
 lib/cryptopp/adhoc.cpp
 .DS_Store

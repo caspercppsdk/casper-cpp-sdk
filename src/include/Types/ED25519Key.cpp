@@ -1,3 +1,5 @@
+#include <spdlog/spdlog.h>
+
 #include "Types/ED25519Key.h"
 #include "Base.h"
 #include <openssl/pem.h>
@@ -15,20 +17,18 @@ Ed25519Key::Ed25519Key(std::string pem_file_path)
   FILE* fp = fopen(pem_file_path.c_str(), "r");
 
   if (!fp) {
-    printf("ERROR: file %s does not exist\n", pem_file_path.c_str());
+    SPDLOG_ERROR("File {} does not exist", pem_file_path.c_str());
     return;
   }
   EVP_PKEY* pkey = PEM_read_PrivateKey(fp, nullptr, nullptr, nullptr);
 
   if (pkey == nullptr) {
-    printf("ERROR: file %s is not a valid private key\n",
-           pem_file_path.c_str());
+    SPDLOG_ERROR("File {} is not a valid private key", pem_file_path.c_str());
     return;
   }
 
   if (EVP_PKEY_id(pkey) != EVP_PKEY_ED25519) {
-    printf("ERROR: file %s is not a valid ED25519 private key\n",
-           pem_file_path.c_str());
+    SPDLOG_ERROR("File {} is not a valid ED25519 private key", pem_file_path.c_str());
     return;
   }
 
@@ -91,7 +91,7 @@ CryptoPP::SecByteBlock Ed25519Key::sign(const CryptoPP::SecByteBlock& message) {
     throw std::runtime_error("Error encoding signature to hex");
   }
 
-  std::cout << "signature: " << encoded << std::endl;
+  SPDLOG_DEBUG("Signature: {}", encoded);
 
   CryptoPP::SecByteBlock signature_block(hexDecode(encoded));
 
@@ -106,7 +106,8 @@ bool Ed25519Key::verify(const CryptoPP::SecByteBlock& message,
   bool is_valid = verifier.VerifyMessage(message.BytePtr(), message.size(),
                                          (CryptoPP::byte*)signature.data(),
                                          signature.size());
-  std::cout << "Verification: " << std::boolalpha << is_valid << std::endl;
+  SPDLOG_DEBUG("Verification: {}", is_valid ? "true" : "false");
+
   return is_valid;
 }
 

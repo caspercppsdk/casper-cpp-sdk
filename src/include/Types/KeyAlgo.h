@@ -26,7 +26,7 @@ class KeyAlgo {
     } else if (value == Value::SECP256K1) {
       return 34;
     } else {
-      throw std::invalid_argument("Wrong key algorithm type");
+      throw std::invalid_argument("Wrong key algorithm type. Value: " + std::to_string(value));
     }
   }
 

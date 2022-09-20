@@ -144,8 +144,7 @@ inline void to_json(nlohmann::json& j, const CLTypeRVA& p) {
   }
   /// inner type - maybe delete
   else if (p.which() == 1) {
-    std::cout << "\n\nboost::get<std::vector<CLTypeRVA>>(p)\n\n" << std::endl;
-
+    SPDLOG_DEBUG("boost::get<std::vector<CLTypeRVA>>(p)");
     auto& p_type = boost::get<std::vector<CLTypeRVA>>(p);
     // TODO: should not be called, be careful check this.
     j = p_type;

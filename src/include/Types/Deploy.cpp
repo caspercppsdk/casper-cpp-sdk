@@ -176,7 +176,7 @@ Deploy Deploy::loadFromFile(const std::string& file_name) {
     std::ifstream ifs(file_name);
     input_json = nlohmann::json::parse(ifs);
   } catch (std::exception& e) {
-    std::cout << "Error! Loading deploy file: " << file_name << std::endl;
+    SPDLOG_ERROR("Error! Loading deploy file: {}", file_name);
   }
 
   // create a Deploy from the json
