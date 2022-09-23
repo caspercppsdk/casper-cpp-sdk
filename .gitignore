@@ -62,6 +62,8 @@ LIBCRYPTOPP-prefix
 test/Testing
 examples/example
 
+include
+libs
 lib/cryptopp/adhoc.cpp
 .DS_Store
 docs/html
