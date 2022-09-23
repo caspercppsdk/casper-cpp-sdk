@@ -153,6 +153,20 @@ class Client {
                         std::vector<std::string> path = {});
 
   /**
+   * FIXME: It is only a workaround, as GetItem function does
+   *        not parse correctly result from json:
+   *        https://matterfi.atlassian.net/browse/CD-216
+   * @brief Returns the item information in nlohmann::json.
+   *
+   * @param state_root_hash The state root hash of the block.
+   * @param key The key of the item.
+   * @param path The path of the item.
+   * @return nlohmann::json that contains the item info.
+   */
+  nlohmann::json GetItem_WA(std::string state_root_hash, std::string key,
+                            std::vector<std::string> path = {});
+
+  /**
    * @brief Get the Dictionary Item object
    *
    * @param stateRootHash The hash of the state root.

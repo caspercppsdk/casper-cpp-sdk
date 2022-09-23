@@ -108,6 +108,18 @@ GetItemResult Client::GetItem(std::string state_root_hash, std::string key,
                                                    paramsJSON);
 }
 
+/// Returns the item in json at the given address with the given key.
+/// FIXME: It is only a workaround, as GetItem function does not parse
+/// correctly result from json:
+/// https://matterfi.atlassian.net/browse/CD-216
+nlohmann::json Client::GetItem_WA(std::string state_root_hash, std::string key,
+                                  std::vector<std::string> path) {
+  nlohmann::json paramsJSON{
+      {"state_root_hash", state_root_hash}, {"key", key}, {"path", path}};
+
+  return mRpcClient.CallMethodNamed_JsonRepr(1, "state_get_item", paramsJSON);
+}
+
 /// Returns the dictionary item with the given key and state root hash.
 nlohmann::json Client::GetDictionaryItem(std::string stateRootHash,
                                          std::string dictionaryItem) {
