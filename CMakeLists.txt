@@ -5,63 +5,54 @@ message("CasperSDK Version: ${CMAKE_PROJECT_VERSION}")
 
 # Set C++17 as the default C++ standard
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS "-Werror -Wno-missing-declarations -O3 -fPIC")
 set(LIB_NAME "casper_sdk")
 set(SDK_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "/EHsc /bigobj")
+    set(CMAKE_EXE_LINKER_FLAGS "/MTd")
+else()
+    set(CMAKE_CXX_FLAGS "-Werror -Wno-missing-declarations -O3 -fPIC")
+endif()
+
+#TODO the rest of deps should be moved outside of the project too (if possible)
+MESSAGE("using deps from vcpkg or system")
 find_package(Boost 1.75.0 REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(cryptopp CONFIG REQUIRED)
 
 # Set the include paths.
 include_directories(
     src/include
     lib
     test/TestLibrary
-    lib/cryptopp
     ${Boost_INCLUDE_DIR}
 )
 
-find_program(
-    MAKE_EXECUTABLE
-    NAMES gmake mingw32-make make
-    NAMES_PER_DIR
-    DOC "GNU Make"
-)
-
-include(ExternalProject)
-ExternalProject_Add(
-    LIBCRYPTOPP
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/cryptopp
-    UPDATE_DISCONNECTED true
-    CONFIGURE_COMMAND ""
-    BUILD_IN_SOURCE TRUE
-    INSTALL_COMMAND ""
-    CMAKE_ARGS ""
-)
-
-execute_process(
-    COMMAND bash -c "cd ${CMAKE_CURRENT_SOURCE_DIR}/lib/cryptopp && make -j8"
-    OUTPUT_VARIABLE outVar
-)
-
+add_subdirectory(lib/cryptopp-pem)
 add_subdirectory(src)
 
-if(CASPER_SDK_TESTS)
+#TODO maybe build for debug only
+IF(CASPER_SDK_TESTS)
+    MESSAGE ("building tests")
     enable_testing()
+    #TODO under linux gcc compiler crashes if we build both examples and tests; so build either this or that (memory exhaustion?)
+    #builds fine under windows
     add_subdirectory(test)
-    add_subdirectory(examples)
+    #add_subdirectory(examples)
 endif()
 
 if(NOT LIBRARIES_DIR)
-    set(LIBRARIES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
+    set(LIBRARIES_DIR ${SDK_ROOT}/libs)
     file(MAKE_DIRECTORY ${LIBRARIES_DIR})
 endif()
 
 if(NOT EXTERNAL_INCLUDES_DIR)
-    set(EXTERNAL_INCLUDES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    set(EXTERNAL_INCLUDES_DIR ${SDK_ROOT}/include)
     file(MAKE_DIRECTORY ${EXTERNAL_INCLUDES_DIR})
 endif()
 
-file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/src/include/" DESTINATION "${EXTERNAL_INCLUDES_DIR}/casper_sdk")
-file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/lib/" DESTINATION "${EXTERNAL_INCLUDES_DIR}")
+file(COPY "${SDK_ROOT}/src/include/" DESTINATION "${EXTERNAL_INCLUDES_DIR}/casper_sdk")
+file(COPY "${SDK_ROOT}/lib/" DESTINATION "${EXTERNAL_INCLUDES_DIR}")
 install(TARGETS ${LIB_NAME} DESTINATION ${LIBRARIES_DIR})
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/include/" DESTINATION ${EXTERNAL_INCLUDES_DIR})
+install(DIRECTORY "${SDK_ROOT}/src/include/" DESTINATION ${EXTERNAL_INCLUDES_DIR})

@@ -7,9 +7,9 @@
 #include <sstream>
 #include <fstream>
 #include "wide-integer/uintwide_t.h"
-#include "cryptopp/secblock.h"
-#include "cryptopp/filters.h"  // CryptoPP::StringSink
-#include "cryptopp/hex.h"      // CryptoPP::HexEncoder
+#include <cryptopp/secblock.h>
+#include <cryptopp/filters.h>  // CryptoPP::StringSink
+#include <cryptopp/hex.h>      // CryptoPP::HexEncoder
 #include "nlohmann/json.hpp"
 
 using uint512_t = math::wide_integer::uint512_t;

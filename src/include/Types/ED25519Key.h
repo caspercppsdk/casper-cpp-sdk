@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "cryptopp/secblock.h"
+#include <cryptopp/secblock.h>
 
 namespace Casper {
 class Ed25519Key {

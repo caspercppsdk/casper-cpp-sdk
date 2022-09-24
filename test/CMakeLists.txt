@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
+set(BINARY casper_cpp_sdk_tests)
 
 add_executable(${BINARY}
     ClientTest.cpp
@@ -8,7 +9,7 @@ add_executable(${BINARY}
     DeployItemByteSerializerTest.cpp
 )
 
-target_link_libraries(${BINARY} PUBLIC ${LIB_NAME})
+target_link_libraries(${BINARY} PUBLIC ${LIB_NAME} cryptopp-static)
 
 add_test(NAME ${BINARY} COMMAND ./${BINARY})
 

@@ -5,7 +5,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include/JsonRpc/ResultTypes
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Types
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Utils
-    ${SDK_ROOT}/lib/cryptopp
+    ${SDK_ROOT}/lib/cryptopp-pem
     ${SDK_ROOT}/lib/
 )
 
@@ -26,9 +26,13 @@ add_library(${LIB_NAME} STATIC
     include/ByteSerializers/BaseByteSerializer.cpp
 )
 
-find_package(OpenSSL REQUIRED)
-
+#openssl comes from vcpkg or system
+#cryptopp-static comes from vcpkg or system
+#cryptopp_pem comes from local source tree
+#linking PUBLIC as we want headers from all those libs be accessible to all clients
 target_link_libraries(${LIB_NAME}
+    PUBLIC 
     OpenSSL::SSL
-    ${SDK_ROOT}/lib/cryptopp/libcryptopp.a
+    cryptopp-static
+    cryptopp_pem
 )

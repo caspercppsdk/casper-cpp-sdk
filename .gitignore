@@ -68,3 +68,5 @@ lib/cryptopp/adhoc.cpp
 .DS_Store
 docs/html
 docs/latex
+build-linux/
+build-windows/

@@ -1,0 +1,125 @@
+# DO NOT create top level (global) keys like env, arch, os, compiler.
+# The top level/global keys invoke [unwanted] matrix expansion. Also
+# see https://stackoverflow.com/q/58473000/608639 and
+# https://docs.travis-ci.com/user/reference/overview/ and
+# https://docs.travis-ci.com/user/multi-cpu-architectures and
+# https://github.com/travis-ci/travis-yml/blob/master/schema.json.
+
+language: cpp
+dist: bionic
+
+git:
+  depth: 2
+
+# Use jobs rather than matrix since we are precisely
+# specifiying our test cases. Do not move any of the
+# keys (env, os, arch, compiler, etc) into global.
+# Putting them in global invokes the matrix expansion.
+jobs:
+  include:
+    - name: Ubuntu Bionic, GCC, amd64
+      os: linux
+      arch: amd64
+      compiler: gcc
+      dist: bionic
+    - name: Ubuntu Bionic, Clang, amd64
+      os: linux
+      arch: amd64
+      compiler: clang
+      dist: bionic
+    - name: Ubuntu Bionic, GCC, arm64
+      os: linux
+      arch: arm64
+      compiler: gcc
+      dist: bionic
+    - name: Ubuntu Bionic, Clang, arm64
+      os: linux
+      arch: arm64
+      compiler: clang
+      dist: bionic
+    - name: Ubuntu Bionic, GCC, ppc64le
+      os: linux
+      arch: ppc64le
+      compiler: gcc
+      dist: bionic
+    - name: Ubuntu Bionic, Clang, ppc64le
+      os: linux
+      arch: ppc64le
+      compiler: clang
+      dist: bionic
+      env:
+        - CC=clang-8
+        - CXX=clang++-8
+    - name: Ubuntu Bionic, GCC, s390x
+      os: linux
+      arch: s390x
+      compiler: gcc
+      dist: bionic
+    - name: Ubuntu Bionic, Clang, s390x
+      os: linux
+      arch: s390x
+      compiler: clang
+      dist: bionic
+      env:
+        - CC=clang-8
+        - CXX=clang++-8
+    - name: OS X 10, GCC, Xcode 10.1
+      os: osx
+      osx_image: xcode10.1
+      arch: amd64
+      compiler: gcc
+    - name: OS X 10, Clang, Xcode 10.1
+      os: osx
+      osx_image: xcode10.1
+      arch: amd64
+      compiler: clang
+
+  allow_failures:
+    # Clang has a fair amount of trouble
+    # on platforms Apple does not support
+    - os: linux
+      arch: s390x
+      compiler: clang
+    # Clang 7.0 and below will likely have trouble on ppc64le
+    # due to https://bugs.llvm.org/show_bug.cgi?id=39704.
+    - os: linux
+      arch: ppc64le
+      compiler: clang
+
+before_script:
+  - |
+    # Clang 7 compiler is completely broken on PPC64 and s390x
+    if [[ "$TRAVIS_CPU_ARCH" == "ppc64le" ]] || [[ "$TRAVIS_CPU_ARCH" == "s390x" ]]; then
+      if [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$TRAVIS_COMPILER" == "clang" ]]; then
+        # https://github.com/travis-ci/travis-ci/issues/9037
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A145
+        sudo apt-get -qq -y install --no-install-recommends clang-8
+      fi
+    fi
+
+    # Let travis clone cryptopp-pem, clone cryptopp
+    # copy cryptopp-pem to cryptopp, and then run
+    # the test script.
+  - |
+    cd ..
+    git clone https://github.com/weidai11/cryptopp.git
+    cp cryptopp-pem/*.* cryptopp/
+    cd cryptopp
+    cp TestScripts/cryptest-pem.sh .
+
+script:
+  - |
+    bash cryptest-pem.sh
+
+# Whitelist branches to avoid testing feature branches twice
+branches:
+  only:
+    - master
+    - /\/ci$/
+
+notifications:
+  email:
+    recipients:
+      - cryptopp-build@googlegroups.com
+    on_success: always # default: change
+    on_failure: always # default: always

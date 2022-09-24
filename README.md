@@ -5,51 +5,77 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 1. [CMake Version 3.0.0 or newer](https://cmake.org)
 2. [Doxygen Version 1.8.8 or newer](https://www.doxygen.nl)
 3. [OpenSSL Version 1.1.1 or newer](https://www.openssl.org)
+4. [cryptopp Version 8.6.0 or newer](https://www.cryptopp.com/)
 
 
 ## Install Instruction of Dependencies
 
-    sudo apt-get install build-essential libssl-dev
-
-    sudo apt-get install cmake
-
+    sudo apt-get install build-essential cmake libssl-dev
     sudo apt-get install graphviz
-
     sudo apt-get install doxygen
 
 ### Install instruction of doxygen for CentOS
-
 On CentOS and Rocky Linux:
 
     sudo dnf config-manager --set-enabled powertools
     sudo dnf install doxygen
 
+### Install instruction for vcpkg
+Can be used for both Windows and Linux.
+Fix your paths in the example
+Prepare vcpkg:
+
+    git clone git@github.com:microsoft/vcpkg.git
+    cd vcpkg
+    git checkout 2022.08.15
+
+Build deps:
+    windows:
+    vcpkg install @casper-cpp-sdk\vcpkg\vcpkg.txt --triplet=x64-windows --clean-after-build
+    linux:
+    ./vcpkg install @casper-cpp-sdk/vcpkg/vcpkg.txt --triplet=x64-linux --clean-after-build
+
+Export deps:
+    windows:
+    vcpkg export @casper-cpp-sdk\vcpkg\vcpkg.txt --raw --triplet=x64-windows --output-dir=mydir\vcpkg-bin-win-casper-cpp-sdk --output=01
+    linux:
+    ./vcpkg export @casper-cpp-sdk/vcpkg/vcpkg.txt --raw --triplet=x64-linux --output-dir=mydir/vcpkg-bin-lin-casper-cpp-sdk --output=01
+
 ## How to clone the SDK
     git clone https://github.com/yusufketen/casper-cpp-sdk.git
 
-## Build
+## Building
 
 ### Debug
-    cmake -DCMAKE_BUILD_TYPE=Debug .
-    make all
+If using deps from system (linux only)
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug .
+    cmake --build .
+If using deps from vcpkg
+    windows:
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-win-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+    linux:
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-lin-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-linux
+    cmake --build .
 
 ### Release
-    cmake -DCMAKE_BUILD_TYPE=Release .
-    make all
+If using deps from system (linux only)
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Release .
+    cmake --build .
 
 ## Test
-    cmake -DCMAKE_BUILD_TYPE=Debug .
-    make all
-    ./test/CasperSDK_test -v
+If using deps from system (linux only)
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCASPER_SDK_TESTS=ON .
+    cmake --build .
+    ./test/casper_test
 
 ## Run Examples
-    cmake -DCMAKE_BUILD_TYPE=Debug .
-    make all
+    cmake -Gninja -DCMAKE_BUILD_TYPE=Debug -DCASPER_SDK_TESTS=ON .
+    cmake --build .
     ./examples/example
 
 ## Install
-    cmake -DCMAKE_BUILD_TYPE=Release .
-    make all
+    cmake -Gninja -DCMAKE_BUILD_TYPE=Release .
+    cmake --build .
     sudo make install
 
 ---

@@ -1,0 +1,3 @@
+boost-variant
+cryptopp
+openssl
