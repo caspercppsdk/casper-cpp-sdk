@@ -10,11 +10,11 @@
 // CryptoPP
 #include <cryptopp/xed25519.h>
 
-#include "cryptopp/blake2.h"
-#include "cryptopp/cryptlib.h"
-#include "cryptopp/files.h"
-#include "cryptopp/hex.h"
-#include "cryptopp/secblock.h"
+#include <cryptopp/blake2.h>
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/files.h>
+#include <cryptopp/hex.h>
+#include <cryptopp/secblock.h>
 
 namespace Casper {
 class CEP57Checksum {

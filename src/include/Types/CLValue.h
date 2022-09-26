@@ -5,7 +5,7 @@
 #include "Types/CLType.h"
 #include "Types/CLTypeParsed.h"
 #include "Utils/CEP57Checksum.h"
-#include "cryptopp/secblock.h"
+#include <cryptopp/secblock.h>
 #include "nlohmann/json.hpp"
 
 namespace Casper {

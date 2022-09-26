@@ -4,8 +4,8 @@
 #include "Types/KeyAlgo.h"
 #include "Utils/CEP57Checksum.h"
 #include "Utils/CryptoUtil.h"
-#include "cryptopp/hex.h"
-#include "cryptopp/secblock.h"
+#include <cryptopp/hex.h>
+#include <cryptopp/secblock.h>
 
 namespace Casper {
 /// <summary>
@@ -60,7 +60,7 @@ struct Signature {
     KeyAlgo algoIdent;
     if (bytes[0] == 0x01) {
       algoIdent = KeyAlgo::ED25519;
-    } else if (algoIdent == 0x02) {
+    } else if (bytes[0] == 0x02) {
       algoIdent = KeyAlgo::SECP256K1;
     } else {
       throw std::invalid_argument("Wrong signature algorithm identifier");

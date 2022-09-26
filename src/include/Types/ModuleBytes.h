@@ -4,7 +4,7 @@
 #include "Types/NamedArg.h"
 #include "Utils/CryptoUtil.h"
 #include "Types/CLConverter.h"
-#include "cryptopp/secblock.h"
+#include <cryptopp/secblock.h>
 #include "nlohmann/json.hpp"
 
 namespace Casper {
