@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.0)
+
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include/JsonRpc
@@ -26,13 +28,15 @@ add_library(${LIB_NAME} STATIC
     include/ByteSerializers/BaseByteSerializer.cpp
 )
 
-#openssl comes from vcpkg or system
-#cryptopp-static comes from vcpkg or system
-#cryptopp_pem comes from local source tree
-#linking PUBLIC as we want headers from all those libs be accessible to all clients
+message("CRYPTOPP_LIBRARIES:" ${CRYPTOPP_LIBRARIES})
+
+# openssl comes from vcpkg or system
+# cryptopp-static comes from vcpkg or system
+# cryptopp_pem comes from local source tree
+# linking PUBLIC as we want headers from all those libs be accessible to all clients
 target_link_libraries(${LIB_NAME}
-    PUBLIC 
+    PUBLIC
     OpenSSL::SSL
-    cryptopp-static
+    ${CRYPTOPP_LIBRARIES}
     cryptopp_pem
 )

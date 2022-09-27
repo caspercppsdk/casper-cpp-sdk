@@ -15,7 +15,7 @@ else()
     set(CMAKE_CXX_FLAGS "-Werror -Wno-missing-declarations -O3 -fPIC")
 endif()
 
-#TODO the rest of deps should be moved outside of the project too (if possible)
+# TODO the rest of deps should be moved outside of the project too (if possible)
 MESSAGE("using deps from vcpkg or system")
 find_package(Boost 1.75.0 REQUIRED)
 find_package(OpenSSL REQUIRED)
@@ -29,27 +29,29 @@ include_directories(
     ${Boost_INCLUDE_DIR}
 )
 
+if(NOT EXTERNAL_INCLUDES_DIR)
+    set(EXTERNAL_INCLUDES_DIR ${SDK_ROOT}/include)
+    file(MAKE_DIRECTORY ${EXTERNAL_INCLUDES_DIR})
+endif()
+
 add_subdirectory(lib/cryptopp-pem)
 add_subdirectory(src)
 
-#TODO maybe build for debug only
+# TODO maybe build for debug only
 IF(CASPER_SDK_TESTS)
-    MESSAGE ("building tests")
+    MESSAGE("building tests")
     enable_testing()
-    #TODO under linux gcc compiler crashes if we build both examples and tests; so build either this or that (memory exhaustion?)
-    #builds fine under windows
+
+    # TODO under linux gcc compiler crashes if we build both examples and tests; so build either this or that (memory exhaustion?)
+    # builds fine under windows
     add_subdirectory(test)
-    #add_subdirectory(examples)
+
+    # add_subdirectory(examples)
 endif()
 
 if(NOT LIBRARIES_DIR)
     set(LIBRARIES_DIR ${SDK_ROOT}/libs)
     file(MAKE_DIRECTORY ${LIBRARIES_DIR})
-endif()
-
-if(NOT EXTERNAL_INCLUDES_DIR)
-    set(EXTERNAL_INCLUDES_DIR ${SDK_ROOT}/include)
-    file(MAKE_DIRECTORY ${EXTERNAL_INCLUDES_DIR})
 endif()
 
 file(COPY "${SDK_ROOT}/src/include/" DESTINATION "${EXTERNAL_INCLUDES_DIR}/casper_sdk")

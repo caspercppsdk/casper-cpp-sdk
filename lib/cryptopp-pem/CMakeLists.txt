@@ -12,6 +12,6 @@ set(SOURCES
 add_library(cryptopp_pem STATIC ${SOURCES})
 target_include_directories(cryptopp_pem PUBLIC ${SRC_PATH})
 target_link_libraries(cryptopp_pem
-    PUBLIC 
-    cryptopp-static
+    PUBLIC
+    ${CRYPTOPP_LIBRARIES}
 )
