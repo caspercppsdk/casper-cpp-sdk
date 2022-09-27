@@ -21,6 +21,13 @@ find_package(Boost 1.75.0 REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(CryptoPP REQUIRED)
 
+# We need ${CRYPTOPP_LIBRARIES} variable set, it is not set
+# by find_package + vcpkg in such a case just find it manually
+if(NOT CRYPTOPP_LIBRARIES)
+    find_library(CryptoPP_LIBRARY NAMES cryptopp-static cryptopp DOC "CryptoPP library")
+    set(CRYPTOPP_LIBRARIES ${CryptoPP_LIBRARY})
+endif()
+
 # Set the include paths.
 include_directories(
     src/include
