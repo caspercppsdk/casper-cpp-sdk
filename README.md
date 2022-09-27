@@ -7,63 +7,83 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 3. [OpenSSL Version 1.1.1 or newer](https://www.openssl.org)
 4. [cryptopp Version 8.6.0 or newer](https://www.cryptopp.com/)
 
+## How to clone the SDK
 
-## Install Instruction of Dependencies
+    git clone https://github.com/yusufketen/casper-cpp-sdk.git
+
+## Install Instructions for Dependencies
 
     sudo apt-get install build-essential cmake libssl-dev
     sudo apt-get install graphviz
     sudo apt-get install doxygen
 
-### Install instruction of doxygen for CentOS
+**TODO** cryptopp for Fedora-based distros.
+
+### Install instructions for doxygen for CentOS
 On CentOS and Rocky Linux:
 
     sudo dnf config-manager --set-enabled powertools
     sudo dnf install doxygen
 
-### Install instruction for vcpkg
-Can be used for both Windows and Linux.
-Fix your paths in the example
-Prepare vcpkg:
+### Install instructions for vcpkg
+Can be used for Windows, Linux and MacOS (fix your paths in the examples)  
 
+#### Prepare vcpkg:
     git clone git@github.com:microsoft/vcpkg.git
     cd vcpkg
     git checkout 2022.08.15
 
-Build deps:
+#### Build deps:
     windows:
-    vcpkg install @casper-cpp-sdk\vcpkg\vcpkg.txt --triplet=x64-windows --clean-after-build
-    linux:
-    ./vcpkg install @casper-cpp-sdk/vcpkg/vcpkg.txt --triplet=x64-linux --clean-after-build
+    vcpkg install @mydir\casper-cpp-sdk\vcpkg\vcpkg.txt --triplet=x64-windows --clean-after-build
 
-Export deps:
-    windows:
-    vcpkg export @casper-cpp-sdk\vcpkg\vcpkg.txt --raw --triplet=x64-windows --output-dir=mydir\vcpkg-bin-win-casper-cpp-sdk --output=01
     linux:
-    ./vcpkg export @casper-cpp-sdk/vcpkg/vcpkg.txt --raw --triplet=x64-linux --output-dir=mydir/vcpkg-bin-lin-casper-cpp-sdk --output=01
+    ./vcpkg install @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --triplet=x64-linux --clean-after-build
 
-## How to clone the SDK
-    git clone https://github.com/yusufketen/casper-cpp-sdk.git
+    macos:
+    ./vcpkg install @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --triplet=x64-osx --clean-after-build
+
+#### Export deps:
+    windows:  
+    vcpkg export @mydir\casper-cpp-sdk\vcpkg\vcpkg.txt --raw --triplet=x64-windows  --output-dir=mydir\vcpkg-bin-win-casper-cpp-sdk --output=01  
+
+    linux:  
+    ./vcpkg export @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --raw --triplet=x64-linux --output-dir=mydir  
+    vcpkg-bin-lin-casper-cpp-sdk --output=01
+
+    macos:
+    ./vcpkg export @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --raw --triplet=x64-osx --output-dir=mydir/vcpkg-bin-mac-casper-cpp-sdk --output=01
 
 ## Building
 
 ### Debug
-If using deps from system (linux only)
+Using deps from system (linux only)
+
     cmake -GNinja -DCMAKE_BUILD_TYPE=Debug .
     cmake --build .
-If using deps from vcpkg
+
+Using deps from vcpkg (linux, windows, macos)
+
     windows:
     cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-win-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+    
     linux:
     cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-lin-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-linux
+
+    macos:
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-mac-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-osx
+
     cmake --build .
 
 ### Release
-If using deps from system (linux only)
+Using deps from system (linux only)
+
     cmake -GNinja -DCMAKE_BUILD_TYPE=Release .
     cmake --build .
 
 ## Test
-If using deps from system (linux only)
+Using deps from system (linux only)
+
     cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCASPER_SDK_TESTS=ON .
     cmake --build .
     ./test/casper_test

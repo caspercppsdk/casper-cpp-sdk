@@ -19,7 +19,7 @@ endif()
 MESSAGE("using deps from vcpkg or system")
 find_package(Boost 1.75.0 REQUIRED)
 find_package(OpenSSL REQUIRED)
-find_package(cryptopp CONFIG REQUIRED)
+find_package(CryptoPP REQUIRED)
 
 # Set the include paths.
 include_directories(
