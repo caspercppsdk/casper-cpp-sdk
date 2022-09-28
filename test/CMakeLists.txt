@@ -9,7 +9,7 @@ add_executable(${BINARY}
     DeployItemByteSerializerTest.cpp
 )
 
-target_link_libraries(${BINARY} PUBLIC ${LIB_NAME} cryptopp-static)
+target_link_libraries(${BINARY} PUBLIC ${LIB_NAME} ${CRYPTOPP_LIBRARIES})
 
 add_test(NAME ${BINARY} COMMAND ./${BINARY})
 
