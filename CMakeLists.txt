@@ -17,6 +17,7 @@ endif()
 
 # TODO the rest of deps should be moved outside of the project too (if possible)
 MESSAGE("using deps from vcpkg or system")
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(Boost 1.75.0 REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(CryptoPP REQUIRED)

@@ -59,43 +59,50 @@ Can be used for Windows, Linux and MacOS (fix your paths in the examples)
 ### Debug
 Using deps from system (linux only)
 
-    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug .
-    cmake --build .
+    mkdir build && cd build
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ..
+    ninja
 
 Using deps from vcpkg (linux, windows, macos)
 
+    mkdir build && cd build
+    
     windows:
-    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-win-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-win-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows ..
     
     linux:
-    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-lin-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-linux
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-lin-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-linux ..
 
     macos:
-    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-mac-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-osx
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-mac-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-osx ..
 
     cmake --build .
 
 ### Release
 Using deps from system (linux only)
 
-    cmake -GNinja -DCMAKE_BUILD_TYPE=Release .
-    cmake --build .
+    mkdir build && cd build
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Release ..
+    ninja
 
 ## Test
 Using deps from system (linux only)
 
-    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCASPER_SDK_TESTS=ON .
-    cmake --build .
+    mkdir build && cd build
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCASPER_SDK_TESTS=ON ..
+    ninja
     ./test/casper_test
 
 ## Run Examples
-    cmake -Gninja -DCMAKE_BUILD_TYPE=Debug -DCASPER_SDK_TESTS=ON .
-    cmake --build .
+    mkdir build && cd build
+    cmake -Gninja -DCMAKE_BUILD_TYPE=Debug -DCASPER_SDK_TESTS=ON ..
+    ninja
     ./examples/example
 
 ## Install
-    cmake -Gninja -DCMAKE_BUILD_TYPE=Release .
-    cmake --build .
+    mkdir build && cd build
+    cmake -Gninja -DCMAKE_BUILD_TYPE=Release ..
+    ninja
     sudo make install
 
 ---
