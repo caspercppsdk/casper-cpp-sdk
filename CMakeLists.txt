@@ -38,14 +38,15 @@ endif()
 add_subdirectory(lib/cryptopp-pem)
 add_subdirectory(src)
 
-# TODO maybe build for debug only
+# TODO under linux gcc compiler crashes if we build both examples and tests; so build either this or that (memory exhaustion?)
+# builds fine under windows
 IF(CASPER_SDK_TESTS)
     MESSAGE("building tests")
     enable_testing()
-
-    # TODO under linux gcc compiler crashes if we build both examples and tests; so build either this or that (memory exhaustion?)
-    # builds fine under windows
-    # add_subdirectory(test)
+    add_subdirectory(test)
+endif()
+IF(CASPER_SDK_EXAMPLES)
+    MESSAGE("building examples")
     add_subdirectory(examples)
 endif()
 

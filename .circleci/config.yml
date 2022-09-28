@@ -1,0 +1,142 @@
+version: 2.1
+
+configuration:
+  - xcode_version: &xcode_version 13.4.1
+  - ubuntu_version: &ubuntu_version ubuntu-2004:current
+  - cache_vcpkg_lin: &cache_vcpkg_lin cache_vcpkg_lin-v01-{{checksum "~/project/vcpkg/vcpkg.txt"}}
+
+parameters:
+  docker-image-casper-cpp-sdk:
+    default: "polishcode/matterfi-casper-cpp-sdk-ubuntu:1"
+    type: string
+  path_vcpkg_bin_lin:
+    default: "/home/circleci/vcpkg-binaries"
+    type: string
+
+executors:
+  executor_macos:
+    macos:
+      xcode: *xcode_version
+    resource_class: macos.x86.medium.gen2
+  executor_ubuntu_large:
+    machine:
+      image: *ubuntu_version
+    resource_class: xlarge
+  executor_ubuntu_small:
+    machine:
+      image: *ubuntu_version
+    resource_class: medium
+      
+commands:
+  cmd_lin_build_vcpkg:
+    description: "command to build vcpkg deps (on host)"
+    steps:
+      - restore_cache:
+          name: "restore cache vcpkg binaries"
+          key: *cache_vcpkg_lin
+      - run:
+          name: "configure vcpkg & build deps"
+          no_output_timeout: 40m
+          working_directory: "~/"
+          command: |
+            if [ ! -d <<pipeline.parameters.path_vcpkg_bin_lin>> ]; then
+
+              echo "vcpkg-binaries not present, building..."
+              mkdir <<pipeline.parameters.path_vcpkg_bin_lin>>
+              
+              git clone git@github.com:microsoft/vcpkg.git
+              cd vcpkg
+              git checkout 2022.08.15
+
+              ./bootstrap-vcpkg.sh -disableMetrics
+              ./vcpkg install @/home/circleci/project/vcpkg/vcpkg.txt --triplet=x64-linux --clean-after-build
+              ./vcpkg export @/home/circleci/project/vcpkg/vcpkg.txt --raw --triplet=x64-linux --output-dir=/home/circleci --output=vcpkg-binaries
+            else
+              echo "vcpkg-binaries restored from cache, skipping build :)"
+            fi
+      - save_cache:
+          name: "save cache vcpkg binaries"
+          key: *cache_vcpkg_lin
+          paths:
+            - <<pipeline.parameters.path_vcpkg_bin_lin>>
+  cmd_lin_build:
+    description: "command to build product (in docker)"
+    parameters:
+      docker-image:
+        type: string
+      compiler:
+        type: string
+      mode:
+        type: string
+    steps:
+      - run:
+          name: start container
+          command: |
+            mkdir /home/circleci/build
+            docker run \
+              -dit \
+              --name dck-executor \
+              --mount type=bind,src=/home/circleci/project,dst=/home/src \
+              --mount type=bind,src=<<pipeline.parameters.path_vcpkg_bin_lin>>,dst=/home/vcpkg,readonly \
+              --mount type=bind,src=/home/circleci/build,dst=/home/build \
+              <<parameters.docker-image>>
+      - run:
+          name: configure
+          command: |
+            if [ <<parameters.compiler>> == "clang" ]; then
+              LOCAL_CXX_COMPILER=clang++
+            else
+              LOCAL_CXX_COMPILER=g++
+            fi
+
+            docker exec -w /home/build dck-executor \
+              cmake -GNinja -DCMAKE_C_COMPILER=<<parameters.compiler>> -DCMAKE_CXX_COMPILER=${LOCAL_CXX_COMPILER} \
+              -DCMAKE_BUILD_TYPE=<<parameters.mode>> \
+              -DCMAKE_TOOLCHAIN_FILE=/home/vcpkg/scripts/buildsystems/vcpkg.cmake \
+              -DVCPKG_TARGET_TRIPLET=x64-linux \
+              -DCASPER_SDK_TESTS=ON \
+              -DCASPER_SDK_EXAMPLES=ON \
+              /home/src/
+      - run:
+          name: build
+          command: |
+            docker exec -w /home/build dck-executor \
+              cmake --build .
+      - run:
+          name: run tests
+          command: |
+            docker exec -w /home/build dck-executor \
+              ./test/casper_cpp_sdk_tests
+      - run:
+          name: stop container
+          command: |
+            docker stop dck-executor
+jobs:
+  build-linux:
+    parameters:
+      docker-image:
+        type: string
+      compiler:
+        type: string
+      mode:
+        type: string
+    executor: executor_ubuntu_large
+    steps:
+      - checkout
+      - cmd_lin_build_vcpkg
+      - cmd_lin_build:
+          docker-image: <<parameters.docker-image>>
+          compiler: <<parameters.compiler>>
+          mode: <<parameters.mode>>
+
+workflows:
+  casper-cpp-sdk-linux:
+    when: true
+    jobs:
+      - build-linux:
+          name: linux-<<matrix.compiler>>-<<matrix.mode>>
+          docker-image: <<pipeline.parameters.docker-image-casper-cpp-sdk>>
+          matrix:
+            parameters:
+              compiler: [clang, gcc]
+              mode: [Debug, Release]
