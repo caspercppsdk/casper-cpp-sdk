@@ -11,7 +11,7 @@ configuration:
 
 parameters:
   docker-image-casper-cpp-sdk:
-    default: "polishcode/matterfi-casper-cpp-sdk-ubuntu:1"
+    default: "polishcode/matterfi-casper-cpp-sdk-debian:1"
     type: string
   path_vcpkg_bin_lin:
     default: "/home/circleci/vcpkg-binaries"
