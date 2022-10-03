@@ -39,4 +39,5 @@ target_link_libraries(${LIB_NAME}
     OpenSSL::SSL
     ${CRYPTOPP_LIBRARIES}
     cryptopp_pem
+    spdlog::spdlog_header_only
 )

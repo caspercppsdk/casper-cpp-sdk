@@ -1,3 +1,6 @@
+boost-algorithm
+boost-property-tree
 boost-variant
 cryptopp
 openssl
+spdlog
