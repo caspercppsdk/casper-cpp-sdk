@@ -1,12 +1,21 @@
+#include <spdlog/spdlog.h>
 #include "CasperClient.h"
-
 namespace Casper {
 
 /// Construct a new Casper Client object
-Client::Client(const std::string& address)
+Client::Client(const std::string& address, const LogConfig* const log_config)
     : mAddress{address},
       mHttpConnector{mAddress},
-      mRpcClient{mHttpConnector, jsonrpccxx::version::v2} {}
+      mRpcClient{mHttpConnector, jsonrpccxx::version::v2} 
+      {
+       if(log_config) {
+           LogConfig config{.log_name = "Casper-SDK",
+                   .severity = log_config->severity,
+                   .sink = log_config->sink};
+
+           LogConfigurator::initDefault(config);
+       }
+      }
 
 /// Get a list of the nodes.
 InfoGetPeersResult Client::GetNodePeers() {

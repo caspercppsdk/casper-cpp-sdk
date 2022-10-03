@@ -7,6 +7,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include/JsonRpc/ResultTypes
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Types
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Utils
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Algorithm
     ${SDK_ROOT}/lib/cryptopp-pem
     ${SDK_ROOT}/lib/
 )
@@ -23,6 +24,7 @@ add_library(${LIB_NAME} STATIC
     include/Utils/CryptoUtil.cpp
     include/Utils/StringUtil.cpp
     include/Utils/CEP57Checksum.cpp
+    include/Utils/LogConfigurator.cpp
     include/Types/CLConverter.cpp
     include/Types/Deploy.cpp
     include/ByteSerializers/BaseByteSerializer.cpp

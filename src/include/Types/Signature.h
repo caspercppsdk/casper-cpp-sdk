@@ -44,7 +44,7 @@ struct Signature {
         throw std::invalid_argument("Invalid key algorithm identifier.");
       }
     } catch (const std::exception& e) {
-      std::cout << "FromHexString() Exception: " << e.what() << '\n';
+      SPDLOG_ERROR("FromHexString() Exception: {}", e.what());
     }
     return Signature();
   }

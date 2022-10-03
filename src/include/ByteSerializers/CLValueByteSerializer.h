@@ -38,7 +38,7 @@ struct CLValueByteSerializer : public BaseByteSerializer {
   void CLTypeToBytes(CBytes& sb, CLType innerType, CLTypeParsedRVA parsed) {
     // std::cout << "CLTypeToBytes1: " << std::endl;
     int type_idx = innerType.type.which();
-    std::cout << "CLTypeToBytes idx: " << type_idx << std::endl;
+    SPDLOG_DEBUG("CLTypeToBytes idx: {}", type_idx);
 
     nlohmann::json j;
     to_json(j, innerType);

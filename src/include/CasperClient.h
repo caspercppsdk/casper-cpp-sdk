@@ -29,6 +29,7 @@
 
 // Utils
 #include "Utils/CryptoUtil.h"
+#include "Utils/LogConfigurator.h"
 
 // external libraries
 #include "jsonrpccxx/client.hpp"
@@ -52,7 +53,7 @@ class Client {
    * @param address is a URL of the node like 'http://127.0.0.1:7777'. Default
    * endpoint is '/rpc'.
    */
-  Client(const std::string& address);
+  Client(const std::string& address, const LogConfig* const log_config = nullptr);
 
   /**
    * @brief Get a list of the nodes.

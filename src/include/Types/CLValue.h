@@ -347,7 +347,7 @@ struct CLValue {
 
   static CLValue List(std::vector<CLValue> values) {
     if (values.size() == 0) {
-      std::cout << "List size is 0" << std::endl;
+      SPDLOG_ERROR("List size is 0"); //Is it worth to print this info here, when there is same information thrown?
       throw std::runtime_error("List cannot be empty");
     }
 
@@ -442,13 +442,12 @@ struct CLValue {
     CLTypeRVA keyType;
     CLTypeRVA valueType;
     CBytes bytes;
-    std::cout << "dict size: " << dict.size() << std::endl;
+    SPDLOG_DEBUG("dict size: {}", dict.size());
 
     CBytes len = hexDecode(u32Encode(dict.size()));
     std::map<CLTypeParsedRVA, CLTypeParsedRVA> parsed_dict;
     bytes += len;
     int i = 0;
-    std::cout << "dict size: " << dict.size() << std::endl;
     for (auto kv : dict) {
       parsed_dict[kv.first.parsed.parsed] = kv.second.parsed.parsed;
       if (i == 0) {
@@ -465,12 +464,11 @@ struct CLValue {
       bytes += kv.second.bytes;
       i++;
     }
-    std::cout << "bytes: " << bytes.size() << std::endl;
     std::map<CLTypeRVA, CLTypeRVA> mp;
     mp[keyType] = valueType;
-    std::cout << "map: " << mp.size() << std::endl;
+    SPDLOG_DEBUG("bytes size: {}", bytes.size());
+    SPDLOG_DEBUG("map size: {}", mp.size());
     CLTypeRVA ty(mp);
-    std::cout << "ty: " << std::endl;
 
     return CLValue(bytes, CLType(ty), parsed_dict);
   }
@@ -605,7 +603,7 @@ inline void to_json(nlohmann::json& j, const CLValue& p) {
     std::string tmp_bytes = hexEncode(p.bytes);
     j["bytes"] = tmp_bytes;
   } catch (const std::exception& e) {
-    std::cout << "CLValue-to_json-bytes what(): " << e.what() << std::endl;
+    SPDLOG_ERROR("CLValue-to_json-bytes what(): {}", e.what());
   }
 
   to_json(j["parsed"], p.parsed);
@@ -618,7 +616,7 @@ inline void from_json(const nlohmann::json& j, CLValue& p) {
     std::string hex_bytes_str = j.at("bytes").get<std::string>();
     p.bytes = hexDecode(hex_bytes_str);
   } catch (const std::exception& e) {
-    std::cout << "CLValue-from_json-bytes what(): " << e.what() << std::endl;
+    SPDLOG_ERROR("CLValue-from_json-bytes what(): {}", e.what());
   }
 
   // std::cout << j.at("parsed").dump(2) << std::endl;
