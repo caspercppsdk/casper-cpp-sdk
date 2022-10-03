@@ -103,7 +103,7 @@ Using deps from system (linux only)
     mkdir build && cd build
     cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCASPER_SDK_TESTS=ON ..
     ninja
-    ./test/casper_test
+    ./test/casper_cpp_sdk_tests
 
 ## Run Examples
     mkdir build && cd build
