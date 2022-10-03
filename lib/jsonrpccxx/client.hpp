@@ -66,13 +66,18 @@ class JsonRpcClient {
 
   JsonRpcResponse call_method(const id_type &id, const std::string &name,
                               const json &params) {
-    SPDLOG_DEBUG("Calling: {} method with id: {} and params: {} ", name, id, params);
+    std::string id_str;
     json j = {{"method", name}};
     if (std::get_if<int>(&id) != nullptr) {
       j["id"] = std::get<int>(id);
+      id_str = std::to_string(std::get<int>(id));
     } else {
       j["id"] = std::get<std::string>(id);
+      id_str = std::get<std::string>(id);
     }
+    
+    SPDLOG_DEBUG("Calling: {} method with id: {} and params: {} ", name, id_str, params);
+
     if (v == version::v2) {
       j["jsonrpc"] = "2.0";
     }
