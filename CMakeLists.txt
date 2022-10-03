@@ -21,6 +21,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(Boost 1.75.0 REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(CryptoPP REQUIRED)
+find_package(spdlog REQUIRED)
 
 # Set the include paths.
 include_directories(
@@ -59,4 +60,3 @@ file(COPY "${SDK_ROOT}/src/include/" DESTINATION "${EXTERNAL_INCLUDES_DIR}/caspe
 file(COPY "${SDK_ROOT}/lib/" DESTINATION "${EXTERNAL_INCLUDES_DIR}")
 install(TARGETS ${LIB_NAME} DESTINATION ${LIBRARIES_DIR})
 install(DIRECTORY "${SDK_ROOT}/src/include/" DESTINATION ${EXTERNAL_INCLUDES_DIR})
-find_package(spdlog REQUIRED)
