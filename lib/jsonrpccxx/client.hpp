@@ -68,12 +68,19 @@ class JsonRpcClient {
                               const json &params) {
     std::string id_str;
     json j = {{"method", name}};
-    if (std::get_if<int>(&id) != nullptr) {
-      j["id"] = std::get<int>(id);
-      id_str = std::to_string(std::get<int>(id));
-    } else {
-      j["id"] = std::get<std::string>(id);
-      id_str = std::get<std::string>(id);
+    if (const auto val = std::get_if<int>(&id)) 
+    {
+      j["id"] = *val;
+      id_str = std::to_string(*val);
+    } 
+    else if (const auto val = std::get_if<std::string>(&id)) 
+    {
+      j["id"] = *val;
+      id_str = *val;
+    }
+    else
+    {
+      SPDLOG_ERROR("Invalid id type!");
     }
     
     SPDLOG_DEBUG("Calling: {} method with id: {} and params: {} ", name, id_str, params);
