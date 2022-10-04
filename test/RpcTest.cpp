@@ -735,4 +735,13 @@ void PutDeploy_StoredContractByHash_Test(void) {
   std::cout << "deploy id: " << res.deploy_hash << std::endl;
 }
 
+void globalStateKey_Simple_Test(void)
+{
+  GlobalStateKey key,key2;
+  key.key = "uref-2f9ac53033ea0b3bae7df8047be450478b69b48d91db7243791b26598af9fcf0-007";
+  nlohmann::json j;
+  to_json(j,key);
+  from_json(j,key2);
+  TEST_ASSERT(key.ToString() == key2.ToString());
+}
 }  // namespace Casper

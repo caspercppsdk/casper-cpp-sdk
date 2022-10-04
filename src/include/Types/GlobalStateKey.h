@@ -231,8 +231,10 @@ inline void to_json(nlohmann::json& j, const GlobalStateKey& p) {
  * @param p GlobalStateKey object to construct.
  */
 inline void from_json(const nlohmann::json& j, GlobalStateKey& p) {
-  std::string jKey = j.at("key");
 
-  p = GlobalStateKey::FromString(j.at("key").get<std::string>());
+  if(not j.contains("key"))
+    p = GlobalStateKey::FromString(j.get<std::string>());
+  else
+    p = GlobalStateKey::FromString(j.at("key").get<std::string>());
 }
 }  // namespace Casper
