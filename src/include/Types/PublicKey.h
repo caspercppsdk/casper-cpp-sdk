@@ -2,12 +2,13 @@
 #include <cctype>
 #include <iostream>
 #include <vector>
+#include <spdlog/spdlog.h>
 
 #include "Types/KeyAlgo.h"
 #include "Utils/CEP57Checksum.h"
 #include "Utils/File.h"
 #include "Utils/StringUtil.h"
-#include "cryptopp/pem.h"
+#include <cryptopp/pem.h>
 #include "nlohmann/json.hpp"
 
 namespace Casper {
@@ -44,7 +45,7 @@ struct PublicKey {
         throw std::invalid_argument("Wrong public algorithm identifier.");
       }
     } catch (std::exception& e) {
-      std::cerr << e.what() << std::endl;
+      SPDLOG_ERROR("{}", e.what());
     }
     return Casper::PublicKey();
   }
@@ -82,9 +83,9 @@ struct PublicKey {
         return PublicKey(rawBytes, KeyAlgo::ED25519);
       }
     } catch (std::exception& e) {
-      std::cerr << "Unsupported key format or it's not a public key PEM object."
-                << std::endl;
+        SPDLOG_ERROR("Unsupported key format or it's not a public key PEM object.");
     }
+      return {};
   }
 
   /// <summary>
@@ -132,14 +133,15 @@ struct PublicKey {
     try {
       int expectedPublicKeySize = KeyAlgo::GetKeySizeInBytes(keyAlgo) - 1;
       if (rawBytes.size() != expectedPublicKeySize) {
-        std::cout << "Bytes size: " << rawBytes.size() << std::endl;
+        SPDLOG_ERROR("rawBytes.size(): {} different than expectedPublicKeySize: {}. For keyAlgo: {}", rawBytes.size(),
+                     expectedPublicKeySize, KeyAlgo::GetName(keyAlgo));
 
         throw std::runtime_error(
             "Wrong public key format. Expected length is " +
             std::to_string(expectedPublicKeySize));
       }
     } catch (std::exception& e) {
-      std::cout << e.what() << std::endl;
+      SPDLOG_ERROR(e.what());
     }
     return Casper::PublicKey(rawBytes, keyAlgo);
   }

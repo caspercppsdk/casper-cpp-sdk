@@ -1,12 +1,21 @@
+#include <spdlog/spdlog.h>
 #include "CasperClient.h"
-
 namespace Casper {
 
 /// Construct a new Casper Client object
-Client::Client(const std::string& address)
+Client::Client(const std::string& address, const LogConfig* const log_config)
     : mAddress{address},
       mHttpConnector{mAddress},
-      mRpcClient{mHttpConnector, jsonrpccxx::version::v2} {}
+      mRpcClient{mHttpConnector, jsonrpccxx::version::v2} 
+      {
+       if(log_config) {
+           LogConfig config{.log_name = "Casper-SDK",
+                   .severity = log_config->severity,
+                   .sink = log_config->sink};
+
+           LogConfigurator::initDefault(config);
+       }
+      }
 
 /// Get a list of the nodes.
 InfoGetPeersResult Client::GetNodePeers() {
@@ -106,6 +115,18 @@ GetItemResult Client::GetItem(std::string state_root_hash, std::string key,
 
   return mRpcClient.CallMethodNamed<GetItemResult>(1, "state_get_item",
                                                    paramsJSON);
+}
+
+/// Returns the item in json at the given address with the given key.
+/// FIXME: It is only a workaround, as GetItem function does not parse
+/// correctly result from json:
+/// https://matterfi.atlassian.net/browse/CD-216
+nlohmann::json Client::GetItem_WA(std::string state_root_hash, std::string key,
+                                  std::vector<std::string> path) {
+  nlohmann::json paramsJSON{
+      {"state_root_hash", state_root_hash}, {"key", key}, {"path", path}};
+
+  return mRpcClient.CallMethodNamed_JsonRepr(1, "state_get_item", paramsJSON);
 }
 
 /// Returns the dictionary item with the given key and state root hash.

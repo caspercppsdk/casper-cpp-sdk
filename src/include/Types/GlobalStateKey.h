@@ -4,7 +4,7 @@
 #include "Types/PublicKey.h"
 #include "magic_enum/magic_enum.hpp"
 // Crypto
-#include "cryptopp/secblock.h"
+#include <cryptopp/secblock.h>
 
 // JSON
 #include "nlohmann/json.hpp"

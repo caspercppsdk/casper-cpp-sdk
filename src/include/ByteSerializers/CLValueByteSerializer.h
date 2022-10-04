@@ -1,7 +1,7 @@
 #pragma once
 #include "ByteSerializers/BaseByteSerializer.h"
 #include "Types/CLValue.h"
-
+#include <boost/variant/get.hpp>
 namespace Casper {
 struct CLValueByteSerializer : public BaseByteSerializer {
   ///
@@ -37,35 +37,35 @@ struct CLValueByteSerializer : public BaseByteSerializer {
 
   void CLTypeToBytes(CBytes& sb, CLType innerType, CLTypeParsedRVA parsed) {
     // std::cout << "CLTypeToBytes1: " << std::endl;
-    int type_idx = innerType.type.index();
-    std::cout << "CLTypeToBytes idx: " << type_idx << std::endl;
+    int type_idx = innerType.type.which();
+    SPDLOG_DEBUG("CLTypeToBytes idx: {}", type_idx);
 
     nlohmann::json j;
     to_json(j, innerType);
     // std::cout << "CLTypeToBytes json: " << j.dump(2) << std::endl;
 
     if (type_idx == 0) {
-      CLTypeEnum type = std::get<CLTypeEnum>(innerType.type);
+      CLTypeEnum type = boost::get<CLTypeEnum>(innerType.type);
       WriteByte(sb, static_cast<uint8_t>(type));
     } else if (type_idx == 1) {
       throw std::runtime_error("CLTypeToBytes: type_idx = 1 not implemented");
     } else if (type_idx == 2) {
       WriteByte(sb, 17);
       std::map<CLTypeRVA, CLTypeRVA> mp =
-          std::get<std::map<CLTypeRVA, CLTypeRVA>>(innerType.type);
-      if (parsed.index() == 16) {
+          boost::get<std::map<CLTypeRVA, CLTypeRVA>>(innerType.type);
+      if (parsed.which() == 16) {
         CLTypeToBytes(sb, mp.begin()->first, parsed);
         CLTypeToBytes(sb, mp.begin()->second, parsed);
       } else {
         std::map<CLTypeParsedRVA, CLTypeParsedRVA> mp2 =
-            std::get<std::map<CLTypeParsedRVA, CLTypeParsedRVA>>(parsed);
+            boost::get<std::map<CLTypeParsedRVA, CLTypeParsedRVA>>(parsed);
 
         CLTypeToBytes(sb, mp.begin()->first, mp2.begin()->first);
         CLTypeToBytes(sb, mp.begin()->second, mp2.begin()->second);
       }
     } else if (type_idx == 3) {
       auto inner_type_rva =
-          std::get<std::map<std::string, CLTypeRVA>>(innerType.type);
+          boost::get<std::map<std::string, CLTypeRVA>>(innerType.type);
       // std::cout << "3-1" << std::endl;
       std::string inner_type_name = inner_type_rva.begin()->first;
       // std::cout << "3-2" << std::endl;
@@ -73,7 +73,7 @@ struct CLValueByteSerializer : public BaseByteSerializer {
       // std::cout << "3-3" << std::endl;
       if (inner_type_name == "Option") {
         WriteByte(sb, 13);
-        // if (parsed.index() != 14) {
+        // if (parsed.which() != 14) {
         // std::cout << "3-option" << std::endl;
         CLTypeToBytes(sb, inner_type_rva_value, parsed);
         // }
@@ -92,7 +92,7 @@ struct CLValueByteSerializer : public BaseByteSerializer {
       } else if (inner_type_name == "Result") {
         WriteByte(sb, 16);
         std::map<std::string, CLTypeRVA> inner_type_rva2 =
-            std::get<std::map<std::string, CLTypeRVA>>(inner_type_rva_value);
+            boost::get<std::map<std::string, CLTypeRVA>>(inner_type_rva_value);
 
         CLTypeToBytes(sb, inner_type_rva2.at("Ok"), parsed);
         CLTypeToBytes(sb, inner_type_rva2.at("Err"), parsed);
@@ -104,7 +104,7 @@ struct CLValueByteSerializer : public BaseByteSerializer {
 
     } else if (type_idx == 4) {
       auto inner_type_rva =
-          std::get<std::map<std::string, std::vector<CLTypeRVA>>>(
+          boost::get<std::map<std::string, std::vector<CLTypeRVA>>>(
               innerType.type);
       std::string inner_type_name = inner_type_rva.begin()->first;
       if (inner_type_name == "Tuple1") {
@@ -126,7 +126,7 @@ struct CLValueByteSerializer : public BaseByteSerializer {
     } else if (type_idx == 5) {
       // std::cout << "CLTypeToBytes: type_idx = 5 " << std::endl;
       auto inner_type_rva =
-          rva::get<std::map<std::string, int32_t>>(innerType.type);
+          boost::get<std::map<std::string, int32_t>>(innerType.type);
       // std::cout << "after get inner_type_rva" << std::endl;
       std::string inner_type_name = inner_type_rva.begin()->first;
       // std::cout << "after get inner_type_name" << std::endl;

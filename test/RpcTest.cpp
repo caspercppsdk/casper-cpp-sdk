@@ -3,6 +3,8 @@
 #include "acutest.h"
 
 namespace Casper {
+const std::string pub_key = "02035724e2530c5c8f298ba41fe1cafa28294ab7b04d4f1ade025a4a268138570b3a";
+
 void test1(void) {
   // function body
   TEST_ASSERT(true);
@@ -573,8 +575,7 @@ void PutDeploy_Transfer_Test(void) {
   std::string timestamp_str = ss.str();
   // std::asctime(std::localtime(&tt)),
   DeployHeader header(
-      Casper::PublicKey::FromHexString("0202a6e2d25621758e2c92900f842ff367bbb5e"
-                                       "4b6a849cacb43c3eaebf371b24b85"),
+      Casper::PublicKey::FromHexString(pub_key),
       timestamp_str, "30m", 1, "", {}, "casper-test");
 
   Casper::PublicKey tgt_key = Casper::PublicKey::FromHexString(
@@ -599,13 +600,8 @@ void PutDeploy_Transfer_Test(void) {
   // std::cout << "before deploy" << std::endl;
   Deploy deploy(header, payment, session);
   // std::cout << "after deploy" << std::endl;
-  std::string signer =
-      "0202a6e2d25621758e2c92900f842ff367bbb5e4b6a849cacb43c3eaebf371b24b85";
-
+  
   // std::cout << "before approval" << std::endl;
-
-  std::string privKeyPemFile =
-      "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/secp_secret_test2_key.pem";
 
   Casper::Secp256k1Key secp256k1Key(privKeyPemFile);
   /*
@@ -667,8 +663,7 @@ void PutDeploy_StoredContractByName_Test(void) {
   std::string timestamp_str = getTimestampNow();
 
   DeployHeader header(
-      Casper::PublicKey::FromHexString("0202a6e2d25621758e2c92900f842ff367bbb5e"
-                                       "4b6a849cacb43c3eaebf371b24b85"),
+      Casper::PublicKey::FromHexString(pub_key),
       timestamp_str, "30m", 1, "", {}, "casper-test");
 
   uint512_t amount = u512FromDec("15000000000");
@@ -677,7 +672,7 @@ void PutDeploy_StoredContractByName_Test(void) {
   NamedArg arg1(
       "target",
       CLValue::ByteArray(
-          "9131b2356aa604ced1725bc2d1814683f4ccfc0050ccbd17991daf669c48d327"));
+          "0203297ebdcc8cb840e6e5ffb427420ec754ac35364c502f4ac58b0ffea799e57f11"));
 
   uint512_t amount2 = u512FromDec("100000000000");
   NamedArg arg2("amount", CLValue::U512(amount2));
@@ -687,12 +682,6 @@ void PutDeploy_StoredContractByName_Test(void) {
   StoredContractByName scbn("faucet", "call_faucet", y_args);
 
   Deploy deploy(header, payment, scbn);
-
-  std::string signer =
-      "0202a6e2d25621758e2c92900f842ff367bbb5e4b6a849cacb43c3eaebf371b24b85";
-
-  std::string privKeyPemFile =
-      "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/secp_secret_test2_key.pem";
 
   Casper::Secp256k1Key secp256k1Key(privKeyPemFile);
 
@@ -712,8 +701,7 @@ void PutDeploy_StoredContractByHash_Test(void) {
   std::string timestamp_str = getTimestampNow();
 
   DeployHeader header(
-      Casper::PublicKey::FromHexString("0202a6e2d25621758e2c92900f842ff367bbb5e"
-                                       "4b6a849cacb43c3eaebf371b24b85"),
+      Casper::PublicKey::FromHexString(pub_key),
       timestamp_str, "30m", 1, "", {}, "casper-test");
 
   uint512_t amount = u512FromDec("5000000000");
@@ -732,12 +720,6 @@ void PutDeploy_StoredContractByHash_Test(void) {
        NamedArg("amount", CLValue::U512("33780000000"))});
 
   Deploy deploy(header, payment, scbh);
-
-  std::string signer =
-      "0202a6e2d25621758e2c92900f842ff367bbb5e4b6a849cacb43c3eaebf371b24b85";
-
-  std::string privKeyPemFile =
-      "/home/yusuf/casper-cpp-sdk/test/data/KeyPair/secp_secret_test2_key.pem";
 
   Casper::Secp256k1Key secp256k1Key(privKeyPemFile);
 

@@ -5,7 +5,7 @@
 #include "Types/CLType.h"
 #include "Types/CLTypeParsed.h"
 #include "Utils/CEP57Checksum.h"
-#include "cryptopp/secblock.h"
+#include <cryptopp/secblock.h>
 #include "nlohmann/json.hpp"
 
 namespace Casper {
@@ -347,7 +347,7 @@ struct CLValue {
 
   static CLValue List(std::vector<CLValue> values) {
     if (values.size() == 0) {
-      std::cout << "List size is 0" << std::endl;
+      SPDLOG_ERROR("List size is 0"); //Is it worth to print this info here, when there is same information thrown?
       throw std::runtime_error("List cannot be empty");
     }
 
@@ -370,7 +370,7 @@ struct CLValue {
       sb += value.bytes;
       parsed_values.push_back(value.parsed.parsed);
 
-      if (value.cl_type.type.index() != first_elem_type.index()) {
+      if (value.cl_type.type.which() != first_elem_type.which()) {
         throw std::runtime_error(
             "All elements in a list must be of the same type");
       }
@@ -442,20 +442,19 @@ struct CLValue {
     CLTypeRVA keyType;
     CLTypeRVA valueType;
     CBytes bytes;
-    std::cout << "dict size: " << dict.size() << std::endl;
+    SPDLOG_DEBUG("dict size: {}", dict.size());
 
     CBytes len = hexDecode(u32Encode(dict.size()));
     std::map<CLTypeParsedRVA, CLTypeParsedRVA> parsed_dict;
     bytes += len;
     int i = 0;
-    std::cout << "dict size: " << dict.size() << std::endl;
     for (auto kv : dict) {
       parsed_dict[kv.first.parsed.parsed] = kv.second.parsed.parsed;
       if (i == 0) {
         keyType = kv.first.cl_type.type;
         valueType = kv.second.cl_type.type;
-      } else if (keyType.index() != kv.first.cl_type.type.index() ||
-                 valueType.index() != kv.second.cl_type.type.index()) {
+      } else if (keyType.which() != kv.first.cl_type.type.which() ||
+                 valueType.which() != kv.second.cl_type.type.which()) {
         throw std::runtime_error(
             "All elements in a map must be of the same "
             "type");
@@ -465,12 +464,11 @@ struct CLValue {
       bytes += kv.second.bytes;
       i++;
     }
-    std::cout << "bytes: " << bytes.size() << std::endl;
     std::map<CLTypeRVA, CLTypeRVA> mp;
     mp[keyType] = valueType;
-    std::cout << "map: " << mp.size() << std::endl;
+    SPDLOG_DEBUG("bytes size: {}", bytes.size());
+    SPDLOG_DEBUG("map size: {}", mp.size());
     CLTypeRVA ty(mp);
-    std::cout << "ty: " << std::endl;
 
     return CLValue(bytes, CLType(ty), parsed_dict);
   }
@@ -605,7 +603,7 @@ inline void to_json(nlohmann::json& j, const CLValue& p) {
     std::string tmp_bytes = hexEncode(p.bytes);
     j["bytes"] = tmp_bytes;
   } catch (const std::exception& e) {
-    std::cout << "CLValue-to_json-bytes what(): " << e.what() << std::endl;
+    SPDLOG_ERROR("CLValue-to_json-bytes what(): {}", e.what());
   }
 
   to_json(j["parsed"], p.parsed);
@@ -618,7 +616,7 @@ inline void from_json(const nlohmann::json& j, CLValue& p) {
     std::string hex_bytes_str = j.at("bytes").get<std::string>();
     p.bytes = hexDecode(hex_bytes_str);
   } catch (const std::exception& e) {
-    std::cout << "CLValue-from_json-bytes what(): " << e.what() << std::endl;
+    SPDLOG_ERROR("CLValue-from_json-bytes what(): {}", e.what());
   }
 
   // std::cout << j.at("parsed").dump(2) << std::endl;
@@ -630,13 +628,13 @@ inline void from_json(const nlohmann::json& j, CLValue& p) {
 
 namespace nlohmann {
 template <typename T>
-struct adl_serializer<std::map<rva::variant<T>, rva::variant<T>>> {
-  static void to_json(json& j, const rva::variant<T>& var) {
-    j = to_json(std::get<var.index()>(var));
+struct adl_serializer<std::map<boost::make_recursive_variant<T>, boost::make_recursive_variant<T>>> {
+  static void to_json(json& j, const boost::make_recursive_variant<T>& var) {
+    j = to_json(boost::get<var.which()>(var));
   }
 
-  static void from_json(const json& j, rva::variant<T>& var) {
-    from_json(j, std::get<var.index()>(var));
+  static void from_json(const json& j, boost::make_recursive_variant<T>& var) {
+    from_json(j, boost::get<var.which()>(var));
   }
 };
 

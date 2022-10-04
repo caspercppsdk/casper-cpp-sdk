@@ -1,9 +1,10 @@
 #include "Types/Secp256k1Key.h"
 #include "Base.h"
-#include "cryptopp/osrng.h"
-#include "cryptopp/filters.h"  // CryptoPP::StringSink, CryptoPP::StringSource
-#include "cryptopp/files.h"
-#include "cryptopp/pem.h"
+#include <cryptopp/osrng.h>
+#include <cryptopp/filters.h>  // CryptoPP::StringSink, CryptoPP::StringSource
+#include <cryptopp/files.h>
+#include <cryptopp/pem.h>
+#include <spdlog/spdlog.h>
 #include "Utils/CEP57Checksum.h"
 namespace Casper {
 
@@ -54,6 +55,7 @@ Secp256k1Key::Secp256k1Key(std::string pem_file_path) {
 
   // use the first part, not Y value
   public_key_str = out_str_no_h;
+  SPDLOG_DEBUG("Public key: {}", public_key_str);
 }
 
 std::string Secp256k1Key::getPublicKeyStr() { return public_key_str; }
@@ -91,8 +93,7 @@ CryptoPP::SecByteBlock Secp256k1Key::sign(
 
   } while ((sig_bytes[32] & 0x80) == 0x80);
 
-  std::cout << "signature size: " << sig_bytes.size() << std::endl;
-  std::cout << "aftter sig decode: " << sig_bytes.size() << std::endl;
+  SPDLOG_DEBUG("Signature size: {}", sig_bytes.size());
   return sig_bytes;
 }
 
@@ -107,9 +108,9 @@ bool Secp256k1Key::verify(std::string message, std::string signature) {
       (const CryptoPP::byte*)&signature[0], signature.size());
 
   if (result) {
-    std::cout << "SECP256K1 signature is successfully verified" << std::endl;
+      SPDLOG_DEBUG("SECP256K1 signature is successfully verified");
   } else {
-    std::cout << "Failed to verify SECP256K1 Signature" << std::endl;
+    SPDLOG_ERROR("Failed to verify SECP256K1 Signature");
   }
 
   return result;

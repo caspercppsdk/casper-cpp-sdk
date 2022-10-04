@@ -29,6 +29,7 @@
 
 // Utils
 #include "Utils/CryptoUtil.h"
+#include "Utils/LogConfigurator.h"
 
 // external libraries
 #include "jsonrpccxx/client.hpp"
@@ -52,7 +53,7 @@ class Client {
    * @param address is a URL of the node like 'http://127.0.0.1:7777'. Default
    * endpoint is '/rpc'.
    */
-  Client(const std::string& address);
+  Client(const std::string& address, const LogConfig* const log_config = nullptr);
 
   /**
    * @brief Get a list of the nodes.
@@ -151,6 +152,20 @@ class Client {
    */
   GetItemResult GetItem(std::string state_root_hash, std::string key,
                         std::vector<std::string> path = {});
+
+  /**
+   * FIXME: It is only a workaround, as GetItem function does
+   *        not parse correctly result from json:
+   *        https://matterfi.atlassian.net/browse/CD-216
+   * @brief Returns the item information in nlohmann::json.
+   *
+   * @param state_root_hash The state root hash of the block.
+   * @param key The key of the item.
+   * @param path The path of the item.
+   * @return nlohmann::json that contains the item info.
+   */
+  nlohmann::json GetItem_WA(std::string state_root_hash, std::string key,
+                            std::vector<std::string> path = {});
 
   /**
    * @brief Get the Dictionary Item object

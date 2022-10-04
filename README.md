@@ -5,51 +5,116 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 1. [CMake Version 3.0.0 or newer](https://cmake.org)
 2. [Doxygen Version 1.8.8 or newer](https://www.doxygen.nl)
 3. [OpenSSL Version 1.1.1 or newer](https://www.openssl.org)
+4. [cryptopp Version 8.6.0 or newer](https://www.cryptopp.com/)
 
+## How to clone the SDK
 
-## Install Instruction of Dependencies
+    git clone https://github.com/yusufketen/casper-cpp-sdk.git
 
-    sudo apt-get install build-essential libssl-dev
+## Install Instructions for Dependencies
 
-    sudo apt-get install cmake
-
+    sudo apt-get install build-essential cmake libssl-dev
     sudo apt-get install graphviz
-
     sudo apt-get install doxygen
+## Install Spdlog
 
-### Install instruction of doxygen for CentOS
+```
+git clone https://github.com/gabime/spdlog.git
+cd spdlog && mkdir build && cd build
+cmake -DCMAKE_CXX_FLAGS=-fPIC .. && make -j && sudo make install
+```
 
+**or via package manager:** <br/>
+
+```
+sudo dnf install spdlog-devel
+```
+**TODO** cryptopp for Fedora-based distros.
+
+### Install instructions for doxygen for CentOS
 On CentOS and Rocky Linux:
 
     sudo dnf config-manager --set-enabled powertools
     sudo dnf install doxygen
 
-## How to clone the SDK
-    git clone https://github.com/yusufketen/casper-cpp-sdk.git
+### Install instructions for vcpkg
+Can be used for Windows, Linux and MacOS (fix your paths in the examples)  
 
-## Build
+#### Prepare vcpkg:
+    git clone git@github.com:microsoft/vcpkg.git
+    cd vcpkg
+    git checkout 2022.08.15
+
+#### Build deps:
+    windows:
+    vcpkg install @mydir\casper-cpp-sdk\vcpkg\vcpkg.txt --triplet=x64-windows --clean-after-build
+
+    linux:
+    ./vcpkg install @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --triplet=x64-linux --clean-after-build
+
+    macos:
+    ./vcpkg install @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --triplet=x64-osx --clean-after-build
+
+#### Export deps:
+    windows:  
+    vcpkg export @mydir\casper-cpp-sdk\vcpkg\vcpkg.txt --raw --triplet=x64-windows  --output-dir=mydir\vcpkg-bin-win-casper-cpp-sdk --output=01  
+
+    linux:  
+    ./vcpkg export @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --raw --triplet=x64-linux --output-dir=mydir  
+    vcpkg-bin-lin-casper-cpp-sdk --output=01
+
+    macos:
+    ./vcpkg export @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --raw --triplet=x64-osx --output-dir=mydir/vcpkg-bin-mac-casper-cpp-sdk --output=01
+
+## Building
 
 ### Debug
-    cmake -DCMAKE_BUILD_TYPE=Debug .
-    make all
+Using deps from system (linux only)
+
+    mkdir build && cd build
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ..
+    ninja
+
+Using deps from vcpkg (linux, windows, macos)
+
+    mkdir build && cd build
+    
+    windows:
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-win-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows ..
+    
+    linux:
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-lin-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-linux ..
+
+    macos:
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=mydir/vcpkg-bin-mac-casper-cpp-sdk/01/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-osx ..
+
+    cmake --build .
 
 ### Release
-    cmake -DCMAKE_BUILD_TYPE=Release .
-    make all
+Using deps from system (linux only)
+
+    mkdir build && cd build
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Release ..
+    ninja
 
 ## Test
-    cmake -DCMAKE_BUILD_TYPE=Debug .
-    make all
-    ./test/CasperSDK_test -v
+Using deps from system (linux only)
+
+    mkdir build && cd build
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCASPER_SDK_TESTS=ON ..
+    ninja
+    ./test/casper_cpp_sdk_tests
 
 ## Run Examples
-    cmake -DCMAKE_BUILD_TYPE=Debug .
-    make all
+    mkdir build && cd build
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCASPER_SDK_TESTS=ON ..
+    ninja
     ./examples/example
 
 ## Install
-    cmake -DCMAKE_BUILD_TYPE=Release .
-    make all
+    mkdir build && cd build
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Release ..
+    ninja
     sudo make install
 
 ---

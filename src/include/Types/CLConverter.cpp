@@ -16,8 +16,8 @@ namespace Casper
     istringstream in{str_date};
     in.exceptions(ios::failbit);
     date::sys_time<milliseconds> tp;
-    in >> parse("%FT%TZ", tp);
-    cout << tp << " = " << tp.time_since_epoch() << '\n';
+    in >> date::parse("%FT%TZ", tp);
+    //cout << tp << " = " << tp.time_since_epoch() << '\n';
     return duration_cast<milliseconds>(tp.time_since_epoch()).count();
   }
 
