@@ -109,6 +109,9 @@ commands:
       mode:
         type: string
     steps:
+      - restore_cache:
+          name: "restore cache vcpkg binaries"
+          key: *cache_vcpkg_lin
       - run:
           name: start container
           command: |
@@ -157,6 +160,9 @@ commands:
       mode:
         type: string
     steps:
+      - restore_cache:
+          name: "restore cache vcpkg binaries"
+          key: *cache_vcpkg_win
       - run:
           name: configure & build
           command: |
@@ -176,6 +182,11 @@ commands:
             
             cmake --build .
 jobs:
+  build-linux-vcpkg:
+    executor: executor_ubuntu_large
+    steps:
+      - checkout
+      - cmd_lin_build_vcpkg
   build-linux:
     parameters:
       docker-image:
@@ -187,11 +198,19 @@ jobs:
     executor: executor_ubuntu_large
     steps:
       - checkout
-      - cmd_lin_build_vcpkg
       - cmd_lin_build:
           docker-image: <<parameters.docker-image>>
           compiler: <<parameters.compiler>>
           mode: <<parameters.mode>>
+  build-windows-vcpkg:
+    executor:
+      name: orb-windows/default
+      shell: powershell.exe
+      size: large
+      version: current
+    steps:
+      - checkout
+      - cmd_win_build_vcpkg
   build-windows:
     parameters:
       mode:
@@ -203,13 +222,13 @@ jobs:
       version: current
     steps:
       - checkout
-      - cmd_win_build_vcpkg
       - cmd_win_build:
           mode: <<parameters.mode>>
 workflows:
   casper-cpp-sdk-linux:
     when: true
     jobs:
+      - build-linux-vcpkg
       - build-linux:
           name: linux-<<matrix.compiler>>-<<matrix.mode>>
           docker-image: <<pipeline.parameters.docker-image-casper-cpp-sdk>>
@@ -217,11 +236,16 @@ workflows:
             parameters:
               compiler: [clang, gcc]
               mode: [Debug, Release]
+          requires:
+            - build-linux-vcpkg
   casper-cpp-sdk-windows:
     when: true
     jobs:
+      - build-windows-vcpkg
       - build-windows:
           name: windows-msvc-<<matrix.mode>>
           matrix:
             parameters:
               mode: [Debug, Release]
+          requires:
+            - build-windows-vcpkg
