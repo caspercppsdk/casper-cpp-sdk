@@ -16,6 +16,8 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
     sudo apt-get install build-essential cmake libssl-dev
     sudo apt-get install graphviz
     sudo apt-get install doxygen
+    sudo apt install ninja-build  
+    
 ## Install Spdlog
 
 ```
@@ -41,16 +43,18 @@ On CentOS and Rocky Linux:
 Can be used for Windows, Linux and MacOS (fix your paths in the examples)  
 
 #### Prepare vcpkg:
-    git clone git@github.com:microsoft/vcpkg.git
+    git clone https://github.com/microsoft/vcpkg.git
     cd vcpkg
     git checkout 2022.08.15
+    ./bootstrap-vcpkg.sh
+    sudo apt-get install pkg-config
 
 #### Build deps:
     windows:
     vcpkg install @mydir\casper-cpp-sdk\vcpkg\vcpkg.txt --triplet=x64-windows --clean-after-build
 
     linux:
-    ./vcpkg install @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --triplet=x64-linux --clean-after-build
+    ./vcpkg install boost-algorithm boost-property-tree boost-variant cryptopp openssl spdlog --triplet=x64-linux --clean-after-build
 
     macos:
     ./vcpkg install @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --triplet=x64-osx --clean-after-build
@@ -60,8 +64,7 @@ Can be used for Windows, Linux and MacOS (fix your paths in the examples)
     vcpkg export @mydir\casper-cpp-sdk\vcpkg\vcpkg.txt --raw --triplet=x64-windows  --output-dir=mydir\vcpkg-bin-win-casper-cpp-sdk --output=01  
 
     linux:  
-    ./vcpkg export @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --raw --triplet=x64-linux --output-dir=mydir  
-    vcpkg-bin-lin-casper-cpp-sdk --output=01
+    ./vcpkg export boost-algorithm boost-property-tree boost-variant cryptopp openssl spdlog --raw --triplet=x64-linux --output-dir=mydir/vcpkg-bin-lin-casper-cpp-sdk --output=01
 
     macos:
     ./vcpkg export @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --raw --triplet=x64-osx --output-dir=mydir/vcpkg-bin-mac-casper-cpp-sdk --output=01
