@@ -31,7 +31,6 @@ cmake -DCMAKE_CXX_FLAGS=-fPIC .. && make -j && sudo make install
 ```
 sudo dnf install spdlog-devel
 ```
-**TODO** cryptopp for Fedora-based distros.
 
 ### Install instructions for doxygen for CentOS
 On CentOS and Rocky Linux:
