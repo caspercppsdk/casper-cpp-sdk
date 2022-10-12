@@ -72,13 +72,13 @@ Can be used for Windows, Linux and MacOS (fix your paths in the examples)
 ## Building
 
 ### Debug
-Using deps from system (linux only)
+Using deps from system (linux only, need to install additional dependencies)
 
     mkdir build && cd build
     cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ..
     ninja
 
-Using deps from vcpkg (linux, windows, macos)
+Using deps from vcpkg (Linux, Windows, macOS)(Suggested)
 
     mkdir build && cd build
     
