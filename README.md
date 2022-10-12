@@ -110,7 +110,7 @@ Using deps from system (linux only)
 
 ## Run Examples
     mkdir build && cd build
-    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCASPER_SDK_TESTS=ON ..
+    cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DCASPER_SDK_EXAMPLES=ON ..
     ninja
     ./examples/example
 
