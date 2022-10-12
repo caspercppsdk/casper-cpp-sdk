@@ -117,7 +117,7 @@ Using deps from system (linux only)
     mkdir build && cd build
     cmake -GNinja -DCMAKE_BUILD_TYPE=Release ..
     ninja
-    sudo make install
+    sudo ninja install
 
 ---
 ## How to integrate Casper C++ SDK into your project
