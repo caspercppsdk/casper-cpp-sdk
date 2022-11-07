@@ -3,12 +3,6 @@ version: 2.1
 orbs:
   orb-windows: circleci/windows@5.0.0
 
-configuration:
-  - xcode_version: &xcode_version 13.4.1
-  - ubuntu_version: &ubuntu_version ubuntu-2004:current
-  - cache_vcpkg_lin: &cache_vcpkg_lin cache_vcpkg_lin-v01-{{checksum "~/project/vcpkg/vcpkg.txt"}}
-  - cache_vcpkg_win: &cache_vcpkg_win cache_vcpkg_win-v01-{{checksum "~/project/vcpkg/vcpkg.txt"}}
-
 parameters:
   docker-image-casper-cpp-sdk:
     default: "polishcode/matterfi-casper-cpp-sdk-debian:1"
@@ -19,6 +13,15 @@ parameters:
   path_vcpkg_bin_win:
     default: "C:\\vcpkg-binaries"
     type: string
+  vcpkg-tag:
+    default: "2022.10.19"
+    type: string
+
+configuration:
+  - xcode_version: &xcode_version 13.4.1
+  - ubuntu_version: &ubuntu_version ubuntu-2004:current
+  - cache_vcpkg_lin: &cache_vcpkg_lin cache_vcpkg_lin-v01-<<pipeline.parameters.vcpkg-tag>>-{{checksum "~/project/vcpkg/vcpkg.txt"}}
+  - cache_vcpkg_win: &cache_vcpkg_win cache_vcpkg_win-v01-<<pipeline.parameters.vcpkg-tag>>-{{checksum "~/project/vcpkg/vcpkg.txt"}}
 
 executors:
   executor_macos:
@@ -54,7 +57,7 @@ commands:
               
               git clone https://github.com/microsoft/vcpkg.git
               cd vcpkg
-              git checkout 2022.08.15
+              git checkout <<pipeline.parameters.vcpkg-tag>>
 
               ./bootstrap-vcpkg.sh -disableMetrics
               ./vcpkg install @/home/circleci/project/vcpkg/vcpkg.txt --triplet=x64-linux --clean-after-build
@@ -88,7 +91,7 @@ commands:
 
               git clone https://github.com/microsoft/vcpkg.git
               cd vcpkg
-              git checkout 2022.08.15
+              git checkout <<pipeline.parameters.vcpkg-tag>>
 
               .\bootstrap-vcpkg.bat -disableMetrics
               .\vcpkg.exe install @$HOME\\project\\vcpkg\\vcpkg.txt --triplet=x64-windows --clean-after-build
@@ -133,18 +136,20 @@ commands:
             fi
 
             docker exec -w /home/build dck-executor \
-              cmake -GNinja -DCMAKE_C_COMPILER=<<parameters.compiler>> -DCMAKE_CXX_COMPILER=${LOCAL_CXX_COMPILER} \
+              cmake -GNinja \
+              -DCMAKE_C_COMPILER=<<parameters.compiler>> \
+              -DCMAKE_CXX_COMPILER=${LOCAL_CXX_COMPILER} \
               -DCMAKE_BUILD_TYPE=<<parameters.mode>> \
               -DCMAKE_TOOLCHAIN_FILE=/home/vcpkg/scripts/buildsystems/vcpkg.cmake \
               -DVCPKG_TARGET_TRIPLET=x64-linux \
               -DCASPER_SDK_TESTS=ON \
-              -DCASPER_SDK_EXAMPLES=OFF \
+              -DCASPER_SDK_EXAMPLES=ON \
               /home/src/
       - run:
           name: build
           command: |
             docker exec -w /home/build dck-executor \
-              cmake --build .
+              ninja
       - run:
           name: run tests
           command: |
@@ -173,14 +178,15 @@ commands:
             mkdir build
             cd build
 
-            cmake -GNinja -DCMAKE_BUILD_TYPE=<<parameters.mode>> `
+            cmake -GNinja `
+              -DCMAKE_BUILD_TYPE=<<parameters.mode>> `
               -DCMAKE_TOOLCHAIN_FILE=<<pipeline.parameters.path_vcpkg_bin_win>>\\scripts\\buildsystems\\vcpkg.cmake `
               -DVCPKG_TARGET_TRIPLET=x64-windows `
               -DCASPER_SDK_TESTS=ON `
-              -DCASPER_SDK_EXAMPLES=OFF `
+              -DCASPER_SDK_EXAMPLES=ON `
               ..
             
-            cmake --build .
+            ninja
 jobs:
   build-linux-vcpkg:
     executor: executor_ubuntu_large
@@ -225,7 +231,7 @@ jobs:
       - cmd_win_build:
           mode: <<parameters.mode>>
 workflows:
-  casper-cpp-sdk-linux:
+  flow-linux:
     when: true
     jobs:
       - build-linux-vcpkg
@@ -238,7 +244,7 @@ workflows:
               mode: [Debug, Release]
           requires:
             - build-linux-vcpkg
-  casper-cpp-sdk-windows:
+  flow-windows:
     when: true
     jobs:
       - build-windows-vcpkg
