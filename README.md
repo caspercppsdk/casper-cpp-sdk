@@ -44,6 +44,13 @@ Can be used for Windows, Linux and MacOS (fix your paths in the examples)
     git clone git@github.com:microsoft/vcpkg.git
     cd vcpkg
     git checkout 2022.08.15
+    ./bootstrap-vcpkg.sh
+
+#### Install necessary libraries for Fedora 35:
+    sudo dnf update && sudo dnf upgrade
+    sudo reboot
+    sudo dnf install kernel-headers kernel-devel autoconf-archive mesa-libGLU-devel R 'xcb-util-*-devel' libxkbcommon-x11-devel libxkbcommon-devel 
+    sudo yum install perl-IPC-Cmd 
 
 #### Build deps:
     windows:
@@ -60,8 +67,9 @@ Can be used for Windows, Linux and MacOS (fix your paths in the examples)
     vcpkg export @mydir\casper-cpp-sdk\vcpkg\vcpkg.txt --raw --triplet=x64-windows  --output-dir=mydir\vcpkg-bin-win-casper-cpp-sdk --output=01  
 
     linux:  
-    ./vcpkg export @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --raw --triplet=x64-linux --output-dir=mydir  
-    vcpkg-bin-lin-casper-cpp-sdk --output=01
+    ./vcpkg export @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --raw --triplet=x64-linux --output-dir=mydir/vcpkg-bin-lin-casper-cpp-sdk --output=01
+        or an alternative way if above doesn't work:    
+    ./vcpkg export <list of packages from vcpkg.txt seperated by space> --raw --triplet=x64-linux --output-dir=/mydir/vcpkg-bin-lin-casper-cpp-sdk --output=01
 
     macos:
     ./vcpkg export @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --raw --triplet=x64-osx --output-dir=mydir/vcpkg-bin-mac-casper-cpp-sdk --output=01
