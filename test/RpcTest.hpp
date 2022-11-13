@@ -8,12 +8,9 @@
 #include "Types/CLType.h"
 #include "Types/CLConverter.h"
 #include "ByteSerializers/DeployByteSerializer.h"
-#include <filesystem>
 
 
 namespace Casper {
-
-inline std::string privKeyPemFile = std::filesystem::canonical("/proc/self/exe").parent_path().string() + "/data/cpp_sdk_test_secret_key.pem";
 
 void test1(void);
 
