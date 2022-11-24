@@ -31,7 +31,8 @@ class HttpLibConnector : public jsonrpccxx::IClientConnector {
     auto res = httpClient.Post("/rpc", request, "application/json");
     if (!res || res->status != 200) {
       throw jsonrpccxx::JsonRpcException(
-          -32003, "client connector error, received status != 200");
+          -32003, "client connector error, received status != 200, status: " +
+                      std::to_string(res->status) + ", reason: " + res->reason);
     }
     return res->body;
   }
