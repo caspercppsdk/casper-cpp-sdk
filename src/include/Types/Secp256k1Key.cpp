@@ -47,6 +47,12 @@ Secp256k1Key::Secp256k1Key(std::string pem_file_path) {
   std::string out_str = ss.str();
 
   std::string out_str_no_h = out_str.substr(0, 66);
+  if (out_str_no_h.ends_with('h')) {
+      std::cout << "HACK! out_str_no_h before: " << out_str_no_h << std::endl;
+      out_str_no_h.insert(out_str_no_h.begin() + 2, '0');
+      out_str_no_h.pop_back();
+      std::cout << "HACK! out_str_no_h after: " << out_str_no_h << std::endl;
+  }
   // std::cout << "out_str_no_h: " << out_str_no_h << std::endl;
   // std::cout << "out_str_no_h size: " << out_str_no_h.size() << std::endl;
 
