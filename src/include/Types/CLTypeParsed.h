@@ -91,7 +91,7 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
     j = p_type;
   } else if (p.which() == 10) {
     auto& p_type = boost::get<URef>(p);
-    std::cout << "\nURef to_json\n" << std::endl;
+    //std::cout << "\nURef to_json\n" << std::endl;
     j = p_type.ToString();
   } else if (p.which() == 11) {
     auto p_type = boost::get<GlobalStateKey>(p);
@@ -238,8 +238,7 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
       p = parsed_map;
     }
 
-  } else if (cl_type_.type.which() == 3) {
-    std::cout << "\nCLTypeRVA from_json 3\n" << std::endl;
+  } else if (cl_type_.type.which() == 3) {    
     /// option, list, result
 
     auto obj = boost::get<std::map<std::string, CLTypeRVA>>(cl_type_.type);
