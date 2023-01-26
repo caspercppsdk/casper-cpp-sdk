@@ -10,7 +10,7 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 ## Install Instructions for Dependencies
 
     sudo apt update
-    sudo apt install build-essential cmake libssl-dev graphviz doxygen ninja-build
+    sudo apt install build-essential cmake libssl-dev graphviz doxygen ninja-build libspdlog-dev
     
 ## Install Spdlog
 
