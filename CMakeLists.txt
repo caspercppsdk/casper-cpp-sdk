@@ -59,7 +59,14 @@ endif()
 
 if(EXTERNAL_INCLUDES_DIR)
     file(COPY "${SDK_ROOT}/src/include/" DESTINATION "${EXTERNAL_INCLUDES_DIR}/casper_sdk")
-    file(COPY "${SDK_ROOT}/lib/" DESTINATION "${EXTERNAL_INCLUDES_DIR}")
+
+    file(COPY "${SDK_ROOT}/lib/cryptopp-pem" DESTINATION "${EXTERNAL_INCLUDES_DIR}")
+    file(COPY "${SDK_ROOT}/lib/date" DESTINATION "${EXTERNAL_INCLUDES_DIR}")
+    file(COPY "${SDK_ROOT}/lib/jsonrpccxx" DESTINATION "${EXTERNAL_INCLUDES_DIR}")
+    file(COPY "${SDK_ROOT}/lib/nlohmann" DESTINATION "${EXTERNAL_INCLUDES_DIR}")
+    file(COPY "${SDK_ROOT}/lib/rva" DESTINATION "${EXTERNAL_INCLUDES_DIR}")
+    file(COPY "${SDK_ROOT}/lib/wide-integer" DESTINATION "${EXTERNAL_INCLUDES_DIR}")
+
     install(DIRECTORY "${SDK_ROOT}/src/include/" DESTINATION ${EXTERNAL_INCLUDES_DIR})
 endif()
 
