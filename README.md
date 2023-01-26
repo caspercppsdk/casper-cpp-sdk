@@ -7,16 +7,10 @@ Casper C++ SDK provides an interface to establish a connection between the Caspe
 3. [OpenSSL Version 1.1.1 or newer](https://www.openssl.org)
 4. [cryptopp Version 8.6.0 or newer](https://www.cryptopp.com/)
 
-## How to clone the SDK
-
-    git clone https://github.com/yusufketen/casper-cpp-sdk.git
-
 ## Install Instructions for Dependencies
 
-    sudo apt-get install build-essential cmake libssl-dev
-    sudo apt-get install graphviz
-    sudo apt-get install doxygen
-    sudo apt install ninja-build  
+    sudo apt update
+    sudo apt install build-essential cmake libssl-dev graphviz doxygen ninja-build libspdlog-dev
     
 ## Install Spdlog
 
