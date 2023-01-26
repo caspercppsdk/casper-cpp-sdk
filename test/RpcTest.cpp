@@ -735,4 +735,26 @@ void PutDeploy_StoredContractByHash_Test(void) {
   std::cout << "deploy id: " << res.deploy_hash << std::endl;
 }
 
+/**
+ * @brief Check the "query_global_state" rpc function
+ *
+ */
+    void QueryGlobalState_with_keyTest(void) {
+        Client client(CASPER_TEST_ADDRESS);
+        std::string block_hash =
+                "a55471527f5b3aa75f8e9c26b781369623d24ada613e09ed341bb56968b7ede1";
+        std::string key =
+                "transfer-b243c65eb43d304c74282c33a835eef25da2760f978f451e49d344cd47fcc466";
+
+        QueryGlobalStateResult result = client.QueryGlobalStateWithBlockHash(key, block_hash);
+
+        // tests
+        TEST_ASSERT(result.api_version != "");
+        TEST_ASSERT(result.merkle_proof != "");
+
+        nlohmann::json res;
+        nlohmann::to_json(res, result);
+        std::cout << res.dump(4) << std::endl;
+        assert(false);
+    }
 }  // namespace Casper

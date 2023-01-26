@@ -59,6 +59,7 @@ void PutDeploy_StoredContractByName_Test(void);
 
 void PutDeploy_StoredContractByHash_Test(void);
 
+void QueryGlobalState_with_keyTest(void);
 
 
 }  // namespace Casper

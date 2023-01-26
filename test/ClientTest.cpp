@@ -561,6 +561,8 @@ TEST_LIST = {
     {"PutDeploy RPC Call with a Transfer", PutDeploy_Transfer_Test},
     {"PutDeploy RPC Call with a Stored Contract by Hash",
      PutDeploy_StoredContractByHash_Test},
+    {"QueryGlobalState RPC Call", QueryGlobalState_with_keyTest},
+
 #endif
 
 #if SER_DE_TEST == 1

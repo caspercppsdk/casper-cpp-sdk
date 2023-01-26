@@ -4,6 +4,8 @@
 #include "../src/include/CasperClient.h"  // To use Casper::Client features
 #include "../src/include/Types/GlobalStateKey.h"
 #include "../src/include/ByteSerializers/DeployByteSerializer.h"
+#include "../src/include/Utils/CryptoUtil.h"
+
 /// Construct a Casper::Client object
 Casper::Client casper_client(CASPER_TEST_ADDRESS);
 
@@ -180,21 +182,23 @@ void accountPutDeploy() {
           deploy_params.approvals[0].signer.ToString()),
       Casper::Signature::FromHexString(
           deploy_params.approvals[0].signature.ToHexString()));
-  // dp.AddApproval(approval);
-  /*
+   dp.AddApproval(approval);
+
     using namespace std::chrono;
 
     const auto now_ms = time_point_cast<milliseconds>(system_clock::now());
     const auto now_s = time_point_cast<seconds>(now_ms);
     const auto millis = now_ms - now_s;
     const auto c_now = system_clock::to_time_t(now_s);
+    /*
+       std::stringstream ss;
+       ss << std::put_time(gmtime(&c_now), "%FT%T") << '.' << std::setfill('0')
+          << std::setw(3) << millis.count() << 'Z';
 
-    std::stringstream ss;
-    ss << std::put_time(gmtime(&c_now), "%FT%T") << '.' << std::setfill('0')
-       << std::setw(3) << millis.count() << 'Z';
+     */
 
-  */
-  dp.header.timestamp = "2022-04-23T09:38:21.700Z";
+  dp.header.timestamp = Casper::CryptoUtil::timeToRFC3339(c_now);
+  //dp.header.timestamp = "2022-04-23T09:38:21.700Z";
   Casper::Deploy t2(dp.header, dp.payment, dp.session);
   t2.AddApproval(approval);
 
