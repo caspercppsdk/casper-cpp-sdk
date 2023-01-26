@@ -1,3 +1,4 @@
+#include "TempFileHandler.hpp"
 #include "CasperClient.h"
 #include "Types/GlobalStateKey.cpp"
 #include "Types/PublicKey.h"
@@ -14,6 +15,7 @@
 #include "Types/Secp256k1Key.h"
 #include <cryptopp/osrng.h>
 #include <chrono>
+#include "data/TestSourceSecretKey.hpp"
 
 // Tests
 #include "RpcTest.hpp"
@@ -25,6 +27,7 @@
 #include <boost/variant/get.hpp>
 
 using namespace Casper;
+
 /*
 /// Helper function to print a result object
 template <typename T>
@@ -438,7 +441,9 @@ void publicKey_load_fromFileTest() {
   /// Create a Private Key from pem file
   // CryptoPP::AutoSeededRandomPool prng;
 
-  Casper::Secp256k1Key secp256k1Key(privKeyPemFile);
+  TempFileHandler fileHandler{sourceSecretKey, "sourceSecretKey"};
+
+  Casper::Secp256k1Key secp256k1Key(fileHandler.getPath());
   std::cout << "private key: " << secp256k1Key.getPrivateKeyStr() << std::endl;
   std::cout << "public key: " << secp256k1Key.getPublicKeyStr() << std::endl;
 
@@ -453,8 +458,9 @@ void publicKey_load_fromFileTest() {
 
 void ed25KeyTest() {
   std::cout << "\n";
-  
-  Ed25519Key ed_key(privKeyPemFile);
+  TempFileHandler fileHandler{sourceSecretKey, "sourceSecretKey"};
+
+  Ed25519Key ed_key(fileHandler.getPath());
   std::cout << "ed_key.getPrivateKeyStr(): " << ed_key.getPrivateKeyStr()
             << std::endl;
   std::cout << "ed_key.getPublicKeyStr(): " << ed_key.getPublicKeyStr()
@@ -562,7 +568,8 @@ TEST_LIST = {
     {"PutDeploy RPC Call with a Stored Contract by Hash",
      PutDeploy_StoredContractByHash_Test},
     {"QueryGlobalState RPC Call", QueryGlobalState_with_keyTest},
-
+    {"GlobalStateKey Serialization and Deserialization test",
+     globalStateKey_Simple_Test},
 #endif
 
 #if SER_DE_TEST == 1

@@ -48,6 +48,12 @@ Can be used for Windows, Linux and MacOS (fix your paths in the examples)
     ./bootstrap-vcpkg.sh
     sudo apt-get install pkg-config
 
+#### Install necessary libraries for Fedora 35:
+    sudo dnf update && sudo dnf upgrade
+    sudo reboot
+    sudo dnf install kernel-headers kernel-devel autoconf-archive mesa-libGLU-devel R 'xcb-util-*-devel' libxkbcommon-x11-devel libxkbcommon-devel 
+    sudo yum install perl-IPC-Cmd 
+
 #### Build deps:
     windows:
     vcpkg install @mydir\casper-cpp-sdk\vcpkg\vcpkg.txt --triplet=x64-windows --clean-after-build
@@ -64,6 +70,9 @@ Can be used for Windows, Linux and MacOS (fix your paths in the examples)
 
     linux:  
     ./vcpkg export boost-algorithm boost-property-tree boost-variant cryptopp openssl spdlog --raw --triplet=x64-linux --output-dir=mydir/vcpkg-bin-lin-casper-cpp-sdk --output=01
+    ./vcpkg export @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --raw --triplet=x64-linux --output-dir=mydir/vcpkg-bin-lin-casper-cpp-sdk --output=01
+        or an alternative way if above doesn't work:    
+    ./vcpkg export <list of packages from vcpkg.txt seperated by space> --raw --triplet=x64-linux --output-dir=/mydir/vcpkg-bin-lin-casper-cpp-sdk --output=01
 
     macos:
     ./vcpkg export @mydir/casper-cpp-sdk/vcpkg/vcpkg.txt --raw --triplet=x64-osx --output-dir=mydir/vcpkg-bin-mac-casper-cpp-sdk --output=01

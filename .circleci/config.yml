@@ -3,15 +3,12 @@ version: 2.1
 orbs:
   orb-windows: circleci/windows@5.0.0
 
-configuration:
-  - xcode_version: &xcode_version 13.4.1
-  - ubuntu_version: &ubuntu_version ubuntu-2004:current
-  - cache_vcpkg_lin: &cache_vcpkg_lin cache_vcpkg_lin-v01-{{checksum "~/project/vcpkg/vcpkg.txt"}}
-  - cache_vcpkg_win: &cache_vcpkg_win cache_vcpkg_win-v01-{{checksum "~/project/vcpkg/vcpkg.txt"}}
-
 parameters:
   docker-image-casper-cpp-sdk:
     default: "polishcode/matterfi-casper-cpp-sdk-debian:1"
+    type: string
+  path_vcpkg_bin_mac:
+    default: "/Users/distiller/vcpkg-binaries"
     type: string
   path_vcpkg_bin_lin:
     default: "/home/circleci/vcpkg-binaries"
@@ -19,6 +16,16 @@ parameters:
   path_vcpkg_bin_win:
     default: "C:\\vcpkg-binaries"
     type: string
+  vcpkg-tag:
+    default: "2022.10.19"
+    type: string
+
+configuration:
+  - xcode_version:   &xcode_version 13.4.1
+  - ubuntu_version:  &ubuntu_version ubuntu-2004:current
+  - cache_vcpkg_mac: &cache_vcpkg_mac cache_vcpkg_mac-v01-<<pipeline.parameters.vcpkg-tag>>-{{checksum "~/project/vcpkg/vcpkg.txt"}}
+  - cache_vcpkg_lin: &cache_vcpkg_lin cache_vcpkg_lin-v01-<<pipeline.parameters.vcpkg-tag>>-{{checksum "~/project/vcpkg/vcpkg.txt"}}
+  - cache_vcpkg_win: &cache_vcpkg_win cache_vcpkg_win-v01-<<pipeline.parameters.vcpkg-tag>>-{{checksum "~/project/vcpkg/vcpkg.txt"}}
 
 executors:
   executor_macos:
@@ -35,6 +42,43 @@ executors:
     resource_class: medium
       
 commands:
+  cmd_mac_build_vcpkg:
+    description: "command to build vcpkg deps (on host)"
+    steps:
+      - restore_cache:
+          name: "restore cache vcpkg binaries"
+          key: *cache_vcpkg_mac
+      - run:
+          name: "configure vcpkg & build deps"
+          no_output_timeout: 40m
+          working_directory: "~/"
+          command: |
+            if [ -d <<pipeline.parameters.path_vcpkg_bin_mac>> ]; then
+              echo "vcpkg-binaries restored from cache, skipping build :)"
+            else
+              brew install pkg-config
+
+              echo "vcpkg-binaries not present, building..."
+              mkdir <<pipeline.parameters.path_vcpkg_bin_mac>>
+              
+              git clone https://github.com/microsoft/vcpkg.git
+              cd vcpkg
+              git checkout <<pipeline.parameters.vcpkg-tag>>
+
+              echo -e 'set(VCPKG_OSX_DEPLOYMENT_TARGET 10.15)'          >> triplets/x64-osx.cmake
+              echo -e 'set(VCPKG_C_FLAGS -mmacosx-version-min=10.15)'   >> triplets/x64-osx.cmake
+              echo -e 'set(VCPKG_CXX_FLAGS -mmacosx-version-min=10.15)' >> triplets/x64-osx.cmake
+              cat triplets/x64-osx.cmake
+
+              ./bootstrap-vcpkg.sh -disableMetrics
+              ./vcpkg install @/Users/distiller/project/vcpkg/vcpkg.txt --triplet=x64-osx --clean-after-build
+              ./vcpkg export  @/Users/distiller/project/vcpkg/vcpkg.txt --triplet=x64-osx --raw --output-dir=/Users/distiller --output=vcpkg-binaries
+            fi
+      - save_cache:
+          name: "save cache vcpkg binaries"
+          key: *cache_vcpkg_mac
+          paths:
+            - <<pipeline.parameters.path_vcpkg_bin_mac>>
   cmd_lin_build_vcpkg:
     description: "command to build vcpkg deps (on host)"
     steps:
@@ -54,7 +98,7 @@ commands:
               
               git clone https://github.com/microsoft/vcpkg.git
               cd vcpkg
-              git checkout 2022.08.15
+              git checkout <<pipeline.parameters.vcpkg-tag>>
 
               ./bootstrap-vcpkg.sh -disableMetrics
               ./vcpkg install @/home/circleci/project/vcpkg/vcpkg.txt --triplet=x64-linux --clean-after-build
@@ -88,7 +132,7 @@ commands:
 
               git clone https://github.com/microsoft/vcpkg.git
               cd vcpkg
-              git checkout 2022.08.15
+              git checkout <<pipeline.parameters.vcpkg-tag>>
 
               .\bootstrap-vcpkg.bat -disableMetrics
               .\vcpkg.exe install @$HOME\\project\\vcpkg\\vcpkg.txt --triplet=x64-windows --clean-after-build
@@ -99,6 +143,42 @@ commands:
           key: *cache_vcpkg_win
           paths:
             - <<pipeline.parameters.path_vcpkg_bin_win>>
+  cmd_mac_build:
+    description: "command to build product (on host)"
+    parameters:
+      compiler:
+        type: string
+      mode:
+        type: string
+    steps:
+      - restore_cache:
+          name: "restore cache vcpkg binaries"
+          key: *cache_vcpkg_mac
+      - run:
+          name: configure & build
+          command: |
+            brew install ninja cmake
+
+            mkdir build
+            cd build
+
+            if [ <<parameters.compiler>> == "clang" ]; then
+              LOCAL_CXX_COMPILER=clang++
+            else
+              LOCAL_CXX_COMPILER=g++
+            fi
+
+            cmake -GNinja \
+              -DCMAKE_C_COMPILER=<<parameters.compiler>> \
+              -DCMAKE_CXX_COMPILER=${LOCAL_CXX_COMPILER} \
+              -DCMAKE_BUILD_TYPE=<<parameters.mode>> \
+              -DCMAKE_TOOLCHAIN_FILE=<<pipeline.parameters.path_vcpkg_bin_mac>>\\scripts\\buildsystems\\vcpkg.cmake \
+              -DVCPKG_TARGET_TRIPLET=x64-osx \
+              -DCASPER_SDK_TESTS=ON \
+              -DCASPER_SDK_EXAMPLES=ON \
+              ..
+            
+            ninja
   cmd_lin_build:
     description: "command to build product (in docker)"
     parameters:
@@ -109,6 +189,9 @@ commands:
       mode:
         type: string
     steps:
+      - restore_cache:
+          name: "restore cache vcpkg binaries"
+          key: *cache_vcpkg_lin
       - run:
           name: start container
           command: |
@@ -130,23 +213,26 @@ commands:
             fi
 
             docker exec -w /home/build dck-executor \
-              cmake -GNinja -DCMAKE_C_COMPILER=<<parameters.compiler>> -DCMAKE_CXX_COMPILER=${LOCAL_CXX_COMPILER} \
+              cmake -GNinja \
+              -DCMAKE_C_COMPILER=<<parameters.compiler>> \
+              -DCMAKE_CXX_COMPILER=${LOCAL_CXX_COMPILER} \
               -DCMAKE_BUILD_TYPE=<<parameters.mode>> \
               -DCMAKE_TOOLCHAIN_FILE=/home/vcpkg/scripts/buildsystems/vcpkg.cmake \
               -DVCPKG_TARGET_TRIPLET=x64-linux \
               -DCASPER_SDK_TESTS=ON \
-              -DCASPER_SDK_EXAMPLES=OFF \
+              -DCASPER_SDK_EXAMPLES=ON \
               /home/src/
       - run:
           name: build
           command: |
             docker exec -w /home/build dck-executor \
-              cmake --build .
-      - run:
-          name: run tests
-          command: |
-            docker exec -w /home/build dck-executor \
-              ./test/casper_cpp_sdk_tests
+              ninja
+      # run tests once CAS-87
+      #- run:
+      #    name: run tests
+      #    command: |
+      #      docker exec -w /home/build dck-executor \
+      #        ./test/casper_cpp_sdk_tests
       - run:
           name: stop container
           command: |
@@ -157,6 +243,9 @@ commands:
       mode:
         type: string
     steps:
+      - restore_cache:
+          name: "restore cache vcpkg binaries"
+          key: *cache_vcpkg_win
       - run:
           name: configure & build
           command: |
@@ -167,15 +256,44 @@ commands:
             mkdir build
             cd build
 
-            cmake -GNinja -DCMAKE_BUILD_TYPE=<<parameters.mode>> `
+            cmake -GNinja `
+              -DCMAKE_BUILD_TYPE=<<parameters.mode>> `
               -DCMAKE_TOOLCHAIN_FILE=<<pipeline.parameters.path_vcpkg_bin_win>>\\scripts\\buildsystems\\vcpkg.cmake `
               -DVCPKG_TARGET_TRIPLET=x64-windows `
               -DCASPER_SDK_TESTS=ON `
-              -DCASPER_SDK_EXAMPLES=OFF `
+              -DCASPER_SDK_EXAMPLES=ON `
               ..
             
-            cmake --build .
+            ninja
 jobs:
+  build-macos-vcpkg:
+    executor: executor_macos
+    environment:
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+    steps:
+      - checkout
+      - cmd_mac_build_vcpkg
+  build-macos:
+    executor: executor_macos
+    environment:
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+    parameters:
+      compiler:
+        type: string
+      mode:
+        type: string
+    steps:
+      - checkout
+      - cmd_mac_build:
+          compiler: <<parameters.compiler>>
+          mode: <<parameters.mode>>
+  build-linux-vcpkg:
+    executor: executor_ubuntu_large
+    steps:
+      - checkout
+      - cmd_lin_build_vcpkg
   build-linux:
     parameters:
       docker-image:
@@ -187,11 +305,19 @@ jobs:
     executor: executor_ubuntu_large
     steps:
       - checkout
-      - cmd_lin_build_vcpkg
       - cmd_lin_build:
           docker-image: <<parameters.docker-image>>
           compiler: <<parameters.compiler>>
           mode: <<parameters.mode>>
+  build-windows-vcpkg:
+    executor:
+      name: orb-windows/default
+      shell: powershell.exe
+      size: large
+      version: current
+    steps:
+      - checkout
+      - cmd_win_build_vcpkg
   build-windows:
     parameters:
       mode:
@@ -203,13 +329,25 @@ jobs:
       version: current
     steps:
       - checkout
-      - cmd_win_build_vcpkg
       - cmd_win_build:
           mode: <<parameters.mode>>
 workflows:
-  casper-cpp-sdk-linux:
+  flow-macos:
     when: true
     jobs:
+      - build-macos-vcpkg
+      - build-macos:
+          name: macos-<<matrix.compiler>>-<<matrix.mode>>
+          matrix:
+            parameters:
+              compiler: [clang, gcc]
+              mode: [Debug, Release]
+          requires:
+            - build-macos-vcpkg
+  flow-linux:
+    when: true
+    jobs:
+      - build-linux-vcpkg
       - build-linux:
           name: linux-<<matrix.compiler>>-<<matrix.mode>>
           docker-image: <<pipeline.parameters.docker-image-casper-cpp-sdk>>
@@ -217,11 +355,16 @@ workflows:
             parameters:
               compiler: [clang, gcc]
               mode: [Debug, Release]
-  casper-cpp-sdk-windows:
+          requires:
+            - build-linux-vcpkg
+  flow-windows:
     when: true
     jobs:
+      - build-windows-vcpkg
       - build-windows:
           name: windows-msvc-<<matrix.mode>>
           matrix:
             parameters:
               mode: [Debug, Release]
+          requires:
+            - build-windows-vcpkg
