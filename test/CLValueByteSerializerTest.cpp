@@ -8,7 +8,6 @@
 #include "Types/CLConverter.h"
 
 #include "ByteSerializers/DeployByteSerializer.h"
-#include "gtest/gtest.h"
 
 namespace Casper{
 
