@@ -17,7 +17,6 @@ namespace Casper
     in.exceptions(ios::failbit);
     date::sys_time<milliseconds> tp;
     in >> date::parse("%FT%TZ", tp);
-    //cout << tp << " = " << tp.time_since_epoch() << '\n';
     return duration_cast<milliseconds>(tp.time_since_epoch()).count();
   }
 

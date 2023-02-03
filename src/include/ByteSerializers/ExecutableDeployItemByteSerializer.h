@@ -11,9 +11,7 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
     NamedArgByteSerializer namedArgSerializer;
 
     uint8_t source_tag = 0;
-    // std::cout << "ExecutableDeployItemByteSerializer: " << std::endl;
     if (source.module_bytes.has_value()) {
-      // std::cout << "has module bytes" << std::endl;
       source_tag = 0;
       WriteByte(bytes, source_tag);
 
@@ -32,7 +30,6 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
       }
 
     } else if (source.stored_contract_by_hash.has_value()) {
-      // std::cout << "has stored contract by hash" << std::endl;
       source_tag = 1;
       WriteByte(bytes, source_tag);
 
@@ -46,7 +43,6 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
       }
 
     } else if (source.stored_contract_by_name.has_value()) {
-      // std::cout << "has stored contract by name" << std::endl;
       source_tag = 2;
       WriteByte(bytes, source_tag);
 
@@ -60,7 +56,6 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
       }
 
     } else if (source.stored_versioned_contract_by_hash.has_value()) {
-      // std::cout << "has stored versioned contract by hash" << std::endl;
       source_tag = 3;
       WriteByte(bytes, source_tag);
 
@@ -81,7 +76,6 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
         WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
       }
     } else if (source.stored_versioned_contract_by_name.has_value()) {
-      // std::cout << "has stored versioned contract by name" << std::endl;
       source_tag = 4;
       WriteByte(bytes, source_tag);
 
@@ -102,34 +96,20 @@ struct ExecutableDeployItemByteSerializer : public BaseByteSerializer {
         WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
       }
     } else if (source.transfer.has_value()) {
-      // std::cout << "has transfer" << std::endl;
       source_tag = 5;
       WriteByte(bytes, source_tag);
-
-      // std::cout << "after tag" << std::endl;
       TransferDeployItem item = source.transfer.value();
-
       bytes += hexDecode(u32Encode(item.args.size()));
 
-      // std::cout << "after bytes write" << std::endl;
-      // std::cout << "args size: " << item.args.size() << std::endl;
-
       for (NamedArg arg : item.args) {
-        // std::cout << "arg loop in transfer" << std::endl;
-        // nlohmann::json j;
-        // to_json(j, arg);
-        // std::cout << j.dump(2) << std::endl;
-        WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
-        // std::cout << "after bytes write" << std::endl;
+       WriteBytes(bytes, namedArgSerializer.ToBytes(arg));
       }
     } else {
       nlohmann::json j;
-      // std::cout << "before source\n";
       to_json(j, source);
       throw std::runtime_error("Unsupported ExecutableDeployItem type: " +
                                j.dump(2));
     }
-    // std::cout << "before executableserializer return" << std::endl;
     return bytes;
   }
 };

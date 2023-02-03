@@ -284,7 +284,6 @@ inline void from_json(const nlohmann::json& j, CLTypeRVA& p) {
       throw std::runtime_error("Invalid CLType");
     }
   } else if (j.is_array()) {
-    std::cout << "arraycltype" << std::endl;
     auto inner_vec = std::vector<CLTypeRVA>();
     for (auto& inner : j) {
       CLTypeRVA inner_val;
@@ -316,11 +315,9 @@ struct CLType {
 
     switch (tag) {
       case CLTypeEnum::List:
-        std::cout << "list cltype switch" << std::endl;
         obj_type = type_;
         list_map["List"] = obj_type;
         type = list_map;
-        std::cout << "list cltype switch end" << std::endl;
         break;
 
       default:

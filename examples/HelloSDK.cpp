@@ -169,8 +169,6 @@ void accountPutDeploy() {
       "/home/yusuf/casper-cpp-sdk/examples/example_put_deploy1.json");
   nlohmann::json deploy_params_json = nlohmann::json::parse(ifs);
 
-  // std::cout << deploy_params_json.dump(2) << std::endl;
-
   Casper::Deploy deploy_params;
   Casper::from_json(deploy_params_json, deploy_params);
 

@@ -15,14 +15,11 @@ struct TransferDeployItem {
 
   TransferDeployItem(uint512_t amount, AccountHashKey targetAccountHash,
                      uint64_t id = 0, bool has_id = false) {
-    // std::cout << "TransferDeployItem::TransferDeployItem()" << std::endl;
 
     args.push_back(NamedArg("amount", CLValue::U512(amount)));
-    // std::cout << "after amount" << std::endl;
 
     args.push_back(
         NamedArg("target", CLValue::ByteArray(targetAccountHash.raw_bytes)));
-    // std::cout << "after target" << std::endl;
 
     if (!has_id) {
       std::cout << "id == -1" << std::endl;
@@ -32,20 +29,8 @@ struct TransferDeployItem {
     } else {
       CLValue cl64 = CLValue::U64(id);
       CLValue cl(CLValue::Option(cl64));
-
-      // nlohmann::json j;
-      // to_json(j, cl);
-      // std::cout << "cl(u64): " << j.dump(2) << std::endl;
-
       args.push_back(NamedArg("id", cl));
     }
-
-    // nlohmann::json j;
-    // to_json(j, args[2]);
-    // std::cout << "args[2]: " << j.dump(2) << std::endl;
-
-    // std::cout << "transfer deploy end" << std::endl;
-    //
   }
 };
 

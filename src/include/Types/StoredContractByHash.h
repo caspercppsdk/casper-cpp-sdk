@@ -45,9 +45,7 @@ inline void to_json(nlohmann::json& j, const StoredContractByHash& p) {
 
 inline void from_json(const nlohmann::json& j, StoredContractByHash& p) {
   j.at("hash").get_to(p.hash);
-  // std::cout << "entry point enter" << std::endl;
   p.entry_point = j.at("entry_point").get<std::string>();
-  // std::cout << "entry point exit" << std::endl;
   j.at("args").get_to(p.args);
 }
 

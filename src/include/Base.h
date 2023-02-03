@@ -91,7 +91,6 @@ inline uint128_t u128FromHex(std::string hex_str) {
 
 inline std::string u128ToHex(uint128_t value) {
   if (value == 0) {
-    // std::cout << "u128ToHex: value is 0" << std::endl;
     return "00";
   }
 
@@ -104,12 +103,9 @@ inline std::string u128ToHex(uint128_t value) {
     u128_str = "0" + u128_str;
   }
 
-  //
   uint8_t bytes_length = u128_str.length() / 2;
   std::string bytes_length_str = integerToHex<uint8_t>(bytes_length);
-
   reverseHex(u128_str);
-  // std::cout << "u128_str: " << u128_str << std::endl;
 
   // this string includes the length of the string and its hex representation
   std::string encoded_u128_str = bytes_length_str + u128_str;
@@ -152,7 +148,6 @@ inline uint256_t u256FromHex(std::string hex_str) {
 
 inline std::string u256ToHex(uint256_t value) {
   if (value == 0) {
-    // std::cout << "u256ToHex: value is 0" << std::endl;
     return "00";
   }
 
@@ -161,18 +156,12 @@ inline std::string u256ToHex(uint256_t value) {
   std::string u256_str;
   u256_str = ss.str();
 
-  // std::cout << "u256_str1: " << u256_str << std::endl;
-
   if (u256_str.length() % 2 != 0) {
     u256_str = "0" + u256_str;
   }
 
-  // std::cout << "u256_str2: " << u256_str << std::endl;
-  //
   uint8_t bytes_length = u256_str.length() / 2;
   std::string bytes_length_str = integerToHex<uint8_t>(bytes_length);
-
-  // std::cout << "u256_str3: " << u256_str << std::endl;
   reverseHex(u256_str);
 
   // this string includes the length of the string and its hex representation
@@ -215,7 +204,6 @@ inline uint512_t u512FromHex(std::string hex_str) {
 
 inline std::string u512ToHex(uint512_t value) {
   if (value == 0) {
-    // std::cout << "u512ToHex: value is 0" << std::endl;
     return "00";
   }
 
@@ -228,11 +216,8 @@ inline std::string u512ToHex(uint512_t value) {
     u512_str = "0" + u512_str;
   }
 
-  //
   uint8_t bytes_length = u512_str.length() / 2;
   std::string bytes_length_str = integerToHex<uint8_t>(bytes_length);
-
-  // std::cout << "u512_str: " << u512_str << std::endl;
   reverseHex(u512_str);
 
   // this string includes the length of the string and its hex representation
