@@ -31,6 +31,12 @@ std::string StringUtil::toLower(std::string& str) {
   return str;
 }
 
+std::string StringUtil::toLower(const std::string& str) {
+  std::string str_copy = str;
+  std::transform(str_copy.begin(), str_copy.end(), str_copy.begin(), ::tolower);
+  return str_copy;
+}
+
 uint32_t StringUtil::hexStrToUint32(const std::string& str) {
   std::stringstream stream{};
   stream << std::hex << str;

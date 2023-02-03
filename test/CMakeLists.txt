@@ -14,6 +14,7 @@ include_directories(
 add_executable(${BINARY}
     CLValueByteSerializerTest.cpp
     DeployItemByteSerializerTest.cpp
+    RpcTest.cpp
 )
 
 target_link_libraries(${BINARY} 

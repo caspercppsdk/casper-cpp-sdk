@@ -1,11 +1,4 @@
-#include <gtest/gtest.h>
-#include "CasperClient.h"
-#include "Types/GlobalStateKey.h"
-#include "Types/PublicKey.h"
-#include "Utils/CryptoUtil.h"
-#include <sstream>
-#include "Types/CLType.h"
-#include "Types/CLConverter.h"
+#include "TestBase.hpp"
 
 #include "ByteSerializers/DeployByteSerializer.h"
 
