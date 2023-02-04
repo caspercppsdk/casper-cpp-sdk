@@ -197,29 +197,19 @@ void accountPutDeploy() {
 
      */
 
-  dp.header.timestamp = Casper::CryptoUtil::timeToRFC3339(c_now);
-  //dp.header.timestamp = "2022-04-23T09:38:21.700Z";
+  //dp.header.timestamp = Casper::CryptoUtil::timeToRFC3339(c_now);
+  dp.header.timestamp = "2022-04-23T09:38:21.700Z";
   Casper::Deploy t2(dp.header, dp.payment, dp.session);
   t2.AddApproval(approval);
 
-  nlohmann::json jj;
-  Casper::to_json(jj, t2);
-
-  std::cout << jj.dump(2) << std::endl;
   t2.header.body_hash =
       Casper::CEP57Checksum::Encode(t2.ComputeBodyHash(t2.payment, t2.session));
   t2.hash = Casper::CEP57Checksum::Encode(t2.ComputeHeaderHash(t2.header));
-  std::cout << "\n\nt2 body: " << t2.header.body_hash << std::endl << "\n\n";
   Casper::DeployByteSerializer sery;
-  std::cout << "\n\n\ntest\n\n\n";
   std::string deploy_bytes = Casper::hexEncode(sery.ToBytes(t2));
   std::reverse(deploy_bytes.begin(), deploy_bytes.end());
-  std::cout << "testttt:" << deploy_bytes << std::endl
-            << std::endl
-            << std::endl
-            << std::endl;
-  Casper::PutDeployResult put_deploy_result = casper_client.PutDeploy(t2);
 
+  Casper::PutDeployResult put_deploy_result = casper_client.PutDeploy(t2);
   printResult(put_deploy_result, "account_put_deploy");
 }
 
