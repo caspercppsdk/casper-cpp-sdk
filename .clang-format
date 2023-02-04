@@ -1,0 +1,41 @@
+﻿---
+BasedOnStyle: LLVM
+ColumnLimit: 120
+
+IndentWidth: 4
+AccessModifierOffset: -4
+BraceWrapping:
+  AfterClass:      true
+  AfterControlStatement: true
+  AfterEnum:       true
+  AfterFunction:   true
+  AfterNamespace:  true
+  AfterObjCDeclaration: true
+  AfterStruct:     true
+  AfterUnion:      true
+  BeforeCatch:     false
+  BeforeElse:      true
+  IndentBraces:    true
+BreakBeforeBraces: Custom
+
+CompactNamespaces: true
+
+PointerAlignment: Left
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignEscapedNewlines: Left
+AlignOperands: true
+AlignTrailingComments: true
+
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortLoopsOnASingleLine: false
+
+BinPackArguments: true
+BinPackParameters: true
+
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+
+SortIncludes: false
+...
