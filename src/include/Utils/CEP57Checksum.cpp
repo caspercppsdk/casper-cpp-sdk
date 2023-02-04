@@ -81,7 +81,7 @@ CBytes CEP57Checksum::Decode(std::string encoded) {
 
   std::string computed = Encode(decoded);
   if (computed != encoded) {
-    throw std::runtime_error("Invalid Checksum");
+    throw std::runtime_error("Invalid Checksum computed:" +  computed + "\n encoded: " + encoded);
   }
 
   return decoded;

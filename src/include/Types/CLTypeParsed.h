@@ -127,18 +127,15 @@ inline void to_json(nlohmann::json& j, const CLTypeParsedRVA& p) {
   }
 }
 
-inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
-                      CLType& cl_type_) {
-  // std::cout << "from_json, idx: " << p.which() << std::endl;
+inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p, CLType& cl_type_) 
+{
   bool is_primitive = false;
+
   if (cl_type_.type.which() == 0) {
     is_primitive = true;
   }
 
   if (is_primitive) {
-    // std::cout << "enum: "
-    //           << magic_enum::enum_name(boost::get<CLTypeEnum>(cl_type_.type))
-    //           << std::endl;
     switch (boost::get<CLTypeEnum>(cl_type_.type)) {
       case CLTypeEnum::Bool:
         p = j.get<bool>();
@@ -190,7 +187,6 @@ inline void from_json(const nlohmann::json& j, CLTypeParsedRVA& p,
     }
   } else if (cl_type_.type.which() == 1) {
     // vector<CLTypeRVA>
-    // std::cout << "\nvector<CLTypeRVA> from_json\n" << std::endl;
   } else if (cl_type_.type.which() == 2) {
     // Map(CLType, CLType)
     auto parsed_map = std::map<CLTypeParsedRVA, CLTypeParsedRVA>();
