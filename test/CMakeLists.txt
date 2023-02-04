@@ -12,6 +12,7 @@ include_directories(
 )
 
 add_executable(${BINARY}
+    ClientTest.cpp
     CLValueByteSerializerTest.cpp
     DeployItemByteSerializerTest.cpp
     RpcTest.cpp

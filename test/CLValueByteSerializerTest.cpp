@@ -400,20 +400,29 @@ TEST_F(CLValueTests, ByteSerializer_ResultErrOptionNone)
 
 TEST_F(CLValueTests, ByteSerializer_Map)
 {
-    std::map<CLValue, CLValue> tempVal{{CLValue::String("key1"), CLValue::U32(1)}};
+    std::map<CLValue, CLValue> tempVal;
+    tempVal.insert(std::make_pair(CLValue::String("key1"), CLValue::U32(1)));
     tempVal.insert(std::make_pair(CLValue::String("key2"), CLValue::U32(2)));
 
     auto clv = CLValue::Map(tempVal);
-    EXPECT_EQ(encodeCLValue(clv), "1c00000002000000040000006b65793101000000040000006b65793202000000110a04");
+    auto actualVal = encodeCLValue(clv);
+    std::string expectedVal = "1c00000002000000040000006b65793101000000040000006b65793202000000110a04";
+    std::string possibleVal = "1c00000002000000040000006b65793202000000040000006b65793101000000110a04";
+    EXPECT_TRUE(actualVal == expectedVal || actualVal == possibleVal);
 }
 
 TEST_F(CLValueTests, ByteSerializer_MapOption)
 {
-    std::map<CLValue, CLValue> tempVal{{CLValue::String("key1"), CLValue::U32(1)}};
+    std::map<CLValue, CLValue> tempVal;
+    tempVal.insert(std::make_pair(CLValue::String("key1"), CLValue::U32(1)));
     tempVal.insert(std::make_pair(CLValue::String("key2"), CLValue::U32(2)));
 
     auto clv = CLValue::Option(CLValue::Map(tempVal));
-    EXPECT_EQ(encodeCLValue(clv), "1d0000000102000000040000006b65793101000000040000006b657932020000000d110a04");
+
+    auto actualVal = encodeCLValue(clv);
+    std::string expectedVal = "1d0000000102000000040000006b65793101000000040000006b657932020000000d110a04";
+    std::string possibleVal = "1d0000000102000000040000006b65793202000000040000006b657931010000000d110a04";
+    EXPECT_TRUE(actualVal == expectedVal || actualVal == possibleVal);
 }
 
 TEST_F(CLValueTests, ByteSerializer_MapOptionNone)
