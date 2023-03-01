@@ -19,6 +19,7 @@
 #include "JsonRpc/ResultTypes/GetStatusResult.h"
 #include "JsonRpc/ResultTypes/InfoGetPeersResult.h"
 #include "JsonRpc/ResultTypes/PutDeployResult.h"
+#include "JsonRpc/ResultTypes/QueryGlobalStateResult.h"
 
 // param types
 #include "Types/Bid.h"
@@ -256,6 +257,18 @@ class Client {
    * @return PutDeployResult that contains the deploy information.
    */
   PutDeployResult PutDeploy(Deploy deploy);
+
+
+  std::vector<std::string> splitPath(std::string path);
+
+  QueryGlobalStateResult QueryGlobalState(std::string key, std::string state_root_hash="", std::string path="");
+
+QueryGlobalStateResult QueryGlobalState(GlobalStateKey key, std::string state_root_hash="", std::string path="");
+
+QueryGlobalStateResult QueryGlobalStateWithBlockHash(std::string key, std::string block_hash, std::string path="");
+
+QueryGlobalStateResult QueryGlobalStateWithBlockHash(GlobalStateKey key, std::string block_hash, std::string path="");
+
 };
 
 }  // namespace Casper

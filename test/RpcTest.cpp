@@ -673,8 +673,7 @@ void PutDeploy_StoredContractByHash_Test(void) {
   putDeploy(deploy, secp256k1Key);
 }
 
-void globalStateKey_Simple_Test(void)
-{
+void globalStateKey_Simple_Test(void) {
   GlobalStateKey key,key2;
   key.key = "uref-2f9ac53033ea0b3bae7df8047be450478b69b48d91db7243791b26598af9fcf0-007";
   nlohmann::json j;
@@ -682,4 +681,27 @@ void globalStateKey_Simple_Test(void)
   from_json(j,key2);
   TEST_ASSERT(key.ToString() == key2.ToString());
 }
+
+/**
+ * @brief Check the "query_global_state" rpc function
+ *
+ */
+void QueryGlobalState_with_keyTest(void) {
+    Client client(CASPER_TEST_ADDRESS);
+    std::string block_hash =
+            "a55471527f5b3aa75f8e9c26b781369623d24ada613e09ed341bb56968b7ede1";
+    std::string key =
+            "transfer-b243c65eb43d304c74282c33a835eef25da2760f978f451e49d344cd47fcc466";
+
+    QueryGlobalStateResult result = client.QueryGlobalStateWithBlockHash(key, block_hash);
+
+    TEST_ASSERT(result.api_version != "");
+    TEST_ASSERT(result.merkle_proof != "");
+
+    nlohmann::json res;
+    nlohmann::to_json(res, result);
+    std::cout << res.dump(4) << std::endl;
+    assert(false);
+}
+
 }  // namespace Casper

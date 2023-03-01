@@ -106,7 +106,7 @@ inline void from_json(const nlohmann::json& j, Deploy& p) {
   try {
     CEP57Checksum::Decode(j.at("hash").get<std::string>());
   } catch (const std::exception& e) {
-    throw std::invalid_argument("Deploy: hash is not a valid checksum");
+    throw std::invalid_argument("Deploy: hash is not a valid checksum" + std::string(e.what()));
   }
 
   j.at("hash").get_to(p.hash);

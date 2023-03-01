@@ -222,4 +222,49 @@ PutDeployResult Client::PutDeploy(Deploy deploy) {
                                                      paramsJSON);
 }
 
+std::vector<std::string> Client::splitPath(std::string path)
+{
+    std::stringstream ss(path);
+    std::string curr_path;
+    std::vector<std::string> paths;
+    while (std::getline(ss, curr_path, '/'))
+    {
+        paths.push_back(curr_path);
+    }
+    return paths;
+}
+
+QueryGlobalStateResult Client::QueryGlobalState(std::string key, std::string state_root_hash, std::string path)
+{
+    std::vector<std::string> path_vec = splitPath(path);
+    nlohmann::json hashJSON{{"StateRootHash", state_root_hash}};
+
+    nlohmann::json paramsJSON{
+            {"state_identifier", hashJSON}, {"key", key}, {"path", path_vec}};
+
+    return mRpcClient.CallMethodNamed<QueryGlobalStateResult>(1, "query_global_state",
+                                                     paramsJSON);
+}
+
+QueryGlobalStateResult Client::QueryGlobalState(GlobalStateKey key, std::string state_root_hash, std::string path) {
+    return QueryGlobalState(key.ToString(), state_root_hash, path);
+}
+
+QueryGlobalStateResult
+Client::QueryGlobalStateWithBlockHash(std::string key, std::string block_hash, std::string path) {
+    std::vector<std::string> path_vec = splitPath(path);
+    nlohmann::json hashJSON{{"BlockHash", block_hash}};
+
+    nlohmann::json paramsJSON{
+            {"state_identifier", hashJSON}, {"key", key}, {"path", path_vec}};
+
+    return mRpcClient.CallMethodNamed<QueryGlobalStateResult>(1, "query_global_state",
+                                                              paramsJSON);
+}
+
+QueryGlobalStateResult
+Client::QueryGlobalStateWithBlockHash(GlobalStateKey key, std::string block_hash, std::string path) {
+    return QueryGlobalState(key.ToString(), block_hash, path);
+}
+
 }  // namespace Casper
