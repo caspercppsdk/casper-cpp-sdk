@@ -1,0 +1,65 @@
+{
+    "hash": "b6aa46333fb858deee7f259a5bca581251c6200a5d902aeb1244c3a7169b5971",
+    "header": {
+        "account": "01a2905e4680aa49e0b44100d9dfc861b9605bb35f9956b1e99eb43863363d80aa",
+        "timestamp": "2023-05-23T13:32:45.554Z",
+        "ttl": "30m",
+        "gas_price": 1,
+        "body_hash": "74db109805bb20de43ef89a5b084544a858908b236601519d5827cd9b7fbb925",
+        "dependencies": [],
+        "chain_name": "integration-test"
+    },
+    "payment": {
+        "ModuleBytes": {
+            "module_bytes": "",
+            "args": [
+                [
+                    "amount",
+                    {
+                        "cl_type": "U512",
+                        "bytes": "0400e1f505",
+                        "parsed": "100000000"
+                    }
+                ]
+            ]
+        }
+    },
+    "session": {
+        "Transfer": {
+            "args": [
+                [
+                    "amount",
+                    {
+                        "cl_type": "U512",
+                        "bytes": "0400f90295",
+                        "parsed": "2500000000"
+                    }
+                ],
+                [
+                    "target",
+                    {
+                        "cl_type": "PublicKey",
+                        "bytes": "01265ea737411b349ad3d0fc724c2c588acd2765c057e5c690cd5e3dade401782b",
+                        "parsed": "01265ea737411b349ad3d0fc724c2c588acd2765c057e5c690cd5e3dade401782b"
+                    }
+                ],
+                [
+                    "id",
+                    {
+                        "cl_type": {
+                            "Option": "U64"
+                        },
+                        "bytes": "010000000000000000",
+                        "parsed": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "approvals": [
+        {
+            "signer": "01a2905e4680aa49e0b44100d9dfc861b9605bb35f9956b1e99eb43863363d80aa",
+            "signature": "01c94d517d5bbc8d5c74e0e68b8cb308561ff979a1c91907b56d427cc90156c437726c0b736d17f7303f2db66e405c7e5c8175b8b863703938eff1659766dff808"
+        }
+    ]
+}
