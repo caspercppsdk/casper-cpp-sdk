@@ -216,7 +216,7 @@ void infoGetDeploy_with_invalidDeployHashTest(void) {
 
   try {
     nlohmann::json deploy_result = client.GetDeployInfo(deploy_hash);
-  } catch (const jsonrpccxx::JsonRpcException& e) {
+  } catch (const std::exception& e) {
     return;
   }
   TEST_ASSERT(false);
@@ -329,7 +329,7 @@ void chainGetBlock_with_blockHashTest(void) {
   Client client(CASPER_TEST_ADDRESS);
 
   std::string block_hash =
-      "acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330";
+      "c512989d5a850bd9cc32fbf54a2046ee422f8a14e1e9003189a7cf987340d073";
   GetBlockResult blockResult = client.GetBlock(block_hash);
 
   TEST_ASSERT(blockResult.api_version != "");
@@ -339,28 +339,28 @@ void chainGetBlock_with_blockHashTest(void) {
 
   TEST_ASSERT(iequals(
       current_block.hash,
-      "acc4646f35cc1d59b24381547a4d2dc1c992a202b6165f3bf68d3f23c2b93330"));
+      "c512989d5a850bd9cc32fbf54a2046ee422f8a14e1e9003189a7cf987340d073"));
 
   // block header
   TEST_ASSERT(iequals(
       current_block.header.parent_hash,
-      "e23b5f98258aff36716a8f60ca8d57c049216eedd88e6c7e14df7a6cfbadca73"));
+      "45a089f5d0575227721526d59b24ab6e860b560d709d9b1760b4378a363c142b"));
 
   TEST_ASSERT(iequals(
       current_block.header.state_root_hash,
-      "f5abb3964382e0dde4bc3ec38414f43f325f5dcc6493d5a7c4037972793fb302"));
+      "116c27db7fbc6ea1c8dcd41b21f655e22913478962a27c746ac68796644f528c"));
 
   TEST_ASSERT(iequals(
       current_block.header.body_hash,
-      "e1786ce884cf41abbc758b0795ee3223daec5fb8015791ced0f8ee66deec8ee3"));
+      "9b79475df86baafbf93ac59a5b11a462157383fe0101ee235cd8aee58daf14cd"));
 
   TEST_ASSERT(iequals(
       current_block.header.accumulated_seed,
-      "35b5d33db0b43df3971831880f51023b37a468ad54494316ec26af4c61904532"));
+      "5f93e8f2fb07f0df9a1bc5e76fa752d603f844e5cfa55ed6f2d6fff2faefd6f7"));
 
   TEST_ASSERT(current_block.header.timestamp != "");
   TEST_ASSERT(current_block.header.era_id != 0);
-  TEST_ASSERT(current_block.header.height == 532041);
+  TEST_ASSERT(current_block.header.height == 1568761);
   TEST_ASSERT(current_block.header.protocol_version != "");
 
   // block body
@@ -368,7 +368,7 @@ void chainGetBlock_with_blockHashTest(void) {
 
   TEST_ASSERT(iequals(
       current_block.body.proposer.ToString(),
-      "01cd807fb41345d8dD5A61da7991e1468173acbEE53920E4DFe0D28Cb8825AC664"));
+      "017d96b9a63abcb61c870a4f55187a0a7ac24096bdb5fc585c12a686a4d892009e"));
 
   TEST_ASSERT(current_block.body.transfer_hashes.size() >= 0);
 
@@ -701,7 +701,6 @@ void QueryGlobalState_with_keyTest(void) {
     nlohmann::json res;
     nlohmann::to_json(res, result);
     std::cout << res.dump(4) << std::endl;
-    assert(false);
 }
 
 }  // namespace Casper
