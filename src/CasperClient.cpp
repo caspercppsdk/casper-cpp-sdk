@@ -273,4 +273,31 @@ QueryGlobalStateResult Client::QueryGlobalStateWithBlockHash(GlobalStateKey key,
     return QueryGlobalState(key.ToString(), block_hash, path);
 }
 
+/// Returns the state root hash at a given block
+SpeculativeExecResult Client::SpeculativeExec(Deploy deploy, std::string block_hash)
+{
+    nlohmann::json blockHashJson{{"Hash", block_hash}};
+
+    nlohmann::json deploy_json;
+    to_json(deploy_json, deploy);
+
+    nlohmann::json paramsJSON{{"block_identifier", nullptr}, {"deploy", deploy_json}};
+
+    std::cout << paramsJSON.dump(2) << std::endl;
+    return mRpcClient.CallMethodNamed<SpeculativeExecResult>(1, "speculative_exec", paramsJSON);
+}
+
+/// Returns the state root hash at a given height
+SpeculativeExecResult Client::SpeculativeExec(Deploy deploy, uint64_t block_height)
+{
+    nlohmann::json blockHeightJSON{{"Height", block_height}};
+
+    nlohmann::json deploy_json;
+    to_json(deploy_json, deploy);
+
+    nlohmann::json paramsJSON{{"block_identifier", blockHeightJSON}, {"deploy", deploy_json}};
+
+    return mRpcClient.CallMethodNamed<SpeculativeExecResult>(1, "speculative_exec", paramsJSON);
+}
+
 } // namespace Casper

@@ -570,6 +570,8 @@ TEST_LIST = {
     {"QueryGlobalState RPC Call", QueryGlobalState_with_keyTest},
     {"GlobalStateKey Serialization and Deserialization test",
      globalStateKey_Simple_Test},
+     {"SpeculativeExec RPC Call without blockIdentifier",
+     SpeculativeExec_without_blockIdentifier},
 #endif
 
 #if SER_DE_TEST == 1

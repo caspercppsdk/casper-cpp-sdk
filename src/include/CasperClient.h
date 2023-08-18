@@ -20,6 +20,7 @@
 #include "JsonRpc/ResultTypes/InfoGetPeersResult.h"
 #include "JsonRpc/ResultTypes/PutDeployResult.h"
 #include "JsonRpc/ResultTypes/QueryGlobalStateResult.h"
+#include "JsonRpc/ResultTypes/SpeculativeExecResult.h"
 
 // param types
 #include "Types/Bid.h"
@@ -269,6 +270,26 @@ QueryGlobalStateResult QueryGlobalStateWithBlockHash(std::string key, std::strin
 
 QueryGlobalStateResult QueryGlobalStateWithBlockHash(GlobalStateKey key, std::string block_hash, std::string path="");
 
+/**
+     * @brief Return the results of the execution to the caller
+     *
+     * @param deploy The deploy object to be sent to the network.
+     * @param block_hash Block hash string of the node. Use empty string to get
+     * the state root hash of the latest block.
+     * @return SpeculativeExecResult that contains the state_root_hash as a
+     * string.
+     */
+    SpeculativeExecResult SpeculativeExec(Deploy deploy, std::string block_hash = "");
+
+    /**
+     * @brief Return the results of the execution to the caller
+     *
+     * @param deploy The deploy object to be sent to the network.
+     * @param block_height The height of the block as a uint64_t.
+     * @return SpeculativeExecResult that contains the state_root_hash as a
+     * string.
+     */
+    SpeculativeExecResult SpeculativeExec(Deploy deploy, uint64_t block_height);
 };
 
 }  // namespace Casper

@@ -60,4 +60,10 @@ void globalStateKey_Simple_Test(void);
 
 void QueryGlobalState_with_keyTest(void);
 
+void SpeculativeExec_with_blockHeightTest(void);
+
+void SpeculativeExec_with_blockHashTest(void);
+
+void SpeculativeExec_without_blockIdentifier(void);
+
 }  // namespace Casper

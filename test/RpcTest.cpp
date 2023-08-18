@@ -703,4 +703,67 @@ void QueryGlobalState_with_keyTest(void) {
     std::cout << res.dump(4) << std::endl;
 }
 
+void SpeculativeExec_with_blockHeightTest(void) 
+{
+  //
+}
+
+void SpeculativeExec_with_blockHashTest(void)
+{
+    //
+}
+
+void SpeculativeExec_without_blockIdentifier(void)
+{
+    // Only deploy
+    // uint512_t amount = u512FromDec("5000000000");
+    // ModuleBytes payment(amount);
+
+    // StoredContractByHash scbh(
+    //     "e3523602448b6085b861890b1c214181e2c1a7bdd2b23424b1941d1301256517",
+    //     "unlock_cspr",
+    //     {NamedArg("receipient_publickey",
+    //               CLValue::String("01f28f169dad17315a03d15e16aa93d5342303ae11f"
+    //                               "15c68aadfdab3df31b0fcbf")),
+    //      NamedArg("bsc_transaction_hash",
+    //               CLValue::String("0xd6e7f5aa561e069c385d0f63a3c8dc5501f63d3616c3"
+    //                               "61749e5efab9776fa33e")),
+
+    //      NamedArg("amount", CLValue::U512("33780000000"))});
+
+    // Deploy deploy(getHeader(pub_key), payment, scbh);
+
+    // TempFileHandler sourceKeyFile{sourceSecretKey, "sourceSecretKey"};
+
+    // Casper::Secp256k1Key secp256k1Key(sourceKeyFile.getPath());
+
+    // putDeploy(deploy, secp256k1Key);
+    nlohmann::json input_json;
+    try
+        {
+            std::string file_path = __FILE__;
+            std::string dir_path = file_path.substr(0, file_path.rfind("/"));
+            std::cout << dir_path << std::endl;
+            std::string file_path_name = dir_path + "/data/SpeculativeExec.json";
+            std::ifstream ifs(file_path_name);
+            input_json = nlohmann::json::parse(ifs);
+    } catch (std::exception& e)
+        {
+            std::cout << "speculative json file: " << e.what() << std::endl;
+    }
+
+    std::cout << std::endl << input_json.dump(2) << std::endl;
+
+    // create a CLValue from the json
+    Deploy dp;
+    from_json(input_json, dp);
+
+    Client client("http://3.138.177.248:7777");
+
+    SpeculativeExecResult result = client.SpeculativeExec(dp);
+    nlohmann::json res;
+    nlohmann::to_json(res, result);
+    std::cout << res.dump(4) << std::endl;
+}
+
 }  // namespace Casper
