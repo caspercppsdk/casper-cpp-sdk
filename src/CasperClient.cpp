@@ -300,4 +300,10 @@ SpeculativeExecResult Client::SpeculativeExec(Deploy deploy, uint64_t block_heig
     return mRpcClient.CallMethodNamed<SpeculativeExecResult>(1, "speculative_exec", paramsJSON);
 }
 
+/// Returns the chainspec.toml file of the node. 
+GetChainspecResult Client::GetChainspec()
+{
+    return mRpcClient.CallMethodNamed<GetChainspecResult>(1, "info_get_chainspec");
+}
+
 } // namespace Casper

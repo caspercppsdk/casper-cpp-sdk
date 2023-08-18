@@ -165,8 +165,13 @@ void stateGetAuctionInfo() {
 
 /// "account_put_deploy" RPC function call example
 void accountPutDeploy() {
-  std::ifstream ifs(
-      "/home/yusuf/casper-cpp-sdk/examples/example_put_deploy1.json");
+  // TODO: fix error: Invalid Deploy, data: "deploy received by the node expired at
+  std::string file_path = __FILE__;
+  std::string dir_path = file_path.substr(0, file_path.rfind('/'));
+  std::cout << dir_path << std::endl;
+  std::string file_path_name = dir_path + "/example_put_deploy1.json";
+
+  std::ifstream ifs(file_path_name);
   nlohmann::json deploy_params_json = nlohmann::json::parse(ifs);
 
   // std::cout << deploy_params_json.dump(2) << std::endl;
