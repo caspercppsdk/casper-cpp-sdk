@@ -290,7 +290,7 @@ QueryGlobalStateResult QueryGlobalStateWithBlockHash(GlobalStateKey key, std::st
      */
     SpeculativeExecResult SpeculativeExec(Deploy deploy, uint64_t block_height);
 
-    GetChainSpecResult GetChainSpec();
+    GetChainspecResult GetChainspec();
 };
 
 }  // namespace Casper

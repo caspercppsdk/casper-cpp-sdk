@@ -301,9 +301,9 @@ SpeculativeExecResult Client::SpeculativeExec(Deploy deploy, uint64_t block_heig
 }
 
 /// Returns the chainspec.toml file of the node. 
-GetChainSpecResult Client::GetChainSpec()
+GetChainspecResult Client::GetChainspec()
 {
-    return mRpcClient.CallMethodNamed<GetChainSpecResult>(1, "info_get_chainspec");
+    return mRpcClient.CallMethodNamed<GetChainspecResult>(1, "info_get_chainspec");
 }
 
 } // namespace Casper
