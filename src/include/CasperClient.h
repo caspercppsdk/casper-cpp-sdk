@@ -38,7 +38,7 @@
 #include "nlohmann/json.hpp"
 
 // casper server test address
-#define CASPER_TEST_ADDRESS "http://138.201.54.44:7777"
+#define CASPER_TEST_ADDRESS "http://103.104.75.222:7777"
 
 namespace Casper {
 class Client {
@@ -89,7 +89,7 @@ class Client {
    * @return GetDeployInfoResult that contains the deploy information as a
    * string.
    */
-  GetDeployInfoResult GetDeployInfo(std::string deploy_hash);
+  GetDeployInfoResult GetDeployInfo(std::string deploy_hash, int counter = 0);
 
   /**
    * @brief Returns the status info.

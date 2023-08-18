@@ -7,6 +7,8 @@
 #include <locale>
 #include <sstream>
 #include <iomanip>  // std::setfill, std::setw
+#include "utfcpp/utf8.h"
+
 namespace Casper {
 
 bool StringUtil::startsWith(const std::string& str, const std::string& cmp) {
@@ -40,11 +42,19 @@ uint32_t StringUtil::hexStrToUint32(const std::string& str) {
 }
 
 std::string StringUtil::hexToUTF8(const std::string& str) {
+  // uint32_t parsed = hexStrToUint32(str);
+
+  // std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
+
+  // return converter.to_bytes(static_cast<char32_t>(parsed));
+
   uint32_t parsed = hexStrToUint32(str);
 
-  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
+  char32_t c = static_cast<char32_t>(parsed);
+  std::string utf8str;
+  utf8::unchecked::append(c, back_inserter(utf8str));
 
-  return converter.to_bytes(static_cast<char32_t>(parsed));
+  return utf8str;
 }
 
 std::string StringUtil::hexToString(const std::string& bytes_str) {
@@ -70,18 +80,41 @@ void swapAndReverse(std::string& str) {
   }
 }
 
-using wstring_utf8_converter =
-    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t>;
+// using wstring_utf8_converter =
+//     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t>;
+
+// std::wstring from_utf8(std::string_view s) {
+//   wstring_utf8_converter converter;
+//   const char* begin = &(*s.begin());
+//   const char* end = begin + s.size();
+//   return converter.from_bytes(begin, end);
+
+// }
 
 std::wstring from_utf8(std::string_view s) {
-  wstring_utf8_converter converter;
-  const char* begin = &(*s.begin());
-  const char* end = begin + s.size();
-  return converter.from_bytes(begin, end);
+  std::wstring wstr;
+  utf8::unchecked::utf8to16(s.begin(), s.end(), back_inserter(wstr));
+
+  return wstr;
 }
 
+
+// std::string StringUtil::getStringBytesWithoutLength(const std::string& str) {
+//   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+//   std::wstring wstr = from_utf8(str);
+
+//   std::stringstream input_ss;
+//   input_ss << std::hex << std::setfill('0');
+
+//   for (auto c : wstr) {
+//     input_ss << std::setw(2) << static_cast<uint32_t>(c);
+//   }
+//   std::string output_str = input_ss.str();
+
+//   return output_str;
+// }
+
 std::string StringUtil::getStringBytesWithoutLength(const std::string& str) {
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
   std::wstring wstr = from_utf8(str);
 
   std::stringstream input_ss;
@@ -94,8 +127,34 @@ std::string StringUtil::getStringBytesWithoutLength(const std::string& str) {
 
   return output_str;
 }
+
+
+// std::string StringUtil::stringToHex(const std::string& str) {
+//   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+//   std::wstring wstr = from_utf8(str);
+
+//   /// add length of string and extra 0s, total is 4 bytes
+//   std::stringstream len_ss;
+//   len_ss << std::hex << std::setfill('0');
+
+//   int32_t str_length = wstr.length();
+//   len_ss << std::setw(8) << str_length;
+
+//   std::string len_str = len_ss.str();
+//   swapAndReverse(len_str);
+
+//   std::stringstream input_ss;
+//   input_ss << std::hex << std::setfill('0');
+
+//   for (auto c : wstr) {
+//     input_ss << std::setw(2) << static_cast<uint32_t>(c);
+//   }
+//   std::string output_str = len_str + input_ss.str();
+
+//   return output_str;
+// }
+
 std::string StringUtil::stringToHex(const std::string& str) {
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
   std::wstring wstr = from_utf8(str);
 
   /// add length of string and extra 0s, total is 4 bytes
@@ -118,5 +177,6 @@ std::string StringUtil::stringToHex(const std::string& str) {
 
   return output_str;
 }
+
 
 }  // namespace Casper
