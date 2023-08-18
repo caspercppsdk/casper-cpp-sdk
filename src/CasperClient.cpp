@@ -29,6 +29,9 @@ GetStateRootHashResult Client::GetStateRootHash(std::string block_hash)
     nlohmann::json hashJSON{{"Hash", block_hash}};
     nlohmann::json block_identifier{{"block_identifier", hashJSON}};
 
+    if (block_hash.empty())
+        block_identifier = nlohmann::json({});
+
     return mRpcClient.CallMethodNamed<GetStateRootHashResult>(1, "chain_get_state_root_hash", block_identifier);
 }
 
