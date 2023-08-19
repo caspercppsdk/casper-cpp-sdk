@@ -10,16 +10,17 @@
 namespace Casper
 {
 
-CBytes GlobalStateKey::_GetRawBytesFromKey(std::string key)
+CBytes GlobalStateKey::_GetRawBytesFromKey(const std::string& key_)
 {
-    return CryptoUtil::hexDecode(key.substr(key.find_last_of("-") + 1));
+    return CryptoUtil::hexDecode(key_.substr(key_.find_last_of('-') + 1));
 }
 
-GlobalStateKey::GlobalStateKey() {}
+GlobalStateKey::GlobalStateKey() = default;
+
 /// <summary>
 /// Constructor for the GlobalStateKey class.
 /// </summary>
-GlobalStateKey::GlobalStateKey(std::string key_)
+GlobalStateKey::GlobalStateKey(const std::string& key_)
     : key{key_}
     , raw_bytes{_GetRawBytesFromKey(key_)}
 {
@@ -28,7 +29,7 @@ GlobalStateKey::GlobalStateKey(std::string key_)
 /// <summary>
 /// Constructor for the GlobalStateKey class with key prefix.
 /// </summary>
-GlobalStateKey::GlobalStateKey(std::string key_, std::string key_prefix)
+GlobalStateKey::GlobalStateKey(const std::string& key_, const std::string& key_prefix)
 {
     if (key_.rfind(key_prefix, 0) != 0)
         throw std::invalid_argument("Key not valid. It should start with '{key_prefix}'.");
@@ -37,13 +38,12 @@ GlobalStateKey::GlobalStateKey(std::string key_, std::string key_prefix)
     raw_bytes = _GetRawBytesFromKey(key);
 }
 
-std::string GlobalStateKey::ToHexString()
+std::string GlobalStateKey::ToHexString() const
 {
-    //
     return CEP57Checksum::Encode(raw_bytes);
 }
 
-GlobalStateKey GlobalStateKey::FromString(std::string value)
+GlobalStateKey GlobalStateKey::FromString(const std::string& value)
 {
     if (StringUtil::startsWith(value, "account-hash-"))
         return AccountHashKey(value);
@@ -157,51 +157,51 @@ bool GlobalStateKey::operator!=(const GlobalStateKey& other) const
     return this->key != other.key;
 }
 
-AccountHashKey::AccountHashKey(std::string key)
+AccountHashKey::AccountHashKey(const std::string& key)
     : GlobalStateKey::GlobalStateKey(key, "account-hash-")
 {
     key_identifier = KeyIdentifier::Account;
 }
 
-AccountHashKey::AccountHashKey(PublicKey publicKey)
+AccountHashKey::AccountHashKey(const PublicKey& publicKey)
     : GlobalStateKey::GlobalStateKey(publicKey.GetAccountHash(), "account-hash-")
 {
 }
 
-HashKey::HashKey(std::string key)
+HashKey::HashKey(const std::string& key)
     : GlobalStateKey::GlobalStateKey(key, "hash-")
 {
     key_identifier = KeyIdentifier::Hash;
 }
 
-HashKey::HashKey(CBytes key)
+HashKey::HashKey(const CBytes& key)
     : HashKey::HashKey("hash-" + CEP57Checksum::Encode(key))
 {
 }
 
-TransferKey::TransferKey(std::string key)
+TransferKey::TransferKey(const std::string& key)
     : GlobalStateKey::GlobalStateKey(key, "transfer-")
 {
     key_identifier = KeyIdentifier::Transfer;
 }
 
-TransferKey::TransferKey(CBytes key)
+TransferKey::TransferKey(const CBytes& key)
     : TransferKey::TransferKey("transfer-" + CEP57Checksum::Encode(key))
 {
 }
 
-DeployInfoKey::DeployInfoKey(std::string key)
+DeployInfoKey::DeployInfoKey(const std::string& key)
     : GlobalStateKey::GlobalStateKey(key, "deploy-")
 {
     key_identifier = KeyIdentifier::DeployInfo;
 }
 
-DeployInfoKey::DeployInfoKey(CBytes key)
+DeployInfoKey::DeployInfoKey(const CBytes& key)
     : DeployInfoKey::DeployInfoKey("deploy-" + CEP57Checksum::Encode(key))
 {
 }
 
-EraInfoKey::EraInfoKey(std::string key)
+EraInfoKey::EraInfoKey(const std::string& key)
     : GlobalStateKey::GlobalStateKey(key)
 {
     key_identifier = KeyIdentifier::EraInfo;
@@ -228,7 +228,7 @@ CBytes EraInfoKey::GetBytes()
     return ms;
 }
 
-CBytes EraInfoKey::_GetRawBytesFromKey(std::string key)
+CBytes EraInfoKey::_GetRawBytesFromKey(const std::string& key)
 {
     uint64_t u64;
     std::istringstream iss(key.substr(4));
@@ -237,51 +237,51 @@ CBytes EraInfoKey::_GetRawBytesFromKey(std::string key)
     CBytes bytes(8);
     std::copy(reinterpret_cast<uint8_t*>(&u64), reinterpret_cast<uint8_t*>(&u64) + 8, bytes.begin());
 
-    // TODOMS3: Check endianness
+    // TODO: Check endianness
     // if (!BitConverter.IsLittleEndian) Array.Reverse(bytes);
 
     return bytes;
 }
 
-BalanceKey::BalanceKey(std::string key)
+BalanceKey::BalanceKey(const std::string& key)
     : GlobalStateKey::GlobalStateKey(key, "balance-")
 {
     key_identifier = KeyIdentifier::Balance;
 }
 
-BalanceKey::BalanceKey(CBytes key)
+BalanceKey::BalanceKey(const CBytes& key)
     : BalanceKey::BalanceKey("balance-" + CEP57Checksum::Encode(key))
 {
 }
 
-BidKey::BidKey(std::string key)
+BidKey::BidKey(const std::string& key)
     : GlobalStateKey::GlobalStateKey(key, "bid-")
 {
     key_identifier = KeyIdentifier::Bid;
 }
 
-BidKey::BidKey(CBytes key)
+BidKey::BidKey(const CBytes& key)
     : BidKey::BidKey("bid-" + CEP57Checksum::Encode(key))
 {
 }
 
-WithdrawKey::WithdrawKey(std::string key)
+WithdrawKey::WithdrawKey(const std::string& key)
     : GlobalStateKey::GlobalStateKey(key, "withdraw-")
 {
     key_identifier = KeyIdentifier::Withdraw;
 }
 
-WithdrawKey::WithdrawKey(CBytes key)
+WithdrawKey::WithdrawKey(const CBytes& key)
     : WithdrawKey::WithdrawKey("withdraw-" + CEP57Checksum::Encode(key))
 {
 }
 
-DictionaryKey::DictionaryKey(std::string key)
+DictionaryKey::DictionaryKey(const std::string& key)
     : GlobalStateKey::GlobalStateKey(key, "dictionary-")
 {
     key_identifier = KeyIdentifier::Dictionary;
 }
-DictionaryKey::DictionaryKey(CBytes key)
+DictionaryKey::DictionaryKey(const CBytes& key)
     : DictionaryKey::DictionaryKey("dictionary-" + CEP57Checksum::Encode(key))
 {
 }
