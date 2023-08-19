@@ -6,6 +6,8 @@
 #include "../src/include/ByteSerializers/DeployByteSerializer.h"
 #include "../src/include/Utils/CryptoUtil.h"
 
+#define IS_DEBUG_MODE 1
+
 /// Construct a Casper::Client object
 Casper::Client casper_client(CASPER_TEST_ADDRESS);
 
@@ -13,6 +15,9 @@ Casper::Client casper_client(CASPER_TEST_ADDRESS);
 template <typename T>
 void printResult(const T& result, const std::string& rpc_call_name, int indent = 2)
 {
+    if constexpr (!IS_DEBUG_MODE)
+        return;
+
     std::cout << "-----------------------------------------------" << std::endl;
     std::cout << rpc_call_name << std::endl;
 
@@ -51,9 +56,6 @@ void chainGetStateRootHash()
 /// "info_get_deploy" RPC function call example
 void infoGetDeploy()
 {
-    std::cout << "-----------------------------------------------";
-    std::cout << "\ninfo_get_deploy\n";
-
     // Option<u64> Testnet Deploy Hash
     // 07d881163cd3cc19b619e461b64d1f674ef74719a18dd5dd41ddb39da1fb1c88
 
@@ -159,13 +161,10 @@ void accountPutDeploy()
     // TODO: fix error: Invalid Deploy, data: "deploy received by the node expired at
     std::string file_path = __FILE__;
     std::string dir_path = file_path.substr(0, file_path.rfind('/'));
-    std::cout << dir_path << std::endl;
     std::string file_path_name = dir_path + "/example_put_deploy1.json";
 
     std::ifstream ifs(file_path_name);
     nlohmann::json deploy_params_json = nlohmann::json::parse(ifs);
-
-    // std::cout << deploy_params_json.dump(2) << std::endl;
 
     Casper::Deploy deploy_params;
     Casper::from_json(deploy_params_json, deploy_params);
@@ -232,7 +231,6 @@ int main()
 
     stateGetAuctionInfo();
 
-    // Milestone 3
-
-    accountPutDeploy();
+    // TODO: fix the error in the example function
+    // accountPutDeploy();
 }
