@@ -283,7 +283,6 @@ SpeculativeExecResult Client::SpeculativeExec(Deploy deploy, std::string block_h
 
     nlohmann::json paramsJSON{{"block_identifier", nullptr}, {"deploy", deploy_json}};
 
-    std::cout << paramsJSON.dump(2) << std::endl;
     return mRpcClient.CallMethodNamed<SpeculativeExecResult>(1, "speculative_exec", paramsJSON);
 }
 

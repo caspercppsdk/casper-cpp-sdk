@@ -109,9 +109,6 @@ CryptoPP::SecByteBlock Secp256k1Key::sign(const CryptoPP::SecByteBlock& message)
     {
         siglen = signer.SignMessage(prng, (const CryptoPP::byte*)&message[0], message.size(), sig_bytes);
         sig_bytes.resize(siglen);
-
-        std::cout << "sig bytes while loop\n";
-
     } while ((sig_bytes[32] & 0x80) == 0x80);
 
     SPDLOG_DEBUG("Signature size: {}", sig_bytes.size());
