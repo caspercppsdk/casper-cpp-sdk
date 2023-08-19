@@ -1,34 +1,23 @@
 ﻿---
 BasedOnStyle: LLVM
-ColumnLimit: 120
+Language: Cpp
 
+ColumnLimit: 120
 IndentWidth: 4
 AccessModifierOffset: -4
-BraceWrapping:
-  AfterClass:      true
-  AfterControlStatement: true
-  AfterEnum:       true
-  AfterFunction:   true
-  AfterNamespace:  true
-  AfterObjCDeclaration: true
-  AfterStruct:     true
-  AfterUnion:      true
-  BeforeCatch:     false
-  BeforeElse:      true
-  IndentBraces:    true
-BreakBeforeBraces: Custom
+
+BreakBeforeBraces: Allman
+AlwaysBreakTemplateDeclarations: Yes
 
 CompactNamespaces: true
 
 PointerAlignment: Left
-AlignConsecutiveAssignments: false
-AlignConsecutiveDeclarations: false
 AlignEscapedNewlines: Left
 AlignOperands: true
 AlignTrailingComments: true
 
 AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: Inline
 AllowShortLoopsOnASingleLine: false
 
 BinPackArguments: true
@@ -37,5 +26,20 @@ BinPackParameters: true
 BreakConstructorInitializers: BeforeComma
 BreakInheritanceList: BeforeComma
 
-SortIncludes: false
-...
+SortIncludes: Never
+IncludeBlocks: Preserve
+IncludeCategories:
+  - Regex:           '^<ext/.*\.h>'
+    Priority:        2
+  - Regex:           '^<.*\.h>'
+    Priority:        1
+  - Regex:           '^<.*>'
+    Priority:        1
+  - Regex:           '.*'
+    Priority:        3
+
+MaxEmptyLinesToKeep: 2
+SpacesInCStyleCastParentheses: false
+
+CommentPragmas:  '^ TODO:|^ FIXME:'
+---
