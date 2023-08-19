@@ -9,7 +9,8 @@
 #include "Types/CLConverter.h"
 
 #include "ByteSerializers/DeployByteSerializer.h"
-namespace Casper {
+namespace Casper
+{
 
 void DeployItem_ByteSer_ModuleBytes_Test(void);
 
@@ -23,4 +24,4 @@ void DeployItem_ByteSer_StoredVersionedContractByName_Test(void);
 
 void DeployItem_ByteSer_Transfer_Test(void);
 
-}  // namespace Casper
+} // namespace Casper

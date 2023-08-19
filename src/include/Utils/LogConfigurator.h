@@ -3,7 +3,10 @@
 #include <memory>
 #include <string>
 #include "Types/Configuration.h"
-namespace spdlog { class logger; }
+namespace spdlog
+{
+class logger;
+}
 
 namespace Casper
 {
@@ -11,6 +14,7 @@ namespace Casper
 class LogConfigurator final
 {
     std::string const log_name_;
+
 public:
     static std::shared_ptr<spdlog::logger> initDefault(LogConfig const& log_config);
 

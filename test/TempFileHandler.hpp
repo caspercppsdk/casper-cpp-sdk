@@ -16,15 +16,10 @@ public:
         file.close();
     }
 
-    ~TempFileHandler()
-    {
-        std::filesystem::remove(m_file);
-    }
+    ~TempFileHandler() { std::filesystem::remove(m_file); }
 
-    const std::string& getPath()
-    {
-        return m_file;
-    }
+    const std::string& getPath() { return m_file; }
+
 private:
     std::string m_file;
 };

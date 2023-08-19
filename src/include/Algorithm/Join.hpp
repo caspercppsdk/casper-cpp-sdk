@@ -15,32 +15,38 @@ template <typename>
 struct string_size_impl;
 
 template <size_t N>
-struct string_size_impl<const char[N]> {
+struct string_size_impl<const char[N]>
+{
     static constexpr size_t size(const char (&)[N]) { return N - 1; }
 };
 
 template <size_t N>
-struct string_size_impl<char[N]> {
+struct string_size_impl<char[N]>
+{
     static constexpr size_t size(char (&s)[N]) { return N ? strlen(s) : 0; }
 };
 
 template <>
-struct string_size_impl<const char*> {
+struct string_size_impl<const char*>
+{
     static constexpr size_t size(const char* s) { return s ? strlen(s) : 0; }
 };
 
 template <>
-struct string_size_impl<char*> {
+struct string_size_impl<char*>
+{
     static size_t size(char* s) { return s ? strlen(s) : 0; }
 };
 
 template <>
-struct string_size_impl<std::string> {
+struct string_size_impl<std::string>
+{
     static size_t size(const std::string& s) { return s.size(); }
 };
 
 template <>
-struct string_size_impl<std::string_view> {
+struct string_size_impl<std::string_view>
+{
     static size_t size(std::string_view s) { return s.size(); }
 };
 
@@ -56,13 +62,15 @@ template <typename...>
 struct concatenate_impl;
 
 template <typename String>
-struct concatenate_impl<String> {
+struct concatenate_impl<String>
+{
     static size_t size(String&& s) { return string_size(s); }
     static void concatenate(std::string& result, String&& s) { result += s; }
 };
 
 template <typename String, typename... Rest>
-struct concatenate_impl<String, Rest...> {
+struct concatenate_impl<String, Rest...>
+{
     static size_t size(String&& s, Rest&&... rest)
     {
         return string_size(s) + concatenate_impl<Rest...>::size(std::forward<Rest>(rest)...);
@@ -74,7 +82,7 @@ struct concatenate_impl<String, Rest...> {
     }
 };
 
-}  // namespace details
+} // namespace details
 
 template <typename... Strings>
 std::string join(Strings&&... strings)
@@ -85,4 +93,4 @@ std::string join(Strings&&... strings)
     return result;
 }
 
-}  // namespace Casper::algorithm
+} // namespace Casper::algorithm

@@ -10,4 +10,4 @@ tDOanQC5BfEICGvW0VcRXBOsf3fXoQ==
 -----END EC PRIVATE KEY-----
 )##"};
 
-} //namespace Casper
+} // namespace Casper
