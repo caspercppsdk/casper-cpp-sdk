@@ -548,18 +548,17 @@ void publicKey_load_fromFileTest()
 
     std::string message = "Do or do not. There is no try.";
     std::string signature = secp256k1Key.sign(message);
-    // verify
-    bool is_valid = secp256k1Key.verify(message, signature);
+    TEST_ASSERT(secp256k1Key.verify(message, signature));
 }
 
 void ed25KeyTest()
 {
-    TempFileHandler fileHandler{sourceSecretKey, "sourceSecretKey"};
+    TempFileHandler fileHandler{sourceED25519SecretKey, "sourceED25519SecretKey"};
 
     Ed25519Key ed_key(fileHandler.getPath());
-
     std::string message = "e0a081fbf1ea9c716852df2bbfbfb1daecb9719f67c63c64cc49267d8038ebcf";
     std::string signature = ed_key.sign(message);
+    TEST_ASSERT(ed_key.verify(message, signature));
 }
 
 #define RPC_TEST 1
