@@ -17,7 +17,6 @@ void DeployItem_ByteSer_ModuleBytes_Test()
 
     std::string expected_module_bytes_str = "00000000000100000006000000616d6f756e740300000002e80308";
     std::string actual_module_bytes_str = hexEncode(ser.ToBytes(module_bytes));
-    std::cout << "module bytes: " << actual_module_bytes_str << std::endl;
     TEST_ASSERT(expected_module_bytes_str == actual_module_bytes_str);
 }
 
@@ -37,7 +36,6 @@ void DeployItem_ByteSer_StoredContractByHash_Test()
 
     std::string actual_stored_contract_by_hash_str = hexEncode(ser.ToBytes(stored_contract_by_hash));
 
-    std::cout << "stored contract by hash: " << actual_stored_contract_by_hash_str << std::endl;
 
     TEST_ASSERT(expected_stored_contract_by_hash_str == actual_stored_contract_by_hash_str);
 }
@@ -57,7 +55,6 @@ void DeployItem_ByteSer_StoredContractByName_Test()
 
     std::string actual_stored_contract_by_name_str = hexEncode(ser.ToBytes(stored_contract_by_name));
 
-    std::cout << "stored contract by name: " << actual_stored_contract_by_name_str << std::endl;
 
     TEST_ASSERT(expected_stored_contract_by_name_str == actual_stored_contract_by_name_str);
 }
@@ -80,7 +77,6 @@ void DeployItem_ByteSer_StoredVersionedContractByHash_Test()
     std::string actual_stored_versioned_contract_by_hash_str =
         hexEncode(ser.ToBytes(stored_versioned_contract_by_hash));
 
-    std::cout << "stored versioned contract by hash: " << actual_stored_versioned_contract_by_hash_str << std::endl;
 
     TEST_ASSERT(expected_stored_versioned_contract_by_hash_str == actual_stored_versioned_contract_by_hash_str);
 }
@@ -100,7 +96,6 @@ void DeployItem_ByteSer_StoredVersionedContractByName_Test()
         "0407000000636f756e746572010f0000000b000000636f756e7465725f696e630000000"
         "0";
     std::string actual_stored_v_contract_str = hexEncode(ser.ToBytes(stored_v_contract));
-    std::cout << "stored versioned contract: " << actual_stored_v_contract_str << std::endl;
     TEST_ASSERT(expected_stored_v_contract_str == actual_stored_v_contract_str);
 }
 
@@ -120,7 +115,6 @@ void DeployItem_ByteSer_Transfer_Test()
                                              "0f20000000020000006964090000000139300000000000000d05";
     std::string actual_transfer_bytes = hexEncode(ser.ToBytes(transfer_item));
 
-    std::cout << "transfer item: " << actual_transfer_bytes << std::endl;
     TEST_ASSERT(expected_transfer_item_str == actual_transfer_bytes);
 }
 

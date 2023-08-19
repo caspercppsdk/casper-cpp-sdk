@@ -25,7 +25,6 @@ std::string getTimestampNow()
     ss << std::put_time(gmtime(&c_now), "%FT%T") << '.' << std::setfill('0') << std::setw(3) << millis.count() << 'Z';
 
     std::string timestamp_str = ss.str();
-    std::cout << "timestamp_str: " << timestamp_str << "\n\n";
     return timestamp_str;
 }
 
@@ -43,10 +42,8 @@ Casper::PutDeployResult putDeploy(Casper::Deploy& deploy, Casper::Secp256k1Key& 
     dp.Sign(secp256k1Key);
     nlohmann::json j;
     to_json(j, dp);
-    std::cout << j.dump(2) << std::endl;
 
     PutDeployResult res = client.PutDeploy(dp);
-    std::cout << "deploy id: " << res.deploy_hash << std::endl;
     return res;
 }
 
@@ -66,14 +63,11 @@ void sendCoins(const std::string& sender, const std::string& receiver, const std
     TransferDeployItem session(u512FromDec("2845678925"), AccountHashKey(target_key), 123456789012345u, true);
 
     // Create deploy object
-    std::cout << "before deploy" << std::endl;
     Deploy deploy(getHeader(sender), payment, session);
-    std::cout << "after deploy" << std::endl;
 
     Casper::Secp256k1Key secp256k1Key(privateKeyPem);
 
     std::string signature = secp256k1Key.sign(deploy.hash);
-    std::cout << "signature: " << Casper::Secp256k1Key::signatureToString(signature) << std::endl;
 
     putDeploy(deploy, secp256k1Key);
 }
@@ -672,7 +666,6 @@ void QueryGlobalState_with_keyTest(void)
 
     nlohmann::json res;
     nlohmann::to_json(res, result);
-    std::cout << res.dump(4) << std::endl;
 }
 
 void SpeculativeExec_with_blockHeightTest(void)
@@ -715,7 +708,6 @@ void SpeculativeExec_without_blockIdentifier(void)
     {
         std::string file_path = __FILE__;
         std::string dir_path = file_path.substr(0, file_path.rfind("/"));
-        std::cout << dir_path << std::endl;
         std::string file_path_name = dir_path + "/data/SpeculativeExec.json";
         std::ifstream ifs(file_path_name);
         input_json = nlohmann::json::parse(ifs);
@@ -725,7 +717,6 @@ void SpeculativeExec_without_blockIdentifier(void)
         std::cout << "speculative json file: " << e.what() << std::endl;
     }
 
-    std::cout << std::endl << input_json.dump(2) << std::endl;
 
     // create a CLValue from the json
     Deploy dp;
@@ -736,7 +727,6 @@ void SpeculativeExec_without_blockIdentifier(void)
     SpeculativeExecResult result = client.SpeculativeExec(dp);
     nlohmann::json res;
     nlohmann::to_json(res, result);
-    std::cout << res.dump(4) << std::endl;
 }
 
 } // namespace Casper
