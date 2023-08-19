@@ -16,7 +16,7 @@ struct InfoGetPeersResult : public RpcResult
     /// </summary>
     std::vector<Peer> peers;
 
-    InfoGetPeersResult() {}
+    InfoGetPeersResult() = default;
 };
 
 /**

@@ -18,7 +18,7 @@ struct GetBalanceResult : public RpcResult
     /// </summary>
     std::string merkle_proof;
 
-    GetBalanceResult() {}
+    GetBalanceResult() = default;
 };
 
 /**

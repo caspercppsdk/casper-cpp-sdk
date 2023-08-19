@@ -24,7 +24,7 @@ struct ExecutableDeployItem
     std::optional<StoredVersionedContractByName> stored_versioned_contract_by_name = std::nullopt;
     std::optional<TransferDeployItem> transfer = std::nullopt;
 
-    ExecutableDeployItem() {}
+    ExecutableDeployItem() = default;
 
     ExecutableDeployItem(ModuleBytes module_bytes)
         : module_bytes(module_bytes)
@@ -89,7 +89,7 @@ inline void to_json(nlohmann::json& j, const ExecutableDeployItem& p)
     {
         j["Transfer"] = p.transfer.value();
     }
-    // TODOMS3: maybe return "null" if no value is set?
+    // TODO: maybe return "null" if no value is set?
 }
 
 /**
@@ -128,7 +128,7 @@ inline void from_json(const nlohmann::json& j, ExecutableDeployItem& p)
     {
         throw std::runtime_error("Invalid ExecutableDeployItem");
     }
-    // TODOMS3: maybe not throw if no value is set?
+    // TODO: maybe not throw if no value is set?
 }
 
 } // namespace Casper

@@ -13,41 +13,24 @@ struct TransferDeployItem
     /// Runtime arguments.
     std::vector<NamedArg> args;
 
-    TransferDeployItem() {}
+    TransferDeployItem() = default;
 
-    TransferDeployItem(uint512_t amount, AccountHashKey targetAccountHash, uint64_t id = 0, bool has_id = false)
+    TransferDeployItem(uint512_t amount, const AccountHashKey& targetAccountHash, uint64_t id = 0, bool has_id = false)
     {
-        // std::cout << "TransferDeployItem::TransferDeployItem()" << std::endl;
-
-        args.push_back(NamedArg("amount", CLValue::U512(amount)));
-        // std::cout << "after amount" << std::endl;
-
-        args.push_back(NamedArg("target", CLValue::ByteArray(targetAccountHash.raw_bytes)));
-        // std::cout << "after target" << std::endl;
+        args.emplace_back("amount", CLValue::U512(amount));
+        args.emplace_back("target", CLValue::ByteArray(targetAccountHash.raw_bytes));
 
         if (!has_id)
         {
             std::cout << "id == -1" << std::endl;
-            args.push_back(NamedArg("id", CLValue::OptionNone(CLType(CLTypeEnum::U64))));
+            args.emplace_back("id", CLValue::OptionNone(CLType(CLTypeEnum::U64)));
         }
         else
         {
             CLValue cl64 = CLValue::U64(id);
             CLValue cl(CLValue::Option(cl64));
-
-            // nlohmann::json j;
-            // to_json(j, cl);
-            // std::cout << "cl(u64): " << j.dump(2) << std::endl;
-
-            args.push_back(NamedArg("id", cl));
+            args.emplace_back("id", cl);
         }
-
-        // nlohmann::json j;
-        // to_json(j, args[2]);
-        // std::cout << "args[2]: " << j.dump(2) << std::endl;
-
-        // std::cout << "transfer deploy end" << std::endl;
-        //
     }
 };
 

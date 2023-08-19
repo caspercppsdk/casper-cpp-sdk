@@ -13,7 +13,7 @@ struct PutDeployResult : public RpcResult
     /// </summary>
     std::string deploy_hash;
 
-    PutDeployResult() {}
+    PutDeployResult() = default;
 };
 
 /**

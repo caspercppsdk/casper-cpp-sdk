@@ -18,7 +18,7 @@ struct ModuleBytes
     /// Runtime arguments.
     std::vector<NamedArg> args;
 
-    ModuleBytes() {}
+    ModuleBytes() = default;
 
     ModuleBytes(uint512_t amount)
         : module_bytes(0)

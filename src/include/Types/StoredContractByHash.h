@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include "Base.h"
 #include "Types/NamedArg.h"
 #include "nlohmann/json.hpp"
@@ -18,12 +20,11 @@ struct StoredContractByHash
     /// Runtime arguments.
     std::vector<NamedArg> args;
 
-    StoredContractByHash() {}
+    StoredContractByHash() = default;
 
-    StoredContractByHash(const std::string& hash, const std::string& entry_point,
-                         const std::vector<NamedArg>& args = {})
-        : hash(hash)
-        , entry_point(entry_point)
+    StoredContractByHash(std::string hash, std::string entry_point, const std::vector<NamedArg>& args = {})
+        : hash(std::move(hash))
+        , entry_point(std::move(entry_point))
         , args(args)
     {
     }

@@ -17,7 +17,7 @@ struct TransformEntry
     std::string key;
     Transform transform;
 
-    TransformEntry() {}
+    TransformEntry() = default;
 };
 
 // to_json of TransformEntry

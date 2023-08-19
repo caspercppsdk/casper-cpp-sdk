@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include "Base.h"
 #include "Types/DeployApproval.h"
 #include "Types/DeployHeader.h"
@@ -8,6 +10,7 @@
 #include "Types/KeyPair.h"
 #include "nlohmann/json.hpp"
 #include "Types/Secp256k1Key.h"
+
 namespace Casper
 {
 /// <summary>
@@ -20,7 +23,7 @@ struct Deploy
     /// </summary>
     std::vector<DeployApproval> approvals;
 
-    // TODOMS3: check with CEP57 Checksum for json serialization
+    // TODO: check with CEP57 Checksum for json serialization
     /// <summary>
     /// A hash over the header of the deploy.
     /// </summary>
@@ -41,15 +44,15 @@ struct Deploy
     /// </summary>
     ExecutableDeployItem session;
 
-    Deploy() {}
+    Deploy() = default;
 
     Deploy(std::string hash_, DeployHeader header_, ExecutableDeployItem payment_, ExecutableDeployItem session_,
            std::vector<DeployApproval> approvals_)
-        : hash(hash_)
-        , header(header_)
-        , payment(payment_)
-        , session(session_)
-        , approvals(approvals_)
+        : hash(std::move(hash_))
+        , header(std::move(header_))
+        , payment(std::move(payment_))
+        , session(std::move(session_))
+        , approvals(std::move(approvals_))
     {
     }
 
@@ -65,21 +68,21 @@ struct Deploy
 
     void Sign(Secp256k1Key& keyPair);
 
-    void AddApproval(DeployApproval approval);
+    void AddApproval(const DeployApproval& approval);
 
     bool ValidateHashes(std::string& message);
 
     bool VerifySignatures(std::string& message);
 
-    int GetDeploySizeInBytes() const;
+    [[nodiscard]] int GetDeploySizeInBytes() const;
 
-    CBytes ComputeBodyHash(ExecutableDeployItem payment, ExecutableDeployItem session);
+    CBytes ComputeBodyHash(const ExecutableDeployItem& payment_, const ExecutableDeployItem& session_);
 
-    CBytes ComputeHeaderHash(DeployHeader header);
+    CBytes ComputeHeaderHash(const DeployHeader& header_);
 
-    nlohmann::json toJson() const;
+    [[nodiscard]] nlohmann::json toJson() const;
 
-    std::string toString(uint8_t indent = 2) const;
+    [[nodiscard]] std::string toString(uint8_t indent = 2) const;
 
     // bool operator==(const Deploy& other) const;
 };

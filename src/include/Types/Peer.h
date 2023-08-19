@@ -20,7 +20,7 @@ struct Peer
     /// </summary>
     std::string address;
 
-    Peer() {}
+    Peer() = default;
 };
 
 /**

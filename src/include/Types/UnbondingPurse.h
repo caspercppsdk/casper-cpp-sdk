@@ -32,7 +32,7 @@ struct UnbondingPurse
     /// </summary>
     uint512_t amount;
 
-    UnbondingPurse() {}
+    UnbondingPurse() = default;
 };
 
 // to_json of UnbondingPurse

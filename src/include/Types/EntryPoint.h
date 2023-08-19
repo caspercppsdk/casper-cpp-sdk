@@ -31,7 +31,7 @@ struct EntryPointAccess
 
     std::vector<std::string> groups;
 
-    EntryPointAccess() {}
+    EntryPointAccess() = default;
 };
 
 /**
@@ -42,7 +42,7 @@ struct EntryPointAccess
  */
 inline void to_json(nlohmann::json& j, const EntryPointAccess& p)
 {
-    // NOT IMPLEMENTED
+    // TODO: NOT IMPLEMENTED
 }
 
 /**
@@ -117,7 +117,7 @@ struct Parameter
     /// </summary>
     CLType cl_type;
 
-    Parameter() {}
+    Parameter() = default;
 };
 
 /**
@@ -181,7 +181,7 @@ struct EntryPoint
     /// </summary>
     CLType ret;
 
-    EntryPoint() {}
+    EntryPoint() = default;
 };
 
 /**

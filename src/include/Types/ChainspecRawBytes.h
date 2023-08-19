@@ -25,7 +25,7 @@ struct ChainspecRawBytes
     /// </summary>
     std::optional<std::string> maybe_global_state_bytes{std::nullopt};
 
-    ChainspecRawBytes() {}
+    ChainspecRawBytes() = default;
 };
 
 /**

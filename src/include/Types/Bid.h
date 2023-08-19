@@ -52,7 +52,7 @@ struct Bid
     /// </summary>
     std::optional<VestingSchedule> vesting_schedule = std::nullopt;
 
-    Bid() {}
+    Bid() = default;
 };
 
 /**
@@ -69,6 +69,7 @@ inline void to_json(nlohmann::json& j, const Bid& p)
          {"delegation_rate", p.delegation_rate},
          {"delegators", p.delegators},
          {"inactive", p.inactive}};
+    
     if (p.vesting_schedule.has_value())
     {
         j["vesting_schedule"] = p.vesting_schedule.value();

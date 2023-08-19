@@ -17,7 +17,7 @@ struct ExecutionResultFailure
     /// </summary>
     ExecutionEffect effect;
 
-    // TODOMS3: Make TransferKey instead of std::string
+    // TODO: Make TransferKey instead of std::string
     /// <summary>
     /// A record of Transfers performed while executing the deploy.
     /// </summary>
@@ -33,7 +33,7 @@ struct ExecutionResultFailure
     /// </summary>
     std::string error_message;
 
-    ExecutionResultFailure() {}
+    ExecutionResultFailure() = default;
 };
 
 // to_json of ExecutionResultFailure
@@ -62,7 +62,7 @@ struct ExecutionResultSuccess
     /// </summary>
     ExecutionEffect effect;
 
-    // TODOMS3: Make TransferKey instead of std::string
+    // TODO: Make TransferKey instead of std::string
     /// <summary>
     /// A record of Transfers performed while executing the deploy.
     /// </summary>
@@ -73,7 +73,7 @@ struct ExecutionResultSuccess
     /// </summary>
     uint512_t cost;
 
-    ExecutionResultSuccess() {}
+    ExecutionResultSuccess() = default;
 };
 
 // to_json of ExecutionResultSuccess
@@ -110,7 +110,7 @@ struct ExecutionResult
     /// </summary>
     std::string block_hash;
 
-    ExecutionResult() {}
+    ExecutionResult() = default;
 };
 
 // to_json of ExecutionResult

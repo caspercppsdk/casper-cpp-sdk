@@ -29,7 +29,7 @@ struct SeigniorageAllocation
     /// </summary>
     uint512_t amount;
 
-    SeigniorageAllocation() {}
+    SeigniorageAllocation() = default;
 };
 
 // to_json of SeigniorageAllocation

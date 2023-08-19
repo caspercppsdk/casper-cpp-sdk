@@ -44,7 +44,7 @@ void Deploy::Sign(Secp256k1Key& sec_key)
 /// <summary>
 /// Adds an approval to the deploy. No check is done to the approval signature.
 /// </summary>
-void Deploy::AddApproval(DeployApproval approval)
+void Deploy::AddApproval(const DeployApproval& approval)
 {
     this->approvals.push_back(approval);
 }
@@ -113,46 +113,40 @@ int Deploy::GetDeploySizeInBytes() const
     return serializer.ToBytes(*this).size();
 }
 
-CBytes Deploy::ComputeBodyHash(ExecutableDeployItem payment, ExecutableDeployItem session)
+CBytes Deploy::ComputeBodyHash(const ExecutableDeployItem& payment_, const ExecutableDeployItem& session_)
 {
     CBytes sb;
-    // std::cout << "ComputeBodyHash" << std::endl;
     ExecutableDeployItemByteSerializer itemSerializer;
 
-    sb += itemSerializer.ToBytes(payment);
-    sb += itemSerializer.ToBytes(session);
-    // std::cout << "ComputeBodyHash2" << std::endl;
+    sb += itemSerializer.ToBytes(payment_);
+    sb += itemSerializer.ToBytes(session_);
 
     CryptoPP::BLAKE2b bcBl2bdigest(32u);
     bcBl2bdigest.Update(sb, sb.size());
-    // std::cout << "ComputeBodyHash3" << std::endl;
 
-    CBytes hash(bcBl2bdigest.DigestSize());
-    bcBl2bdigest.Final(hash);
-    // std::cout << "ComputeBodyHash4" << std::endl;
+    CBytes bodyHash(bcBl2bdigest.DigestSize());
+    bcBl2bdigest.Final(bodyHash);
 
-    return hash;
+    return bodyHash;
 }
 
-CBytes Deploy::ComputeHeaderHash(DeployHeader header)
+CBytes Deploy::ComputeHeaderHash(const DeployHeader& header_)
 {
     DeployByteSerializer serializer;
 
     nlohmann::json j;
-    to_json(j, header);
-    // std::cout << "ComputeHeaderHash header: \n";
-    // std::cout << j.dump(2) << std::endl;
+    to_json(j, header_);
 
-    CBytes bHeader = serializer.ToBytes(header);
+    CBytes bHeader = serializer.ToBytes(header_);
 
     CryptoPP::BLAKE2b bcBl2bdigest(32u);
 
     bcBl2bdigest.Update(bHeader, bHeader.size());
 
-    CBytes hash(bcBl2bdigest.DigestSize());
-    bcBl2bdigest.Final(hash);
+    CBytes headerHash(bcBl2bdigest.DigestSize());
+    bcBl2bdigest.Final(headerHash);
 
-    return hash;
+    return headerHash;
 }
 
 /// Loads the deploy from the given json object.

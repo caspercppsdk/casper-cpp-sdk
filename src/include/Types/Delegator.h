@@ -36,7 +36,7 @@ struct Delegator
 
     std::optional<VestingSchedule> vesting_schedule = std::nullopt;
 
-    Delegator() {}
+    Delegator() = default;
 };
 /**
  * @brief Construct a JSON object from a Delegator object.

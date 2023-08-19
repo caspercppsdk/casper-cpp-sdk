@@ -14,7 +14,7 @@ class Ed25519Key
 
 public:
     /// Create a Private Key from pem file
-    Ed25519Key(std::string pem_file_path);
+    Ed25519Key(const std::string& pem_file_path);
 
     /// Sign a message with the private key and return the signature
     CryptoPP::SecByteBlock sign(const CryptoPP::SecByteBlock& message);

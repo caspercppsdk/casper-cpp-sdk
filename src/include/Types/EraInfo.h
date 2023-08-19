@@ -16,7 +16,7 @@ struct EraInfo
     /// </summary>
     std::vector<SeigniorageAllocation> seigniorage_allocations;
 
-    EraInfo() {}
+    EraInfo() = default;
 };
 
 // to_json of EraInfo

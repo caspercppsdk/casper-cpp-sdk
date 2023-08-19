@@ -26,7 +26,7 @@ struct QueryGlobalStateResult : public RpcResult
     /// </summary>
     std::string merkle_proof;
 
-    QueryGlobalStateResult() {}
+    QueryGlobalStateResult() = default;
 };
 
 /**

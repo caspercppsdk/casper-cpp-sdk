@@ -19,7 +19,7 @@ struct GetItemResult : public RpcResult
     /// </summary>
     std::string merkle_proof;
 
-    GetItemResult() {}
+    GetItemResult() = default;
 };
 
 /**

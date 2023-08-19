@@ -62,7 +62,7 @@ struct BlockHeader
     /// </summary>
     std::string timestamp;
 
-    BlockHeader() {}
+    BlockHeader() = default;
 };
 
 // to_json of BlockHeader
@@ -124,7 +124,7 @@ struct BlockBody
     /// </summary>
     std::vector<std::string> transfer_hashes;
 
-    BlockBody() {}
+    BlockBody() = default;
 };
 
 // to_json  of BlockBody
@@ -161,7 +161,7 @@ struct BlockProof
     /// </summary>
     Signature signature;
 
-    BlockProof() {}
+    BlockProof() = default;
 };
 
 // to_json  of BlockProof
@@ -202,7 +202,7 @@ struct Block
     /// </summary>
     std::vector<BlockProof> proofs;
 
-    Block() {}
+    Block() = default;
 };
 
 // to_json  of Block

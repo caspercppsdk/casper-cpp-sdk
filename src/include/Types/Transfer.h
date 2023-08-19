@@ -54,7 +54,7 @@ struct Transfer
     /// </summary>
     std::optional<uint64_t> id = std::nullopt;
 
-    Transfer() {}
+    Transfer() = default;
 };
 
 /**

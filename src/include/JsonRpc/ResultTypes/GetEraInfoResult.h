@@ -16,7 +16,7 @@ struct GetEraInfoResult : public RpcResult
     /// </summary>
     std::optional<EraSummary> era_summary = std::nullopt;
 
-    GetEraInfoResult() {}
+    GetEraInfoResult() = default;
 };
 
 /**

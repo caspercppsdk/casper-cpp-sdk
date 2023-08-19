@@ -9,7 +9,7 @@
 namespace Casper
 {
 
-Secp256k1Key::Secp256k1Key(std::string pem_file_path)
+Secp256k1Key::Secp256k1Key(const std::string& pem_file_path)
 {
     CryptoPP::AutoSeededRandomPool prng;
 
@@ -23,7 +23,7 @@ Secp256k1Key::Secp256k1Key(std::string pem_file_path)
     _private_key.Initialize(CryptoPP::ASN1::secp256k1(), temp_param);
 
     /// Check if the private key is valid
-    if (_private_key.Validate(prng, 3) == false)
+    if (!_private_key.Validate(prng, 3))
     {
         throw std::runtime_error("Unable to verify the SECP256K1 Private Key");
     }
@@ -31,7 +31,7 @@ Secp256k1Key::Secp256k1Key(std::string pem_file_path)
     /// Initialize the public key
     _private_key.MakePublicKey(_public_key);
 
-    if (_public_key.Validate(prng, 3) == false)
+    if (!_public_key.Validate(prng, 3))
     {
         throw std::runtime_error("Unable to verify the SECP256K1 Public Key");
     }
@@ -145,7 +145,7 @@ std::string Secp256k1Key::signatureToString(std::string signature)
     return encoded;
 }
 
-std::string Secp256k1Key::integerToString(CryptoPP::Integer x)
+std::string Secp256k1Key::integerToString(const CryptoPP::Integer& x)
 {
     std::stringstream ss;
     ss << std::hex << x;

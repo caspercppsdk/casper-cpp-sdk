@@ -21,7 +21,7 @@ struct DisabledVersion
     /// </summary>
     uint8_t protocol_version_major;
 
-    DisabledVersion() {}
+    DisabledVersion() = default;
 };
 
 // from_json of DisabledVersion
@@ -57,7 +57,7 @@ struct ContractVersion
     /// </summary>
     uint8_t protocol_version_major;
 
-    ContractVersion() {}
+    ContractVersion() = default;
 };
 
 // from_json of ContractVersion
@@ -132,7 +132,7 @@ struct ContractPackage
     /// </summary>
     std::vector<Group> groups;
 
-    ContractPackage() {}
+    ContractPackage() = default;
 };
 
 // from_json of ContractPackage

@@ -56,7 +56,7 @@ struct GetStatusResult : public RpcResult
     /// </summary>
     std::string uptime;
 
-    GetStatusResult() {}
+    GetStatusResult() = default;
 };
 
 /**

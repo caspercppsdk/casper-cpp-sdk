@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include "Base.h"
 #include "Types/NamedArg.h"
 #include "nlohmann/json.hpp"
@@ -17,12 +19,11 @@ struct StoredContractByName
     /// Runtime arguments.
     std::vector<NamedArg> args;
 
-    StoredContractByName() {}
+    StoredContractByName() = default;
 
-    StoredContractByName(const std::string& name, const std::string& entry_point,
-                         const std::vector<NamedArg>& args = {})
-        : name(name)
-        , entry_point(entry_point)
+    StoredContractByName(std::string name, std::string entry_point, const std::vector<NamedArg>& args = {})
+        : name(std::move(name))
+        , entry_point(std::move(entry_point))
         , args(args)
     {
     }

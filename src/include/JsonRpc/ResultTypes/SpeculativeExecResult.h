@@ -20,7 +20,7 @@ struct SpeculativeExecResult : public RpcResult
     /// </summary>
     ExecutionResult execution_result;
 
-    SpeculativeExecResult() {}
+    SpeculativeExecResult() = default;
 };
 
 /**

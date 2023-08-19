@@ -24,7 +24,7 @@ struct GetDictionaryItemResult : public RpcResult
     /// </summary>
     std::string merkle_proof;
 
-    GetDictionaryItemResult() {}
+    GetDictionaryItemResult() = default;
 };
 
 /**

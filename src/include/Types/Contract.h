@@ -40,7 +40,7 @@ struct Contract
     /// </summary>
     std::string protocol_version;
 
-    Contract() {}
+    Contract() = default;
 };
 
 /**

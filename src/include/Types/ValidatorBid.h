@@ -19,7 +19,7 @@ struct ValidatorBid
     /// </summary>
     Bid bid;
 
-    ValidatorBid() {}
+    ValidatorBid() = default;
 };
 
 /**

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include "Base.h"
 #include "Types/CLValue.h"
 #include "nlohmann/json.hpp"
@@ -21,11 +23,11 @@ struct NamedArg
     /// </summary>
     CLValue value;
 
-    NamedArg() {}
+    NamedArg() = default;
 
     NamedArg(std::string name, CLValue value)
-        : name(name)
-        , value(value)
+        : name(std::move(name))
+        , value(std::move(value))
     {
     }
 };
