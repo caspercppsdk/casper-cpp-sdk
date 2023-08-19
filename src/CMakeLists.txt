@@ -14,6 +14,7 @@ include_directories(
 
 add_library(${LIB_NAME} STATIC
     CasperClient.cpp
+    ServerEventsClient.cpp
     include/Types/CLValue.cpp
     include/Types/CLType.cpp
     include/Types/CLTypeParsed.cpp

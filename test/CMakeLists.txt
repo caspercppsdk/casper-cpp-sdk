@@ -11,7 +11,7 @@ add_executable(${BINARY}
     RpcTest.cpp
     CLValueByteSerializerTest.cpp
     DeployItemByteSerializerTest.cpp
-)
+        ServerEventsTest.cpp ServerEventsTest.h)
 
 target_link_libraries(${BINARY} 
     PRIVATE
