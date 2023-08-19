@@ -29,7 +29,7 @@ using CHexDecoder = CryptoPP::HexDecoder;
 using CStringSink = CryptoPP::StringSink;
 using CStringSource = CryptoPP::StringSource;
 
-inline CBytes hexDecode(std::string hex)
+inline CBytes hexDecode(const std::string& hex)
 {
     CryptoPP::StringSource ss(hex, true, new CryptoPP::HexDecoder);
     CBytes decoded((size_t)ss.MaxRetrievable());
@@ -81,20 +81,20 @@ inline void reverseHex(std::string& hex_input)
     std::reverse(hex_input.begin(), hex_input.end());
 }
 
-inline uint128_t u128FromHex(std::string hex_str)
+inline uint128_t u128FromHex(const std::string& hex_str)
 {
-    uint32_t len = hexToInteger<uint32_t>(hex_str.substr(0, 2));
+    auto len = hexToInteger<uint32_t>(hex_str.substr(0, 2));
 
     if (len < 1)
     {
-        return uint128_t(0);
+        return 0;
     }
 
-    hex_str = hex_str.substr(2, len * 2);
-    reverseHex(hex_str);
-    hex_str = "0x" + hex_str;
+    auto subHexStr = hex_str.substr(2, len * 2);
+    reverseHex(subHexStr);
+    subHexStr = "0x" + subHexStr;
 
-    return uint128_t(hex_str.c_str());
+    return {subHexStr.c_str()};
 }
 
 inline std::string u128ToHex(uint128_t value)

@@ -26,10 +26,10 @@ std::vector<bool> CEP57Checksum::_bytes_to_bits_cycle(CBytes bytes)
     return bits;
 }
 
-bool CEP57Checksum::HasChecksum(std::string hex)
+bool CEP57Checksum::HasChecksum(const std::string& hex)
 {
     int mix = 0;
-    for (auto& c : hex)
+    for (const auto& c : hex)
     {
         if (c >= '0' && c <= '9')
             mix |= 0x00;
@@ -81,7 +81,7 @@ std::string CEP57Checksum::Encode(CBytes decoded)
     return encoded_bytes;
 }
 
-CBytes CEP57Checksum::Decode(std::string encoded)
+CBytes CEP57Checksum::Decode(const std::string& encoded)
 {
     CBytes decoded = CryptoUtil::hexDecode(encoded);
     if (decoded.size() > SMALL_BYTES_COUNT || !HasChecksum(encoded))

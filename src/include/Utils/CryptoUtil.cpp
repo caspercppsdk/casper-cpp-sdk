@@ -10,7 +10,7 @@
 
 namespace Casper
 {
-CBytes CryptoUtil::hexDecode(std::string encoded)
+CBytes CryptoUtil::hexDecode(const std::string& encoded)
 {
     CStringSource ss(encoded, true, new CHexDecoder);
     CBytes decoded((size_t)ss.MaxRetrievable());

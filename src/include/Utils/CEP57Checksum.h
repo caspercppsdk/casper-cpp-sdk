@@ -26,11 +26,11 @@ private:
     static std::vector<bool> _bytes_to_bits_cycle(CBytes bytes);
 
 public:
-    static bool HasChecksum(std::string hex);
+    static bool HasChecksum(const std::string& hex);
 
     static std::string Encode(CBytes decoded);
 
-    static CBytes Decode(std::string encoded);
+    static CBytes Decode(const std::string& encoded);
 };
 
 } // namespace Casper
