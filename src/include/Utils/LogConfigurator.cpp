@@ -9,44 +9,45 @@
 
 namespace Casper
 {
-    using LogConfig = Casper::LogConfig;
+using LogConfig = Casper::LogConfig;
 
-    spdlog::level::level_enum get_level(LogConfig::Severity const log_level)
+spdlog::level::level_enum get_level(LogConfig::Severity const log_level)
+{
+    using Severity = LogConfig::Severity;
+    switch (log_level)
     {
-        using Severity = LogConfig::Severity;
-        switch(log_level)
-        {
-            case Severity::trace:
-                return spdlog::level::level_enum::trace;
-            case Severity::debug:
-                return spdlog::level::level_enum::debug;
-            case Severity::info:
-                return spdlog::level::level_enum::info;
-            case Severity::warn:
-                return spdlog::level::level_enum::warn;
-            case Severity::err:
-                return spdlog::level::level_enum::err;
-            case Severity::critical:
-                return spdlog::level::level_enum::critical;
-            case Severity::off:
-                return spdlog::level::level_enum::off;
-            case Severity::n_levels:
-                return spdlog::level::level_enum::n_levels;
-            default:
-                SPDLOG_ERROR("Not correct spdlog severity {}, so TRACE will be used.", static_cast<int>(log_level));
-        }
+    case Severity::trace:
         return spdlog::level::level_enum::trace;
+    case Severity::debug:
+        return spdlog::level::level_enum::debug;
+    case Severity::info:
+        return spdlog::level::level_enum::info;
+    case Severity::warn:
+        return spdlog::level::level_enum::warn;
+    case Severity::err:
+        return spdlog::level::level_enum::err;
+    case Severity::critical:
+        return spdlog::level::level_enum::critical;
+    case Severity::off:
+        return spdlog::level::level_enum::off;
+    case Severity::n_levels:
+        return spdlog::level::level_enum::n_levels;
+    default:
+        SPDLOG_ERROR("Not correct spdlog severity {}, so TRACE will be used.", static_cast<int>(log_level));
     }
+    return spdlog::level::level_enum::trace;
+}
 
-    std::shared_ptr<spdlog::logger> LogConfigurator::initDefault(LogConfig const& log_config)
-    {
-        LogConfigurator log{log_config.log_name};
-        return log.configure(log_config);
-    }
+std::shared_ptr<spdlog::logger> LogConfigurator::initDefault(LogConfig const& log_config)
+{
+    LogConfigurator log{log_config.log_name};
+    return log.configure(log_config);
+}
 
-    LogConfigurator::LogConfigurator(std::string const& log_name) noexcept:
-    log_name_{log_name}
-{}
+LogConfigurator::LogConfigurator(std::string const& log_name) noexcept
+    : log_name_{log_name}
+{
+}
 
 std::shared_ptr<spdlog::logger> LogConfigurator::configure(LogConfig const& log_config)
 {
@@ -62,11 +63,12 @@ std::shared_ptr<spdlog::logger> LogConfigurator::configureRotatingLogger()
 {
     auto const max_size = 1048576 * 5;
     auto const max_files = 10;
-    return spdlog::rotating_logger_mt(log_name_, algorithm::join("logs/rotating_", log_name_, ".txt"), max_size, max_files);
+    return spdlog::rotating_logger_mt(log_name_, algorithm::join("logs/rotating_", log_name_, ".txt"), max_size,
+                                      max_files);
 }
 
 std::shared_ptr<spdlog::logger> LogConfigurator::configureConsoleLogger()
 {
     return spdlog::stdout_color_mt(log_name_);
 }
-}
+} // namespace Casper

@@ -15,7 +15,8 @@
 #include "magic_enum/magic_enum.hpp"
 #include "wide-integer/uintwide_t.h"
 
-namespace Casper {
+namespace Casper
+{
 
 uint64_t strToTimestamp(std::string str);
 
@@ -55,4 +56,4 @@ std::string stringEncode(const std::string& val);
 
 GlobalStateKey urefDecode(const std::string& byte_str);
 
-}  // namespace Casper
+} // namespace Casper

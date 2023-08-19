@@ -4,19 +4,21 @@
 #include "Types/GlobalStateKey.h"
 #include "nlohmann/json.hpp"
 
-namespace Casper {
+namespace Casper
+{
 /**
  * @brief A named key in an Account or Contract.
  *
  */
-struct NamedKey {
-  /// The name of the entry.
-  std::string name;
+struct NamedKey
+{
+    /// The name of the entry.
+    std::string name;
 
-  /// The value of the entry: a Casper GlobalStateKey type.
-  GlobalStateKey key;
+    /// The value of the entry: a Casper GlobalStateKey type.
+    GlobalStateKey key;
 
-  NamedKey() {}
+    NamedKey() {}
 };
 
 /**
@@ -25,8 +27,9 @@ struct NamedKey {
  * @param j JSON object to construct.
  * @param p NamedKey object to construct from.
  */
-inline void to_json(nlohmann::json& j, const NamedKey& p) {
-  j = {{"name", p.name}, {"key", p.key}};
+inline void to_json(nlohmann::json& j, const NamedKey& p)
+{
+    j = {{"name", p.name}, {"key", p.key}};
 }
 
 /**
@@ -35,8 +38,9 @@ inline void to_json(nlohmann::json& j, const NamedKey& p) {
  * @param j JSON object to construct the object from.
  * @param p NamedKey object to construct.
  */
-inline void from_json(const nlohmann::json& j, NamedKey& p) {
-  j.at("name").get_to(p.name);
-  j.at("key").get_to(p.key);
+inline void from_json(const nlohmann::json& j, NamedKey& p)
+{
+    j.at("name").get_to(p.name);
+    j.at("key").get_to(p.key);
 }
-}  // namespace Casper
+} // namespace Casper

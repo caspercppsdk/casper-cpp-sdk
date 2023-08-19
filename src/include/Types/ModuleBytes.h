@@ -7,20 +7,24 @@
 #include <cryptopp/secblock.h>
 #include "nlohmann/json.hpp"
 
-namespace Casper {
+namespace Casper
+{
 /// Executable specified as raw bytes that represent WASM code and an instance
 /// of [`RuntimeArgs`].
-struct ModuleBytes {
-  /// Raw WASM module bytes with assumed "call" export as an entrypoint.
-  CBytes module_bytes;
-  /// Runtime arguments.
-  std::vector<NamedArg> args;
+struct ModuleBytes
+{
+    /// Raw WASM module bytes with assumed "call" export as an entrypoint.
+    CBytes module_bytes;
+    /// Runtime arguments.
+    std::vector<NamedArg> args;
 
-  ModuleBytes() {}
+    ModuleBytes() {}
 
-  ModuleBytes(uint512_t amount) : module_bytes(0) {
-    args.push_back(NamedArg("amount", CLValue::U512(amount)));
-  }
+    ModuleBytes(uint512_t amount)
+        : module_bytes(0)
+    {
+        args.push_back(NamedArg("amount", CLValue::U512(amount)));
+    }
 };
 
 /**
@@ -30,9 +34,10 @@ struct ModuleBytes {
  * @param p ModuleBytes object to construct from.
  */
 
-inline void to_json(nlohmann::json& j, const ModuleBytes& p) {
-  j["module_bytes"] = hexEncode(p.module_bytes);
-  j["args"] = p.args;
+inline void to_json(nlohmann::json& j, const ModuleBytes& p)
+{
+    j["module_bytes"] = hexEncode(p.module_bytes);
+    j["args"] = p.args;
 }
 
 /**
@@ -42,11 +47,12 @@ inline void to_json(nlohmann::json& j, const ModuleBytes& p) {
  * @param p ModuleBytes object to construct.
  */
 
-inline void from_json(const nlohmann::json& j, ModuleBytes& p) {
-  std::string bytesString = j["module_bytes"].get<std::string>();
-  p.module_bytes = hexDecode(bytesString);
+inline void from_json(const nlohmann::json& j, ModuleBytes& p)
+{
+    std::string bytesString = j["module_bytes"].get<std::string>();
+    p.module_bytes = hexDecode(bytesString);
 
-  j.at("args").get_to(p.args);
+    j.at("args").get_to(p.args);
 }
 
-}  // namespace Casper
+} // namespace Casper

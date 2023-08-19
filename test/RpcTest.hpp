@@ -9,8 +9,8 @@
 #include "Types/CLConverter.h"
 #include "ByteSerializers/DeployByteSerializer.h"
 
-
-namespace Casper {
+namespace Casper
+{
 
 void test1(void);
 
@@ -66,4 +66,4 @@ void SpeculativeExec_with_blockHashTest(void);
 
 void SpeculativeExec_without_blockIdentifier(void);
 
-}  // namespace Casper
+} // namespace Casper

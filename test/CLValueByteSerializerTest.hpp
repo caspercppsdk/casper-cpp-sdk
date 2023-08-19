@@ -9,7 +9,8 @@
 #include "Types/CLConverter.h"
 
 #include "ByteSerializers/DeployByteSerializer.h"
-namespace Casper {
+namespace Casper
+{
 
 /// Bool Byte Serialization
 void CLValue_ByteSer_Bool_Test(void);
@@ -55,4 +56,4 @@ void CLValue_ByteSer_Tuple2_Test(void);
 void CLValue_ByteSer_Tuple3_Test(void);
 
 void CLValue_ByteSer_Any_Test(void);
-}  // namespace Casper
+} // namespace Casper

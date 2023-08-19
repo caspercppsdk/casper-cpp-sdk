@@ -16,9 +16,7 @@ struct GetChainspecResult : public RpcResult
     /// </summary>
     ChainspecRawBytes chainspec_bytes;
 
-    GetChainspecResult()
-    {
-    }
+    GetChainspecResult() {}
 };
 
 /**
@@ -27,7 +25,7 @@ struct GetChainspecResult : public RpcResult
  * @param j JSON object to construct.
  * @param p GetChainspecResult Result object to construct from.
  */
-inline void to_json(nlohmann::json &j, const GetChainspecResult &p)
+inline void to_json(nlohmann::json& j, const GetChainspecResult& p)
 {
     j = static_cast<RpcResult>(p);
     j["chainspec_bytes"] = p.chainspec_bytes;
@@ -39,9 +37,9 @@ inline void to_json(nlohmann::json &j, const GetChainspecResult &p)
  * @param j JSON object to construct the object from.
  * @param p GetChainspecResult object to construct.
  */
-inline void from_json(const nlohmann::json &j, GetChainspecResult &p)
+inline void from_json(const nlohmann::json& j, GetChainspecResult& p)
 {
-    nlohmann::from_json(j, static_cast<RpcResult &>(p));
+    nlohmann::from_json(j, static_cast<RpcResult&>(p));
     j.at("chainspec_bytes").get_to(p.chainspec_bytes);
 }
 

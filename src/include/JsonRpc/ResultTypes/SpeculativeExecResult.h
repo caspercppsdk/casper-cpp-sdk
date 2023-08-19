@@ -4,21 +4,23 @@
 #include "JsonRpc/ResultTypes/RpcResult.h"
 #include "Types/ExecutionResult.h"
 
-namespace Casper {
+namespace Casper
+{
 
 /// Result for the "speculative-exec" rpc call.
-struct SpeculativeExecResult : public RpcResult {
-  /// <summary>
-  /// The block hash
-  /// </summary>
-  std::string block_hash;
+struct SpeculativeExecResult : public RpcResult
+{
+    /// <summary>
+    /// The block hash
+    /// </summary>
+    std::string block_hash;
 
-  /// <summary>
-  /// Execution result.
-  /// </summary>
-  ExecutionResult execution_result;
+    /// <summary>
+    /// Execution result.
+    /// </summary>
+    ExecutionResult execution_result;
 
-  SpeculativeExecResult() {}
+    SpeculativeExecResult() {}
 };
 
 /**
@@ -27,10 +29,11 @@ struct SpeculativeExecResult : public RpcResult {
  * @param j JSON object to construct.
  * @param p SpeculativeExecResult Result object to construct from.
  */
-inline void to_json(nlohmann::json& j, const SpeculativeExecResult& p) {
-  j = static_cast<RpcResult>(p);
-  j["block_hash"] = p.block_hash;
-  j["execution_result"] = p.execution_result;
+inline void to_json(nlohmann::json& j, const SpeculativeExecResult& p)
+{
+    j = static_cast<RpcResult>(p);
+    j["block_hash"] = p.block_hash;
+    j["execution_result"] = p.execution_result;
 }
 
 /**
@@ -39,10 +42,11 @@ inline void to_json(nlohmann::json& j, const SpeculativeExecResult& p) {
  * @param j JSON object to construct the object from.
  * @param p SpeculativeExecResult object to construct.
  */
-inline void from_json(const nlohmann::json& j, SpeculativeExecResult& p) {
-  nlohmann::from_json(j, static_cast<RpcResult&>(p));
-  j.at("block_hash").get_to(p.block_hash);
-  j.at("execution_result").get_to(p.execution_result);
+inline void from_json(const nlohmann::json& j, SpeculativeExecResult& p)
+{
+    nlohmann::from_json(j, static_cast<RpcResult&>(p));
+    j.at("block_hash").get_to(p.block_hash);
+    j.at("execution_result").get_to(p.execution_result);
 }
 
-}  // namespace Casper
+} // namespace Casper

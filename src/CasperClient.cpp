@@ -10,11 +10,11 @@ Client::Client(const std::string& address, const LogConfig* const log_config)
     , mRpcClient{mHttpConnector, jsonrpccxx::version::v2}
 {
     if (log_config)
-        {
-            LogConfig config{.log_name = "Casper-SDK", .severity = log_config->severity, .sink = log_config->sink};
+    {
+        LogConfig config{.log_name = "Casper-SDK", .severity = log_config->severity, .sink = log_config->sink};
 
-            LogConfigurator::initDefault(config);
-        }
+        LogConfigurator::initDefault(config);
+    }
 }
 
 /// Get a list of the nodes.
@@ -236,9 +236,9 @@ std::vector<std::string> Client::splitPath(std::string path)
     std::string curr_path;
     std::vector<std::string> paths;
     while (std::getline(ss, curr_path, '/'))
-        {
-            paths.push_back(curr_path);
-        }
+    {
+        paths.push_back(curr_path);
+    }
     return paths;
 }
 
@@ -300,7 +300,7 @@ SpeculativeExecResult Client::SpeculativeExec(Deploy deploy, uint64_t block_heig
     return mRpcClient.CallMethodNamed<SpeculativeExecResult>(1, "speculative_exec", paramsJSON);
 }
 
-/// Returns the chainspec.toml file of the node. 
+/// Returns the chainspec.toml file of the node.
 GetChainspecResult Client::GetChainspec()
 {
     return mRpcClient.CallMethodNamed<GetChainspecResult>(1, "info_get_chainspec");

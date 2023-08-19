@@ -25,9 +25,7 @@ struct ChainspecRawBytes
     /// </summary>
     std::optional<std::string> maybe_global_state_bytes{std::nullopt};
 
-    ChainspecRawBytes()
-    {
-    }
+    ChainspecRawBytes() {}
 };
 
 /**
@@ -36,7 +34,7 @@ struct ChainspecRawBytes
  * @param j JSON object to construct.
  * @param p ChainspecRawBytes object to construct from.
  */
-inline void to_json(nlohmann::json &j, const ChainspecRawBytes &p)
+inline void to_json(nlohmann::json& j, const ChainspecRawBytes& p)
 {
     j = nlohmann::json{{"chainspec_bytes", p.chainspec_bytes}};
 
@@ -57,7 +55,7 @@ inline void to_json(nlohmann::json &j, const ChainspecRawBytes &p)
  * @param j JSON object to construct the object from.
  * @param p ChainspecRawBytes object to construct.
  */
-inline void from_json(const nlohmann::json &j, ChainspecRawBytes &p)
+inline void from_json(const nlohmann::json& j, ChainspecRawBytes& p)
 {
     j.at("chainspec_bytes").get_to(p.chainspec_bytes);
 
