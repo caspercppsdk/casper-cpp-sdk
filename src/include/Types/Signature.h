@@ -101,7 +101,7 @@ public:
     /// Returns the bytes of the signature, including the Key algorithm as the
     /// first byte.
     /// </summary>
-    CBytes GetBytes()
+    CBytes GetBytes() const
     {
         CBytes bytes = CBytes(raw_bytes.size() + 1);
         if (key_algorithm == KeyAlgo::ED25519)

@@ -111,7 +111,7 @@ public:
     /// Converts a key object to a string with the right prefix
     /// </summary>
 
-    std::string ToString();
+    std::string ToString() const;
 
     bool operator<(const GlobalStateKey& other) const;
 

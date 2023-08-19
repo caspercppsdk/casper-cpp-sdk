@@ -7,7 +7,7 @@ namespace Casper
 struct CLValueByteSerializer : public BaseByteSerializer
 {
     ///
-    CBytes ToBytes(CLValue source)
+    CBytes ToBytes(const CLValue& source)
     {
         // ByteQueue byte_queue;
         CBytes bytes;

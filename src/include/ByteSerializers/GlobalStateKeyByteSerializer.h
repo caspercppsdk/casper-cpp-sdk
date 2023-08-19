@@ -7,7 +7,7 @@ namespace Casper
 {
 struct GlobalStateKeyByteSerializer : public BaseByteSerializer
 {
-    CBytes ToBytes(GlobalStateKey& source)
+    CBytes ToBytes(const GlobalStateKey& source)
     {
         CBytes bytes;
 

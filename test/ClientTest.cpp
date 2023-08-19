@@ -562,7 +562,6 @@ void ed25KeyTest()
 }
 
 #define RPC_TEST 1
-#define SER_DE_TEST 0
 #define CL_TYPE_TEST 1
 #define CL_VALUE_TEST 1
 #define DEPLOY_ITEM_BYTE_SERIALIZER_TEST 1
@@ -635,22 +634,6 @@ TEST_LIST = {
     {"QueryGlobalState RPC Call", QueryGlobalState_with_keyTest},
     {"GlobalStateKey Serialization and Deserialization test", globalStateKey_Simple_Test},
     {"SpeculativeExec RPC Call without blockIdentifier", SpeculativeExec_without_blockIdentifier},
-#endif
-
-#if SER_DE_TEST == 1
-    {"Serialize - Bool", serializeBoolTest},
-    {"Serialize - I32", serializeI32Test},
-    {"Serialize - I64", serializeI64Test},
-    {"Serialize - String", serializeStringTest},
-    {"Serialize - U8", serializeU8Test},
-    {"Serialize - U32", serializeU32Test},
-    {"Serialize - U64", serializeU64Test},
-    {"Serialize - U128", serializeU128Test},
-    {"Serialize - U256", serializeU256Test},
-    {"Serialize - U512", serializeU512Test},
-    {"Serialize - ByteArray", serializeByteArrayTest},
-    {"Serialize - Key", serializeKeyTest},
-    {"Serialize - PublicKey", serializePublicKeyTest},
 #endif
 
 #if CL_TYPE_TEST == 1

@@ -19,11 +19,11 @@ protected:
 
     static void WriteByte(CBytes& sb, uint8_t value);
 
-    static void WriteBytes(CBytes& sb, std::vector<uint8_t> value);
+    static void WriteBytes(CBytes& sb, const std::vector<uint8_t>& value);
 
-    static void WriteBytes(CBytes& sb, CBytes value);
+    static void WriteBytes(CBytes& sb, const CBytes& value);
 
-    static void WriteString(CBytes& sb, std::string value);
+    static void WriteString(CBytes& sb, const std::string& value);
 };
 
 } // namespace Casper

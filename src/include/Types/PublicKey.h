@@ -266,7 +266,7 @@ public:
     /// Returns the bytes of the public key, including the Key algorithm as the
     /// first byte.
     /// </summary>
-    CBytes GetBytes()
+    CBytes GetBytes() const
     {
         CBytes bytes = CBytes(raw_bytes.size() + 1);
 

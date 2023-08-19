@@ -136,7 +136,7 @@ CBytes GlobalStateKey::GetBytes()
     return ms;
 }
 
-std::string GlobalStateKey::ToString()
+std::string GlobalStateKey::ToString() const
 {
     return this->key;
 }
