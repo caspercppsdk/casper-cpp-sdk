@@ -1,28 +1,88 @@
 #pragma once
 
+#include "Base.h"
 #include <string>
-
-// casper server test address
-#define SSE_TEST_ADDRESS "http://93.190.141.13:9999"
+#include <map>
+#include <set>
+#include <vector>
+#include <future>
+#include <atomic>
+#include <functional>
 
 namespace Casper
 {
-class ServerEventsClient
+enum class ChannelType
 {
-public:
-    /**
-     * @brief Construct a new ServerEventsClient object
-     *
-     * @param address is a URL of the node like 'http://127.0.0.1:9999'. Default
-     * endpoint is '/events'.
-     */
-    ServerEventsClient(std::string address_);
+    Main,
+    Deploys,
+    Sigs
+};
 
-    void listen();
+enum class EventType
+{
+    All,
+    ApiVersion,
+    BlockAdded,
+    DeployAccepted,
+    DeployProcessed,
+    Fault,
+    Step,
+    FinalitySignature,
+    DeployExpired
+};
 
-private:
-    std::string address;
+struct EventData
+{
+    bool hasData() const { return !payload.empty(); }
+
+    EventType eventType;
+    int id;
+    std::string payload;
+};
+
+using EventCallback = std::function<void(const EventData&)>;
+
+struct SSECallback
+{
+    EventType eventType;
+    std::string name;
+    EventCallback callbackFn;
+    int startFrom;
+
+    SSECallback(EventType et, const std::string& n, EventCallback cb, int sf = INT32_MAX)
+        : eventType(et)
+        , name(n)
+        , callbackFn(cb)
+        , startFrom(sf)
+    {
+    }
 };
 
 
+class ServerEventsClient
+{
+public:
+    ServerEventsClient(const std::string& address_);
+    void listen();
+    void startListening();
+    void stopListening();
+    void addEventCallback(EventType eventType, const std::string& name, EventCallback cb, int startFrom = INT32_MAX);
+    bool removeEventCallback(EventType eventType, const std::string& name);
+
+private:
+    void listenChannelAsync(ChannelType channelType, int startFrom, std::atomic<bool>& isRunning);
+    bool parseEventType(const std::string& evtType, EventType& evt);
+    bool parseStream(const std::string& line, EventData& eventData);
+    void emitEvent(const EventData& eventData);
+
+    std::string address;
+    std::string accumulated_data;
+    std::set<ChannelType> _channels;
+
+    std::vector<SSECallback> _callbacks;
+    std::map<EventType, ChannelType> eventTypeToChannelMap;
+
+    std::vector<std::unique_ptr<std::atomic<bool>>> _runningFlags;
+    std::vector<std::future<void>> _runningTasks;
+};
 } // namespace Casper

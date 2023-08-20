@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/SSE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/JsonRpc
     ${CMAKE_CURRENT_SOURCE_DIR}/include/JsonRpc/Connection
     ${CMAKE_CURRENT_SOURCE_DIR}/include/JsonRpc/ResultTypes
