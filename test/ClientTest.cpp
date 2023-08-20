@@ -563,13 +563,13 @@ void ed25KeyTest()
     TEST_ASSERT(ed_key.verify(message, signature));
 }
 
-#define RPC_TEST 0
+#define RPC_TEST 1
 #define SSE_TEST 1
-#define CL_TYPE_TEST 0
-#define CL_VALUE_TEST 0
-#define DEPLOY_ITEM_BYTE_SERIALIZER_TEST 0
-#define CL_VALUE_BYTE_SERIALIZER_TEST 0
-#define UTILS_TEST 0
+#define CL_TYPE_TEST 1
+#define CL_VALUE_TEST 1
+#define DEPLOY_ITEM_BYTE_SERIALIZER_TEST 1
+#define CL_VALUE_BYTE_SERIALIZER_TEST 1
+#define UTILS_TEST 1
 
 TEST_LIST = {
 
