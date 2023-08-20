@@ -16,7 +16,7 @@ private:
 
 public:
     /// Create a Private Key from pem file
-    Secp256k1Key(std::string pem_file_path);
+    Secp256k1Key(const std::string& pem_file_path);
 
     /// Sign a message with the private key and return the signature
     std::string sign(std::string message);
@@ -43,7 +43,7 @@ public:
 private:
     /// Convert CryptoPP::Integer values to std::string with eliminate the h(0x)
     /// for 64 char hex string
-    std::string integerToString(CryptoPP::Integer x);
+    std::string integerToString(const CryptoPP::Integer& x);
 
     /// Convert CryptoPP::Integer values to std::string with add the h(0x) as
     /// prefix for 64 char hex string

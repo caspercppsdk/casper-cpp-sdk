@@ -8,9 +8,9 @@
 namespace Casper
 {
 
-URef::URef() {}
+URef::URef() = default;
 
-URef::URef(std::string value)
+URef::URef(const std::string& value)
     : GlobalStateKey::GlobalStateKey(value)
 {
     key_identifier = KeyIdentifier::URef;
@@ -82,7 +82,7 @@ std::string URef::byteToString(CBytes bytes, AccessRights rights)
 /// rights.
 /// </summary>
 
-URef::URef(CBytes bytes)
+URef::URef(const CBytes& bytes)
     : URef::URef(byteToStringWithAccessRights(bytes))
 {
 }
@@ -117,7 +117,7 @@ std::string URef::ToString() const
     return "uref-" + CEP57Checksum::Encode(_GetRawBytesFromKey(key)) + "-" + access_rights_str;
 }
 
-CBytes URef::_GetRawBytesFromKey(std::string key) const
+CBytes URef::_GetRawBytesFromKey(const std::string& key) const
 {
     std::string new_key = key.substr(0, key.find_last_of('-'));
     return CryptoUtil::hexDecode(new_key.substr(new_key.find_last_of('-') + 1));

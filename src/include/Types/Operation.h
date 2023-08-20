@@ -32,7 +32,7 @@ struct Operation
     /// </summary>
     OpKind kind;
 
-    Operation() {}
+    Operation() = default;
 };
 
 // to_json of Operation

@@ -7,7 +7,7 @@
 namespace Casper
 {
 
-uint64_t strToTimestamp(std::string str_date)
+uint64_t strToTimestamp(const std::string& str_date)
 {
     using namespace date;
     using namespace std;

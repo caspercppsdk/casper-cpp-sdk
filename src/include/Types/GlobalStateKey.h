@@ -76,7 +76,7 @@ public:
     CBytes raw_bytes;
 
 protected:
-    virtual CBytes _GetRawBytesFromKey(std::string key);
+    virtual CBytes _GetRawBytesFromKey(const std::string& key);
 
 public:
     GlobalStateKey();
@@ -84,20 +84,20 @@ public:
     /// <summary>
     /// Constructor for the GlobalStateKey class.
     /// </summary>
-    GlobalStateKey(std::string key_);
+    GlobalStateKey(const std::string& key_);
 
     /// <summary>
     /// Constructor for the GlobalStateKey class with key prefix.
     /// </summary>
-    GlobalStateKey(std::string key_, std::string key_prefix);
+    GlobalStateKey(const std::string& key_, const std::string& key_prefix);
 
-    std::string ToHexString();
+    std::string ToHexString() const;
 
     /// <summary>
     /// Converts a global state key from string to its specific key object.
     /// </summary>
 
-    static GlobalStateKey FromString(std::string value);
+    static GlobalStateKey FromString(const std::string& value);
 
     /// <summary>
     /// Converts a global state key from a byte array to its specific key object.
@@ -111,7 +111,7 @@ public:
     /// Converts a key object to a string with the right prefix
     /// </summary>
 
-    std::string ToString();
+    std::string ToString() const;
 
     bool operator<(const GlobalStateKey& other) const;
 
@@ -126,9 +126,9 @@ public:
 /// </summary>
 struct AccountHashKey : public GlobalStateKey
 {
-    AccountHashKey(std::string key);
+    AccountHashKey(const std::string& key);
     AccountHashKey() { key_identifier = KeyIdentifier::Account; }
-    AccountHashKey(PublicKey publicKey);
+    AccountHashKey(const PublicKey& publicKey);
 };
 
 /// <summary>
@@ -137,9 +137,9 @@ struct AccountHashKey : public GlobalStateKey
 /// </summary>
 struct HashKey : public GlobalStateKey
 {
-    HashKey(std::string key);
+    HashKey(const std::string& key);
 
-    HashKey(CBytes key);
+    HashKey(const CBytes& key);
 };
 
 /// <summary>
@@ -148,9 +148,9 @@ struct HashKey : public GlobalStateKey
 /// </summary>
 struct TransferKey : public GlobalStateKey
 {
-    TransferKey(std::string key);
+    TransferKey(const std::string& key);
 
-    TransferKey(CBytes key);
+    TransferKey(const CBytes& key);
 };
 
 /// <summary>
@@ -159,9 +159,9 @@ struct TransferKey : public GlobalStateKey
 /// </summary>
 struct DeployInfoKey : public GlobalStateKey
 {
-    DeployInfoKey(std::string key);
+    DeployInfoKey(const std::string& key);
 
-    DeployInfoKey(CBytes key);
+    DeployInfoKey(const CBytes& key);
 };
 
 /// <summary>
@@ -170,12 +170,12 @@ struct DeployInfoKey : public GlobalStateKey
 /// </summary>
 struct EraInfoKey : public GlobalStateKey
 {
-    EraInfoKey(std::string key);
+    EraInfoKey(const std::string& key);
 
     CBytes GetBytes() override;
 
 protected:
-    CBytes _GetRawBytesFromKey(std::string key) override;
+    CBytes _GetRawBytesFromKey(const std::string& key) override;
 };
 
 /// <summary>
@@ -184,9 +184,9 @@ protected:
 /// </summary>
 struct BalanceKey : public GlobalStateKey
 {
-    BalanceKey(std::string key);
+    BalanceKey(const std::string& key);
 
-    BalanceKey(CBytes key);
+    BalanceKey(const CBytes& key);
 };
 
 /// <summary>
@@ -195,9 +195,9 @@ struct BalanceKey : public GlobalStateKey
 /// </summary>
 struct BidKey : public GlobalStateKey
 {
-    BidKey(std::string key);
+    BidKey(const std::string& key);
 
-    BidKey(CBytes key);
+    BidKey(const CBytes& key);
 };
 
 /// <summary>
@@ -206,9 +206,9 @@ struct BidKey : public GlobalStateKey
 /// </summary>
 struct WithdrawKey : public GlobalStateKey
 {
-    WithdrawKey(std::string key);
+    WithdrawKey(const std::string& key);
 
-    WithdrawKey(CBytes key);
+    WithdrawKey(const CBytes& key);
 };
 
 /// <summary>
@@ -217,9 +217,9 @@ struct WithdrawKey : public GlobalStateKey
 /// </summary>
 struct DictionaryKey : public GlobalStateKey
 {
-    DictionaryKey(std::string key);
+    DictionaryKey(const std::string& key);
 
-    DictionaryKey(CBytes key);
+    DictionaryKey(const CBytes& key);
 };
 
 /**

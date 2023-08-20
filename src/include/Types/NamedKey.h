@@ -18,7 +18,7 @@ struct NamedKey
     /// The value of the entry: a Casper GlobalStateKey type.
     GlobalStateKey key;
 
-    NamedKey() {}
+    NamedKey() = default;
 };
 
 /**

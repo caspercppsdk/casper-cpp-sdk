@@ -21,7 +21,7 @@ struct EraValidators
     /// </summary>
     std::vector<ValidatorWeight> validator_weights;
 
-    EraValidators() {}
+    EraValidators() = default;
 };
 
 /**

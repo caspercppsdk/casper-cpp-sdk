@@ -7,7 +7,7 @@ namespace Casper
 {
 struct DeployApprovalByteSerializer : public BaseByteSerializer
 {
-    CBytes ToBytes(DeployApproval& source)
+    CBytes ToBytes(const DeployApproval& source)
     {
         CBytes bytes;
         WriteBytes(bytes, source.signer.GetBytes());

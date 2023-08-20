@@ -1,11 +1,13 @@
 #include <spdlog/spdlog.h>
+
+#include <utility>
 #include "CasperClient.h"
 namespace Casper
 {
 
 /// Construct a new Casper Client object
-Client::Client(const std::string& address, const LogConfig* const log_config)
-    : mAddress{address}
+Client::Client(std::string address, const LogConfig* const log_config)
+    : mAddress{std::move(address)}
     , mHttpConnector{mAddress}
     , mRpcClient{mHttpConnector, jsonrpccxx::version::v2}
 {
@@ -24,7 +26,7 @@ InfoGetPeersResult Client::GetNodePeers()
 }
 
 /// Returns the state root hash at a given block
-GetStateRootHashResult Client::GetStateRootHash(std::string block_hash)
+GetStateRootHashResult Client::GetStateRootHash(const std::string& block_hash)
 {
     nlohmann::json hashJSON{{"Hash", block_hash}};
     nlohmann::json block_identifier{{"block_identifier", hashJSON}};
@@ -45,7 +47,7 @@ GetStateRootHashResult Client::GetStateRootHash(uint64_t block_height)
 }
 
 /// Returns the deploy info.
-GetDeployInfoResult Client::GetDeployInfo(std::string deploy_hash, int counter)
+GetDeployInfoResult Client::GetDeployInfo(const std::string& deploy_hash, int counter)
 {
     nlohmann::json hashJSON{{"deploy_hash", deploy_hash}};
     return mRpcClient.CallMethodNamed<GetDeployInfoResult>(1, "info_get_deploy", hashJSON);
@@ -78,7 +80,7 @@ GetStatusResult Client::GetStatusInfo()
 }
 
 /// Returns the transfers at the block given by the block hash.
-GetBlockTransfersResult Client::GetBlockTransfers(std::string block_hash)
+GetBlockTransfersResult Client::GetBlockTransfers(const std::string& block_hash)
 {
     nlohmann::json hashJSON{{"Hash", block_hash}};
     nlohmann::json block_identifier{{"block_identifier", hashJSON}};
@@ -96,7 +98,7 @@ GetBlockTransfersResult Client::GetBlockTransfers(uint64_t block_height)
 }
 
 /// Returns the block at the block given by the block hash.
-GetBlockResult Client::GetBlock(std::string block_hash)
+GetBlockResult Client::GetBlock(const std::string& block_hash)
 {
     nlohmann::json hashJSON{{"Hash", block_hash}};
     nlohmann::json block_identifier{{"block_identifier", hashJSON}};
@@ -114,7 +116,7 @@ GetBlockResult Client::GetBlock(uint64_t block_height)
 }
 
 /// Returns the era information at the block given by the block hash.
-GetEraInfoResult Client::GetEraInfoBySwitchBlock(std::string block_hash)
+GetEraInfoResult Client::GetEraInfoBySwitchBlock(const std::string& block_hash)
 {
     nlohmann::json hashJSON{{"Hash", block_hash}};
     nlohmann::json block_identifier{{"block_identifier", hashJSON}};
@@ -132,7 +134,8 @@ GetEraInfoResult Client::GetEraInfoBySwitchBlock(uint64_t block_height)
 }
 
 /// Returns the item at the given address with the given key.
-GetItemResult Client::GetItem(std::string state_root_hash, std::string key, std::vector<std::string> path)
+GetItemResult Client::GetItem(const std::string& state_root_hash, const std::string& key,
+                              const std::vector<std::string>& path)
 {
     nlohmann::json paramsJSON{{"state_root_hash", state_root_hash}, {"key", key}, {"path", path}};
 
@@ -143,7 +146,8 @@ GetItemResult Client::GetItem(std::string state_root_hash, std::string key, std:
 /// FIXME: It is only a workaround, as GetItem function does not parse
 /// correctly result from json:
 /// https://matterfi.atlassian.net/browse/CD-216
-nlohmann::json Client::GetItem_WA(std::string state_root_hash, std::string key, std::vector<std::string> path)
+nlohmann::json Client::GetItem_WA(const std::string& state_root_hash, const std::string& key,
+                                  const std::vector<std::string>& path)
 {
     nlohmann::json paramsJSON{{"state_root_hash", state_root_hash}, {"key", key}, {"path", path}};
 
@@ -151,7 +155,7 @@ nlohmann::json Client::GetItem_WA(std::string state_root_hash, std::string key, 
 }
 
 /// Returns the dictionary item with the given key and state root hash.
-nlohmann::json Client::GetDictionaryItem(std::string stateRootHash, std::string dictionaryItem)
+nlohmann::json Client::GetDictionaryItem(const std::string& stateRootHash, const std::string& dictionaryItem)
 {
     nlohmann::json dictionaryJSON{{"Dictionary", dictionaryItem}};
 
@@ -161,8 +165,10 @@ nlohmann::json Client::GetDictionaryItem(std::string stateRootHash, std::string 
 }
 
 /// Returns the dictionary item with the given account key and item key.
-GetDictionaryItemResult Client::GetDictionaryItemByAccount(std::string stateRootHash, std::string accountKey,
-                                                           std::string dictionaryName, std::string dictionaryItemKey)
+GetDictionaryItemResult Client::GetDictionaryItemByAccount(const std::string& stateRootHash,
+                                                           const std::string& accountKey,
+                                                           const std::string& dictionaryName,
+                                                           const std::string& dictionaryItemKey)
 {
     nlohmann::json accountNamedKey{
         {"key", accountKey}, {"dictionary_name", dictionaryName}, {"dictionary_item_key", dictionaryItemKey}};
@@ -173,8 +179,10 @@ GetDictionaryItemResult Client::GetDictionaryItemByAccount(std::string stateRoot
 }
 
 /// Returns the dictionary item with the given contract.
-GetDictionaryItemResult Client::GetDictionaryItemByContract(std::string stateRootHash, std::string contractKey,
-                                                            std::string dictionaryName, std::string dictionaryItemKey)
+GetDictionaryItemResult Client::GetDictionaryItemByContract(const std::string& stateRootHash,
+                                                            const std::string& contractKey,
+                                                            const std::string& dictionaryName,
+                                                            const std::string& dictionaryItemKey)
 {
     nlohmann::json contractNamedKey{
         {"key", contractKey}, {"dictionary_name", dictionaryName}, {"dictionary_item_key", dictionaryItemKey}};
@@ -185,8 +193,8 @@ GetDictionaryItemResult Client::GetDictionaryItemByContract(std::string stateRoo
 }
 
 /// Returns the dictionary item with the given URef.
-GetDictionaryItemResult Client::GetDictionaryItemByURef(std::string stateRootHash, std::string seedURef,
-                                                        std::string dictionaryItemKey)
+GetDictionaryItemResult Client::GetDictionaryItemByURef(const std::string& stateRootHash, const std::string& seedURef,
+                                                        const std::string& dictionaryItemKey)
 {
     nlohmann::json urefIdentifier{{"seed_uref", seedURef}, {"dictionary_item_key", dictionaryItemKey}};
     nlohmann::json urefIdentifierJSON{{"URef", urefIdentifier}};
@@ -196,7 +204,7 @@ GetDictionaryItemResult Client::GetDictionaryItemByURef(std::string stateRootHas
 }
 
 /// Returns the balance of the given account.
-GetBalanceResult Client::GetAccountBalance(std::string purseURef, std::string stateRootHash)
+GetBalanceResult Client::GetAccountBalance(const std::string& purseURef, const std::string& stateRootHash)
 {
     nlohmann::json paramsJSON{{"state_root_hash", stateRootHash}, {"purse_uref", purseURef}};
 
@@ -204,7 +212,7 @@ GetBalanceResult Client::GetAccountBalance(std::string purseURef, std::string st
 }
 
 /// Returns the auction information for the given block hash.
-GetAuctionInfoResult Client::GetAuctionInfo(std::string block_hash)
+GetAuctionInfoResult Client::GetAuctionInfo(const std::string& block_hash)
 {
     nlohmann::json hashJSON{{"Hash", block_hash}};
     nlohmann::json block_identifier{{"block_identifier", hashJSON}};
@@ -222,7 +230,7 @@ GetAuctionInfoResult Client::GetAuctionInfo(uint64_t block_height)
 }
 
 /// Returns the deploy hash of the given deploy.
-PutDeployResult Client::PutDeploy(Deploy deploy)
+PutDeployResult Client::PutDeploy(const Deploy& deploy)
 {
     nlohmann::json deploy_json;
     to_json(deploy_json, deploy);
@@ -230,7 +238,7 @@ PutDeployResult Client::PutDeploy(Deploy deploy)
     return mRpcClient.CallMethodNamed<PutDeployResult>(1, "account_put_deploy", paramsJSON);
 }
 
-std::vector<std::string> Client::splitPath(std::string path)
+std::vector<std::string> Client::splitPath(const std::string& path)
 {
     std::stringstream ss(path);
     std::string curr_path;
@@ -242,7 +250,8 @@ std::vector<std::string> Client::splitPath(std::string path)
     return paths;
 }
 
-QueryGlobalStateResult Client::QueryGlobalState(std::string key, std::string state_root_hash, std::string path)
+QueryGlobalStateResult Client::QueryGlobalState(const std::string& key, const std::string& state_root_hash,
+                                                const std::string& path)
 {
     std::vector<std::string> path_vec = splitPath(path);
     nlohmann::json hashJSON{{"StateRootHash", state_root_hash}};
@@ -252,12 +261,14 @@ QueryGlobalStateResult Client::QueryGlobalState(std::string key, std::string sta
     return mRpcClient.CallMethodNamed<QueryGlobalStateResult>(1, "query_global_state", paramsJSON);
 }
 
-QueryGlobalStateResult Client::QueryGlobalState(GlobalStateKey key, std::string state_root_hash, std::string path)
+QueryGlobalStateResult Client::QueryGlobalState(GlobalStateKey key, const std::string& state_root_hash,
+                                                const std::string& path)
 {
     return QueryGlobalState(key.ToString(), state_root_hash, path);
 }
 
-QueryGlobalStateResult Client::QueryGlobalStateWithBlockHash(std::string key, std::string block_hash, std::string path)
+QueryGlobalStateResult Client::QueryGlobalStateWithBlockHash(const std::string& key, const std::string& block_hash,
+                                                             const std::string& path)
 {
     std::vector<std::string> path_vec = splitPath(path);
     nlohmann::json hashJSON{{"BlockHash", block_hash}};
@@ -267,14 +278,14 @@ QueryGlobalStateResult Client::QueryGlobalStateWithBlockHash(std::string key, st
     return mRpcClient.CallMethodNamed<QueryGlobalStateResult>(1, "query_global_state", paramsJSON);
 }
 
-QueryGlobalStateResult Client::QueryGlobalStateWithBlockHash(GlobalStateKey key, std::string block_hash,
-                                                             std::string path)
+QueryGlobalStateResult Client::QueryGlobalStateWithBlockHash(GlobalStateKey key, const std::string& block_hash,
+                                                             const std::string& path)
 {
     return QueryGlobalState(key.ToString(), block_hash, path);
 }
 
 /// Returns the state root hash at a given block
-SpeculativeExecResult Client::SpeculativeExec(Deploy deploy, std::string block_hash)
+SpeculativeExecResult Client::SpeculativeExec(const Deploy& deploy, const std::string& block_hash)
 {
     nlohmann::json blockHashJson{{"Hash", block_hash}};
 
@@ -283,12 +294,11 @@ SpeculativeExecResult Client::SpeculativeExec(Deploy deploy, std::string block_h
 
     nlohmann::json paramsJSON{{"block_identifier", nullptr}, {"deploy", deploy_json}};
 
-    std::cout << paramsJSON.dump(2) << std::endl;
     return mRpcClient.CallMethodNamed<SpeculativeExecResult>(1, "speculative_exec", paramsJSON);
 }
 
 /// Returns the state root hash at a given height
-SpeculativeExecResult Client::SpeculativeExec(Deploy deploy, uint64_t block_height)
+SpeculativeExecResult Client::SpeculativeExec(const Deploy& deploy, uint64_t block_height)
 {
     nlohmann::json blockHeightJSON{{"Height", block_height}};
 

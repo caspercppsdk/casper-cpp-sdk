@@ -24,7 +24,7 @@ struct ActionThresholds
     /// </summary>
     uint8_t key_management;
 
-    ActionThresholds() {}
+    ActionThresholds() = default;
 };
 
 /**
@@ -65,7 +65,7 @@ struct AssociatedKey
     /// </summary>
     uint8_t weight;
 
-    AssociatedKey() {}
+    AssociatedKey() = default;
 };
 
 /**
@@ -123,7 +123,7 @@ struct Account
     /// </summary>
     ActionThresholds action_thresholds;
 
-    Account() {}
+    Account() = default;
 };
 
 /**

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+#include <utility>
 
 #include "Base.h"
 #include "Types/NamedArg.h"
@@ -22,29 +23,28 @@ struct StoredVersionedContractByName
     /// Runtime arguments.
     std::vector<NamedArg> args;
 
-    StoredVersionedContractByName() {}
+    StoredVersionedContractByName() = default;
 
-    StoredVersionedContractByName(const std::string& name, const uint32_t version, const std::string& entry_point,
+    StoredVersionedContractByName(std::string name, const uint32_t version, std::string entry_point,
                                   const std::vector<NamedArg>& args)
-        : name(name)
+        : name(std::move(name))
         , version(version)
-        , entry_point(entry_point)
+        , entry_point(std::move(entry_point))
         , args(args)
     {
     }
 
-    StoredVersionedContractByName(const std::string& name, const std::string& entry_point,
-                                  const std::vector<NamedArg>& args = {})
-        : name(name)
-        , entry_point(entry_point)
+    StoredVersionedContractByName(std::string name, std::string entry_point, const std::vector<NamedArg>& args = {})
+        : name(std::move(name))
+        , entry_point(std::move(entry_point))
         , args(args)
     {
     }
 
-    StoredVersionedContractByName(const std::string& name, const uint32_t version, const std::string& entry_point)
-        : name(name)
+    StoredVersionedContractByName(std::string name, const uint32_t version, std::string entry_point)
+        : name(std::move(name))
         , version(version)
-        , entry_point(entry_point)
+        , entry_point(std::move(entry_point))
     {
     }
 };

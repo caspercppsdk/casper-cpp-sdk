@@ -9,7 +9,7 @@ namespace Casper
 {
 struct CryptoUtil
 {
-    static CBytes hexDecode(std::string hex);
+    static CBytes hexDecode(const std::string& hex);
 
     static std::string hexEncode(CBytes bytes);
 

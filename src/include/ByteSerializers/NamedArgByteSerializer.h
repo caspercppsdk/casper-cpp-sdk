@@ -8,7 +8,7 @@ namespace Casper
 {
 struct NamedArgByteSerializer : public BaseByteSerializer
 {
-    CBytes ToBytes(NamedArg source)
+    CBytes ToBytes(const NamedArg& source)
     {
         CBytes bytes;
         // std::cout << "NamedArgByteSerializer: " << std::endl;

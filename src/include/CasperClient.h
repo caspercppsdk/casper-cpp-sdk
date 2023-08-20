@@ -58,7 +58,7 @@ public:
      * @param address is a URL of the node like 'http://127.0.0.1:7777'. Default
      * endpoint is '/rpc'.
      */
-    Client(const std::string& address, const LogConfig* const log_config = nullptr);
+    Client(std::string address, const LogConfig* const log_config = nullptr);
 
     /**
      * @brief Get a list of the nodes.
@@ -75,7 +75,7 @@ public:
      * @return GetStateRootHashResult that contains the state_root_hash as a
      * string.
      */
-    GetStateRootHashResult GetStateRootHash(std::string block_hash = "");
+    GetStateRootHashResult GetStateRootHash(const std::string& block_hash = "");
 
     /**
      * @brief Returns the state root hash at a given height
@@ -93,7 +93,7 @@ public:
      * @return GetDeployInfoResult that contains the deploy information as a
      * string.
      */
-    GetDeployInfoResult GetDeployInfo(std::string deploy_hash, int counter = 0);
+    GetDeployInfoResult GetDeployInfo(const std::string& deploy_hash, int counter = 0);
 
     /**
      * @brief Returns the status info.
@@ -108,7 +108,7 @@ public:
      * the transfers of the latest block.
      * @return GetBlockTransfersResult that contains the transfers info.
      */
-    GetBlockTransfersResult GetBlockTransfers(std::string block_hash = "");
+    GetBlockTransfersResult GetBlockTransfers(const std::string& block_hash = "");
 
     /**
      * @brief Returns the transfers information.
@@ -123,7 +123,7 @@ public:
      * the block info of the latest block.
      * @return GetBlockResult that contains the block info.
      */
-    GetBlockResult GetBlock(std::string block_hash = "");
+    GetBlockResult GetBlock(const std::string& block_hash = "");
 
     /**
      * @brief Returns the block information.
@@ -138,7 +138,7 @@ public:
      * the era info of the latest block.
      * @return GetEraInfoBySwitchBlock that contains the era info.
      */
-    GetEraInfoResult GetEraInfoBySwitchBlock(std::string block_hash = "");
+    GetEraInfoResult GetEraInfoBySwitchBlock(const std::string& block_hash = "");
 
     /**
      * @brief Returns the era information.
@@ -155,7 +155,8 @@ public:
      * @param path The path of the item.
      * @return GetItemResult that contains the item info.
      */
-    GetItemResult GetItem(std::string state_root_hash, std::string key, std::vector<std::string> path = {});
+    GetItemResult GetItem(const std::string& state_root_hash, const std::string& key,
+                          const std::vector<std::string>& path = {});
 
     /**
      * FIXME: It is only a workaround, as GetItem function does
@@ -168,7 +169,8 @@ public:
      * @param path The path of the item.
      * @return nlohmann::json that contains the item info.
      */
-    nlohmann::json GetItem_WA(std::string state_root_hash, std::string key, std::vector<std::string> path = {});
+    nlohmann::json GetItem_WA(const std::string& state_root_hash, const std::string& key,
+                              const std::vector<std::string>& path = {});
 
     /**
      * @brief Get the Dictionary Item object
@@ -178,7 +180,7 @@ public:
      * @return json that contains the dictionary item
      * information.
      */
-    nlohmann::json GetDictionaryItem(std::string stateRootHash, std::string dictionaryItem);
+    nlohmann::json GetDictionaryItem(const std::string& stateRootHash, const std::string& dictionaryItem);
 
     /**
      * @brief Get the Dictionary Item by Account's named keys.
@@ -192,8 +194,9 @@ public:
      * @return GetDictionaryItemResult that contains the dictionary item
      * information.
      */
-    GetDictionaryItemResult GetDictionaryItemByAccount(std::string stateRootHash, std::string accountKey,
-                                                       std::string dictionaryName, std::string dictionaryItemKey);
+    GetDictionaryItemResult GetDictionaryItemByAccount(const std::string& stateRootHash, const std::string& accountKey,
+                                                       const std::string& dictionaryName,
+                                                       const std::string& dictionaryItemKey);
 
     /**
      * @brief Get the Dictionary Item By Contract object
@@ -207,8 +210,10 @@ public:
      * @return GetDictionaryItemResult that contains the dictionary item
      * information.
      */
-    GetDictionaryItemResult GetDictionaryItemByContract(std::string stateRootHash, std::string contractKey,
-                                                        std::string dictionaryName, std::string dictionaryItemKey);
+    GetDictionaryItemResult GetDictionaryItemByContract(const std::string& stateRootHash,
+                                                        const std::string& contractKey,
+                                                        const std::string& dictionaryName,
+                                                        const std::string& dictionaryItemKey);
 
     /**
      * @brief Get the Dictionary Item By U Ref object
@@ -219,8 +224,8 @@ public:
      * @return GetDictionaryItemResult that contains the dictionary item
      * information.
      */
-    GetDictionaryItemResult GetDictionaryItemByURef(std::string stateRootHash, std::string seedURef,
-                                                    std::string dictionaryItemKey);
+    GetDictionaryItemResult GetDictionaryItemByURef(const std::string& stateRootHash, const std::string& seedURef,
+                                                    const std::string& dictionaryItemKey);
 
     /**
      * @brief Returns the balance of the account.
@@ -228,7 +233,7 @@ public:
      * @param stateRootHash The hash of the state root.
      * @return GetBalanceResult that contains the balance and merkle proof.
      */
-    GetBalanceResult GetAccountBalance(std::string purseURef, std::string stateRootHash);
+    GetBalanceResult GetAccountBalance(const std::string& purseURef, const std::string& stateRootHash);
 
     /**
      * @brief Get the Auction Info object
@@ -237,7 +242,7 @@ public:
      * the auction info of the latest block.
      * @return GetAuctionInfoResult that contains the auction information.
      */
-    GetAuctionInfoResult GetAuctionInfo(std::string block_hash = "");
+    GetAuctionInfoResult GetAuctionInfo(const std::string& block_hash = "");
 
     /**
      * @brief Get the Auction Info object
@@ -253,20 +258,21 @@ public:
      * @param deploy The deploy object to be sent to the network.
      * @return PutDeployResult that contains the deploy information.
      */
-    PutDeployResult PutDeploy(Deploy deploy);
+    PutDeployResult PutDeploy(const Deploy& deploy);
 
-    std::vector<std::string> splitPath(std::string path);
+    static std::vector<std::string> splitPath(const std::string& path);
 
-    QueryGlobalStateResult QueryGlobalState(std::string key, std::string state_root_hash = "", std::string path = "");
+    QueryGlobalStateResult QueryGlobalState(const std::string& key, const std::string& state_root_hash = "",
+                                            const std::string& path = "");
 
-    QueryGlobalStateResult QueryGlobalState(GlobalStateKey key, std::string state_root_hash = "",
-                                            std::string path = "");
+    QueryGlobalStateResult QueryGlobalState(GlobalStateKey key, const std::string& state_root_hash = "",
+                                            const std::string& path = "");
 
-    QueryGlobalStateResult QueryGlobalStateWithBlockHash(std::string key, std::string block_hash,
-                                                         std::string path = "");
+    QueryGlobalStateResult QueryGlobalStateWithBlockHash(const std::string& key, const std::string& block_hash,
+                                                         const std::string& path = "");
 
-    QueryGlobalStateResult QueryGlobalStateWithBlockHash(GlobalStateKey key, std::string block_hash,
-                                                         std::string path = "");
+    QueryGlobalStateResult QueryGlobalStateWithBlockHash(GlobalStateKey key, const std::string& block_hash,
+                                                         const std::string& path = "");
 
     /**
      * @brief Return the results of the execution to the caller
@@ -276,7 +282,7 @@ public:
      * the state root hash of the latest block.
      * @return SpeculativeExecResult
      */
-    SpeculativeExecResult SpeculativeExec(Deploy deploy, std::string block_hash = "");
+    SpeculativeExecResult SpeculativeExec(const Deploy& deploy, const std::string& block_hash = "");
 
     /**
      * @brief Return the results of the execution to the caller
@@ -285,7 +291,7 @@ public:
      * @param block_height The height of the block as a uint64_t.
      * @return SpeculativeExecResult
      */
-    SpeculativeExecResult SpeculativeExec(Deploy deploy, uint64_t block_height);
+    SpeculativeExecResult SpeculativeExec(const Deploy& deploy, uint64_t block_height);
 
     GetChainspecResult GetChainspec();
 };

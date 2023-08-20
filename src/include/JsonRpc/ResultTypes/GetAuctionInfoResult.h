@@ -14,7 +14,7 @@ struct GetAuctionInfoResult : public RpcResult
     /// </summary>
     AuctionState auction_state;
 
-    GetAuctionInfoResult() {}
+    GetAuctionInfoResult() = default;
 };
 
 /**

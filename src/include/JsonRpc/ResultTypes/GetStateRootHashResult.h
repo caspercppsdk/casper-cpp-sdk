@@ -13,7 +13,7 @@ struct GetStateRootHashResult : public RpcResult
     /// </summary>
     std::string state_root_hash;
 
-    GetStateRootHashResult() {}
+    GetStateRootHashResult() = default;
 };
 
 /**

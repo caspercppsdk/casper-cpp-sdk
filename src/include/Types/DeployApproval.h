@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include "Base.h"
 #include "Types/PublicKey.h"
 #include "Types/Signature.h"
@@ -22,11 +24,11 @@ struct DeployApproval
     /// </summary>
     Signature signature;
 
-    DeployApproval() {}
+    DeployApproval() = default;
 
-    DeployApproval(const PublicKey& signer, const Signature& signature)
-        : signer(signer)
-        , signature(signature)
+    DeployApproval(PublicKey signer, Signature signature)
+        : signer(std::move(signer))
+        , signature(std::move(signature))
     {
     }
 };

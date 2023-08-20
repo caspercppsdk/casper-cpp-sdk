@@ -24,7 +24,7 @@ struct Signature
     /// </summary>
     KeyAlgo key_algorithm;
 
-    Signature() {}
+    Signature() = default;
 
 protected:
     Signature(CBytes raw_bytes_, KeyAlgo key_algorithm_)
@@ -38,7 +38,7 @@ public:
     /// Creates a Signature object from a hexadecimal string (containing the
     /// Key algorithm identifier).
     /// </summary>
-    static Signature FromHexString(std::string signature)
+    static Signature FromHexString(const std::string& signature)
     {
         try
         {
@@ -60,7 +60,7 @@ public:
         {
             SPDLOG_ERROR("FromHexString() Exception: {}", e.what());
         }
-        return Signature();
+        return {};
     }
 
     /// <summary>
@@ -88,20 +88,20 @@ public:
 
         CBytes data_bytes(bytes.size() - 1);
         std::copy(bytes.begin() + 1, bytes.end(), data_bytes.begin());
-        return Signature(data_bytes, algoIdent);
+        return {data_bytes, algoIdent};
     }
 
     /// <summary>
     /// Creates a Signature object from a byte array and the key algorithm
     /// identifier.
     /// </summary>
-    static Signature FromRawBytes(CBytes rawBytes, KeyAlgo keyAlgo) { return Signature(rawBytes, keyAlgo); }
+    static Signature FromRawBytes(const CBytes& rawBytes, KeyAlgo keyAlgo) { return {rawBytes, keyAlgo}; }
 
     /// <summary>
     /// Returns the bytes of the signature, including the Key algorithm as the
     /// first byte.
     /// </summary>
-    CBytes GetBytes()
+    CBytes GetBytes() const
     {
         CBytes bytes = CBytes(raw_bytes.size() + 1);
         if (key_algorithm == KeyAlgo::ED25519)

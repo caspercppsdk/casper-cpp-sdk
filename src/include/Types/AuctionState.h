@@ -31,7 +31,7 @@ struct AuctionState
     /// </summary>
     std::vector<ValidatorBid> bids;
 
-    AuctionState() {}
+    AuctionState() = default;
 };
 
 /**

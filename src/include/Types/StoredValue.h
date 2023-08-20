@@ -53,19 +53,23 @@ struct StoredValue
     /// Variant that stores unbonding information.
     std::optional<std::vector<UnbondingPurse>> withdraw = std::nullopt;
 
-    StoredValue() {}
+    StoredValue() = default;
+
     StoredValue(CLValue cl_value_)
         : cl_value(cl_value_)
     {
     }
+
     StoredValue(Account account_)
         : account(account_)
     {
     }
+
     StoredValue(std::string contract_wasm_)
         : contract_wasm(contract_wasm_)
     {
     }
+
     StoredValue(Contract contract_)
         : contract(contract_)
     {
@@ -74,22 +78,27 @@ struct StoredValue
         : contract_package(contract_package_)
     {
     }
+
     StoredValue(Transfer transfer_)
         : transfer(transfer_)
     {
     }
+
     StoredValue(DeployInfo deploy_info_)
         : deploy_info(deploy_info_)
     {
     }
+
     StoredValue(EraInfo era_info_)
         : era_info(era_info_)
     {
     }
+
     StoredValue(Bid bid_)
         : bid(bid_)
     {
     }
+    
     StoredValue(std::vector<UnbondingPurse> withdraw_)
         : withdraw(withdraw_)
     {

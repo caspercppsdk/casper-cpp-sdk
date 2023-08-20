@@ -16,7 +16,7 @@ struct GetChainspecResult : public RpcResult
     /// </summary>
     ChainspecRawBytes chainspec_bytes;
 
-    GetChainspecResult() {}
+    GetChainspecResult() = default;
 };
 
 /**

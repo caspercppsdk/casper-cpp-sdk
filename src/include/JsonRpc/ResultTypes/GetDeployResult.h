@@ -21,7 +21,7 @@ struct GetDeployInfoResult : public RpcResult
     /// </summary>
     std::vector<ExecutionResult> execution_results;
 
-    GetDeployInfoResult() {}
+    GetDeployInfoResult() = default;
 };
 
 /**

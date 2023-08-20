@@ -20,7 +20,7 @@ struct GetBlockTransfersResult : public RpcResult
     /// </summary>
     std::optional<std::vector<Transfer>> transfers = std::nullopt;
 
-    GetBlockTransfersResult() {}
+    GetBlockTransfersResult() = default;
 };
 
 /**

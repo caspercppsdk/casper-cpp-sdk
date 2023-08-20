@@ -37,7 +37,7 @@ struct EraSummary
     /// </summary>
     std::string merkle_proof;
 
-    EraSummary() {}
+    EraSummary() = default;
 };
 
 /**

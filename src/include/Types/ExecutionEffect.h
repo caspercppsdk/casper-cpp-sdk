@@ -22,7 +22,7 @@ struct ExecutionEffect
     /// </summary>
     std::vector<TransformEntry> transforms;
 
-    ExecutionEffect() {}
+    ExecutionEffect() = default;
 };
 
 // to_json of ExecutionEffect

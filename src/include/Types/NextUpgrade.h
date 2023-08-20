@@ -20,7 +20,7 @@ struct NextUpgrade
     /// </summary>
     std::string protocol_version;
 
-    NextUpgrade() {}
+    NextUpgrade() = default;
 };
 
 /**

@@ -34,7 +34,7 @@ void BaseByteSerializer::WriteByte(CBytes& sb, uint8_t value)
     sb += bytes;
 }
 
-void BaseByteSerializer::WriteBytes(CBytes& sb, std::vector<uint8_t> value)
+void BaseByteSerializer::WriteBytes(CBytes& sb, const std::vector<uint8_t>& value)
 {
     // TODO: CHECK BELOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     CBytes bytes(value.size());
@@ -45,12 +45,12 @@ void BaseByteSerializer::WriteBytes(CBytes& sb, std::vector<uint8_t> value)
     sb += bytes;
 }
 
-void BaseByteSerializer::WriteBytes(CBytes& sb, CBytes value)
+void BaseByteSerializer::WriteBytes(CBytes& sb, const CBytes& value)
 {
     sb += value;
 }
 
-void BaseByteSerializer::WriteString(CBytes& sb, std::string value)
+void BaseByteSerializer::WriteString(CBytes& sb, const std::string& value)
 {
     CBytes bytes = hexDecode(stringEncode(value));
     //    if (!BitConverter.IsLittleEndian) Array.Reverse(bytes);

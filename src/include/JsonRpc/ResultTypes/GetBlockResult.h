@@ -19,7 +19,7 @@ struct GetBlockResult : public RpcResult
     /// </summary>
     std::optional<Block> block = std::nullopt;
 
-    GetBlockResult() {}
+    GetBlockResult() = default;
 };
 
 /**

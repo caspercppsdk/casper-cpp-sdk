@@ -20,7 +20,7 @@ struct ValidatorWeight
     /// </summary>
     uint512_t weight;
 
-    ValidatorWeight() {}
+    ValidatorWeight() = default;
 };
 
 /**
@@ -44,7 +44,7 @@ inline void from_json(const nlohmann::json& j, ValidatorWeight& p)
 {
     // TODO: Check with j.find("weight") != j.end()
     std::string weightString = j.at("weight").get<std::string>();
-    if (weightString.size() > 0)
+    if (!weightString.empty())
     {
         p.weight = u512FromDec(weightString);
     }

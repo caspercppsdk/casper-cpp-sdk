@@ -21,7 +21,7 @@ struct Reward
     /// </summary>
     PublicKey validator;
 
-    Reward() {}
+    Reward() = default;
 };
 
 // to_json of Reward
@@ -60,7 +60,7 @@ struct EraReport
     /// </summary>
     std::vector<Reward> rewards;
 
-    EraReport() {}
+    EraReport() = default;
 };
 
 // to_json of EraReport
@@ -96,7 +96,7 @@ struct EraEnd
     /// </summary>
     std::vector<ValidatorWeight> next_era_validator_weights;
 
-    EraEnd() {}
+    EraEnd() = default;
 };
 
 // to_json of EraEnd

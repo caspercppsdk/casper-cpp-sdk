@@ -9,7 +9,7 @@ namespace Casper
 {
 struct DeployByteSerializer : public BaseByteSerializer
 {
-    CBytes ToBytes(DeployHeader source)
+    CBytes ToBytes(const DeployHeader& source)
     {
         CBytes bytes;
 
@@ -45,7 +45,7 @@ struct DeployByteSerializer : public BaseByteSerializer
         return bytes;
     }
 
-    CBytes ToBytes(Deploy source)
+    CBytes ToBytes(const Deploy& source)
     {
         CBytes bytes;
 
@@ -63,7 +63,7 @@ struct DeployByteSerializer : public BaseByteSerializer
         // add the approvals
         //
         WriteInteger(bytes, source.approvals.size());
-        for (auto& approval : source.approvals)
+        for (const auto& approval : source.approvals)
         {
             WriteBytes(bytes, approvalSerializer.ToBytes(approval));
         }

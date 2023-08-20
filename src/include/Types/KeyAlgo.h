@@ -1,6 +1,6 @@
 #pragma once
 #include <stdexcept>
-// TODOMS3: Make the stdexcept a global in the project
+// TODO: Make the stdexcept a global in the project
 #include <iostream>
 
 namespace Casper
@@ -15,6 +15,7 @@ public:
     };
 
     KeyAlgo() = default;
+    
     constexpr KeyAlgo(Value aKeyAlgo)
         : value(aKeyAlgo)
     {

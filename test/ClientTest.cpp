@@ -64,7 +64,6 @@ void publicKey_getAccountHashTest()
 
     std::string expected_account_hash = "account-hash-"
                                         "998c5fd4e7b568bedd78e05555c83c61893dc5d8546ce0bec8b30e1c570f21aa";
-    std::cout << "lower_case_account_hash: " << lower_case_account_hash << std::endl;
     TEST_ASSERT(iequals(lower_case_account_hash, expected_account_hash));
 }
 
@@ -144,7 +143,6 @@ bool threeWayCompare(CLTypeRVA rva)
     nlohmann::json obj_to_json;
     to_json(obj_to_json, rva);
 
-    std::cout << "json: " << obj_to_json.dump() << std::endl;
 
     // create a new type object object from the generated json
     CLTypeRVA json_to_obj;
@@ -154,7 +152,6 @@ bool threeWayCompare(CLTypeRVA rva)
     nlohmann::json final_json;
     to_json(final_json, json_to_obj);
 
-    std::cout << "final json: " << final_json.dump() << std::endl;
 
     // compare the final parsed json with the initial json
     bool result = obj_to_json == final_json;
@@ -278,7 +275,6 @@ void clTypeParsed_test()
   )";
 
     nlohmann::json j = nlohmann::json::parse(json_str);
-    std::cout << std::endl << j.dump(2) << std::endl;
     CLValue cl;
     from_json(j, cl);
 
@@ -286,7 +282,6 @@ void clTypeParsed_test()
 
     nlohmann::json j2;
     to_json(j2, cl);
-    std::cout << std::endl << j2.dump(2) << std::endl;
 
     TEST_ASSERT(j2.dump() == j.dump());
 }
@@ -300,7 +295,6 @@ void clValue_with_jsonFile(std::string file_name)
     {
         std::string file_path = __FILE__;
         std::string dir_path = file_path.substr(0, file_path.rfind("/"));
-        std::cout << dir_path << std::endl;
         std::string file_path_name = dir_path + "/data/CLValue/" + file_name;
         std::ifstream ifs(file_path_name);
         input_json = nlohmann::json::parse(ifs);
@@ -310,7 +304,6 @@ void clValue_with_jsonFile(std::string file_name)
         std::cout << "clValue_with_jsonFile: " << e.what() << std::endl;
     }
 
-    std::cout << std::endl << input_json.dump(2) << std::endl;
 
     // create a CLValue from the json
     CLValue generated_obj;
@@ -320,7 +313,6 @@ void clValue_with_jsonFile(std::string file_name)
     nlohmann::json generated_json;
     to_json(generated_json, generated_obj);
 
-    std::cout << std::endl << generated_json.dump(2) << std::endl;
 
     // compare the final parsed json with the initial json
     TEST_ASSERT(iequals(generated_json.dump(), input_json.dump()));
@@ -504,8 +496,6 @@ void globalStateKey_serialize(T key, std::string& expected_bytes_str)
 
     std::string bytes_str = CEP57Checksum::Encode(key_bytes);
 
-    std::cout << std::endl << "key_bytes: " << key_bytes.size() << std::endl;
-    std::cout << bytes_str << std::endl;
 
     TEST_ASSERT(iequals(expected_bytes_str, bytes_str));
 }
@@ -549,41 +539,29 @@ void globalStateKey_serializer_test()
 
 void publicKey_load_fromFileTest()
 {
-    std::cout << "\n";
     /// Create a Private Key from pem file
     // CryptoPP::AutoSeededRandomPool prng;
 
     TempFileHandler fileHandler{sourceSecretKey, "sourceSecretKey"};
 
     Casper::Secp256k1Key secp256k1Key(fileHandler.getPath());
-    std::cout << "private key: " << secp256k1Key.getPrivateKeyStr() << std::endl;
-    std::cout << "public key: " << secp256k1Key.getPublicKeyStr() << std::endl;
 
     std::string message = "Do or do not. There is no try.";
     std::string signature = secp256k1Key.sign(message);
-    std::cout << "signature: " << Casper::Secp256k1Key::signatureToString(signature) << std::endl;
-    // verify
-    bool is_valid = secp256k1Key.verify(message, signature);
-    std::cout << "Verification: " << std::boolalpha << is_valid << std::endl;
+    TEST_ASSERT(secp256k1Key.verify(message, signature));
 }
 
 void ed25KeyTest()
 {
-    std::cout << "\n";
-    TempFileHandler fileHandler{sourceSecretKey, "sourceSecretKey"};
+    TempFileHandler fileHandler{sourceED25519SecretKey, "sourceED25519SecretKey"};
 
     Ed25519Key ed_key(fileHandler.getPath());
-    std::cout << "ed_key.getPrivateKeyStr(): " << ed_key.getPrivateKeyStr() << std::endl;
-    std::cout << "ed_key.getPublicKeyStr(): " << ed_key.getPublicKeyStr() << std::endl;
-
     std::string message = "e0a081fbf1ea9c716852df2bbfbfb1daecb9719f67c63c64cc49267d8038ebcf";
     std::string signature = ed_key.sign(message);
-
-    std::cout << "in test verify: " << std::boolalpha << ed_key.verify(message, signature) << std::endl;
+    TEST_ASSERT(ed_key.verify(message, signature));
 }
 
 #define RPC_TEST 1
-#define SER_DE_TEST 0
 #define CL_TYPE_TEST 1
 #define CL_VALUE_TEST 1
 #define DEPLOY_ITEM_BYTE_SERIALIZER_TEST 1
@@ -656,22 +634,6 @@ TEST_LIST = {
     {"QueryGlobalState RPC Call", QueryGlobalState_with_keyTest},
     {"GlobalStateKey Serialization and Deserialization test", globalStateKey_Simple_Test},
     {"SpeculativeExec RPC Call without blockIdentifier", SpeculativeExec_without_blockIdentifier},
-#endif
-
-#if SER_DE_TEST == 1
-    {"Serialize - Bool", serializeBoolTest},
-    {"Serialize - I32", serializeI32Test},
-    {"Serialize - I64", serializeI64Test},
-    {"Serialize - String", serializeStringTest},
-    {"Serialize - U8", serializeU8Test},
-    {"Serialize - U32", serializeU32Test},
-    {"Serialize - U64", serializeU64Test},
-    {"Serialize - U128", serializeU128Test},
-    {"Serialize - U256", serializeU256Test},
-    {"Serialize - U512", serializeU512Test},
-    {"Serialize - ByteArray", serializeByteArrayTest},
-    {"Serialize - Key", serializeKeyTest},
-    {"Serialize - PublicKey", serializePublicKeyTest},
 #endif
 
 #if CL_TYPE_TEST == 1

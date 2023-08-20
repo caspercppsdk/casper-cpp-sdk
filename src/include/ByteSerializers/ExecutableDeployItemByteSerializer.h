@@ -8,7 +8,7 @@ namespace Casper
 {
 struct ExecutableDeployItemByteSerializer : public BaseByteSerializer
 {
-    CBytes ToBytes(ExecutableDeployItem source)
+    CBytes ToBytes(const ExecutableDeployItem& source)
     {
         CBytes bytes;
         NamedArgByteSerializer namedArgSerializer;

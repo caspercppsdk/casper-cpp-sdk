@@ -13,7 +13,7 @@
 
 namespace Casper
 {
-Ed25519Key::Ed25519Key(std::string pem_file_path)
+Ed25519Key::Ed25519Key(const std::string& pem_file_path)
     : pub_key(1024)
     , priv_key(1024)
 {

@@ -22,7 +22,7 @@ struct VestingSchedule
     /// </summary>
     std::vector<uint512_t> locked_amounts;
 
-    VestingSchedule() {}
+    VestingSchedule() = default;
 };
 
 /**

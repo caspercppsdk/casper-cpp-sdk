@@ -18,11 +18,11 @@
 namespace Casper
 {
 
-uint64_t strToTimestamp(std::string str);
+uint64_t strToTimestamp(const std::string& str);
 
-CBytes hexDecode(std::string hex);
-
-std::string hexEncode(CBytes decoded);
+// CBytes hexDecode(const std::string& hex);
+//
+// std::string hexEncode(CBytes decoded);
 
 // Encoding && Decoding
 

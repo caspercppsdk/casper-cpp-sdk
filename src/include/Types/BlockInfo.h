@@ -41,7 +41,7 @@ struct BlockInfo
     /// </summary>
     std::string timestamp;
 
-    BlockInfo() {}
+    BlockInfo() = default;
 };
 
 /**

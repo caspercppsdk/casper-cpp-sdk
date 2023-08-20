@@ -26,14 +26,14 @@ struct PublicKey
     KeyAlgo key_algorithm;
 
 protected:
-    PublicKey(CBytes raw_bytes_, KeyAlgo key_algorithm_)
+    PublicKey(const CBytes& raw_bytes_, KeyAlgo key_algorithm_)
         : raw_bytes(raw_bytes_)
         , key_algorithm(key_algorithm_)
     {
     }
 
 public:
-    PublicKey() {}
+    PublicKey() = default;
 
     /// <summary>
     /// Creates a PublicKey object from an hexadecimal string (containing the
@@ -61,7 +61,7 @@ public:
         {
             SPDLOG_ERROR("{}", e.what());
         }
-        return Casper::PublicKey();
+        return {};
     }
 
     /// <summary>
@@ -71,38 +71,38 @@ public:
     {
         throw std::runtime_error("Not implemented: static Casper::PublicKey FromPemFile(const "
                                  "std::string& pemFilePath)");
-
-        try
-        {
-            CryptoPP::FileSource fs1(pemFilePath.c_str(), true);
-            if (CryptoPP::PEM_GetType(fs1) == CryptoPP::PEM_EC_PUBLIC_KEY)
-            {
-                CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::PublicKey publicKey;
-
-                publicKey.Load(fs1);
-
-                // TODOMS3: Check the false below if any error occurs
-                CBytes rawBytes(publicKey.GetGroupParameters().GetEncodedElementSize(false));
-
-                // TODOMS3: Check the false below if any error occurs
-                publicKey.GetGroupParameters().EncodeElement(false, publicKey.GetPublicElement(), rawBytes);
-
-                return PublicKey(rawBytes, KeyAlgo::SECP256K1);
-            }
-            else
-            {
-                CryptoPP::ed25519PublicKey k1;
-                k1.Load(fs1);
-                CBytes rawBytes(k1.GetPublicElement().MinEncodedSize());
-                k1.GetPublicElement().Encode(rawBytes, rawBytes.size());
-                return PublicKey(rawBytes, KeyAlgo::ED25519);
-            }
-        }
-        catch (std::exception& e)
-        {
-            SPDLOG_ERROR("Unsupported key format or it's not a public key PEM object.");
-        }
-        return {};
+        //
+        //        try
+        //        {
+        //            CryptoPP::FileSource fs1(pemFilePath.c_str(), true);
+        //            if (CryptoPP::PEM_GetType(fs1) == CryptoPP::PEM_EC_PUBLIC_KEY)
+        //            {
+        //                CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::PublicKey publicKey;
+        //
+        //                publicKey.Load(fs1);
+        //
+        //                // TODO: Check the false below if any error occurs
+        //                CBytes rawBytes(publicKey.GetGroupParameters().GetEncodedElementSize(false));
+        //
+        //                // TODO: Check the false below if any error occurs
+        //                publicKey.GetGroupParameters().EncodeElement(false, publicKey.GetPublicElement(), rawBytes);
+        //
+        //                return PublicKey(rawBytes, KeyAlgo::SECP256K1);
+        //            }
+        //            else
+        //            {
+        //                CryptoPP::ed25519PublicKey k1;
+        //                k1.Load(fs1);
+        //                CBytes rawBytes(k1.GetPublicElement().MinEncodedSize());
+        //                k1.GetPublicElement().Encode(rawBytes, rawBytes.size());
+        //                return PublicKey(rawBytes, KeyAlgo::ED25519);
+        //            }
+        //        }
+        //        catch (std::exception& e)
+        //        {
+        //            SPDLOG_ERROR("Unsupported key format or it's not a public key PEM object.");
+        //        }
+        //        return {};
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ public:
         unsigned char algoIdent = bytes[0];
 
         int expectedPublicKeySize = -1;
-        std::string algo = "";
+        std::string algo;
 
         if (algoIdent == 0x01)
         {
@@ -239,9 +239,9 @@ public:
     /// Returns the key as an hexadecimal string, including the key algorithm in
     /// the first position.
     /// </summary>
-    std::string ToAccountHex() const
+    [[nodiscard]] std::string ToAccountHex() const
     {
-        std::string pk_hex = "";
+        std::string pk_hex;
         if (key_algorithm == KeyAlgo::ED25519)
         {
             pk_hex = "01" + CEP57Checksum::Encode(raw_bytes);
@@ -260,13 +260,13 @@ public:
     /// <summary>
     /// Recall ToAccountHex()
     /// </summary>
-    std::string ToString() const { return ToAccountHex(); }
+    [[nodiscard]] std::string ToString() const { return ToAccountHex(); }
 
     /// <summary>
     /// Returns the bytes of the public key, including the Key algorithm as the
     /// first byte.
     /// </summary>
-    CBytes GetBytes()
+    [[nodiscard]] CBytes GetBytes() const
     {
         CBytes bytes = CBytes(raw_bytes.size() + 1);
 
@@ -322,14 +322,14 @@ public:
     /// <summary>
     /// Verifies the signature given its value and the original message.
     /// </summary>
-    bool VerifySignature(std::string message, std::string signature)
+    bool VerifySignature(const std::string& message, const std::string& signature)
     {
         return VerifySignature(hexDecode(message), hexDecode(signature));
     }
 
     /// <summary>
     /// Converts the public key to a string.
-    std::ostream& operator<<(std::ostream& os)
+    std::ostream& operator<<(std::ostream& os) const
     {
         os << ToAccountHex();
         return os;

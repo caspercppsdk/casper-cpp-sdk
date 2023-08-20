@@ -14,7 +14,7 @@ struct RpcResult
     /// </summary>
     std::string api_version;
 
-    RpcResult() {}
+    RpcResult() = default;
 };
 
 /**
