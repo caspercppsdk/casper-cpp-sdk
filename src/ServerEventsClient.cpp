@@ -1,6 +1,6 @@
 #include "ServerEventsClient.h"
+#include "BlockAdded.h"
 #include <iostream>
-#include <httplib.h>
 #include <thread>
 #include <nlohmann/json.hpp>
 
@@ -50,9 +50,21 @@ void ServerEventsClient::stopListening()
     for (size_t i = 0; i < _runningFlags.size(); ++i)
     {
         _runningFlags[i]->store(false);
+    }
+
+    // Stop all clients
+    for (auto& client : _clients)
+    {
+        client->stop();
+    }
+
+    // Now wait for the tasks to finish
+    for (size_t i = 0; i < _runningTasks.size(); ++i)
+    {
         _runningTasks[i].wait();
     }
 }
+
 
 void ServerEventsClient::addEventCallback(EventType eventType, const std::string& name, EventCallback cb, int startFrom)
 {
@@ -84,7 +96,8 @@ void ServerEventsClient::listenChannelAsync(ChannelType channelType, int startFr
 {
     std::string local_accumulated_data; // Each task has its own local copy
 
-    httplib::Client client(address);
+    _clients.push_back(std::make_unique<httplib::Client>(address));
+    httplib::Client& client = *_clients.back();
     client.set_read_timeout(500); // 500 seconds
 
     std::string endpoint;

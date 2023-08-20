@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Base.h"
+#include "JsonRpc/Connection/httplib.h"
+
 #include <string>
 #include <map>
 #include <set>
@@ -78,6 +80,7 @@ private:
     std::string address;
     std::string accumulated_data;
     std::set<ChannelType> _channels;
+    std::vector<std::unique_ptr<httplib::Client>> _clients;
 
     std::vector<SSECallback> _callbacks;
     std::map<EventType, ChannelType> eventTypeToChannelMap;

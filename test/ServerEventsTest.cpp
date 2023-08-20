@@ -2,6 +2,7 @@
 
 #include "ServerEventsTest.h"
 #include "acutest.h"
+#include "SSE/BlockAdded.h"
 #include <thread>
 
 namespace Casper
@@ -15,6 +16,19 @@ void Hello_SSE_Test(void)
 
     auto printCallback = [&](const std::string& message, const Casper::EventData& eventData)
     {
+        // Example type cast
+        if (eventData.eventType == EventType::BlockAdded)
+        {
+
+            BlockAdded blockAdded;
+            nlohmann::json j = nlohmann::json::parse(eventData.payload);
+            from_json(j, blockAdded);
+
+            nlohmann::json out_json;
+            to_json(out_json, blockAdded);
+            std::cout << "out_json: \n" << out_json.dump(4) << std::endl;
+        }
+        
         if (shouldPrint)
         {
             std::cout << message << eventData.payload << std::endl;
@@ -55,8 +69,8 @@ void Hello_SSE_Test(void)
     // Start listening on the channels
     client.startListening();
 
-    // Sleep for 1000 seconds to give time for events to be received
-    std::this_thread::sleep_for(std::chrono::seconds(100000));
+    // Sleep for 10 seconds to give time for events to be received
+    std::this_thread::sleep_for(std::chrono::seconds(10));
 
     // Stop listening
     client.stopListening();

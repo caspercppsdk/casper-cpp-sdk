@@ -614,7 +614,7 @@ TEST_LIST = {
     {"toLower checks internal lower case converter", stringUtil_toLowerTest},
     {"gsk test", globalStateKey_serializer_test},
 #endif
-    
+
 #if RPC_TEST == 1
     {"infoGetPeers checks node list size", infoGetPeers_Test},
     {"chainGetStateRootHash using Block height parameter", chainGetStateRootHash_with_blockHeightTest},
