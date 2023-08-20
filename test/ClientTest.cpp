@@ -1,5 +1,6 @@
 #include "TempFileHandler.hpp"
 #include "CasperClient.h"
+#include "ServerEventsClient.h"
 #include "Types/GlobalStateKey.cpp"
 #include "Types/PublicKey.h"
 #include "Utils/CryptoUtil.h"
@@ -19,6 +20,7 @@
 
 // Tests
 #include "RpcTest.hpp"
+#include "ServerEventsTest.h"
 #include "CLValueByteSerializerTest.hpp"
 #include "DeployItemByteSerializerTest.hpp"
 
@@ -562,10 +564,13 @@ void ed25KeyTest()
 }
 
 #define RPC_TEST 1
+#define SSE_TEST 1
 #define CL_TYPE_TEST 1
 #define CL_VALUE_TEST 1
 #define DEPLOY_ITEM_BYTE_SERIALIZER_TEST 1
 #define CL_VALUE_BYTE_SERIALIZER_TEST 1
+#define UTILS_TEST 1
+
 TEST_LIST = {
 
 #if CL_VALUE_BYTE_SERIALIZER_TEST == 1
@@ -602,11 +607,13 @@ TEST_LIST = {
     {"TransferDeployItemSerialization", DeployItem_ByteSer_Transfer_Test},
 #endif
 
+#if UTILS_TEST == 1
     {"ED25519 Key Test", ed25KeyTest},
     {"PublicKey Load fromFile", publicKey_load_fromFileTest},
     {"getAccountHash checks internal PublicKey to AccountHash converter", publicKey_getAccountHashTest},
     {"toLower checks internal lower case converter", stringUtil_toLowerTest},
     {"gsk test", globalStateKey_serializer_test},
+#endif
 
 #if RPC_TEST == 1
     {"infoGetPeers checks node list size", infoGetPeers_Test},
@@ -634,6 +641,10 @@ TEST_LIST = {
     {"QueryGlobalState RPC Call", QueryGlobalState_with_keyTest},
     {"GlobalStateKey Serialization and Deserialization test", globalStateKey_Simple_Test},
     {"SpeculativeExec RPC Call without blockIdentifier", SpeculativeExec_without_blockIdentifier},
+#endif
+
+#if SSE_TEST == 1
+    {"Hello SSE", Hello_SSE_Test},
 #endif
 
 #if CL_TYPE_TEST == 1

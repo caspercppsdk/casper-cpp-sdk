@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/SSE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/JsonRpc
     ${CMAKE_CURRENT_SOURCE_DIR}/include/JsonRpc/Connection
     ${CMAKE_CURRENT_SOURCE_DIR}/include/JsonRpc/ResultTypes
@@ -14,6 +15,7 @@ include_directories(
 
 add_library(${LIB_NAME} STATIC
     CasperClient.cpp
+    ServerEventsClient.cpp
     include/Types/CLValue.cpp
     include/Types/CLType.cpp
     include/Types/CLTypeParsed.cpp
